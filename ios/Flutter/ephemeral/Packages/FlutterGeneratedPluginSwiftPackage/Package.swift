@@ -16,6 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "path_provider_foundation", path: "../.packages/path_provider_foundation-2.4.2"),
+        .package(name: "sqlite3_flutter_libs", path: "../.packages/sqlite3_flutter_libs-0.5.42"),
         .package(name: "FlutterFramework", path: "../.packages/FlutterFramework")
     ],
     targets: [
@@ -23,6 +24,7 @@ let package = Package(
             name: "FlutterGeneratedPluginSwiftPackage",
             dependencies: [
                 .product(name: "path-provider-foundation", package: "path_provider_foundation"),
+                .product(name: "sqlite3-flutter-libs", package: "sqlite3_flutter_libs"),
                 .product(name: "FlutterFramework", package: "FlutterFramework")
             ]
         )
