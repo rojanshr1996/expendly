@@ -21,6 +21,8 @@ import '../../features/dashboard/domain/usecases/get_financial_summary.dart'
     as _i119;
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart'
     as _i24;
+import '../services/notification_service.dart' as _i941;
+import '../services/remote_config_service.dart' as _i858;
 
 extension GetItInjectableX on _i174.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -33,6 +35,10 @@ extension GetItInjectableX on _i174.GetIt {
       environment,
       environmentFilter,
     );
+    gh.lazySingleton<_i858.RemoteConfigService>(
+        () => _i858.RemoteConfigService());
+    gh.lazySingleton<_i941.NotificationService>(
+        () => _i941.NotificationService());
     gh.lazySingleton<_i838.DashboardLocalDataSource>(
         () => _i838.DashboardLocalDataSourceImpl());
     gh.lazySingleton<_i665.DashboardRepository>(() =>

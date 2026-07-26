@@ -121,8 +121,9 @@ class _MetricTile extends StatelessWidget {
           AppSpacing.gapTight,
           Text(
             amount,
-            style: customTypography.amountDisplay.copyWith(
-              fontSize: 18.sp,
+            style: textTheme.titleMedium?.copyWith(
+              fontFamily: customTypography.amountDisplay.fontFamily,
+              fontWeight: FontWeight.w600,
               color: colorScheme.onSurface,
             ),
           ),

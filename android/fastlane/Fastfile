@@ -1,0 +1,54 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build and Distribute DEV APK to Firebase App Distribution"
+  lane :distribute_dev do |options|
+    release_notes = options[:release_notes] || "Expendly DEV build - #{Time.now.strftime('%Y-%m-%d %H:%M')}"
+    groups = options[:groups] || "dev-testers, internal-testers"
+
+    sh("cd ../.. && flutter build apk --flavor dev --target lib/main_dev.dart --release")
+
+    firebase_app_distribution(
+      app: "1:748636232967:android:87bd73587100d5a126b9a2",
+      apk_path: "../build/app/outputs/flutter-apk/app-dev-release.apk",
+      groups: groups,
+      release_notes: release_notes,
+      service_credentials_file: ENV["FIREBASE_SERVICE_ACCOUNT_KEY_PATH"],
+      firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"]
+    )
+  end
+
+  desc "Build and Distribute QA APK to Firebase App Distribution"
+  lane :distribute_qa do |options|
+    release_notes = options[:release_notes] || "Expendly QA build - #{Time.now.strftime('%Y-%m-%d %H:%M')}"
+    groups = options[:groups] || "qa-testers, internal-testers"
+
+    sh("cd ../.. && flutter build apk --flavor qa --target lib/main_qa.dart --release")
+
+    firebase_app_distribution(
+      app: "1:748636232967:android:d5c5362c2afc683726b9a2",
+      apk_path: "../build/app/outputs/flutter-apk/app-qa-release.apk",
+      groups: groups,
+      release_notes: release_notes,
+      service_credentials_file: ENV["FIREBASE_SERVICE_ACCOUNT_KEY_PATH"],
+      firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"]
+    )
+  end
+
+  desc "Build and Distribute PROD APK to Firebase App Distribution"
+  lane :distribute_prod do |options|
+    release_notes = options[:release_notes] || "Expendly PROD build - #{Time.now.strftime('%Y-%m-%d %H:%M')}"
+    groups = options[:groups] || "prod-testers, beta-testers"
+
+    sh("cd ../.. && flutter build apk --flavor prod --target lib/main_prod.dart --release")
+
+    firebase_app_distribution(
+      app: "1:748636232967:android:b869f641ba48869026b9a2",
+      apk_path: "../build/app/outputs/flutter-apk/app-prod-release.apk",
+      groups: groups,
+      release_notes: release_notes,
+      service_credentials_file: ENV["FIREBASE_SERVICE_ACCOUNT_KEY_PATH"],
+      firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"]
+    )
+  end
+end

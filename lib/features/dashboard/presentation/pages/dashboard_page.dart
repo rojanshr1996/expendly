@@ -73,7 +73,7 @@ class _DashboardView extends StatelessWidget {
           if (state is DashboardError) {
             return Center(
               child: Text(
-                'Error: ${state.message}',
+                l10n.errorMessage(state.message),
                 style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(color: colorScheme.error),
               ),
             );
@@ -150,7 +150,7 @@ class _DashboardView extends StatelessWidget {
       children: [
         Text(
           l10n.recentActivity,
-          style: (textTheme.headlineMedium ?? const TextStyle()).copyWith(fontSize: 20.sp),
+          style: textTheme.titleMedium,
         ),
         TextButton(
           onPressed: () {},
@@ -190,7 +190,7 @@ class _DashboardView extends StatelessWidget {
         title: l10n.netflixSubscription,
         category: l10n.entertainment,
         amount: '-\$15.99',
-        date: 'Jul 22, 2026',
+        date: l10n.jul22Date,
         icon: Icons.movie_creation_outlined,
         color: colorScheme.secondary,
       ),
@@ -274,9 +274,10 @@ class _TransactionTile extends StatelessWidget {
             children: [
               Text(
                 item.amount,
-                style: customTypography.amountDisplay.copyWith(
-                  fontSize: 16.sp,
+                style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(
+                  fontFamily: customTypography.labelMediumMono.fontFamily,
                   color: item.isIncome ? customColors.semanticGreen : colorScheme.onSurface,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               AppSpacing.gapTight,

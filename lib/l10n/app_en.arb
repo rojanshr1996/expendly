@@ -63,5 +63,22 @@
   "yesterday": "Yesterday",
   "@yesterday": {
     "description": "Relative date label for yesterday"
+  },
+  "modernFiscalCore": "MODERN FISCAL CORE",
+  "@modernFiscalCore": {
+    "description": "Application tagline displayed on splash screen"
+  },
+  "errorMessage": "Error: {message}",
+  "@errorMessage": {
+    "description": "Error text displayed when an operation fails",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "jul22Date": "Jul 22, 2026",
+  "@jul22Date": {
+    "description": "Sample transaction date"
   }
 }
