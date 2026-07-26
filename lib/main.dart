@@ -1,4 +1,6 @@
 import 'package:expendly/l10n/app_localizations.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,9 +8,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'core/config/app_config.dart';
+import 'core/config/firebase_options_factory.dart';
 import 'core/di/injection.dart';
 import 'core/router/app_router.dart';
+import 'core/services/notification_service.dart';
+import 'core/services/remote_config_service.dart';
 import 'core/theme/app_theme.dart';
+import 'core/widgets/app_update_guard.dart';
 
 /// Shared offline-first initialization entrypoint for all environment flavors.
 Future<void> bootstrapApp(AppConfig config) async {
@@ -20,6 +26,21 @@ Future<void> bootstrapApp(AppConfig config) async {
 
   // Configure Dependency Injection via GetIt & Injectable
   await configureDependencies(config.flavor.name);
+
+  // Initialize Firebase with flavor-specific options
+  try {
+    await Firebase.initializeApp(
+      options: FirebaseOptionsFactory.currentOptions,
+    );
+
+    // Initialize Notification and Remote Config Services
+    await getIt<NotificationService>().initialize();
+    await getIt<RemoteConfigService>().initialize();
+  } catch (e) {
+    if (kDebugMode) {
+      print('Firebase Initialization Error: $e');
+    }
+  }
 
   runApp(const ExpendlyApp());
 }
@@ -75,20 +96,21 @@ class _ExpendlyAppState extends State<ExpendlyApp> {
             Locale('en'), // English
           ],
           builder: (context, child) {
-            final content = child ?? const SizedBox.shrink();
+            Widget content = child ?? const SizedBox.shrink();
             if (config.showFlavorBanner && !config.isProd) {
               final colorScheme = Theme.of(context).colorScheme;
-              return Banner(
+              content = Banner(
                 message: config.flavor.name.toUpperCase(),
                 location: BannerLocation.topEnd,
                 color: config.isDev ? colorScheme.tertiary : colorScheme.secondary,
                 child: content,
               );
             }
-            return content;
+            return AppUpdateGuard(child: content);
           },
         );
       },
     );
   }
 }
+

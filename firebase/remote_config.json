@@ -1,0 +1,70 @@
+{
+  "parameters": {
+    "min_required_version": {
+      "defaultValue": {
+        "value": "1.0.0"
+      },
+      "description": "Minimum app version required. Users on lower versions will be forced to update."
+    },
+    "latest_version": {
+      "defaultValue": {
+        "value": "1.0.0"
+      },
+      "description": "Latest available app version. Users on lower versions will be prompted with an optional update."
+    },
+    "is_maintenance_mode": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Master switch to enable or disable app maintenance mode overlay."
+    },
+    "force_update_title": {
+      "defaultValue": {
+        "value": "Update Required"
+      },
+      "description": "Title text shown on mandatory force update modal."
+    },
+    "force_update_message": {
+      "defaultValue": {
+        "value": "A mandatory update is required to continue using Expendly. Please update to the latest version."
+      },
+      "description": "Description message shown on mandatory force update modal."
+    },
+    "optional_update_title": {
+      "defaultValue": {
+        "value": "Update Available"
+      },
+      "description": "Title text shown on optional update modal."
+    },
+    "optional_update_message": {
+      "defaultValue": {
+        "value": "A new update is available with new features and performance enhancements."
+      },
+      "description": "Description message shown on optional update modal."
+    },
+    "maintenance_title": {
+      "defaultValue": {
+        "value": "Under Scheduled Maintenance"
+      },
+      "description": "Header title displayed when app is in maintenance mode."
+    },
+    "maintenance_message": {
+      "defaultValue": {
+        "value": "Expendly is currently undergoing maintenance to serve you better. Please check back soon."
+      },
+      "description": "Subtext message displayed when app is in maintenance mode."
+    },
+    "update_url_android": {
+      "defaultValue": {
+        "value": "https://play.google.com/store/apps/details?id=com.expendly.app"
+      },
+      "description": "Play Store URL for downloading app updates on Android."
+    },
+    "update_url_ios": {
+      "defaultValue": {
+        "value": "https://apps.apple.com/app/expendly/id000000000"
+      },
+      "description": "App Store URL for downloading app updates on iOS."
+    }
+  }
+}
