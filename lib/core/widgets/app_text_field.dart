@@ -6,6 +6,10 @@ import '../theme/app_colors.dart';
 
 /// Standardized custom text field component matching the Modern Fiscal Core design system.
 /// Reusable across search bars, form inputs, numerical balance entries, and settings inputs.
+///
+/// Uses [HankenGrotesk] for general input fields and labels via context theme.
+/// Uses [JetBrainsMono] strictly when [isAmount] is true for numerical currency entries.
+/// Automatically dismisses the soft keyboard when tapping outside the text field.
 class AppTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String? hintText;
@@ -21,6 +25,7 @@ class AppTextField extends StatelessWidget {
   final bool readOnly;
   final bool autoFocus;
   final bool enabled;
+  final bool isAmount;
   final int? maxLines;
   final int? minLines;
   final int? maxLength;
@@ -30,6 +35,7 @@ class AppTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final VoidCallback? onTap;
+  final TapRegionCallback? onTapOutside;
   final FormFieldValidator<String>? validator;
   final EdgeInsetsGeometry? contentPadding;
   final Color? fillColor;
@@ -52,6 +58,7 @@ class AppTextField extends StatelessWidget {
     this.readOnly = false,
     this.autoFocus = false,
     this.enabled = true,
+    this.isAmount = false,
     this.maxLines = 1,
     this.minLines,
     this.maxLength,
@@ -61,6 +68,7 @@ class AppTextField extends StatelessWidget {
     this.onChanged,
     this.onSubmitted,
     this.onTap,
+    this.onTapOutside,
     this.validator,
     this.contentPadding,
     this.fillColor,
@@ -71,18 +79,21 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
+    final customTypography = context.customTypography;
     final colorScheme = context.colorScheme;
     final effectiveRadius = borderRadius ?? BorderRadius.circular(10.r);
 
-    final defaultStyle = textTheme.bodyLarge?.copyWith(
-      color: colorScheme.onSurface,
-    );
+    // If isAmount is true, use monospaced typography (JetBrains Mono).
+    // Otherwise, use Hanken Grotesk from theme context.
+    final defaultStyle = isAmount
+        ? (customTypography.amountDisplay).copyWith(color: colorScheme.onSurface)
+        : (textTheme.bodyLarge ?? const TextStyle()).copyWith(color: colorScheme.onSurface);
 
-    final defaultHintStyle = textTheme.bodyMedium?.copyWith(
-      color: AppColors.onSurfaceVariant,
-    );
+    final defaultHintStyle = isAmount
+        ? (customTypography.labelMediumMono).copyWith(color: AppColors.onSurfaceVariant)
+        : (textTheme.bodyMedium ?? const TextStyle()).copyWith(color: AppColors.onSurfaceVariant);
 
-    final defaultLabelStyle = textTheme.labelMedium?.copyWith(
+    final defaultLabelStyle = (textTheme.labelMedium ?? const TextStyle()).copyWith(
       color: colorScheme.onSurfaceVariant,
     );
 
@@ -103,6 +114,7 @@ class AppTextField extends StatelessWidget {
           onChanged: onChanged,
           onFieldSubmitted: onSubmitted,
           onTap: onTap,
+          onTapOutside: onTapOutside ?? (_) => FocusManager.instance.primaryFocus?.unfocus(),
           validator: validator,
           obscureText: obscureText,
           readOnly: readOnly,
@@ -111,7 +123,7 @@ class AppTextField extends StatelessWidget {
           maxLines: maxLines,
           minLines: minLines,
           maxLength: maxLength,
-          keyboardType: keyboardType,
+          keyboardType: keyboardType ?? (isAmount ? const TextInputType.numberWithOptions(decimal: true) : null),
           textInputAction: textInputAction,
           style: style ?? defaultStyle,
           decoration: InputDecoration(

@@ -35,7 +35,9 @@ class AccountConfigCard extends StatelessWidget {
     final textTheme = context.textTheme;
     final l10n = context.l10n;
 
-    final amountStyle = (textTheme.titleMedium ?? const TextStyle()).copyWith(
+    final customTypography = context.customTypography;
+
+    final amountStyle = (customTypography.amountDisplay).copyWith(
       color: colorScheme.primary,
       fontWeight: FontWeights.bold,
     );
