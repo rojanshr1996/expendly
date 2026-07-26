@@ -17,72 +17,17 @@ extension BuildContextExtension on BuildContext {
   TextTheme get textTheme => Theme.of(this).textTheme;
 
   // Custom design extensions getters
-  AppCustomColors get customColors => Theme.of(this).extension<AppCustomColors>() ?? AppCustomColors.dark;
+  AppCustomColors get customColors =>
+      Theme.of(this).extension<AppCustomColors>() ?? AppCustomColors.dark;
 
   AppCustomTypography get customTypography =>
-      Theme.of(this).extension<AppCustomTypography>() ?? AppCustomTypography.dark;
+      Theme.of(this).extension<AppCustomTypography>() ??
+      AppCustomTypography.dark;
 }
 
 class _FallbackLocalizations implements AppLocalizations {
   static final _FallbackLocalizations instance = _FallbackLocalizations();
 
   @override
-  String get localeName => 'en';
-
-  @override
-  String get appName => 'Expendly';
-
-  @override
-  String get totalBalance => 'TOTAL BALANCE';
-
-  @override
-  String get income => 'Income';
-
-  @override
-  String get expenses => 'Expenses';
-
-  @override
-  String get addTransaction => 'Add Transaction';
-
-  @override
-  String get addExpense => 'Add Expense';
-
-  @override
-  String get analytics => 'Analytics';
-
-  @override
-  String get recentActivity => 'Recent Activity';
-
-  @override
-  String get seeAll => 'See All';
-
-  @override
-  String get foodAndDining => 'Food & Dining';
-
-  @override
-  String get entertainment => 'Entertainment';
-
-  @override
-  String get groceryShopping => 'Grocery Shopping';
-
-  @override
-  String get freelancePayout => 'Freelance Payout';
-
-  @override
-  String get netflixSubscription => 'Netflix Subscription';
-
-  @override
-  String get today => 'Today';
-
-  @override
-  String get yesterday => 'Yesterday';
-
-  @override
-  String get modernFiscalCore => 'MODERN FISCAL CORE';
-
-  @override
-  String errorMessage(String message) => 'Error: $message';
-
-  @override
-  String get jul22Date => 'Jul 22, 2026';
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

@@ -7,14 +7,13 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
 
 import '../config/app_config.dart';
+import '../utils/app_logger.dart';
 
 /// Top-level background message handler required by Firebase Messaging.
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  if (kDebugMode) {
-    print('Handling background message: ${message.messageId}');
-  }
+  AppLogger.i('FCM Handling background message: ${message.messageId}');
 }
 
 @lazySingleton
@@ -36,6 +35,8 @@ class NotificationService {
 
   /// Initializes FCM and local notifications service.
   Future<void> initialize() async {
+    AppLogger.i('Initializing NotificationService...');
+
     // 1. Register background message handler
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
@@ -53,6 +54,8 @@ class NotificationService {
 
     // 6. Subscribe to flavor specific FCM topic
     await _subscribeToFlavorTopic();
+
+    AppLogger.i('NotificationService initialization complete');
   }
 
   /// Request permissions for FCM & Local Notifications (iOS & Android 13+)
@@ -64,14 +67,14 @@ class NotificationService {
       provisional: false,
     );
 
-    if (kDebugMode) {
-      print('User granted notification permission: ${settings.authorizationStatus}');
-    }
+    AppLogger.i(
+        'Notification permission status: ${settings.authorizationStatus}');
   }
 
   /// Initialize flutter_local_notifications with platform settings & android channel
   Future<void> _initLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -92,8 +95,9 @@ class NotificationService {
       importance: Importance.high,
     );
 
-    final androidPlugin = _localNotifications.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin =
+        _localNotifications.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
     if (androidPlugin != null) {
       await androidPlugin.createNotificationChannel(androidChannel);
     }

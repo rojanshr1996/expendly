@@ -68,6 +68,310 @@
   "@modernFiscalCore": {
     "description": "Application tagline displayed on splash screen"
   },
+  "financeRedefined": "FINANCE REDEFINED",
+  "@financeRedefined": {
+    "description": "Subtitle on splash screen"
+  },
+  "protectedByAes256": "Protected by AES-256",
+  "@protectedByAes256": {
+    "description": "Security label on splash screen"
+  },
+  "offlineEncryption": "OFFLINE ENCRYPTION",
+  "@offlineEncryption": {
+    "description": "Footer label on splash screen"
+  },
+  "appVersion": "VER 1.0.0",
+  "@appVersion": {
+    "description": "App version label on splash screen"
+  },
+  "selectPrimaryCurrency": "Select Primary Currency",
+  "@selectPrimaryCurrency": {
+    "description": "Header title for currency setup page"
+  },
+  "selectCurrencyDescription": "Choose the default currency for your ledger. This can be changed later in settings.",
+  "@selectCurrencyDescription": {
+    "description": "Subheading description for currency setup page"
+  },
+  "searchCurrencyHint": "Search currency...",
+  "@searchCurrencyHint": {
+    "description": "Search input placeholder"
+  },
+  "commonCurrencies": "COMMON CURRENCIES",
+  "@commonCurrencies": {
+    "description": "Section title for list of currencies"
+  },
+  "continueButton": "Continue",
+  "@continueButton": {
+    "description": "Generic continue button text"
+  },
+  "skip": "Skip",
+  "@skip": {
+    "description": "Skip button text"
+  },
+  "setupStep1": "Setup 01/04",
+  "@setupStep1": {
+    "description": "Onboarding progress step 1"
+  },
+  "setupStep2": "Setup 02/04",
+  "@setupStep2": {
+    "description": "Onboarding progress step 2"
+  },
+  "setupStep3": "Setup 03/04",
+  "@setupStep3": {
+    "description": "Onboarding progress step 3"
+  },
+  "setupStep4": "Setup 04/04",
+  "@setupStep4": {
+    "description": "Onboarding progress step 4"
+  },
+  "stepWelcome": "Step: Welcome",
+  "@stepWelcome": {
+    "description": "Welcome carousel step title"
+  },
+  "stepCurrency": "Step: Currency",
+  "@stepCurrency": {
+    "description": "Onboarding step title for currency"
+  },
+  "stepAccounts": "Step: Accounts",
+  "@stepAccounts": {
+    "description": "Onboarding step title for accounts"
+  },
+  "stepSecurity": "Step: Security",
+  "@stepSecurity": {
+    "description": "Onboarding step title for security"
+  },
+  "welcomeTitle1": "100% Offline & Private",
+  "@welcomeTitle1": {
+    "description": "Carousel slide 1 title"
+  },
+  "welcomeDesc1": "Your financial data stays exclusively on your device, secured with hardware-backed AES-256 encryption.",
+  "@welcomeDesc1": {
+    "description": "Carousel slide 1 description"
+  },
+  "welcomeTitle2": "Unified Accounts Control",
+  "@welcomeTitle2": {
+    "description": "Carousel slide 2 title"
+  },
+  "welcomeDesc2": "Manage Cash, Bank Accounts, Credit Cards, and Savings in one sleek, modern dashboard.",
+  "@welcomeDesc2": {
+    "description": "Carousel slide 2 description"
+  },
+  "welcomeTitle3": "Calculated Fiscal Calm",
+  "@welcomeTitle3": {
+    "description": "Carousel slide 3 title"
+  },
+  "welcomeDesc3": "Track spending velocity, enforce dynamic monthly budgets, and reach your savings goals with total peace of mind.",
+  "@welcomeDesc3": {
+    "description": "Carousel slide 3 description"
+  },
+  "configureAccountsTitle": "Configure Initial Accounts",
+  "@configureAccountsTitle": {
+    "description": "Title for account setup page"
+  },
+  "configureAccountsDesc": "Set up your starting balances for Cash and Bank. You can add more accounts later in settings.",
+  "@configureAccountsDesc": {
+    "description": "Description for account setup page"
+  },
+  "cashWalletName": "Cash Wallet",
+  "@cashWalletName": {
+    "description": "Default cash wallet name"
+  },
+  "bankAccountName": "Main Bank Account",
+  "@bankAccountName": {
+    "description": "Default bank account name"
+  },
+  "startingBalance": "Starting Balance",
+  "@startingBalance": {
+    "description": "Label for account starting balance input"
+  },
+  "setupPinTitle": "Set Security PIN (Optional)",
+  "@setupPinTitle": {
+    "description": "Title for PIN setup page"
+  },
+  "setupPinDesc": "Create a 4-digit security PIN to restrict access to your financial ledger.",
+  "@setupPinDesc": {
+    "description": "Description for PIN setup page"
+  },
+  "setPinHeader": "Enter 4-Digit PIN",
+  "@setPinHeader": {
+    "description": "Header prompt for PIN entry"
+  },
+  "confirmPinHeader": "Confirm 4-Digit PIN",
+  "@confirmPinHeader": {
+    "description": "Header prompt for PIN confirmation"
+  },
+  "setupRecoveryTitle": "Set 2 Security Questions",
+  "@setupRecoveryTitle": {
+    "description": "Title for setting up 2 recovery questions in onboarding"
+  },
+  "setupRecoveryDesc": "Set secret answers for 2 security questions to recover your PIN if forgotten.",
+  "@setupRecoveryDesc": {
+    "description": "Description for setting up 2 recovery questions"
+  },
+  "question1Label": "Question 1 of 2",
+  "@question1Label": {
+    "description": "Label for question 1"
+  },
+  "question2Label": "Question 2 of 2",
+  "@question2Label": {
+    "description": "Label for question 2"
+  },
+  "recoveryQuestion1": "What is your secret security passphrase?",
+  "@recoveryQuestion1": {
+    "description": "Default intuitive security question 1"
+  },
+  "recoveryQuestion2": "In what city were you born?",
+  "@recoveryQuestion2": {
+    "description": "Default intuitive security question 2"
+  },
+  "recoveryQuestion3": "What was the name of your first pet?",
+  "@recoveryQuestion3": {
+    "description": "Default intuitive security question 3"
+  },
+  "recoveryQuestion4": "What is your favorite personal code word?",
+  "@recoveryQuestion4": {
+    "description": "Default intuitive security question 4"
+  },
+  "enterAnswerHint": "Enter secret answer...",
+  "@enterAnswerHint": {
+    "description": "Placeholder hint for typing recovery answer"
+  },
+  "saveSecuritySetup": "Save & Continue",
+  "@saveSecuritySetup": {
+    "description": "Button text to save PIN and recovery answers"
+  },
+  "securitySetupComplete": "Security PIN & Recovery Answers configured!",
+  "@securitySetupComplete": {
+    "description": "Toast message when security setup is complete"
+  },
+  "pinMismatchError": "PINs do not match. Please try again.",
+  "@pinMismatchError": {
+    "description": "Error text when PIN entry doesn't match"
+  },
+  "youAreAllSet": "You''re all set!",
+  "@youAreAllSet": {
+    "description": "Title on final setup completion page"
+  },
+  "allSetDescription": "Your private financial ledger is calibrated and ready to help you achieve absolute fiscal clarity.",
+  "@allSetDescription": {
+    "description": "Subheading text on final setup completion page"
+  },
+  "defaultWallet": "Default Wallet",
+  "@defaultWallet": {
+    "description": "Label for default wallet bento card"
+  },
+  "personalLedger": "Personal Ledger",
+  "@personalLedger": {
+    "description": "Default wallet name"
+  },
+  "currency": "Currency",
+  "@currency": {
+    "description": "Label for currency bento card"
+  },
+  "preferences": "PREFERENCES",
+  "@preferences": {
+    "description": "Section header for preference toggles"
+  },
+  "biometricUnlock": "Biometric Unlock",
+  "@biometricUnlock": {
+    "description": "Title for biometric toggle"
+  },
+  "biometricsDescription": "Secure your ledger with FaceID/TouchID",
+  "@biometricsDescription": {
+    "description": "Subtitle for biometric toggle"
+  },
+  "pushNotifications": "Push Notifications",
+  "@pushNotifications": {
+    "description": "Title for push notification toggle"
+  },
+  "notificationsDescription": "Daily summaries & budget alerts",
+  "@notificationsDescription": {
+    "description": "Subtitle for push notification toggle"
+  },
+  "getStarted": "Get Started",
+  "@getStarted": {
+    "description": "Action button text to finish onboarding"
+  },
+  "agreePolicyText": "By clicking \"Get Started\", you agree to local data storage policy.",
+  "@agreePolicyText": {
+    "description": "Disclaimer text below Get Started button"
+  },
+  "unlockToContinue": "Unlock to continue",
+  "@unlockToContinue": {
+    "description": "Header title on security lock screen"
+  },
+  "secureAccessTitle": "Expendly Secure Access",
+  "@secureAccessTitle": {
+    "description": "Subtitle on security lock screen"
+  },
+  "useBiometrics": "Use Biometrics",
+  "@useBiometrics": {
+    "description": "Button text to trigger biometrics on lock screen"
+  },
+  "forgotPin": "Forgot PIN?",
+  "@forgotPin": {
+    "description": "Button text to trigger PIN reset"
+  },
+  "resetPinTitle": "Reset Security PIN",
+  "@resetPinTitle": {
+    "description": "Title for PIN reset modal"
+  },
+  "resetPinDesc": "Verify your identity using your secret security answer or biometrics to set a new PIN.",
+  "@resetPinDesc": {
+    "description": "Subtitle for PIN reset modal"
+  },
+  "resetViaBiometrics": "Reset via Biometrics",
+  "@resetViaBiometrics": {
+    "description": "Option to reset PIN using biometrics"
+  },
+  "resetViaSecurityAnswer": "Reset via Secret Answer",
+  "@resetViaSecurityAnswer": {
+    "description": "Option to reset PIN using security question"
+  },
+  "selectQuestionToVerify": "Select security question to answer:",
+  "@selectQuestionToVerify": {
+    "description": "Instruction label when resetting PIN via security question"
+  },
+  "securityQuestionLabel": "Security Recovery Question",
+  "@securityQuestionLabel": {
+    "description": "Label for security question"
+  },
+  "defaultSecurityQuestion": "What is your secret security key or word?",
+  "@defaultSecurityQuestion": {
+    "description": "Default security question string"
+  },
+  "yourAnswerHint": "Enter your secret answer...",
+  "@yourAnswerHint": {
+    "description": "Input hint for secret answer"
+  },
+  "verifyAnswer": "Verify & Reset PIN",
+  "@verifyAnswer": {
+    "description": "Button text to verify answer and proceed to new PIN"
+  },
+  "invalidAnswerError": "Incorrect secret answer. Please try again.",
+  "@invalidAnswerError": {
+    "description": "Error text for invalid secret answer"
+  },
+  "pinResetSuccess": "Security PIN reset successfully!",
+  "@pinResetSuccess": {
+    "description": "Success message when PIN is reset"
+  },
+  "newPinHeader": "Enter New 4-Digit PIN",
+  "@newPinHeader": {
+    "description": "Prompt for entering new PIN during reset"
+  },
+  "incorrectPinMessage": "Incorrect PIN. Please try again.",
+  "@incorrectPinMessage": {
+    "description": "Error toast message on invalid PIN"
+  },
+  "confirmButton": "Confirm",
+  "@confirmButton": {
+    "description": "Generic confirm button text"
+  },
+  "cancelButton": "Cancel",
+  "@cancelButton": {
+    "description": "Generic cancel button text"
+  },
   "errorMessage": "Error: {message}",
   "@errorMessage": {
     "description": "Error text displayed when an operation fails",

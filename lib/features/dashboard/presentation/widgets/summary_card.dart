@@ -58,7 +58,8 @@ class SummaryCard extends StatelessWidget {
               Expanded(
                 child: _MetricTile(
                   label: l10n.income,
-                  amount: '${summary.currencySymbol}${summary.totalIncome.toStringAsFixed(2)}',
+                  amount:
+                      '${summary.currencySymbol}${summary.totalIncome.toStringAsFixed(2)}',
                   color: customColors.semanticGreen,
                   icon: Icons.arrow_downward_rounded,
                 ),
@@ -71,7 +72,8 @@ class SummaryCard extends StatelessWidget {
               Expanded(
                 child: _MetricTile(
                   label: l10n.expenses,
-                  amount: '${summary.currencySymbol}${summary.totalExpense.toStringAsFixed(2)}',
+                  amount:
+                      '${summary.currencySymbol}${summary.totalExpense.toStringAsFixed(2)}',
                   color: customColors.semanticRed,
                   icon: Icons.arrow_upward_rounded,
                 ),
@@ -114,7 +116,8 @@ class _MetricTile extends StatelessWidget {
               AppSpacing.gapHorizontalTight,
               Text(
                 label,
-                style: (textTheme.bodyMedium ?? const TextStyle()).copyWith(color: colorScheme.onSurfaceVariant),
+                style: (textTheme.bodyMedium ?? const TextStyle())
+                    .copyWith(color: colorScheme.onSurfaceVariant),
               ),
             ],
           ),

@@ -7,25 +7,35 @@ extension PaddingExtension on Widget {
         child: this,
       );
 
-  Padding py(double padding) => Padding(padding: EdgeInsets.symmetric(vertical: padding), child: this);
+  Padding py(double padding) =>
+      Padding(padding: EdgeInsets.symmetric(vertical: padding), child: this);
 
-  Padding defaultCanvasPadding() => Padding(padding: symmetricPaddingLarge, child: this);
+  Padding defaultCanvasPadding() =>
+      Padding(padding: symmetricPaddingLarge, child: this);
 
-  Padding defaultMediumPadding() => Padding(padding: symmetricPaddingMedium, child: this);
+  Padding defaultMediumPadding() =>
+      Padding(padding: symmetricPaddingMedium, child: this);
 
-  Padding defaultSmallPadding() => Padding(padding: symmetricPaddingSmall, child: this);
+  Padding defaultSmallPadding() =>
+      Padding(padding: symmetricPaddingSmall, child: this);
 
-  Padding defaultHorizontalPadding() => Padding(padding: horizontalPaddingLarge, child: this);
+  Padding defaultHorizontalPadding() =>
+      Padding(padding: horizontalPaddingLarge, child: this);
 
-  Padding defaultVerticalPadding() => Padding(padding: verticalPaddingLarge, child: this);
+  Padding defaultVerticalPadding() =>
+      Padding(padding: verticalPaddingLarge, child: this);
 
-  Padding defaultSmallVerticalPadding() => Padding(padding: verticalPaddingSmall, child: this);
+  Padding defaultSmallVerticalPadding() =>
+      Padding(padding: verticalPaddingSmall, child: this);
 
-  Padding defaultSmallHorizontalPadding() => Padding(padding: horizontalPaddingSmall, child: this);
+  Padding defaultSmallHorizontalPadding() =>
+      Padding(padding: horizontalPaddingSmall, child: this);
 
-  Padding defaultMediumVerticalPadding() => Padding(padding: verticalPaddingMedium, child: this);
+  Padding defaultMediumVerticalPadding() =>
+      Padding(padding: verticalPaddingMedium, child: this);
 
-  Padding defaultMediumHorizontalPadding() => Padding(padding: horizontalPaddingMedium, child: this);
+  Padding defaultMediumHorizontalPadding() =>
+      Padding(padding: horizontalPaddingMedium, child: this);
 
   Padding padSymmetric({
     required double horizontalPad,
@@ -39,12 +49,19 @@ extension PaddingExtension on Widget {
         child: this,
       );
 
-  Padding pOnly({double left = 0, double top = 0, double right = 0, double bottom = 0}) => Padding(
-        padding: EdgeInsets.only(left: left, top: top, right: right, bottom: bottom),
+  Padding pOnly(
+          {double left = 0,
+          double top = 0,
+          double right = 0,
+          double bottom = 0}) =>
+      Padding(
+        padding:
+            EdgeInsets.only(left: left, top: top, right: right, bottom: bottom),
         child: this,
       );
 
-  Padding padAll(double value) => Padding(padding: EdgeInsets.all(value), child: this);
+  Padding padAll(double value) =>
+      Padding(padding: EdgeInsets.all(value), child: this);
 }
 
 extension Numx on num {

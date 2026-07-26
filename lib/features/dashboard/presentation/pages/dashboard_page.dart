@@ -26,7 +26,8 @@ class DashboardPage extends StatelessWidget {
         try {
           return getIt<DashboardCubit>()..loadDashboardData();
         } catch (_) {
-          return DashboardCubit(_FallbackGetFinancialSummary())..loadDashboardData();
+          return DashboardCubit(_FallbackGetFinancialSummary())
+            ..loadDashboardData();
         }
       },
       child: const _DashboardView(),
@@ -53,7 +54,8 @@ class _DashboardView extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_none_rounded, color: colorScheme.onSurface),
+            icon: Icon(Icons.notifications_none_rounded,
+                color: colorScheme.onSurface),
             onPressed: () {},
           ),
           IconButton(
@@ -74,7 +76,8 @@ class _DashboardView extends StatelessWidget {
             return Center(
               child: Text(
                 l10n.errorMessage(state.message),
-                style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(color: colorScheme.error),
+                style: (textTheme.bodyLarge ?? const TextStyle())
+                    .copyWith(color: colorScheme.error),
               ),
             );
           }
@@ -156,7 +159,8 @@ class _DashboardView extends StatelessWidget {
           onPressed: () {},
           child: Text(
             l10n.seeAll,
-            style: customTypography.labelMediumMono.copyWith(color: colorScheme.primary),
+            style: customTypography.labelMediumMono
+                .copyWith(color: colorScheme.primary),
           ),
         ),
       ],
@@ -259,7 +263,8 @@ class _TransactionTile extends StatelessWidget {
               children: [
                 Text(
                   item.title,
-                  style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(fontWeight: FontWeight.w600),
+                  style: (textTheme.bodyLarge ?? const TextStyle())
+                      .copyWith(fontWeight: FontWeight.w600),
                 ),
                 AppSpacing.gapTight,
                 Text(
@@ -276,7 +281,9 @@ class _TransactionTile extends StatelessWidget {
                 item.amount,
                 style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(
                   fontFamily: customTypography.labelMediumMono.fontFamily,
-                  color: item.isIncome ? customColors.semanticGreen : colorScheme.onSurface,
+                  color: item.isIncome
+                      ? customColors.semanticGreen
+                      : colorScheme.onSurface,
                   fontWeight: FontWeight.w600,
                 ),
               ),

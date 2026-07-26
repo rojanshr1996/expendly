@@ -83,11 +83,13 @@ abstract class AppTheme {
         hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.outline),
         border: OutlineInputBorder(
           borderRadius: AppRadius.borderDefault,
-          borderSide: const BorderSide(color: AppColors.glassStroke, width: 1.0),
+          borderSide:
+              const BorderSide(color: AppColors.glassStroke, width: 1.0),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: AppRadius.borderDefault,
-          borderSide: const BorderSide(color: AppColors.glassStroke, width: 1.0),
+          borderSide:
+              const BorderSide(color: AppColors.glassStroke, width: 1.0),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.borderDefault,

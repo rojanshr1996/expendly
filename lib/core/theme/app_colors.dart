@@ -24,13 +24,16 @@ abstract class AppColors {
 
   // Tonal Elevation Layers
   static const Color surfaceLowest = Color(0xFF0F172A); // Level 0: Canvas
-  static const Color surfaceLow = Color(0xFF1E293B);    // Level 1: Primary card containers
-  static const Color surfaceMid = Color(0xFF334155);    // Level 2: Inputs / Active states
+  static const Color surfaceLow =
+      Color(0xFF1E293B); // Level 1: Primary card containers
+  static const Color surfaceMid =
+      Color(0xFF334155); // Level 2: Inputs / Active states
 
   // Outlines & Borders
   static const Color outline = Color(0xFF859490);
   static const Color outlineVariant = Color(0xFF3C4A46);
-  static const Color glassStroke = Color(0x1AFFFFFF); // 10% white stroke for glassmorphism
+  static const Color glassStroke =
+      Color(0x1AFFFFFF); // 10% white stroke for glassmorphism
 
   // Primary Palette (Refined Teal)
   static const Color primary = Color(0xFF57F1DB);
@@ -74,7 +77,7 @@ abstract class AppColors {
   static const Color onErrorContainer = Color(0xFFFFDAD6);
 
   // Semantic Financial Colors (Desaturated for low fatigue)
-  static const Color semanticRed = Color(0xFFFB7185);   // Expense
+  static const Color semanticRed = Color(0xFFFB7185); // Expense
   static const Color semanticGreen = Color(0xFF34D399); // Income
 }
 

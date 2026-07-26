@@ -13,9 +13,11 @@ abstract class AppRadius {
 
   // BorderRadius instances
   static BorderRadius get borderSm => BorderRadius.all(Radius.circular(4.r));
-  static BorderRadius get borderDefault => BorderRadius.all(Radius.circular(8.r));
+  static BorderRadius get borderDefault =>
+      BorderRadius.all(Radius.circular(8.r));
   static BorderRadius get borderMd => BorderRadius.all(Radius.circular(12.r));
   static BorderRadius get borderLg => BorderRadius.all(Radius.circular(16.r));
   static BorderRadius get borderXl => BorderRadius.all(Radius.circular(24.r));
-  static BorderRadius get borderFull => BorderRadius.all(Radius.circular(9999.r));
+  static BorderRadius get borderFull =>
+      BorderRadius.all(Radius.circular(9999.r));
 }

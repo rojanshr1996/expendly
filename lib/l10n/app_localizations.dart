@@ -196,6 +196,462 @@ abstract class AppLocalizations {
   /// **'MODERN FISCAL CORE'**
   String get modernFiscalCore;
 
+  /// Subtitle on splash screen
+  ///
+  /// In en, this message translates to:
+  /// **'FINANCE REDEFINED'**
+  String get financeRedefined;
+
+  /// Security label on splash screen
+  ///
+  /// In en, this message translates to:
+  /// **'Protected by AES-256'**
+  String get protectedByAes256;
+
+  /// Footer label on splash screen
+  ///
+  /// In en, this message translates to:
+  /// **'OFFLINE ENCRYPTION'**
+  String get offlineEncryption;
+
+  /// App version label on splash screen
+  ///
+  /// In en, this message translates to:
+  /// **'VER 1.0.0'**
+  String get appVersion;
+
+  /// Header title for currency setup page
+  ///
+  /// In en, this message translates to:
+  /// **'Select Primary Currency'**
+  String get selectPrimaryCurrency;
+
+  /// Subheading description for currency setup page
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the default currency for your ledger. This can be changed later in settings.'**
+  String get selectCurrencyDescription;
+
+  /// Search input placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Search currency...'**
+  String get searchCurrencyHint;
+
+  /// Section title for list of currencies
+  ///
+  /// In en, this message translates to:
+  /// **'COMMON CURRENCIES'**
+  String get commonCurrencies;
+
+  /// Generic continue button text
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
+
+  /// Skip button text
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// Onboarding progress step 1
+  ///
+  /// In en, this message translates to:
+  /// **'Setup 01/04'**
+  String get setupStep1;
+
+  /// Onboarding progress step 2
+  ///
+  /// In en, this message translates to:
+  /// **'Setup 02/04'**
+  String get setupStep2;
+
+  /// Onboarding progress step 3
+  ///
+  /// In en, this message translates to:
+  /// **'Setup 03/04'**
+  String get setupStep3;
+
+  /// Onboarding progress step 4
+  ///
+  /// In en, this message translates to:
+  /// **'Setup 04/04'**
+  String get setupStep4;
+
+  /// Welcome carousel step title
+  ///
+  /// In en, this message translates to:
+  /// **'Step: Welcome'**
+  String get stepWelcome;
+
+  /// Onboarding step title for currency
+  ///
+  /// In en, this message translates to:
+  /// **'Step: Currency'**
+  String get stepCurrency;
+
+  /// Onboarding step title for accounts
+  ///
+  /// In en, this message translates to:
+  /// **'Step: Accounts'**
+  String get stepAccounts;
+
+  /// Onboarding step title for security
+  ///
+  /// In en, this message translates to:
+  /// **'Step: Security'**
+  String get stepSecurity;
+
+  /// Carousel slide 1 title
+  ///
+  /// In en, this message translates to:
+  /// **'100% Offline & Private'**
+  String get welcomeTitle1;
+
+  /// Carousel slide 1 description
+  ///
+  /// In en, this message translates to:
+  /// **'Your financial data stays exclusively on your device, secured with hardware-backed AES-256 encryption.'**
+  String get welcomeDesc1;
+
+  /// Carousel slide 2 title
+  ///
+  /// In en, this message translates to:
+  /// **'Unified Accounts Control'**
+  String get welcomeTitle2;
+
+  /// Carousel slide 2 description
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Cash, Bank Accounts, Credit Cards, and Savings in one sleek, modern dashboard.'**
+  String get welcomeDesc2;
+
+  /// Carousel slide 3 title
+  ///
+  /// In en, this message translates to:
+  /// **'Calculated Fiscal Calm'**
+  String get welcomeTitle3;
+
+  /// Carousel slide 3 description
+  ///
+  /// In en, this message translates to:
+  /// **'Track spending velocity, enforce dynamic monthly budgets, and reach your savings goals with total peace of mind.'**
+  String get welcomeDesc3;
+
+  /// Title for account setup page
+  ///
+  /// In en, this message translates to:
+  /// **'Configure Initial Accounts'**
+  String get configureAccountsTitle;
+
+  /// Description for account setup page
+  ///
+  /// In en, this message translates to:
+  /// **'Set up your starting balances for Cash and Bank. You can add more accounts later in settings.'**
+  String get configureAccountsDesc;
+
+  /// Default cash wallet name
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Wallet'**
+  String get cashWalletName;
+
+  /// Default bank account name
+  ///
+  /// In en, this message translates to:
+  /// **'Main Bank Account'**
+  String get bankAccountName;
+
+  /// Label for account starting balance input
+  ///
+  /// In en, this message translates to:
+  /// **'Starting Balance'**
+  String get startingBalance;
+
+  /// Title for PIN setup page
+  ///
+  /// In en, this message translates to:
+  /// **'Set Security PIN (Optional)'**
+  String get setupPinTitle;
+
+  /// Description for PIN setup page
+  ///
+  /// In en, this message translates to:
+  /// **'Create a 4-digit security PIN to restrict access to your financial ledger.'**
+  String get setupPinDesc;
+
+  /// Header prompt for PIN entry
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 4-Digit PIN'**
+  String get setPinHeader;
+
+  /// Header prompt for PIN confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm 4-Digit PIN'**
+  String get confirmPinHeader;
+
+  /// Title for setting up 2 recovery questions in onboarding
+  ///
+  /// In en, this message translates to:
+  /// **'Set 2 Security Questions'**
+  String get setupRecoveryTitle;
+
+  /// Description for setting up 2 recovery questions
+  ///
+  /// In en, this message translates to:
+  /// **'Set secret answers for 2 security questions to recover your PIN if forgotten.'**
+  String get setupRecoveryDesc;
+
+  /// Label for question 1
+  ///
+  /// In en, this message translates to:
+  /// **'Question 1 of 2'**
+  String get question1Label;
+
+  /// Label for question 2
+  ///
+  /// In en, this message translates to:
+  /// **'Question 2 of 2'**
+  String get question2Label;
+
+  /// Default intuitive security question 1
+  ///
+  /// In en, this message translates to:
+  /// **'What is your secret security passphrase?'**
+  String get recoveryQuestion1;
+
+  /// Default intuitive security question 2
+  ///
+  /// In en, this message translates to:
+  /// **'In what city were you born?'**
+  String get recoveryQuestion2;
+
+  /// Default intuitive security question 3
+  ///
+  /// In en, this message translates to:
+  /// **'What was the name of your first pet?'**
+  String get recoveryQuestion3;
+
+  /// Default intuitive security question 4
+  ///
+  /// In en, this message translates to:
+  /// **'What is your favorite personal code word?'**
+  String get recoveryQuestion4;
+
+  /// Placeholder hint for typing recovery answer
+  ///
+  /// In en, this message translates to:
+  /// **'Enter secret answer...'**
+  String get enterAnswerHint;
+
+  /// Button text to save PIN and recovery answers
+  ///
+  /// In en, this message translates to:
+  /// **'Save & Continue'**
+  String get saveSecuritySetup;
+
+  /// Toast message when security setup is complete
+  ///
+  /// In en, this message translates to:
+  /// **'Security PIN & Recovery Answers configured!'**
+  String get securitySetupComplete;
+
+  /// Error text when PIN entry doesn't match
+  ///
+  /// In en, this message translates to:
+  /// **'PINs do not match. Please try again.'**
+  String get pinMismatchError;
+
+  /// Title on final setup completion page
+  ///
+  /// In en, this message translates to:
+  /// **'You\'\'re all set!'**
+  String get youAreAllSet;
+
+  /// Subheading text on final setup completion page
+  ///
+  /// In en, this message translates to:
+  /// **'Your private financial ledger is calibrated and ready to help you achieve absolute fiscal clarity.'**
+  String get allSetDescription;
+
+  /// Label for default wallet bento card
+  ///
+  /// In en, this message translates to:
+  /// **'Default Wallet'**
+  String get defaultWallet;
+
+  /// Default wallet name
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Ledger'**
+  String get personalLedger;
+
+  /// Label for currency bento card
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get currency;
+
+  /// Section header for preference toggles
+  ///
+  /// In en, this message translates to:
+  /// **'PREFERENCES'**
+  String get preferences;
+
+  /// Title for biometric toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric Unlock'**
+  String get biometricUnlock;
+
+  /// Subtitle for biometric toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Secure your ledger with FaceID/TouchID'**
+  String get biometricsDescription;
+
+  /// Title for push notification toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Push Notifications'**
+  String get pushNotifications;
+
+  /// Subtitle for push notification toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Daily summaries & budget alerts'**
+  String get notificationsDescription;
+
+  /// Action button text to finish onboarding
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get getStarted;
+
+  /// Disclaimer text below Get Started button
+  ///
+  /// In en, this message translates to:
+  /// **'By clicking \"Get Started\", you agree to local data storage policy.'**
+  String get agreePolicyText;
+
+  /// Header title on security lock screen
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock to continue'**
+  String get unlockToContinue;
+
+  /// Subtitle on security lock screen
+  ///
+  /// In en, this message translates to:
+  /// **'Expendly Secure Access'**
+  String get secureAccessTitle;
+
+  /// Button text to trigger biometrics on lock screen
+  ///
+  /// In en, this message translates to:
+  /// **'Use Biometrics'**
+  String get useBiometrics;
+
+  /// Button text to trigger PIN reset
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot PIN?'**
+  String get forgotPin;
+
+  /// Title for PIN reset modal
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Security PIN'**
+  String get resetPinTitle;
+
+  /// Subtitle for PIN reset modal
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your identity using your secret security answer or biometrics to set a new PIN.'**
+  String get resetPinDesc;
+
+  /// Option to reset PIN using biometrics
+  ///
+  /// In en, this message translates to:
+  /// **'Reset via Biometrics'**
+  String get resetViaBiometrics;
+
+  /// Option to reset PIN using security question
+  ///
+  /// In en, this message translates to:
+  /// **'Reset via Secret Answer'**
+  String get resetViaSecurityAnswer;
+
+  /// Instruction label when resetting PIN via security question
+  ///
+  /// In en, this message translates to:
+  /// **'Select security question to answer:'**
+  String get selectQuestionToVerify;
+
+  /// Label for security question
+  ///
+  /// In en, this message translates to:
+  /// **'Security Recovery Question'**
+  String get securityQuestionLabel;
+
+  /// Default security question string
+  ///
+  /// In en, this message translates to:
+  /// **'What is your secret security key or word?'**
+  String get defaultSecurityQuestion;
+
+  /// Input hint for secret answer
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your secret answer...'**
+  String get yourAnswerHint;
+
+  /// Button text to verify answer and proceed to new PIN
+  ///
+  /// In en, this message translates to:
+  /// **'Verify & Reset PIN'**
+  String get verifyAnswer;
+
+  /// Error text for invalid secret answer
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect secret answer. Please try again.'**
+  String get invalidAnswerError;
+
+  /// Success message when PIN is reset
+  ///
+  /// In en, this message translates to:
+  /// **'Security PIN reset successfully!'**
+  String get pinResetSuccess;
+
+  /// Prompt for entering new PIN during reset
+  ///
+  /// In en, this message translates to:
+  /// **'Enter New 4-Digit PIN'**
+  String get newPinHeader;
+
+  /// Error toast message on invalid PIN
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect PIN. Please try again.'**
+  String get incorrectPinMessage;
+
+  /// Generic confirm button text
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirmButton;
+
+  /// Generic cancel button text
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButton;
+
   /// Error text displayed when an operation fails
   ///
   /// In en, this message translates to:

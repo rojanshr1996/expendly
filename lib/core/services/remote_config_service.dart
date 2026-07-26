@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../config/app_config.dart';
+import '../utils/app_logger.dart';
 
 enum AppUpdateStatus {
   none,
@@ -49,9 +50,8 @@ class RemoteConfigService {
     await _remoteConfig.setConfigSettings(
       RemoteConfigSettings(
         fetchTimeout: const Duration(seconds: 10),
-        minimumFetchInterval: isDevOrQa
-            ? Duration.zero
-            : const Duration(hours: 1),
+        minimumFetchInterval:
+            isDevOrQa ? Duration.zero : const Duration(hours: 1),
       ),
     );
 
@@ -76,16 +76,17 @@ class RemoteConfigService {
 
     // 2. Fetch and Activate latest Remote Config values
     try {
-      await _remoteConfig.fetchAndActivate();
-    } catch (e) {
-      if (kDebugMode) {
-        print('RemoteConfig fetch error: $e');
-      }
+      final activated = await _remoteConfig.fetchAndActivate();
+      AppLogger.i('RemoteConfig fetched and activated (updated: $activated)');
+    } catch (e, stackTrace) {
+      AppLogger.w('RemoteConfig fetch error: $e', e, stackTrace);
     }
 
     // 3. Real-time update listener for server-side config changes
     _remoteConfig.onConfigUpdated.listen((event) async {
       await _remoteConfig.activate();
+      AppLogger.i(
+          'RemoteConfig real-time config updated: ${event.updatedKeys}');
       _notifyListeners();
     });
 
@@ -102,18 +103,22 @@ class RemoteConfigService {
   // --- Getters ---
   bool get isMaintenanceMode => _remoteConfig.getBool(keyIsMaintenanceMode);
 
-  String get minRequiredVersion => _remoteConfig.getString(keyMinRequiredVersion);
+  String get minRequiredVersion =>
+      _remoteConfig.getString(keyMinRequiredVersion);
   String get latestVersion => _remoteConfig.getString(keyLatestVersion);
 
   String get forceUpdateTitle => _remoteConfig.getString(keyForceUpdateTitle);
-  String get forceUpdateMessage => _remoteConfig.getString(keyForceUpdateMessage);
+  String get forceUpdateMessage =>
+      _remoteConfig.getString(keyForceUpdateMessage);
 
-  String get optionalUpdateTitle => _remoteConfig.getString(keyOptionalUpdateTitle);
+  String get optionalUpdateTitle =>
+      _remoteConfig.getString(keyOptionalUpdateTitle);
   String get optionalUpdateMessage =>
       _remoteConfig.getString(keyOptionalUpdateMessage);
 
   String get maintenanceTitle => _remoteConfig.getString(keyMaintenanceTitle);
-  String get maintenanceMessage => _remoteConfig.getString(keyMaintenanceMessage);
+  String get maintenanceMessage =>
+      _remoteConfig.getString(keyMaintenanceMessage);
 
   String get updateUrlAndroid => _remoteConfig.getString(keyUpdateUrlAndroid);
   String get updateUrlIos => _remoteConfig.getString(keyUpdateUrlIos);
@@ -144,8 +149,14 @@ class RemoteConfigService {
   /// Utility to compare semantic version strings (e.g., "1.0.0" vs "1.1.0")
   bool _isVersionLower(String versionA, String versionB) {
     try {
-      final partsA = versionA.split('.').map((e) => int.parse(e.split('+').first)).toList();
-      final partsB = versionB.split('.').map((e) => int.parse(e.split('+').first)).toList();
+      final partsA = versionA
+          .split('.')
+          .map((e) => int.parse(e.split('+').first))
+          .toList();
+      final partsB = versionB
+          .split('.')
+          .map((e) => int.parse(e.split('+').first))
+          .toList();
 
       for (int i = 0; i < 3; i++) {
         final valA = i < partsA.length ? partsA[i] : 0;

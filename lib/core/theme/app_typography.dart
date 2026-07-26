@@ -142,11 +142,14 @@ class AppCustomTypography extends ThemeExtension<AppCustomTypography> {
   }
 
   @override
-  AppCustomTypography lerp(ThemeExtension<AppCustomTypography>? other, double t) {
+  AppCustomTypography lerp(
+      ThemeExtension<AppCustomTypography>? other, double t) {
     if (other is! AppCustomTypography) return this;
     return AppCustomTypography(
-      headlineLargeMobile: TextStyle.lerp(headlineLargeMobile, other.headlineLargeMobile, t)!,
-      labelMediumMono: TextStyle.lerp(labelMediumMono, other.labelMediumMono, t)!,
+      headlineLargeMobile:
+          TextStyle.lerp(headlineLargeMobile, other.headlineLargeMobile, t)!,
+      labelMediumMono:
+          TextStyle.lerp(labelMediumMono, other.labelMediumMono, t)!,
       amountDisplay: TextStyle.lerp(amountDisplay, other.amountDisplay, t)!,
       amountLarge: TextStyle.lerp(amountLarge, other.amountLarge, t)!,
     );

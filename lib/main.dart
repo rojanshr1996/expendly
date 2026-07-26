@@ -1,6 +1,5 @@
 import 'package:expendly/l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,6 +13,7 @@ import 'core/router/app_router.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/remote_config_service.dart';
 import 'core/theme/app_theme.dart';
+import 'core/utils/app_logger.dart';
 import 'core/widgets/app_update_guard.dart';
 
 /// Shared offline-first initialization entrypoint for all environment flavors.
@@ -21,25 +21,28 @@ Future<void> bootstrapApp(AppConfig config) async {
   WidgetsFlutterBinding.ensureInitialized();
   AppConfig.initialize(config);
 
+  AppLogger.i(
+      '🚀 Bootstrapping Expendly App [Flavor: ${config.flavor.name.toUpperCase()}]');
+
   // Disable runtime font fetching — fonts are bundled in assets/google_fonts/
   GoogleFonts.config.allowRuntimeFetching = false;
 
   // Configure Dependency Injection via GetIt & Injectable
   await configureDependencies(config.flavor.name);
+  AppLogger.d('Dependency injection configured via GetIt');
 
   // Initialize Firebase with flavor-specific options
   try {
     await Firebase.initializeApp(
       options: FirebaseOptionsFactory.currentOptions,
     );
+    AppLogger.i('Firebase initialized successfully');
 
     // Initialize Notification and Remote Config Services
     await getIt<NotificationService>().initialize();
     await getIt<RemoteConfigService>().initialize();
-  } catch (e) {
-    if (kDebugMode) {
-      print('Firebase Initialization Error: $e');
-    }
+  } catch (e, stackTrace) {
+    AppLogger.e('Firebase Initialization Error', e, stackTrace);
   }
 
   runApp(const ExpendlyApp());
@@ -102,7 +105,8 @@ class _ExpendlyAppState extends State<ExpendlyApp> {
               content = Banner(
                 message: config.flavor.name.toUpperCase(),
                 location: BannerLocation.topEnd,
-                color: config.isDev ? colorScheme.tertiary : colorScheme.secondary,
+                color:
+                    config.isDev ? colorScheme.tertiary : colorScheme.secondary,
                 child: content,
               );
             }
@@ -113,4 +117,3 @@ class _ExpendlyAppState extends State<ExpendlyApp> {
     );
   }
 }
-
