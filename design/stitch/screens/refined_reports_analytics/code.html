@@ -1,0 +1,320 @@
+<!DOCTYPE html><html lang="en" class="dark" style=""><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><meta charset="utf-8"><script id="tailwind-config">try{
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-container": "#2dd4bf",
+            "surface-container-high": "#242b2a",
+            "surface-variant": "#2f3634",
+            "surface-mid": "#334155",
+            "outline": "#859490",
+            "on-tertiary-fixed": "#2d1600",
+            "background": "#0e1513",
+            "error": "#ffb4ab",
+            "on-surface": "#dde4e1",
+            "tertiary-fixed-dim": "#ffb875",
+            "on-background": "#dde4e1",
+            "surface": "#0e1513",
+            "primary": "#57f1db",
+            "error-container": "#93000a",
+            "inverse-on-surface": "#2b3230",
+            "tertiary-container": "#ffac5a",
+            "surface-container": "#1a211f",
+            "inverse-primary": "#006b5f",
+            "outline-variant": "#3c4a46",
+            "on-primary-fixed-variant": "#005047",
+            "on-error": "#690005",
+            "surface-bright": "#333b39",
+            "on-secondary-fixed": "#07006c",
+            "surface-dim": "#0e1513",
+            "secondary-fixed": "#e1e0ff",
+            "on-tertiary-fixed-variant": "#6b3b00",
+            "primary-fixed": "#62fae3",
+            "surface-container-highest": "#2f3634",
+            "semantic-red": "#FB7185",
+            "on-secondary-fixed-variant": "#2f2ebe",
+            "secondary-fixed-dim": "#c0c1ff",
+            "on-primary-fixed": "#00201c",
+            "semantic-green": "#34D399",
+            "on-primary-container": "#00574d",
+            "on-error-container": "#ffdad6",
+            "secondary": "#c0c1ff",
+            "on-surface-variant": "#bacac5",
+            "surface-tint": "#3cddc7",
+            "surface-container-lowest": "#09100e",
+            "secondary-container": "#3131c0",
+            "on-secondary": "#1000a9",
+            "surface-low": "#1E293B",
+            "on-secondary-container": "#b0b2ff",
+            "on-tertiary-container": "#744000",
+            "glass-stroke": "rgba(255, 255, 255, 0.1)",
+            "on-tertiary": "#4b2800",
+            "tertiary-fixed": "#ffdcc0",
+            "surface-container-low": "#161d1b",
+            "primary-fixed-dim": "#3cddc7",
+            "surface-lowest": "#0F172A",
+            "on-primary": "#003731",
+            "inverse-surface": "#dde4e1",
+            "tertiary": "#ffd1aa"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "inner-component": "12px",
+            "container-padding": "24px",
+            "base": "8px",
+            "stack-tight": "4px",
+            "gutter-md": "16px"
+          },
+          "fontFamily": {
+            "label-md": ["JetBrains Mono"],
+            "headline-lg": ["Hanken Grotesk"],
+            "body-md": ["Hanken Grotesk"],
+            "body-lg": ["Hanken Grotesk"],
+            "headline-lg-mobile": ["Hanken Grotesk"],
+            "headline-md": ["Hanken Grotesk"]
+          },
+          "fontSize": {
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600" }]
+          }
+        },
+      },
+    }
+  }catch(_e){}</script></head><body class="bg-background font-body-md text-on-background overflow-x-hidden custom-scrollbar">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 bg-background/60 backdrop-blur-md border-b border-glass-stroke flex items-center justify-between px-container-padding h-16 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A professional close-up studio portrait of a young entrepreneur, featuring soft rim lighting and a dark, moody background. The individual has a confident, calm expression, perfectly aligned with a premium financial application aesthetic. The color palette is dominated by deep slates and subtle teal highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfGqyrAK5mnNFvxpuI4rCGD-bqZrpbIh9y0Ph9kHC1QN_GgmnQmua26xnp3n9QFa_J5CTZ57jiprvtF3i2_JtPpwAoI0gpauZwJOyiRTo0S5yDLGd8aowYNvBswZMG7sSptlePoX7CYapfK5pQPYuxgmMlGbcPZrOT1uTXPEzD88odfv7lVeBAXB2aPM0JDqZUZBKcBASz2Ilg50qJyU4GuBgFYFuMqjePPRZrn8qwiin_NZzhrEDwYf-bHB8m5XHu2zuwkCGGghh-">
+</div>
+<span class="font-headline-md text-headline-md font-bold text-primary">FinanceFlow</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-bright transition-colors p-2 rounded-full active:scale-95 transition-transform">search</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-bright transition-colors p-2 rounded-full active:scale-95 transition-transform">settings</button>
+</div>
+</nav>
+<main class="pt-24 pb-32 px-container-padding max-w-[1024px] mx-auto min-h-screen">
+<!-- Period Selector -->
+<header class="mb-gutter-md">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg mb-6">Financial Reports</h1>
+<div class="flex p-1 bg-surface-container rounded-xl gap-1">
+<button class="flex-1 py-2 text-label-md font-label-md rounded-lg bg-surface-mid text-primary transition-all">Weekly</button>
+<button class="flex-1 py-2 text-label-md font-label-md rounded-lg text-on-surface-variant hover:bg-surface-bright transition-all">Monthly</button>
+<button class="flex-1 py-2 text-label-md font-label-md rounded-lg text-on-surface-variant hover:bg-surface-bright transition-all">Yearly</button>
+<button class="flex-1 py-2 text-label-md font-label-md rounded-lg text-on-surface-variant hover:bg-surface-bright transition-all">Custom</button>
+</div>
+</header>
+<!-- Bento Grid Section -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Spending Overview Chart -->
+<div class="md:col-span-8 glass-card rounded-xl p-6 min-h-[340px] flex flex-col">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-on-surface-variant text-label-md font-label-md">Net Flow</h3>
+<p class="font-headline-md text-headline-md text-primary">+$2,480.00</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-1 text-semantic-green text-label-md font-label-md">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> 12%
+            </span>
+</div>
+</div>
+<div class="flex-1 relative flex items-end justify-between gap-2 px-2 pb-4">
+<!-- Animated Area Graph Placeholder using Canvas/SVG Simulation -->
+<div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
+
+</div>
+<!-- Column bars for visual data representation -->
+<div class="w-full h-full flex items-end justify-between gap-3 group">
+<div class="flex-1 bg-primary/20 rounded-t-lg h-[40%] hover:bg-primary/40 transition-all relative">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-label-md font-label-md hidden group-hover:block">$1.2k</div>
+</div>
+<div class="flex-1 bg-primary/20 rounded-t-lg h-[65%] hover:bg-primary/40 transition-all"></div>
+<div class="flex-1 bg-primary rounded-t-lg h-[90%] hover:brightness-110 transition-all chart-pulse"></div>
+<div class="flex-1 bg-primary/20 rounded-t-lg h-[55%] hover:bg-primary/40 transition-all"></div>
+<div class="flex-1 bg-primary/20 rounded-t-lg h-[75%] hover:bg-primary/40 transition-all"></div>
+<div class="flex-1 bg-primary/20 rounded-t-lg h-[45%] hover:bg-primary/40 transition-all"></div>
+<div class="flex-1 bg-primary/20 rounded-t-lg h-[60%] hover:bg-primary/40 transition-all"></div>
+</div>
+</div>
+<div class="flex justify-between mt-4 text-on-surface-variant text-label-md font-label-md border-t border-glass-stroke pt-4">
+<span class="">Mon</span><span class="">Tue</span><span class="">Wed</span><span class="">Thu</span><span class="">Fri</span><span class="">Sat</span><span class="">Sun</span>
+</div>
+</div>
+<!-- Insights Column -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<!-- Average Daily Spending -->
+<div class="glass-card rounded-xl p-6 flex flex-col justify-between">
+<span class="text-on-surface-variant text-label-md font-label-md">Avg. Daily Spend</span>
+<div class="mt-2">
+<span class="text-headline-md font-headline-md text-on-surface">$142.50</span>
+<div class="flex items-center gap-1 mt-1 text-semantic-red text-label-md font-label-md">
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span> 4.2% higher than last week
+            </div>
+</div>
+</div>
+<!-- Budget Health -->
+<div class="glass-card rounded-xl p-6 flex flex-col justify-between bg-gradient-to-br from-primary/5 to-transparent">
+<div class="flex justify-between items-start mb-4">
+<span class="text-on-surface-variant text-label-md font-label-md">Budget Health</span>
+<span class="bg-semantic-green/20 text-semantic-green px-2 py-0.5 rounded text-[10px] font-bold">STABLE</span>
+</div>
+<div class="flex items-center justify-center h-24">
+<!-- Simplified circular indicator -->
+<div class="relative w-20 h-20 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-mid" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-primary" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-dasharray="213" stroke-dashoffset="60" stroke-width="6"></circle>
+</svg>
+<span class="absolute text-label-md font-label-md">72%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Category Breakdown -->
+<div class="md:col-span-7 glass-card rounded-xl p-6">
+<h3 class="text-on-surface font-headline-md text-headline-md mb-6">Category Breakdown</h3>
+<div class="space-y-6">
+<!-- Food -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-tertiary-container/10 flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined text-[18px]">restaurant</span>
+</div>
+<span class="text-body-md font-body-md">Dining &amp; Groceries</span>
+</div>
+<span class="font-label-md text-label-md">$840.00 (35%)</span>
+</div>
+<div class="h-2 w-full bg-surface-mid rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container rounded-full" style="width: 35%"></div>
+</div>
+</div>
+<!-- Transport -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-secondary-container/10 flex items-center justify-center text-secondary-container">
+<span class="material-symbols-outlined text-[18px]">directions_car</span>
+</div>
+<span class="text-body-md font-body-md">Transport</span>
+</div>
+<span class="font-label-md text-label-md">$320.00 (15%)</span>
+</div>
+<div class="h-2 w-full bg-surface-mid rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container rounded-full" style="width: 15%"></div>
+</div>
+</div>
+<!-- Housing -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[18px]">home</span>
+</div>
+<span class="text-body-md font-body-md">Rent &amp; Utilities</span>
+</div>
+<span class="font-label-md text-label-md">$1,200.00 (45%)</span>
+</div>
+<div class="h-2 w-full bg-surface-mid rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 45%"></div>
+</div>
+</div>
+<!-- Entertainment -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-semantic-red/10 flex items-center justify-center text-semantic-red">
+<span class="material-symbols-outlined text-[18px]">movie</span>
+</div>
+<span class="text-body-md font-body-md">Entertainment</span>
+</div>
+<span class="font-label-md text-label-md">$120.00 (5%)</span>
+</div>
+<div class="h-2 w-full bg-surface-mid rounded-full overflow-hidden">
+<div class="h-full bg-semantic-red rounded-full" style="width: 5%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- -->
+<div class="md:col-span-5 relative overflow-hidden glass-card rounded-xl">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-30 grayscale hover:grayscale-0 transition-all duration-700" data-alt="A macro photograph of high-end, architectural textures, featuring brutalist concrete and polished teal metal. The image has deep shadows and sharp, dramatic lighting that creates a high-contrast, technical atmosphere. This abstract architectural background emphasizes professional efficiency and minimalist luxury." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrK9yMLpQGedlVIDxdfW1bKeU3L2r9FMVIswybxo6T-VPDVHs-sytL1uYDTAyUZPG1YxaxHkkGo0nf7eSx7SSz14swQE4nus6uRw-pykIas3EcTcPGBBjMlyuW-ejVIhzCEZfWRz1ZZJ47lMowf_AL2UB8uMcooG8guJyzhFW-PeBCX6n-Z1iilgOt7lHbFku_SbCKj7rw3vHTCvQrdp4tPQ33Vh-jao2-nCd-H1xGa5s5AKu_xvj9lnpDodbEbHgpi-6zt6npziF5">
+</div>
+<div class="relative z-10 p-6 flex flex-col h-full justify-between min-h-[300px]">
+<div>
+<span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Trend Report</span>
+<h3 class="font-headline-md text-headline-md mt-4 text-on-surface">Top Category: Rent</h3>
+<p class="text-on-surface-variant text-body-md mt-2">Housing expenses remain your highest outflow, consuming 45% of your total budget this month.</p>
+</div>
+
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-background/60 backdrop-blur-md border-t border-glass-stroke flex justify-around items-center h-20 px-4 pb-safe w-full">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-md text-label-md">Activity</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Budgets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary bg-primary-container/10 rounded-xl px-4 py-1 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+<script>
+    // Add micro-interactions for interaction states
+    document.querySelectorAll('button, a').forEach(el => {
+      el.addEventListener('mousedown', () => {
+        el.classList.add('scale-95');
+      });
+      el.addEventListener('mouseup', () => {
+        el.classList.remove('scale-95');
+      });
+      el.addEventListener('mouseleave', () => {
+        el.classList.remove('scale-95');
+      });
+    });
+
+    // Simple intersection observer for reveal animations
+    const observerOptions = {
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('opacity-100', 'translate-y-0');
+          entry.target.classList.remove('opacity-0', 'translate-y-4');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.glass-card').forEach(card => {
+      card.classList.add('transition-all', 'duration-500', 'opacity-0', 'translate-y-4');
+      observer.observe(card);
+    });
+  </script>
+
+</body></html>

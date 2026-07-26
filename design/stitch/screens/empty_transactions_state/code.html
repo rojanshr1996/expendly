@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Transactions - No Activity</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Shared Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#1a211f",
+                    "secondary-container": "#3131c0",
+                    "surface-variant": "#2f3634",
+                    "on-tertiary-fixed": "#2d1600",
+                    "tertiary-fixed-dim": "#ffb875",
+                    "surface-container-lowest": "#09100e",
+                    "error-container": "#93000a",
+                    "surface-mid": "#334155",
+                    "tertiary-fixed": "#ffdcc0",
+                    "tertiary-container": "#ffac5a",
+                    "on-tertiary": "#4b2800",
+                    "primary": "#57f1db",
+                    "on-primary-container": "#00574d",
+                    "on-tertiary-container": "#744000",
+                    "semantic-green": "#34D399",
+                    "on-background": "#dde4e1",
+                    "secondary-fixed": "#e1e0ff",
+                    "surface-container-high": "#242b2a",
+                    "surface-low": "#1E293B",
+                    "tertiary": "#ffd1aa",
+                    "on-surface": "#dde4e1",
+                    "on-secondary-container": "#b0b2ff",
+                    "surface-dim": "#0e1513",
+                    "inverse-on-surface": "#2b3230",
+                    "outline": "#859490",
+                    "surface-container-low": "#161d1b",
+                    "semantic-red": "#FB7185",
+                    "on-secondary": "#1000a9",
+                    "glass-stroke": "rgba(255, 255, 255, 0.1)",
+                    "surface-tint": "#3cddc7",
+                    "surface-bright": "#333b39",
+                    "on-error-container": "#ffdad6",
+                    "on-surface-variant": "#bacac5",
+                    "on-primary-fixed-variant": "#005047",
+                    "surface-lowest": "#0F172A",
+                    "primary-fixed": "#62fae3",
+                    "surface-container-highest": "#2f3634",
+                    "on-secondary-fixed": "#07006c",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "on-primary-fixed": "#00201c",
+                    "inverse-surface": "#dde4e1",
+                    "primary-container": "#2dd4bf",
+                    "inverse-primary": "#006b5f",
+                    "error": "#ffb4ab",
+                    "outline-variant": "#3c4a46",
+                    "surface": "#0e1513",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "secondary": "#c0c1ff",
+                    "on-error": "#690005",
+                    "background": "#0e1513",
+                    "primary-fixed-dim": "#3cddc7",
+                    "on-tertiary-fixed-variant": "#6b3b00",
+                    "on-primary": "#003731"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-tight": "4px",
+                    "base": "8px",
+                    "inner-component": "12px",
+                    "container-padding": "24px",
+                    "gutter-md": "16px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "label-md": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0e1513;
+            color: #dde4e1;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+        }
+        .active-tab-glow {
+            box-shadow: 0 0 12px rgba(87, 241, 219, 0.2);
+        }
+        .btn-press:active {
+            transform: scale(0.98);
+        }
+        .empty-state-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky backdrop-blur-md bg-surface/80 dark:bg-surface-dark/80 flex justify-between items-center px-margin-mobile h-14 w-full z-50 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-glass-stroke">
+<img class="w-full h-full object-cover" data-alt="Professional headshot of a user with a clean, tech-focused aesthetic, set against a dark architectural background with subtle cyan lighting highlights, consistent with a modern corporate financial application's dark mode palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYz5S1Y1AeOB6L78fuKeP46MACaw2POJJGbxS9wqhm7UqVgfEXbWTPDFdsvvlMmusPuM0TzoGxvXtlMsO0I2VdFBGO1dbTQqJ4yhZNRFIg-WQ7moVdD3AU5D8FVhbmIW-cFLk5UJfA7C7CHWjqyDgO6YSxTdiJjMkDWPaWnN0UizT3pjFK1MB6uSz3rID6jKQX6MklF89y5Uwu6DUpW8WN5KQM4bvUNvYaX2V_5AbIgGtX3TNCACgUcYq_n8oLjGpJfrjfcYlX5jMC"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-on-surface-variant">Wallet</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full transition-colors duration-200 hover:bg-surface-variant/50">
+<span class="material-symbols-outlined text-primary" data-icon="settings">settings</span>
+</button>
+</header>
+<!-- Date-based Tab Bar -->
+<nav class="w-full px-6 py-4 flex gap-4 overflow-x-auto no-scrollbar scroll-smooth">
+<button class="flex-shrink-0 px-4 py-2 rounded-full border border-glass-stroke text-on-surface-variant font-label-md text-label-md hover:bg-surface-variant/30 transition-all">
+            MAR 2024
+        </button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full border border-primary bg-primary/10 text-primary font-label-md text-label-md active-tab-glow transition-all">
+            APR 2024
+        </button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full border border-glass-stroke text-on-surface-variant font-label-md text-label-md hover:bg-surface-variant/30 transition-all">
+            MAY 2024
+        </button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full border border-glass-stroke text-on-surface-variant font-label-md text-label-md hover:bg-surface-variant/30 transition-all">
+            JUN 2024
+        </button>
+</nav>
+<!-- Main Content: Empty State Canvas -->
+<main class="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-10 text-center">
+<!-- Visual Graphic -->
+<div class="relative mb-8 empty-state-animation">
+<!-- Glass Background Circle -->
+<div class="absolute inset-0 bg-primary/5 blur-3xl rounded-full scale-150"></div>
+<div class="relative w-48 h-48 flex items-center justify-center">
+<div class="glass-card w-32 h-40 rounded-xl relative flex flex-col p-4 gap-3">
+<div class="w-full h-2 bg-outline-variant/30 rounded"></div>
+<div class="w-2/3 h-2 bg-outline-variant/30 rounded"></div>
+<div class="w-full h-2 bg-outline-variant/30 rounded"></div>
+<div class="mt-auto flex justify-between items-center">
+<div class="w-8 h-8 rounded bg-primary/20"></div>
+<div class="w-12 h-3 bg-primary/40 rounded"></div>
+</div>
+<!-- Magnifying Glass Overlay -->
+<div class="absolute -bottom-4 -right-4 w-20 h-20 bg-surface-mid rounded-full border border-glass-stroke flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined text-primary text-5xl" data-icon="search">search</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Typography -->
+<div class="max-w-xs space-y-3 mb-10">
+<h2 class="font-headline-md text-headline-md text-on-surface">No Activity Found</h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                Your financial history will appear here once you log your first expense or income.
+            </p>
+</div>
+<!-- Primary Action -->
+<button class="btn-press flex items-center gap-3 bg-primary text-on-primary font-headline-md px-8 py-4 rounded-full shadow-lg shadow-primary/10 hover:brightness-110 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span>Add Transaction</span>
+</button>
+</main>
+<!-- BottomNavBar -->
+<footer class="fixed bottom-0 left-0 w-full z-50 rounded-t-xl backdrop-blur-xl bg-surface/90 dark:bg-surface-dark/90 border-t border-outline-variant/10 shadow-lg shadow-primary/5 flex justify-around items-center pt-2 pb-6 px-2">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-5 py-1 group transition-transform duration-150 scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary-fixed-dim text-on-primary-container dark:text-on-primary-fixed rounded-full px-6 py-2 transition-transform duration-150 active-tab-glow" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-md text-label-md mt-1">Activity</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-5 py-1 group transition-transform duration-150 scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-label-md text-label-md mt-1">Budgets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-5 py-1 group transition-transform duration-150 scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-label-md text-label-md mt-1">Reports</span>
+</a>
+</footer>
+<script>
+        // Micro-interaction for the main action button
+        document.querySelector('button.btn-press').addEventListener('mousedown', function() {
+            this.style.filter = 'brightness(0.9)';
+        });
+        document.querySelector('button.btn-press').addEventListener('mouseup', function() {
+            this.style.filter = 'brightness(1.1)';
+        });
+
+        // Simple scroll behavior for horizontal tabs
+        const nav = document.querySelector('nav');
+        let isDown = false;
+        letstartX;
+        let scrollLeft;
+
+        nav.addEventListener('mousedown', (e) => {
+            isDown = true;
+            startX = e.pageX - nav.offsetLeft;
+            scrollLeft = nav.scrollLeft;
+        });
+        nav.addEventListener('mouseleave', () => {
+            isDown = false;
+        });
+        nav.addEventListener('mouseup', () => {
+            isDown = false;
+        });
+        nav.addEventListener('mousemove', (e) => {
+            if(!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - nav.offsetLeft;
+            const walk = (x - startX) * 2;
+            nav.scrollLeft = scrollLeft - walk;
+        });
+    </script>
+</body></html>

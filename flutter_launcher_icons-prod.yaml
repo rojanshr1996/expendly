@@ -1,0 +1,6 @@
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: false
+  image_path: "assets/images/expendly_icon.png"
+  android_flavor: "prod"
+  remove_alpha_ios: false

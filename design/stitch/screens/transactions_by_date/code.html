@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FinanceFlow - Activity</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#0e1513",
+                    "on-surface": "#dde4e1",
+                    "surface-variant": "#2f3634",
+                    "surface-lowest": "#0F172A",
+                    "semantic-red": "#FB7185",
+                    "surface-bright": "#333b39",
+                    "primary-container": "#2dd4bf",
+                    "on-primary-fixed-variant": "#005047",
+                    "tertiary-container": "#ffac5a",
+                    "on-secondary": "#1000a9",
+                    "inverse-on-surface": "#2b3230",
+                    "on-tertiary": "#4b2800",
+                    "surface": "#0e1513",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "on-secondary-fixed": "#07006c",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-fixed": "#ffdcc0",
+                    "on-primary": "#003731",
+                    "on-tertiary-fixed-variant": "#6b3b00",
+                    "surface-container-high": "#242b2a",
+                    "surface-dim": "#0e1513",
+                    "tertiary": "#ffd1aa",
+                    "primary": "#57f1db",
+                    "primary-fixed-dim": "#3cddc7",
+                    "surface-low": "#1E293B",
+                    "on-primary-container": "#00574d",
+                    "surface-container-lowest": "#09100e",
+                    "on-tertiary-fixed": "#2d1600",
+                    "on-surface-variant": "#bacac5",
+                    "error": "#ffb4ab",
+                    "tertiary-fixed-dim": "#ffb875",
+                    "inverse-primary": "#006b5f",
+                    "outline-variant": "#3c4a46",
+                    "on-primary-fixed": "#00201c",
+                    "secondary-fixed": "#e1e0ff",
+                    "surface-container-low": "#161d1b",
+                    "glass-stroke": "rgba(255, 255, 255, 0.1)",
+                    "secondary-container": "#3131c0",
+                    "surface-container-highest": "#2f3634",
+                    "outline": "#859490",
+                    "inverse-surface": "#dde4e1",
+                    "error-container": "#93000a",
+                    "primary-fixed": "#62fae3",
+                    "on-tertiary-container": "#744000",
+                    "semantic-green": "#34D399",
+                    "on-secondary-container": "#b0b2ff",
+                    "surface-container": "#1a211f",
+                    "secondary": "#c0c1ff",
+                    "surface-tint": "#3cddc7",
+                    "surface-mid": "#334155",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "on-background": "#dde4e1",
+                    "on-error": "#690005"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "inner-component": "12px",
+                    "gutter-md": "16px",
+                    "stack-tight": "4px",
+                    "base": "8px",
+                    "container-padding": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "label-md": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-blur {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        body {
+            background-color: #0e1513;
+            color: #dde4e1;
+            font-family: 'Hanken Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+        .transaction-card:active {
+            transform: scale(0.98);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/60 backdrop-blur-md border-b border-glass-stroke flex items-center justify-between px-container-padding h-16">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-glass-stroke">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrXo8oSMNqygrMaFSccWMB6CsxSKhCLydYkvjlBQG4FprAKUg32HGKetlGwLtbqe9u6tOPjS2Z85vbwGlmEAYPRnmAFr0gYQW_CsweJ-UhOTpk71o9KwYIaurWhc4YwG6v1XTsP6aEuRv-7xC_TKC4C0pXyrsUj3NQmfDt_aejKKViEs5GHBiP3BHNoWGeLu0yelPK16fMeNA5J3C94iKM6-M30Zn5D31jvviCe1ap-G9eQ6O-vF85dBfjO6JJzJDl8Z2r1UCd4te0"/>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">FinanceFlow</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-surface-bright transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary">settings</span>
+</button>
+</header>
+<main class="pt-20 pb-32 px-container-padding max-w-[1024px] mx-auto min-h-screen">
+<!-- Month Selector & Search -->
+<section class="mb-gutter-md space-y-4">
+<div class="flex items-center justify-between gap-4">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container border border-glass-stroke rounded-xl text-body-lg font-medium hover:bg-surface-bright transition-colors">
+<span>October 2023</span>
+<span class="material-symbols-outlined text-[20px]">expand_more</span>
+</button>
+<div class="relative flex-1 group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full h-11 bg-surface-container border border-glass-stroke rounded-xl pl-11 pr-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none text-body-md placeholder:text-outline transition-all" placeholder="Search..." type="text"/>
+</div>
+</div>
+<!-- Horizontal Date Tab Bar -->
+<div class="relative">
+<div class="flex gap-2 overflow-x-auto no-scrollbar pb-1 px-1 -mx-1">
+<!-- Generating a sample range of days -->
+<div class="flex flex-col items-center justify-center min-w-[48px] h-20 rounded-2xl border border-glass-stroke bg-surface-container text-on-surface-variant transition-all hover:bg-surface-bright">
+<span class="text-[10px] font-label-md uppercase opacity-60">Sun</span>
+<span class="text-headline-md font-bold">22</span>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[48px] h-20 rounded-2xl border border-glass-stroke bg-surface-container text-on-surface-variant transition-all hover:bg-surface-bright">
+<span class="text-[10px] font-label-md uppercase opacity-60">Mon</span>
+<span class="text-headline-md font-bold">23</span>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[48px] h-20 rounded-2xl border border-glass-stroke bg-surface-container text-on-surface-variant transition-all hover:bg-surface-bright">
+<span class="text-[10px] font-label-md uppercase opacity-60">Tue</span>
+<span class="text-headline-md font-bold">24</span>
+</div>
+<!-- Active Day -->
+<div class="flex flex-col items-center justify-center min-w-[48px] h-20 rounded-2xl border border-primary/30 bg-primary-container/20 text-primary ring-2 ring-primary/20 transition-all">
+<span class="text-[10px] font-label-md uppercase">Wed</span>
+<span class="text-headline-md font-bold">25</span>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[48px] h-20 rounded-2xl border border-glass-stroke bg-surface-container text-on-surface-variant transition-all hover:bg-surface-bright">
+<span class="text-[10px] font-label-md uppercase opacity-60">Thu</span>
+<span class="text-headline-md font-bold">26</span>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[48px] h-20 rounded-2xl border border-glass-stroke bg-surface-container text-on-surface-variant transition-all hover:bg-surface-bright">
+<span class="text-[10px] font-label-md uppercase opacity-60">Fri</span>
+<span class="text-headline-md font-bold">27</span>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[48px] h-20 rounded-2xl border border-glass-stroke bg-surface-container text-on-surface-variant transition-all hover:bg-surface-bright">
+<span class="text-[10px] font-label-md uppercase opacity-60">Sat</span>
+<span class="text-headline-md font-bold">28</span>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[48px] h-20 rounded-2xl border border-glass-stroke bg-surface-container text-on-surface-variant transition-all hover:bg-surface-bright">
+<span class="text-[10px] font-label-md uppercase opacity-60">Sun</span>
+<span class="text-headline-md font-bold">29</span>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[48px] h-20 rounded-2xl border border-glass-stroke bg-surface-container text-on-surface-variant transition-all hover:bg-surface-bright">
+<span class="text-[10px] font-label-md uppercase opacity-60">Mon</span>
+<span class="text-headline-md font-bold">30</span>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[48px] h-20 rounded-2xl border border-glass-stroke bg-surface-container text-on-surface-variant transition-all hover:bg-surface-bright">
+<span class="text-[10px] font-label-md uppercase opacity-60">Tue</span>
+<span class="text-headline-md font-bold">31</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Transaction List -->
+<div class="space-y-gutter-md">
+<section>
+<div class="flex items-center justify-between mb-base px-2">
+<h3 class="text-label-md font-label-md text-outline uppercase tracking-wider">Today, Oct 25</h3>
+<span class="text-label-md font-label-md text-on-surface-variant">2 Transactions</span>
+</div>
+<div class="space-y-base">
+<!-- Transaction Item -->
+<div class="transaction-card flex items-center justify-between p-4 bg-surface-low border border-glass-stroke rounded-xl transition-all hover:bg-surface-mid">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 flex items-center justify-center rounded-lg bg-tertiary-container/10 text-tertiary-container">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<h4 class="font-body-lg text-body-lg text-on-surface">Blue Bottle Coffee</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Dining &amp; Drinks</p>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-md text-label-md text-semantic-red block">- $12.50</span>
+<span class="font-label-md text-[10px] text-outline uppercase">09:42 AM</span>
+</div>
+</div>
+<!-- Transaction Item -->
+<div class="transaction-card flex items-center justify-between p-4 bg-surface-low border border-glass-stroke rounded-xl transition-all hover:bg-surface-mid">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 flex items-center justify-center rounded-lg bg-primary-container/10 text-primary">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div>
+<h4 class="font-body-lg text-body-lg text-on-surface">Stripe Payout</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Direct Deposit</p>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-md text-label-md text-semantic-green block">+ $2,450.00</span>
+<span class="font-label-md text-[10px] text-outline uppercase">08:15 AM</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Group: Other Day Preview -->
+<section class="opacity-60">
+<div class="flex items-center justify-between mb-base px-2">
+<h3 class="text-label-md font-label-md text-outline uppercase tracking-wider">Yesterday, Oct 24</h3>
+</div>
+<div class="space-y-base">
+<div class="transaction-card flex items-center justify-between p-4 bg-surface-low border border-glass-stroke rounded-xl transition-all hover:bg-surface-mid">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 flex items-center justify-center rounded-lg bg-secondary/10 text-secondary">
+<span class="material-symbols-outlined">shopping_bag</span>
+</div>
+<div>
+<h4 class="font-body-lg text-body-lg text-on-surface">Apple Store</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Electronics</p>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-md text-label-md text-semantic-red block">- $1,299.00</span>
+<span class="font-label-md text-[10px] text-outline uppercase">04:20 PM</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-background/60 backdrop-blur-md border-t border-glass-stroke flex justify-around items-center h-20 px-4 pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary bg-primary-container/10 rounded-xl px-4 py-1 active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="font-label-md text-label-md mt-1">Activity</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md mt-1">Budgets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md mt-1">Reports</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for date tabs
+        const dateTabs = document.querySelectorAll('.overflow-x-auto > div');
+        dateTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                dateTabs.forEach(t => {
+                    t.classList.remove('border-primary/30', 'bg-primary-container/20', 'text-primary', 'ring-2', 'ring-primary/20');
+                    t.classList.add('border-glass-stroke', 'bg-surface-container', 'text-on-surface-variant');
+                    t.querySelector('span:first-child').classList.add('opacity-60');
+                });
+                tab.classList.add('border-primary/30', 'bg-primary-container/20', 'text-primary', 'ring-2', 'ring-primary/20');
+                tab.classList.remove('border-glass-stroke', 'bg-surface-container', 'text-on-surface-variant');
+                tab.querySelector('span:first-child').classList.remove('opacity-60');
+            });
+        });
+    </script>
+</body></html>

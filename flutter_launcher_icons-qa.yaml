@@ -1,0 +1,6 @@
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: false
+  image_path: "assets/images/expendly_icon_qa.png"
+  android_flavor: "qa"
+  remove_alpha_ios: false

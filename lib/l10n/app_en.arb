@@ -1,0 +1,67 @@
+{
+  "@@locale": "en",
+  "appName": "Expendly",
+  "@appName": {
+    "description": "The name of the application"
+  },
+  "totalBalance": "TOTAL BALANCE",
+  "@totalBalance": {
+    "description": "Header title for total balance overview"
+  },
+  "income": "Income",
+  "@income": {
+    "description": "Label for financial income"
+  },
+  "expenses": "Expenses",
+  "@expenses": {
+    "description": "Label for financial expenses"
+  },
+  "addTransaction": "Add Transaction",
+  "@addTransaction": {
+    "description": "Button text to add a new transaction"
+  },
+  "addExpense": "Add Expense",
+  "@addExpense": {
+    "description": "FAB text to log a quick expense"
+  },
+  "analytics": "Analytics",
+  "@analytics": {
+    "description": "Button text to view analytics"
+  },
+  "recentActivity": "Recent Activity",
+  "@recentActivity": {
+    "description": "Section title for recent transaction history"
+  },
+  "seeAll": "See All",
+  "@seeAll": {
+    "description": "Action text to view all items"
+  },
+  "foodAndDining": "Food & Dining",
+  "@foodAndDining": {
+    "description": "Category for food expenses"
+  },
+  "entertainment": "Entertainment",
+  "@entertainment": {
+    "description": "Category for entertainment expenses"
+  },
+  "groceryShopping": "Grocery Shopping",
+  "@groceryShopping": {
+    "description": "Transaction title for groceries"
+  },
+  "freelancePayout": "Freelance Payout",
+  "@freelancePayout": {
+    "description": "Transaction title for income payout"
+  },
+  "netflixSubscription": "Netflix Subscription",
+  "@netflixSubscription": {
+    "description": "Transaction title for subscription"
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Relative date label for today"
+  },
+  "yesterday": "Yesterday",
+  "@yesterday": {
+    "description": "Relative date label for yesterday"
+  }
+}

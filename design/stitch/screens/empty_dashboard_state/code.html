@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fiscal - Welcome</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#c0c1ff",
+                    "surface-variant": "#2f3634",
+                    "surface-bright": "#333b39",
+                    "on-secondary-fixed": "#07006c",
+                    "surface-container-low": "#161d1b",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "on-primary-fixed-variant": "#005047",
+                    "on-background": "#dde4e1",
+                    "on-primary": "#003731",
+                    "surface-mid": "#334155",
+                    "tertiary": "#ffd1aa",
+                    "on-secondary-container": "#b0b2ff",
+                    "tertiary-fixed": "#ffdcc0",
+                    "surface-container-lowest": "#09100e",
+                    "primary": "#57f1db",
+                    "secondary-fixed": "#e1e0ff",
+                    "on-primary-fixed": "#00201c",
+                    "surface-low": "#1E293B",
+                    "outline-variant": "#3c4a46",
+                    "on-primary-container": "#00574d",
+                    "on-tertiary": "#4b2800",
+                    "primary-fixed": "#62fae3",
+                    "glass-stroke": "rgba(255, 255, 255, 0.1)",
+                    "secondary-container": "#3131c0",
+                    "tertiary-fixed-dim": "#ffb875",
+                    "on-tertiary-fixed-variant": "#6b3b00",
+                    "error": "#ffb4ab",
+                    "semantic-green": "#34D399",
+                    "primary-fixed-dim": "#3cddc7",
+                    "error-container": "#93000a",
+                    "surface-dim": "#0e1513",
+                    "tertiary-container": "#ffac5a",
+                    "surface-tint": "#3cddc7",
+                    "semantic-red": "#FB7185",
+                    "surface-container-high": "#242b2a",
+                    "on-surface": "#dde4e1",
+                    "inverse-primary": "#006b5f",
+                    "on-error": "#690005",
+                    "on-tertiary-container": "#744000",
+                    "on-secondary": "#1000a9",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "surface-container-highest": "#2f3634",
+                    "surface-container": "#1a211f",
+                    "outline": "#859490",
+                    "background": "#0e1513",
+                    "inverse-on-surface": "#2b3230",
+                    "on-error-container": "#ffdad6",
+                    "surface-lowest": "#0F172A",
+                    "primary-container": "#2dd4bf",
+                    "on-surface-variant": "#bacac5",
+                    "surface": "#0e1513",
+                    "on-tertiary-fixed": "#2d1600",
+                    "inverse-surface": "#dde4e1"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-tight": "4px",
+                    "gutter-md": "16px",
+                    "container-padding": "24px",
+                    "inner-component": "12px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "label-md": ["JetBrains Mono"],
+                    "headline-md": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0e1513;
+            color: #dde4e1;
+            font-family: 'Hanken Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .pulse-teal {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.05); }
+        }
+        .active-press:active {
+            transform: scale(0.95);
+            transition: transform 150ms ease-in-out;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-container-padding py-base w-full sticky top-0 z-50 bg-background/60 backdrop-blur-[20px] border-b border-glass-stroke">
+<div class="flex items-center gap-base">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Fiscal</h1>
+</div>
+<div class="flex items-center gap-inner-component">
+<button class="w-10 h-10 rounded-full bg-surface-variant/20 hover:bg-surface-variant/40 transition-colors flex items-center justify-center active-press">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="settings">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full border border-glass-stroke bg-surface-low flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional close-up portrait of a tech-savvy user in a dimly lit, high-end office environment. The lighting is soft and moody with cool teal highlights that match the corporate modern aesthetic of the app. The subject has a calm, confident expression, suggesting reliability and financial control. The background is a blurred bokeh of modern office structures in deep slate and charcoal tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmIi74UiHQcN28NFWLKndzUlXKfkrh2KofZ_ik992-fiXe_XEbywXlntx3rYkVgTGjA89hFsJRbaZpC-CR7mqcs0lG6ghWdd18yRl7uZ_oCwXAaaCh9pMLS1XGqx6obtHAcemf6GjqHfXB3S-tqZd9ZNhlc6ajRq8UXtXMpqL2rQ7L0AkH4PUqeDO9u0pEEaoBAw8syNhXq2QpWkQ1tge46dVl-6LkwtOWJXd-jh1Pxv-qm0XWxuIPN0cC3kt7xpbixpUVLmTgDQnZ"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center px-container-padding pb-32">
+<!-- Empty State Container -->
+<div class="max-w-[480px] w-full flex flex-col items-center text-center">
+<!-- Sophisticated Illustration Wrapper -->
+<div class="relative w-64 h-64 mb-10 flex items-center justify-center">
+<!-- Decorative Glow -->
+<div class="absolute inset-0 bg-primary/10 blur-[80px] rounded-full pulse-teal"></div>
+<!-- Main Illustration Layer -->
+<div class="glass-panel w-48 h-48 rounded-3xl rotate-12 absolute z-10 opacity-30"></div>
+<div class="glass-panel w-48 h-48 rounded-3xl -rotate-6 absolute z-20 overflow-hidden flex items-center justify-center">
+<img class="w-full h-full object-cover opacity-80" data-alt="A sophisticated, high-end 3D digital illustration of a glass-like minimalist box containing floating glowing geometric teal shards and a subtle upwards-pointing arrow. The style is Corporate Modern with soft gradients and deep shadows. The background is a dark midnight slate, emphasizing the translucent glass textures and the vibrant teal energy core within. Everything is lit by a soft, cinematic top-down light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuANGYkjMGMNs7nScmpyRaiYKJUcUp_ELpjBP4O8p41B1RpRJIUruacE2FOUTtkkwUMjC-_VG7Hn0TvQZR8jTtJ541ojCt3tKAAxeyqPd6478-wTGuz2UXGd6mCDtC3QivlAx-ObkRLdqfTQ3pYIpII3Wog17Y7PytohrnHUtIx9qGfE1bVnENILTTZ8L0rwPaJwTQFWNVd0rgxQMp13fK_ptJoeSHcQ4CxYTyToemoNHui1kNnqVQpwdW5-rEPxPZCAboJUljGrc_SY"/>
+</div>
+<!-- Floating Icon Elements -->
+<div class="absolute top-4 right-4 z-30 w-12 h-12 glass-panel rounded-xl flex items-center justify-center text-primary shadow-xl">
+<span class="material-symbols-outlined text-[24px]">add_chart</span>
+</div>
+<div class="absolute bottom-8 left-0 z-30 w-14 h-14 glass-panel rounded-xl flex items-center justify-center text-secondary shadow-xl">
+<span class="material-symbols-outlined text-[28px]">payments</span>
+</div>
+</div>
+<!-- Welcome Copy -->
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-stack-tight">
+                Welcome to your financial journey.
+            </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-[340px] mb-8">
+                You haven't added any transactions yet. Let's start tracking your wealth today.
+            </p>
+<!-- CTA Button -->
+<button class="group relative px-8 py-4 bg-primary rounded-xl flex items-center gap-base transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(87,241,219,0.3)] active:scale-[0.98]">
+<span class="material-symbols-outlined text-on-primary" style="font-variation-settings: 'FILL' 1;">add</span>
+<span class="font-headline-md text-[18px] text-on-primary font-bold">Add Your First Transaction</span>
+<!-- Hover Glow Effect -->
+<div class="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</button>
+<!-- Secondary Guidance -->
+<div class="mt-12 flex items-center gap-gutter-md opacity-60">
+<div class="flex items-center gap-stack-tight">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+<span class="font-label-md text-label-md">Private &amp; Secure</span>
+</div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center gap-stack-tight">
+<span class="material-symbols-outlined text-[16px]">cloud_off</span>
+<span class="font-label-md text-label-md">Offline Ready</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-gutter-md pt-2 pb-6 bg-background/60 backdrop-blur-[20px] border-t border-glass-stroke">
+<!-- Dashboard (Active) -->
+<a class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl px-4 py-1 transition-all duration-200 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md mt-1">Dashboard</span>
+</a>
+<!-- Activity -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-md text-label-md mt-1">Activity</span>
+</a>
+<!-- Budgets -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-label-md text-label-md mt-1">Budgets</span>
+</a>
+<!-- Reports -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md mt-1">Reports</span>
+</a>
+</nav>
+<!-- Micro-interaction Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.querySelector('button');
+            btn.addEventListener('mouseenter', () => {
+                // Subtle interaction logic if needed
+            });
+            
+            // Add parallax effect to empty state illustration
+            window.addEventListener('mousemove', (e) => {
+                const moveX = (e.clientX - window.innerWidth / 2) / 50;
+                const moveY = (e.clientY - window.innerHeight / 2) / 50;
+                const illustration = document.querySelector('.relative.w-64.h-64');
+                if (illustration) {
+                    illustration.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                }
+            });
+        });
+    </script>
+</body></html>

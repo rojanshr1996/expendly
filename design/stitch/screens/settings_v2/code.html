@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ledger - Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error": "#690005",
+                    "tertiary-fixed": "#ffdcc0",
+                    "semantic-green": "#34D399",
+                    "surface-container-low": "#161d1b",
+                    "tertiary-container": "#ffac5a",
+                    "surface-container-highest": "#2f3634",
+                    "surface-tint": "#3cddc7",
+                    "secondary-container": "#3131c0",
+                    "error-container": "#93000a",
+                    "surface-lowest": "#0F172A",
+                    "error": "#ffb4ab",
+                    "primary-container": "#2dd4bf",
+                    "surface-mid": "#334155",
+                    "inverse-primary": "#006b5f",
+                    "on-tertiary-fixed": "#2d1600",
+                    "tertiary-fixed-dim": "#ffb875",
+                    "outline": "#859490",
+                    "surface-container-high": "#242b2a",
+                    "on-primary": "#003731",
+                    "surface-low": "#1E293B",
+                    "on-background": "#dde4e1",
+                    "surface-bright": "#333b39",
+                    "on-secondary-container": "#b0b2ff",
+                    "glass-stroke": "rgba(255, 255, 255, 0.1)",
+                    "on-tertiary": "#4b2800",
+                    "surface-dim": "#0e1513",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "on-primary-container": "#00574d",
+                    "on-tertiary-container": "#744000",
+                    "secondary-fixed": "#e1e0ff",
+                    "on-primary-fixed-variant": "#005047",
+                    "secondary": "#c0c1ff",
+                    "surface-variant": "#2f3634",
+                    "surface": "#0e1513",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "surface-container-lowest": "#09100e",
+                    "on-secondary": "#1000a9",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed-variant": "#6b3b00",
+                    "inverse-on-surface": "#2b3230",
+                    "semantic-red": "#FB7185",
+                    "surface-container": "#1a211f",
+                    "on-surface-variant": "#bacac5",
+                    "on-primary-fixed": "#00201c",
+                    "outline-variant": "#3c4a46",
+                    "primary-fixed-dim": "#3cddc7",
+                    "primary-fixed": "#62fae3",
+                    "primary": "#57f1db",
+                    "on-surface": "#dde4e1",
+                    "tertiary": "#ffd1aa",
+                    "inverse-surface": "#dde4e1",
+                    "background": "#0e1513",
+                    "on-secondary-fixed": "#07006c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "inner-component": "12px",
+                    "stack-tight": "4px",
+                    "gutter-md": "16px",
+                    "container-padding": "24px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Hanken Grotesk"],
+                    "label-md": ["JetBrains Mono"],
+                    "body-md": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0F172A;
+            color: #dde4e1;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-card {
+            background: #1E293B;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .premium-gradient {
+            background: linear-gradient(135deg, #2dd4bf 0%, #3131c0 100%);
+        }
+        .custom-toggle {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .custom-toggle input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #334155;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #57f1db; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md overflow-x-hidden pb-32">
+<!-- Top App Bar -->
+<header class="sticky top-0 w-full z-50 bg-surface/60 dark:bg-surface/60 backdrop-blur-md border-b border-glass-stroke flex justify-between items-center px-container-padding py-base">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A professional high-resolution studio portrait of a modern fintech user, clean lighting, sharp focus, sophisticated corporate aesthetic with subtle teal lighting accents in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOCDfHE_w5m21K7_g-Uuf7vcQaNHTBmd3R7v3Ci4kVkvAoPrT10qbi7UhGoA4AD5YeeKDufNDeWlnCbc1O5iluBXJ8J0pKktBPr9HObidQy-1ylG-ii48LG0JUWajIpNZso4o3iBG9KU82j-DmuivR6OCmhDMltssoyt6-5mvsO10divSAkSQAIVQSAQLGQjytyEyvZBHbQTPYhuKflYUJOdu9aAHA0rzUhP-OSc6Wxw3jMUhoZR7aZJf6IQeMRmp4aK-p42yrvsYQ"/>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Settings</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity active:scale-90 transition-transform text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<main class="max-w-screen-md mx-auto px-container-padding pt-gutter-md space-y-gutter-md">
+<!-- Section 1: Premium Upgrade Card -->
+<section class="premium-gradient p-6 rounded-xl shadow-lg relative overflow-hidden group active:scale-[0.98] transition-transform duration-200">
+<div class="relative z-10 flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-primary-fixed mb-1">Upgrade to Pro</h2>
+<p class="text-on-primary-fixed opacity-90 max-w-[80%] font-body-md">Unlock unlimited backups, advanced financial analytics, and priority support.</p>
+</div>
+<span class="material-symbols-outlined text-4xl text-on-primary-fixed/30">auto_awesome</span>
+</div>
+<button class="bg-surface-lowest text-primary py-3 px-6 rounded-lg font-bold w-fit hover:opacity-90 transition-opacity shadow-xl">
+                    Go Pro
+                </button>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]">account_balance</span>
+</div>
+</section>
+<!-- Section 2: Account -->
+<section class="space-y-base">
+<h3 class="font-label-md text-label-md text-primary uppercase tracking-wider px-1">Account</h3>
+<div class="glass-card rounded-xl overflow-hidden divide-y divide-glass-stroke">
+<div class="flex items-center justify-between p-4 hover:bg-surface-mid/20 transition-colors cursor-pointer group active:scale-[0.99]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<span class="font-body-lg text-body-lg font-medium">Personal Profile</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-surface-mid/20 transition-colors cursor-pointer group active:scale-[0.99]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="font-body-lg text-body-lg font-medium">Subscription Plan</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Section 3: Security -->
+<section class="space-y-base">
+<h3 class="font-label-md text-label-md text-primary uppercase tracking-wider px-1">Security</h3>
+<div class="glass-card rounded-xl overflow-hidden divide-y divide-glass-stroke">
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-semantic-green/10 flex items-center justify-center text-semantic-green">
+<span class="material-symbols-outlined">fingerprint</span>
+</div>
+<span class="font-body-lg text-body-lg font-medium">Biometric Authentication</span>
+</div>
+<label class="custom-toggle">
+<input checked="" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-surface-mid/20 transition-colors cursor-pointer group active:scale-[0.99]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-mid/40 flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined">pin</span>
+</div>
+<span class="font-body-lg text-body-lg font-medium">Change Security PIN</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Section 4: Appearance -->
+<section class="space-y-base">
+<h3 class="font-label-md text-label-md text-primary uppercase tracking-wider px-1">Appearance</h3>
+<div class="glass-card rounded-xl overflow-hidden divide-y divide-glass-stroke">
+<div class="flex items-center justify-between p-4 hover:bg-surface-mid/20 transition-colors cursor-pointer active:scale-[0.99]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-tertiary-container/10 flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined">dark_mode</span>
+</div>
+<span class="font-body-lg text-body-lg font-medium">Theme</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Dark Mode</span>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-surface-mid/20 transition-colors cursor-pointer active:scale-[0.99]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">currency_exchange</span>
+</div>
+<span class="font-body-lg text-body-lg font-medium">Primary Currency</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">USD ($)</span>
+</div>
+</div>
+</section>
+<!-- Section 5: Data Management -->
+<section class="space-y-base">
+<h3 class="font-label-md text-label-md text-primary uppercase tracking-wider px-1">Data Management</h3>
+<div class="glass-card rounded-xl overflow-hidden divide-y divide-glass-stroke">
+<div class="flex items-center justify-between p-4 hover:bg-surface-mid/20 transition-colors cursor-pointer active:scale-[0.99]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-mid/40 flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined">cloud_upload</span>
+</div>
+<span class="font-body-lg text-body-lg font-medium">Cloud Backup</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">sync</span>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-surface-mid/20 transition-colors cursor-pointer active:scale-[0.99]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-mid/40 flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined">csv</span>
+</div>
+<span class="font-body-lg text-body-lg font-medium">Export Data (.CSV)</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">download</span>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-semantic-red/10 transition-colors cursor-pointer active:scale-[0.99]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-semantic-red/10 flex items-center justify-center text-semantic-red">
+<span class="material-symbols-outlined">delete</span>
+</div>
+<span class="font-body-lg text-body-lg font-medium text-semantic-red">Clear Local Cache</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="pt-8 pb-12 text-center space-y-1">
+<p class="font-label-md text-label-md text-on-surface-variant opacity-60">v2.4.1</p>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-40 italic">Made with precision</p>
+</footer>
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface/60 dark:bg-surface/60 backdrop-blur-md border-t border-glass-stroke flex justify-around items-center px-4 pb-8 pt-4">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/80 transition-colors scale-98 active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/80 transition-colors scale-98 active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md mt-1">Insights</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/80 transition-colors scale-98 active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md mt-1">Wallets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-bold hover:text-primary/80 transition-colors scale-98 active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md mt-1">Settings</span>
+</a>
+</nav>
+<script>
+        // Lightweight interaction for setting cards
+        document.querySelectorAll('.glass-card > div').forEach(item => {
+            item.addEventListener('click', function() {
+                const icon = this.querySelector('.material-symbols-outlined:last-child');
+                if(icon && icon.textContent === 'chevron_right') {
+                    icon.classList.add('translate-x-2');
+                    setTimeout(() => icon.classList.remove('translate-x-2'), 200);
+                }
+            });
+        });
+
+        // Add visual feedback for the Go Pro button
+        const proBtn = document.querySelector('.premium-gradient button');
+        proBtn.addEventListener('click', () => {
+            proBtn.textContent = 'Processing...';
+            proBtn.classList.add('opacity-50');
+            setTimeout(() => {
+                proBtn.textContent = 'Go Pro';
+                proBtn.classList.remove('opacity-50');
+            }, 1000);
+        });
+    </script>
+</body></html>

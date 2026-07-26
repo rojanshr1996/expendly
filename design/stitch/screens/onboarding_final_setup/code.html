@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ledger - Welcome &amp; Final Setup</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#242b2a",
+                    "tertiary-fixed-dim": "#ffb875",
+                    "tertiary": "#ffd1aa",
+                    "error-container": "#93000a",
+                    "surface-container-highest": "#2f3634",
+                    "surface": "#0e1513",
+                    "secondary-container": "#3131c0",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed": "#2d1600",
+                    "inverse-surface": "#dde4e1",
+                    "surface-variant": "#2f3634",
+                    "on-surface-variant": "#bacac5",
+                    "on-tertiary-fixed-variant": "#6b3b00",
+                    "semantic-green": "#34D399",
+                    "on-secondary-container": "#b0b2ff",
+                    "surface-bright": "#333b39",
+                    "on-tertiary-container": "#744000",
+                    "secondary": "#c0c1ff",
+                    "on-primary": "#003731",
+                    "surface-tint": "#3cddc7",
+                    "on-primary-fixed": "#00201c",
+                    "inverse-primary": "#006b5f",
+                    "surface-low": "#1E293B",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "on-primary-fixed-variant": "#005047",
+                    "surface-dim": "#0e1513",
+                    "glass-stroke": "rgba(255, 255, 255, 0.1)",
+                    "outline-variant": "#3c4a46",
+                    "primary-fixed-dim": "#3cddc7",
+                    "surface-container-lowest": "#09100e",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-fixed": "#07006c",
+                    "on-primary-container": "#00574d",
+                    "primary-container": "#2dd4bf",
+                    "primary-fixed": "#62fae3",
+                    "error": "#ffb4ab",
+                    "tertiary-container": "#ffac5a",
+                    "on-tertiary": "#4b2800",
+                    "on-surface": "#dde4e1",
+                    "surface-container-low": "#161d1b",
+                    "semantic-red": "#FB7185",
+                    "on-background": "#dde4e1",
+                    "surface-mid": "#334155",
+                    "secondary-fixed": "#e1e0ff",
+                    "background": "#0e1513",
+                    "outline": "#859490",
+                    "inverse-on-surface": "#2b3230",
+                    "surface-lowest": "#0F172A",
+                    "surface-container": "#1a211f",
+                    "on-secondary": "#1000a9",
+                    "tertiary-fixed": "#ffdcc0",
+                    "primary": "#57f1db"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-tight": "4px",
+                    "inner-component": "12px",
+                    "container-padding": "24px",
+                    "base": "8px",
+                    "gutter-md": "16px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "label-md": ["JetBrains Mono"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.04em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-checkbox:checked + .toggle-slot {
+            background-color: #2dd4bf;
+        }
+
+        .toggle-checkbox:checked + .toggle-slot .toggle-dot {
+            transform: translateX(20px);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-lg min-h-screen flex flex-col overflow-x-hidden">
+<!-- Top Navigation Shell Suppressed (Transactional/Onboarding Flow) -->
+<main class="flex-grow flex flex-col items-center justify-center px-container-padding py-12 relative">
+<!-- Decorative Ambient Background Elements -->
+<div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/10 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="w-full max-w-md space-y-8 relative z-10">
+<!-- Celebratory Graphic -->
+<div class="flex justify-center mb-4">
+<div class="relative w-48 h-48 flex items-center justify-center bg-surface-low glass-panel rounded-full animate-float">
+<!-- Background Glow -->
+<div class="absolute inset-0 bg-primary/20 blur-2xl rounded-full"></div>
+<!-- Central Icon -->
+<div class="relative flex flex-col items-center">
+<span class="material-symbols-outlined text-[80px] text-primary" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+<div class="absolute -top-4 -right-4 bg-secondary p-2 rounded-lg rotate-12 shadow-lg">
+<span class="material-symbols-outlined text-on-secondary text-2xl">celebration</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Content Header -->
+<div class="text-center space-y-2">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">You're all set!</h1>
+<p class="text-on-surface-variant font-body-md max-w-xs mx-auto">Your private financial ledger is calibrated and ready to help you achieve absolute fiscal clarity.</p>
+</div>
+<!-- Selection Summary Bento Grid -->
+<div class="grid grid-cols-2 gap-inner-component">
+<div class="glass-panel p-4 rounded-xl flex flex-col items-center space-y-2">
+<span class="material-symbols-outlined text-secondary" data-icon="account_balance">account_balance</span>
+<span class="text-label-md font-label-md text-on-surface-variant">Default Wallet</span>
+<span class="text-body-md font-bold text-on-surface">Personal Slate</span>
+</div>
+<div class="glass-panel p-4 rounded-xl flex flex-col items-center space-y-2">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" data-icon="currency_exchange">currency_exchange</span>
+<span class="text-label-md font-label-md text-on-surface-variant">Currency</span>
+<span class="text-body-md font-bold text-on-surface">USD ($)</span>
+</div>
+</div>
+<!-- Final Configuration Controls -->
+<div class="space-y-4">
+<h3 class="text-label-md font-label-md text-on-surface-variant px-1 uppercase tracking-widest">Preferences</h3>
+<div class="space-y-base">
+<!-- Toggle 1 -->
+<label class="flex items-center justify-between glass-panel p-4 rounded-xl cursor-pointer hover:bg-surface-mid/40 transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="fingerprint">fingerprint</span>
+</div>
+<div>
+<p class="text-body-lg font-medium text-on-surface">Biometric Unlock</p>
+<p class="text-label-md font-label-md text-on-surface-variant">Secure your data with FaceID/TouchID</p>
+</div>
+</div>
+<div class="relative">
+<input checked="" class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-slot w-11 h-6 bg-surface-variant rounded-full transition-colors border border-glass-stroke">
+<div class="toggle-dot absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform"></div>
+</div>
+</div>
+</label>
+<!-- Toggle 2 -->
+<label class="flex items-center justify-between glass-panel p-4 rounded-xl cursor-pointer hover:bg-surface-mid/40 transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+</div>
+<div>
+<p class="text-body-lg font-medium text-on-surface">Push Notifications</p>
+<p class="text-label-md font-label-md text-on-surface-variant">Daily summaries &amp; budget alerts</p>
+</div>
+</div>
+<div class="relative">
+<input class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-slot w-11 h-6 bg-surface-variant rounded-full transition-colors border border-glass-stroke">
+<div class="toggle-dot absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform"></div>
+</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-4">
+<button class="w-full bg-primary text-on-primary font-headline-md text-headline-md py-4 rounded-xl transition-all duration-200 active:scale-95 shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_30px_rgba(45,212,191,0.5)]" id="get-started">
+                    Get Started
+                </button>
+<p class="text-center mt-4 text-label-md font-label-md text-on-surface-variant/60">
+                    By clicking "Get Started", you agree to our local data storage policy.
+                </p>
+</div>
+</div>
+<!-- Footer Visual (Optional/Atmospheric) -->
+<div class="mt-12 opacity-30 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">lock</span>
+<span class="text-label-md font-label-md">End-to-End Encryption Enabled</span>
+</div>
+</main>
+<!-- Bottom Navigation Shell Suppressed (Transactional/Onboarding Flow) -->
+<script>
+        // Micro-interactions for toggles
+        document.querySelectorAll('.toggle-checkbox').forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const isChecked = this.checked;
+                // Add a haptic-like effect or subtle scale
+                const parent = this.closest('.glass-panel');
+                parent.classList.add('scale-[0.98]');
+                setTimeout(() => parent.classList.remove('scale-[0.98]'), 150);
+            });
+        });
+
+        // Get Started Action
+        const startBtn = document.getElementById('get-started');
+        startBtn.addEventListener('click', () => {
+            // Ripple or confetti effect would go here
+            startBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span>';
+            setTimeout(() => {
+                startBtn.innerHTML = 'Welcome';
+                // Transition to Dashboard logic
+            }, 800);
+        });
+
+        // Simple floating background movement logic
+        document.addEventListener('mousemove', (e) => {
+            const blobs = document.querySelectorAll('.bg-primary\\/10, .bg-secondary\\/10');
+            const x = (window.innerWidth - e.pageX * 2) / 100;
+            const y = (window.innerHeight - e.pageY * 2) / 100;
+            blobs.forEach(blob => {
+                blob.style.transform = `translateX(${x}px) translateY(${y}px)`;
+            });
+        });
+    </script>
+</body></html>

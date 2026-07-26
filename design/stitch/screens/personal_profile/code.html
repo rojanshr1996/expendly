@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#242b2a",
+                    "tertiary-fixed-dim": "#ffb875",
+                    "tertiary": "#ffd1aa",
+                    "error-container": "#93000a",
+                    "surface-container-highest": "#2f3634",
+                    "surface": "#0e1513",
+                    "secondary-container": "#3131c0",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed": "#2d1600",
+                    "inverse-surface": "#dde4e1",
+                    "surface-variant": "#2f3634",
+                    "on-surface-variant": "#bacac5",
+                    "on-tertiary-fixed-variant": "#6b3b00",
+                    "semantic-green": "#34D399",
+                    "on-secondary-container": "#b0b2ff",
+                    "surface-bright": "#333b39",
+                    "on-tertiary-container": "#744000",
+                    "secondary": "#c0c1ff",
+                    "on-primary": "#003731",
+                    "surface-tint": "#3cddc7",
+                    "on-primary-fixed": "#00201c",
+                    "inverse-primary": "#006b5f",
+                    "surface-low": "#1E293B",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "on-primary-fixed-variant": "#005047",
+                    "surface-dim": "#0e1513",
+                    "glass-stroke": "rgba(255, 255, 255, 0.1)",
+                    "outline-variant": "#3c4a46",
+                    "primary-fixed-dim": "#3cddc7",
+                    "surface-container-lowest": "#09100e",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-fixed": "#07006c",
+                    "on-primary-container": "#00574d",
+                    "primary-container": "#2dd4bf",
+                    "primary-fixed": "#62fae3",
+                    "error": "#ffb4ab",
+                    "tertiary-container": "#ffac5a",
+                    "on-tertiary": "#4b2800",
+                    "on-surface": "#dde4e1",
+                    "surface-container-low": "#161d1b",
+                    "semantic-red": "#FB7185",
+                    "on-background": "#dde4e1",
+                    "surface-mid": "#334155",
+                    "secondary-fixed": "#e1e0ff",
+                    "background": "#0e1513",
+                    "outline": "#859490",
+                    "inverse-on-surface": "#2b3230",
+                    "surface-lowest": "#0F172A",
+                    "surface-container": "#1a211f",
+                    "on-secondary": "#1000a9",
+                    "tertiary-fixed": "#ffdcc0",
+                    "primary": "#57f1db"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-tight": "4px",
+                    "inner-component": "12px",
+                    "container-padding": "24px",
+                    "base": "8px",
+                    "gutter-md": "16px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "label-md": ["JetBrains Mono"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.04em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0e1513;
+            color: #dde4e1;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass-card {
+            background: #1E293B;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .input-focus-glow:focus-within {
+            border-color: #57f1db;
+            box-shadow: 0 0 12px rgba(87, 241, 219, 0.2);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-24">
+<!-- Top AppBar (Back & Context) -->
+<header class="sticky top-0 w-full z-50 bg-surface/60 backdrop-blur-md border-b border-glass-stroke flex justify-between items-center px-container-padding py-base">
+<div class="flex items-center gap-4">
+<button class="hover:opacity-80 transition-opacity p-2 -ml-2 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Personal Profile</h1>
+</div>
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
+</button>
+</header>
+<main class="max-w-xl mx-auto px-container-padding mt-8">
+<!-- Profile Avatar Section -->
+<div class="flex flex-col items-center mb-10">
+<div class="relative group">
+<div class="w-32 h-32 rounded-full border-2 border-primary p-1 overflow-hidden transition-transform duration-300 group-hover:scale-105">
+<div class="w-full h-full rounded-full bg-cover bg-center" data-alt="A professional and sleek portrait of a young business executive with a neutral expression, set against a dark, moody studio background with subtle teal rim lighting. The style is modern corporate photography, emphasizing high-end clarity, cinematic depth of field, and a sophisticated financial professional aesthetic. The lighting is soft but directional, highlighting sharp facial features and professional attire." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDDFOvfx-BV54qsv5Z66SL4rQ983EWl5c4X1nxYh7agpIDt9bGVmS0x9HJfZD4NGGcgyCsibZVPIE32y5pOCNN8Pu68JegfzsAn4E_88xBTRohrDn19dMkAR9FvqOy7zYIhhmbhcpQxEO0FAltZRyMFVQvaNbjCZfqet1KomjEnxWVGsM0v6IxaHgYfvDKmfQlajmrkyMomFr5iegCLlcQcSSEK77bPOy2g7Hzv4vZsXvZPXU1cmuSUrVL_zUtOrk3KeSTxgVy1XfP8')">
+</div>
+</div>
+<button class="absolute bottom-0 right-0 bg-primary text-on-primary p-2 rounded-full shadow-lg active:scale-90 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">edit</span>
+</button>
+</div>
+<p class="mt-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Account ID: LDGR-8829</p>
+</div>
+<!-- Settings Form -->
+<form class="space-y-gutter-md">
+<!-- Full Name -->
+<div class="space-y-base">
+<label class="font-label-md text-label-md text-primary uppercase tracking-wider block ml-1">Full Name</label>
+<div class="glass-card rounded-xl px-4 py-3 flex items-center gap-3 input-focus-glow transition-all duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">person</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-body-lg font-body-lg text-on-surface placeholder-on-surface-variant/40" placeholder="Your name" type="text" value="Julian Sterling"/>
+</div>
+</div>
+<!-- Email Address -->
+<div class="space-y-base">
+<label class="font-label-md text-label-md text-primary uppercase tracking-wider block ml-1">Email Address</label>
+<div class="glass-card rounded-xl px-4 py-3 flex items-center gap-3 input-focus-glow transition-all duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">mail</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-body-lg font-body-lg text-on-surface placeholder-on-surface-variant/40" placeholder="email@example.com" type="email" value="j.sterling@ledger.app"/>
+</div>
+</div>
+<!-- Bio / Description -->
+<div class="space-y-base">
+<label class="font-label-md text-label-md text-primary uppercase tracking-wider block ml-1">Professional Bio</label>
+<div class="glass-card rounded-xl px-4 py-3 input-focus-glow transition-all duration-200">
+<textarea class="bg-transparent border-none focus:ring-0 w-full text-body-lg font-body-lg text-on-surface placeholder-on-surface-variant/40 resize-none" placeholder="Briefly describe your financial focus..." rows="4">Senior Portfolio Analyst and long-term value investor. Managing multi-asset ledger with a focus on risk mitigation and liquid growth. Lover of clean data and minimalist workflows.</textarea>
+</div>
+</div>
+<!-- Privacy Toggle (Visual Garnish) -->
+<div class="flex items-center justify-between p-4 glass-card rounded-xl mt-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant">visibility_off</span>
+<div>
+<p class="text-body-md font-body-md text-on-surface">Private Profile</p>
+<p class="text-label-md font-label-md text-on-surface-variant">Only you can see your identity</p>
+</div>
+</div>
+<div class="w-12 h-6 bg-primary-container rounded-full relative cursor-pointer active:scale-95 transition-transform">
+<div class="absolute right-1 top-1 w-4 h-4 bg-on-primary-container rounded-full"></div>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-8">
+<button class="w-full bg-primary text-on-primary py-4 rounded-xl font-headline-md text-headline-md font-bold shadow-xl shadow-primary/10 hover:opacity-90 active:scale-95 transition-all duration-200" type="button">
+                    Save Changes
+                </button>
+<button class="w-full mt-4 border border-glass-stroke py-3 rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-variant/20 transition-colors" type="button">
+                    Discard Changes
+                </button>
+</div>
+</form>
+<!-- Danger Zone -->
+<div class="mt-12 pt-8 border-t border-glass-stroke">
+<h3 class="font-label-md text-label-md text-semantic-red uppercase tracking-widest mb-4">Security Zone</h3>
+<button class="flex items-center gap-3 text-semantic-red/80 hover:text-semantic-red transition-colors active:scale-98">
+<span class="material-symbols-outlined">delete_forever</span>
+<span class="font-body-md font-body-md">Deactivate Account</span>
+</button>
+</div>
+</main>
+<!-- Bottom Navigation Shell (Suppressed context for Transactional/Settings pages but included as per JSON structure if needed, choosing to hide as per "Suppression" rule but maintaining for layout example) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-surface/60 backdrop-blur-md border-t border-glass-stroke md:hidden">
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/80 transition-colors">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/80 transition-colors">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Insights</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/80 transition-colors">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Wallets</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary font-bold transition-all duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</div>
+</nav>
+<script>
+        // Micro-interaction for input fields
+        document.querySelectorAll('input, textarea').forEach(element => {
+            element.addEventListener('focus', () => {
+                element.parentElement.classList.add('scale-[1.01]');
+            });
+            element.addEventListener('blur', () => {
+                element.parentElement.classList.remove('scale-[1.01]');
+            });
+        });
+
+        // Toggle simulation
+        const toggle = document.querySelector('.bg-primary-container');
+        if(toggle) {
+            toggle.addEventListener('click', () => {
+                const dot = toggle.querySelector('div');
+                if(dot.classList.contains('right-1')) {
+                    dot.classList.remove('right-1');
+                    dot.classList.add('left-1');
+                    toggle.classList.replace('bg-primary-container', 'bg-surface-mid');
+                } else {
+                    dot.classList.remove('left-1');
+                    dot.classList.add('right-1');
+                    toggle.classList.replace('bg-surface-mid', 'bg-primary-container');
+                }
+            });
+        }
+    </script>
+</body></html>

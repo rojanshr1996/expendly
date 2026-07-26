@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Transaction Details | WealthFlow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#2f3634",
+                    "background": "#0e1513",
+                    "surface-low": "#1E293B",
+                    "on-primary-container": "#00574d",
+                    "primary-fixed": "#62fae3",
+                    "tertiary": "#ffd1aa",
+                    "outline-variant": "#3c4a46",
+                    "primary-container": "#2dd4bf",
+                    "on-error-container": "#ffdad6",
+                    "on-error": "#690005",
+                    "semantic-green": "#34D399",
+                    "secondary-fixed": "#e1e0ff",
+                    "primary-fixed-dim": "#3cddc7",
+                    "on-secondary-fixed": "#07006c",
+                    "surface-container": "#1a211f",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "surface-container-lowest": "#09100e",
+                    "surface-mid": "#334155",
+                    "outline": "#859490",
+                    "on-tertiary-fixed-variant": "#6b3b00",
+                    "tertiary-fixed": "#ffdcc0",
+                    "secondary": "#c0c1ff",
+                    "on-primary": "#003731",
+                    "on-secondary": "#1000a9",
+                    "secondary-container": "#3131c0",
+                    "on-surface-variant": "#bacac5",
+                    "surface-container-highest": "#2f3634",
+                    "surface-lowest": "#0F172A",
+                    "inverse-on-surface": "#2b3230",
+                    "inverse-surface": "#dde4e1",
+                    "on-tertiary-fixed": "#2d1600",
+                    "surface-bright": "#333b39",
+                    "semantic-red": "#FB7185",
+                    "on-tertiary": "#4b2800",
+                    "surface-tint": "#3cddc7",
+                    "tertiary-fixed-dim": "#ffb875",
+                    "on-background": "#dde4e1",
+                    "on-tertiary-container": "#744000",
+                    "surface-dim": "#0e1513",
+                    "surface": "#0e1513",
+                    "glass-stroke": "rgba(255, 255, 255, 0.1)",
+                    "on-primary-fixed-variant": "#005047",
+                    "on-surface": "#dde4e1",
+                    "inverse-primary": "#006b5f",
+                    "on-primary-fixed": "#00201c",
+                    "surface-container-high": "#242b2a",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "error-container": "#93000a",
+                    "on-secondary-container": "#b0b2ff",
+                    "primary": "#57f1db",
+                    "error": "#ffb4ab",
+                    "surface-container-low": "#161d1b",
+                    "tertiary-container": "#ffac5a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "inner-component": "12px",
+                    "container-padding": "24px",
+                    "gutter-md": "16px",
+                    "stack-tight": "4px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Hanken Grotesk"],
+                    "label-md": ["JetBrains Mono"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0e1513;
+            color: #dde4e1;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .transaction-glow {
+            box-shadow: 0 0 40px -10px rgba(87, 241, 219, 0.15);
+        }
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/60 backdrop-blur-xl border-b border-glass-stroke flex justify-between items-center px-container-padding h-16">
+<div class="flex items-center gap-3">
+<button class="active:scale-95 transition-transform duration-200 text-on-surface-variant hover:opacity-80">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">WealthFlow</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant hover:opacity-80 cursor-pointer active:scale-95 transition-transform">share</span>
+<div class="w-8 h-8 rounded-full bg-surface-mid overflow-hidden border border-glass-stroke">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a person with clean studio lighting, set against a dark, minimalist background. The style is modern corporate with high contrast and a subtle teal color cast to match a fintech brand identity. The person is looking directly at the camera with a neutral, confident expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArjxR2dwVsnyepTEx1IulyLraG-bNNgXLKeYJ3ec4vuE96lXmGiIjGoHzE7H-MQR32cVE-1Do-5Mdkio80GDR4DEN9BXzkm6VI7C2A4xCcFIdBXc7iaxsn9xeMnCihrymAz-HhPdWv7HVofiRWWFL_BViWhIMozH7TA4ra8Y83GS0fmFEbeLNAitdS-AepO4e7Bg0RPceIg6_LyQnsW-Vs6rNuICDR0I6uP5icaqY1uxEyAJ42_rAKGmF83WWt3t4hNUy7NG__qRfU"/>
+</div>
+</div>
+</header>
+<main class="pt-24 px-container-padding max-w-2xl mx-auto">
+<!-- Transaction Header Section -->
+<section class="text-center mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+<div class="inline-flex p-4 rounded-full bg-surface-container mb-4 transaction-glow border border-glass-stroke">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-semantic-red mb-1">-$45.00</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Dining &amp; Drinks</p>
+</section>
+<!-- Details Grid -->
+<div class="space-y-gutter-md">
+<!-- Information Bento Card -->
+<div class="glass-panel rounded-xl p-container-padding space-y-base">
+<div class="flex justify-between items-center py-2 border-b border-glass-stroke/5">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Date</span>
+<span class="font-body-md text-body-md text-on-surface">Oct 24, 2023</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-glass-stroke/5">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Time</span>
+<span class="font-body-md text-body-md text-on-surface">07:45 PM</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-glass-stroke/5">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Category</span>
+<span class="font-body-md text-body-md text-on-surface">Dining &amp; Drinks</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-glass-stroke/5">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Subcategory</span>
+<span class="font-body-md text-body-md text-on-surface">Bistro &amp; Grill</span>
+</div>
+<div class="pt-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block mb-2">Note</span>
+<p class="font-body-md text-body-md text-on-surface italic">"Business dinner with the lead architect for the Azure project. Great ambiance."</p>
+</div>
+</div>
+<!-- Receipt Section -->
+<div class="glass-panel rounded-xl p-container-padding">
+<div class="flex justify-between items-center mb-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Receipt</span>
+<button class="text-primary font-label-md text-label-md hover:opacity-80 transition-opacity flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">fullscreen</span>
+                        View Full
+                    </button>
+</div>
+<div class="relative group rounded-lg overflow-hidden border border-glass-stroke aspect-[3/4] cursor-pointer">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="A high-resolution photograph of a paper restaurant receipt lying on a dark slate surface. The receipt shows detailed line items and a total amount, with clear typography and some parts slightly out of focus. The lighting is moody and dramatic, with a subtle emerald green tint reflecting off the edges of the paper, consistent with a high-end fintech app aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDtMmaqFr1Od5YaXJ0bNaZZIRRdlsY4XFohbefNUT3aI7ifxcPxWOHC2_YnYeLVPCsxXR3on9LuSQVxqPaR_NL9C7bEbNV5UZWXZyVEvCfTdMZtq51APaLAmeegIplfr6HeAnSLBGqttTKDxhU1tFAcO_x82LWFjKwliqXUujHlvoYRrJKzPXV2KB6JLsWgSNEhtkGAw4jsz2pZz-q-INKxywFU_hD1VenfPMxduG_NZq7EjlV6KZw813AEgMsO3DSdoXPPDS5-bKSv')"></div>
+<div class="absolute inset-0 bg-background/20 group-hover:bg-transparent transition-colors duration-300"></div>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="mt-12 grid grid-cols-2 gap-gutter-md">
+<button class="flex items-center justify-center gap-2 bg-surface-mid border border-glass-stroke text-primary py-4 rounded-xl font-headline-md text-body-lg active:scale-95 transition-all hover:bg-surface-mid/80">
+<span class="material-symbols-outlined">edit</span>
+                Edit
+            </button>
+<button class="flex items-center justify-center gap-2 bg-semantic-red/10 border border-semantic-red/20 text-semantic-red py-4 rounded-xl font-headline-md text-body-lg active:scale-95 transition-all hover:bg-semantic-red/20">
+<span class="material-symbols-outlined">delete</span>
+                Delete
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 pb-safe bg-background/60 backdrop-blur-xl border-t border-glass-stroke flex justify-around items-center h-20 px-4">
+<div class="flex flex-col items-center justify-center text-primary font-bold transition-all duration-200 active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-colors active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-md text-label-md">Activity</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-colors active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Budgets</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-colors active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</div>
+</nav>
+<script>
+        // Micro-interactions and subtle reveal effects
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.glass-panel');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 + (index * 150));
+            });
+
+            // Interactive effect for the receipt
+            const receipt = document.querySelector('.group');
+            receipt.addEventListener('mousemove', (e) => {
+                const { left, top, width, height } = receipt.getBoundingClientRect();
+                const x = (e.clientX - left) / width - 0.5;
+                const y = (e.clientY - top) / height - 0.5;
+                receipt.style.transform = `perspective(1000px) rotateX(${y * -5}deg) rotateY(${x * 5}deg)`;
+            });
+
+            receipt.addEventListener('mouseleave', () => {
+                receipt.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+            });
+        });
+    </script>
+</body></html>

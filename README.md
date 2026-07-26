@@ -1,0 +1,142 @@
+# 💰 Expendly
+
+**Expendly** is a personal finance management mobile application built with Flutter, featuring an offline-first architecture, clean layered code structure, and a modern fiscal design system.
+
+---
+
+## 🌟 Key Features
+
+- 📱 **Modern Fiscal Core Design**: Custom theme extensions, tailored HSL color palettes, and responsive typography scaling using `flutter_screenutil`.
+- ⚡ **Offline-First Architecture**: High performance with zero runtime network dependencies for essential assets and font rendering.
+- 🔀 **Multi-Flavor Support**: Built-in support for `dev`, `qa`, and `prod` environment configurations with flavor-specific app icons and branding banners.
+- 🏗️ **Clean Architecture & BLoC**: Decoupled presentation, domain, and data layers powered by `flutter_bloc`.
+- 💉 **Dependency Injection**: Automated service locator setup using `get_it` and `injectable`.
+- 🧭 **Declarative Routing**: Strongly typed URL and deep-link navigation using `auto_route`.
+
+---
+
+## 🛠️ Technology Stack
+
+| Component | Library / Framework |
+| :--- | :--- |
+| **Framework** | [Flutter](https://flutter.dev/) (SDK `>=3.0.0 <4.0.0`) |
+| **State Management** | [flutter_bloc](https://pub.dev/packages/flutter_bloc) |
+| **Dependency Injection** | [get_it](https://pub.dev/packages/get_it) & [injectable](https://pub.dev/packages/injectable) |
+| **Navigation & Routing** | [auto_route](https://pub.dev/packages/auto_route) |
+| **Typography & Fonts** | [google_fonts](https://pub.dev/packages/google_fonts) (*bundled offline assets*) |
+| **Screen Adaptation** | [flutter_screenutil](https://pub.dev/packages/flutter_screenutil) |
+| **Script Automation** | [rps](https://pub.dev/packages/rps) (*Run Pub Scripts*) |
+| **Icon Generation** | [flutter_launcher_icons](https://pub.dev/packages/flutter_launcher_icons) |
+
+---
+
+## 📁 Project Structure
+
+```text
+lib/
+├── core/
+│   ├── config/          # Environment flavor configuration (dev, qa, prod)
+│   ├── di/              # Dependency injection setup (GetIt & Injectable)
+│   ├── error/           # Core failures & exception handling
+│   ├── extensions/      # BuildContext extensions (l10n, theme, colors)
+│   ├── router/          # AutoRoute configuration & generated routes
+│   ├── theme/           # Design tokens (Colors, Typography, Spacing, Radius)
+│   └── usecase/         # Abstract UseCase contracts
+├── features/
+│   ├── splash/          # Animated splash screen & initial route guard
+│   └── dashboard/       # Financial summary, metric tiles, & transaction list
+├── l10n/                # Internationalization & localization delegates
+├── main_dev.dart        # Development flavor entrypoint
+├── main_qa.dart         # QA flavor entrypoint
+├── main_prod.dart       # Production flavor entrypoint
+└── main.dart            # Shared bootstrap initializer
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (version `>= 3.0.0`)
+- Android Studio / Xcode for mobile emulators & device deployments
+
+### Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/rojanshr1996/expendly.git
+   cd expendly
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   flutter pub get
+   ```
+
+3. **Generate code** (*AutoRoute & Injectable*):
+   ```bash
+   dart run build_runner build --delete-conflicting-outputs
+   ```
+   *or using the script runner:*
+   ```bash
+   dart run rps generator build
+   ```
+
+---
+
+## 🎛️ Running Environment Flavors
+
+Expendly supports three separate environment flavors:
+
+### 🛠️ Development (`dev`)
+```bash
+flutter run -t lib/main_dev.dart --flavor dev
+```
+
+### 🧪 QA (`qa`)
+```bash
+flutter run -t lib/main_qa.dart --flavor qa
+```
+
+### 🚀 Production (`prod`)
+```bash
+flutter run -t lib/main_prod.dart --flavor prod
+```
+
+---
+
+## 📜 Script Commands (`rps`)
+
+This project uses [`rps`](https://pub.dev/packages/rps) for script execution. Available scripts in `pubspec.yaml`:
+
+| Command | Action |
+| :--- | :--- |
+| `dart run rps generator build` | Runs `build_runner` to generate code for AutoRoute & Injectable. |
+| `dart run rps buildapk` | Builds a production-ready Android release APK (`arm64`). |
+| `dart run rps buildios` | Builds an iOS release IPA. |
+| `dart run rps reset` | Cleans the build directory, gets dependencies, and regenerates code. |
+| `dart run rps sonarTest` | Runs flutter tests with coverage output. |
+
+---
+
+## 🎨 Launcher Icons Configuration
+
+App launcher icons are generated per flavor using `flutter_launcher_icons`:
+
+```bash
+# Generate dev icons
+dart run flutter_launcher_icons -f flutter_launcher_icons-dev.yaml
+
+# Generate QA icons
+dart run flutter_launcher_icons -f flutter_launcher_icons-qa.yaml
+
+# Generate Prod icons
+dart run flutter_launcher_icons -f flutter_launcher_icons-prod.yaml
+```
+
+---
+
+## 📄 License
+
+This project is proprietary and intended for personal finance management. All rights reserved.
