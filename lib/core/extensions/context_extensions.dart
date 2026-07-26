@@ -1,8 +1,8 @@
 import 'package:expendly/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
-import '../theme/app_custom_colors.dart';
-import '../theme/app_custom_typography.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
 
 /// Context extensions for localization, theme, colorScheme, textTheme, and design extensions.
 extension BuildContextExtension on BuildContext {
@@ -76,4 +76,13 @@ class _FallbackLocalizations implements AppLocalizations {
 
   @override
   String get yesterday => 'Yesterday';
+
+  @override
+  String get modernFiscalCore => 'MODERN FISCAL CORE';
+
+  @override
+  String errorMessage(String message) => 'Error: $message';
+
+  @override
+  String get jul22Date => 'Jul 22, 2026';
 }

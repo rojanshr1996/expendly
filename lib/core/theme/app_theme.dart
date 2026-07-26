@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'app_colors.dart';
-import 'app_custom_colors.dart';
-import 'app_custom_typography.dart';
 import 'app_radius.dart';
 import 'app_typography.dart';
 
