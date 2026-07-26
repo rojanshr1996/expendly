@@ -55,4 +55,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yesterday => 'Yesterday';
+
+  @override
+  String get modernFiscalCore => 'MODERN FISCAL CORE';
+
+  @override
+  String errorMessage(String message) {
+    return 'Error: $message';
+  }
+
+  @override
+  String get jul22Date => 'Jul 22, 2026';
 }

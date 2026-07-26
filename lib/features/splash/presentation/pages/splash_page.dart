@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:expendly/core/extensions/padding_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/gen/assets.gen.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/theme/app_spacing.dart';
 
@@ -64,6 +66,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colorScheme = context.colorScheme;
     final textTheme = context.textTheme;
     final customColors = context.customColors;
@@ -85,7 +88,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                     Container(
                       width: 140.w,
                       height: 140.w,
-                      padding: EdgeInsets.all(16.w),
+                      // padding: allLarge,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: customColors.surfaceLow,
@@ -98,14 +101,15 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                           ),
                         ],
                       ),
-                      child: Image.asset(
-                        'assets/images/expendly_logo.png',
-                        fit: BoxFit.contain,
-                      ),
+                      child: Assets.images.expendlyLogo
+                          .image(
+                            fit: BoxFit.contain,
+                          )
+                          .padAll(24.w),
                     ),
                     AppSpacing.gapContainer,
                     Text(
-                      'Expendly',
+                      l10n.appName,
                       style: (textTheme.headlineLarge ?? const TextStyle()).copyWith(
                         color: colorScheme.primary,
                         letterSpacing: -0.5,
@@ -113,7 +117,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                     ),
                     AppSpacing.gapTight,
                     Text(
-                      'MODERN FISCAL CORE',
+                      l10n.modernFiscalCore,
                       style: customTypography.labelMediumMono.copyWith(
                         color: colorScheme.outline,
                         letterSpacing: 2.0,

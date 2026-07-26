@@ -189,6 +189,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yesterday'**
   String get yesterday;
+
+  /// Application tagline displayed on splash screen
+  ///
+  /// In en, this message translates to:
+  /// **'MODERN FISCAL CORE'**
+  String get modernFiscalCore;
+
+  /// Error text displayed when an operation fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {message}'**
+  String errorMessage(String message);
+
+  /// Sample transaction date
+  ///
+  /// In en, this message translates to:
+  /// **'Jul 22, 2026'**
+  String get jul22Date;
 }
 
 class _AppLocalizationsDelegate
