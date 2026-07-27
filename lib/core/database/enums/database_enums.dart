@@ -1,6 +1,7 @@
 enum TransactionType {
   expense,
   income,
+  transfer,
 }
 
 enum BudgetPeriod {

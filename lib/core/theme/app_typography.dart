@@ -46,6 +46,15 @@ abstract class AppTypography {
         color: AppColors.onSurface,
       );
 
+  /// Body Large Bold (16px, Bold 700)
+  static TextStyle get bodyLargeBold => GoogleFonts.hankenGrotesk(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w700,
+        height: 24 / 16,
+        letterSpacing: -0.16,
+        color: AppColors.onSurface,
+      );
+
   /// Body Medium (14px, Regular 400, Line Height 20px, Tracking 0.0em)
   static TextStyle get bodyMedium => GoogleFonts.hankenGrotesk(
         fontSize: 14.sp,
@@ -93,6 +102,20 @@ abstract class AppTypography {
         color: AppColors.onSurface,
       );
 
+  /// Headline Medium Monospaced Bold (20px, Bold - JetBrains Mono)
+  static TextStyle get headlineMediumMonoBold => GoogleFonts.jetBrainsMono(
+        fontSize: 20.sp,
+        fontWeight: FontWeight.w700,
+        color: AppColors.onSurface,
+      );
+
+  /// Headline Large Monospaced Bold (32px, Bold - JetBrains Mono)
+  static TextStyle get headlineLargeMonoBold => GoogleFonts.jetBrainsMono(
+        fontSize: 32.sp,
+        fontWeight: FontWeight.w700,
+        color: AppColors.onSurface,
+      );
+
   /// Build complete ThemeData TextTheme
   static TextTheme buildTextTheme() {
     return TextTheme(
@@ -121,12 +144,22 @@ class AppCustomTypography extends ThemeExtension<AppCustomTypography> {
   final TextStyle labelMediumMono;
   final TextStyle amountDisplay;
   final TextStyle amountLarge;
+  final TextStyle bodyLarge;
+  final TextStyle bodyLargeBold;
+  final TextStyle bodyMedium;
+  final TextStyle headlineMediumMonoBold;
+  final TextStyle headlineLargeMonoBold;
 
   const AppCustomTypography({
     required this.headlineLargeMobile,
     required this.labelMediumMono,
     required this.amountDisplay,
     required this.amountLarge,
+    required this.bodyLarge,
+    required this.bodyLargeBold,
+    required this.bodyMedium,
+    required this.headlineMediumMonoBold,
+    required this.headlineLargeMonoBold,
   });
 
   static final dark = AppCustomTypography(
@@ -134,6 +167,11 @@ class AppCustomTypography extends ThemeExtension<AppCustomTypography> {
     labelMediumMono: AppTypography.labelMediumMono,
     amountDisplay: AppTypography.amountDisplay,
     amountLarge: AppTypography.amountLarge,
+    bodyLarge: AppTypography.bodyLarge,
+    bodyLargeBold: AppTypography.bodyLargeBold,
+    bodyMedium: AppTypography.bodyMedium,
+    headlineMediumMonoBold: AppTypography.headlineMediumMonoBold,
+    headlineLargeMonoBold: AppTypography.headlineLargeMonoBold,
   );
 
   @override
@@ -142,12 +180,24 @@ class AppCustomTypography extends ThemeExtension<AppCustomTypography> {
     TextStyle? labelMediumMono,
     TextStyle? amountDisplay,
     TextStyle? amountLarge,
+    TextStyle? bodyLarge,
+    TextStyle? bodyLargeBold,
+    TextStyle? bodyMedium,
+    TextStyle? headlineMediumMonoBold,
+    TextStyle? headlineLargeMonoBold,
   }) {
     return AppCustomTypography(
       headlineLargeMobile: headlineLargeMobile ?? this.headlineLargeMobile,
       labelMediumMono: labelMediumMono ?? this.labelMediumMono,
       amountDisplay: amountDisplay ?? this.amountDisplay,
       amountLarge: amountLarge ?? this.amountLarge,
+      bodyLarge: bodyLarge ?? this.bodyLarge,
+      bodyLargeBold: bodyLargeBold ?? this.bodyLargeBold,
+      bodyMedium: bodyMedium ?? this.bodyMedium,
+      headlineMediumMonoBold:
+          headlineMediumMonoBold ?? this.headlineMediumMonoBold,
+      headlineLargeMonoBold:
+          headlineLargeMonoBold ?? this.headlineLargeMonoBold,
     );
   }
 
@@ -162,6 +212,13 @@ class AppCustomTypography extends ThemeExtension<AppCustomTypography> {
           TextStyle.lerp(labelMediumMono, other.labelMediumMono, t)!,
       amountDisplay: TextStyle.lerp(amountDisplay, other.amountDisplay, t)!,
       amountLarge: TextStyle.lerp(amountLarge, other.amountLarge, t)!,
+      bodyLarge: TextStyle.lerp(bodyLarge, other.bodyLarge, t)!,
+      bodyLargeBold: TextStyle.lerp(bodyLargeBold, other.bodyLargeBold, t)!,
+      bodyMedium: TextStyle.lerp(bodyMedium, other.bodyMedium, t)!,
+      headlineMediumMonoBold: TextStyle.lerp(
+          headlineMediumMonoBold, other.headlineMediumMonoBold, t)!,
+      headlineLargeMonoBold: TextStyle.lerp(
+          headlineLargeMonoBold, other.headlineLargeMonoBold, t)!,
     );
   }
 }

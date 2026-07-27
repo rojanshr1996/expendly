@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 
 /// Top App Bar matching the Modern Fiscal Core glass header specs.
@@ -27,9 +26,9 @@ class DashboardHeader extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: AppColors.background.withAlpha((0.85 * 255).round()),
-        border: const Border(
-          bottom: BorderSide(color: AppColors.glassStroke, width: 1.0),
+        color: colorScheme.surface.withAlpha((0.85 * 255).round()),
+        border: Border(
+          bottom: BorderSide(color: colorScheme.outlineVariant, width: 1.0),
         ),
       ),
       child: SafeArea(
@@ -45,7 +44,7 @@ class DashboardHeader extends StatelessWidget {
                   height: 38.w,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.surfaceContainerHigh,
+                    color: colorScheme.surfaceContainerHigh,
                     border: Border.all(
                       color: colorScheme.primary.withAlpha((0.3 * 255).round()),
                       width: 1.5,
@@ -62,7 +61,7 @@ class DashboardHeader extends StatelessWidget {
                 horizontalMarginSmall,
 
                 Text(
-                  'Expendly',
+                  context.l10n.appName,
                   style: (textTheme.titleLarge ?? const TextStyle()).copyWith(
                     fontWeight: FontWeights.bold,
                     color: colorScheme.onSurface,
@@ -78,8 +77,8 @@ class DashboardHeader extends StatelessWidget {
                   builder: (context, isPrivacyMode, _) {
                     return IconButton(
                       tooltip: isPrivacyMode
-                          ? 'Show Balances'
-                          : 'Hide Balances (Privacy Mode)',
+                          ? context.l10n.showBalances
+                          : context.l10n.hideBalances,
                       icon: Icon(
                         isPrivacyMode
                             ? Icons.visibility_off_rounded
@@ -99,7 +98,7 @@ class DashboardHeader extends StatelessWidget {
 
                 // Settings Button
                 IconButton(
-                  tooltip: 'Settings',
+                  tooltip: context.l10n.settings,
                   icon: Icon(
                     Icons.settings_outlined,
                     color: colorScheme.onSurfaceVariant,

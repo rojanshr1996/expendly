@@ -1,5 +1,21 @@
 import 'package:equatable/equatable.dart';
 
+/// Represents daily aggregated income and expense for the cash flow chart.
+class DailyCashFlowPoint extends Equatable {
+  final int day; // Day of month (1..31)
+  final double income;
+  final double expense;
+
+  const DailyCashFlowPoint({
+    required this.day,
+    required this.income,
+    required this.expense,
+  });
+
+  @override
+  List<Object?> get props => [day, income, expense];
+}
+
 class DashboardTransactionItem extends Equatable {
   final int id;
   final String title;
@@ -62,6 +78,7 @@ class FinancialSummary extends Equatable {
   final DateTime periodEnd;
   final List<DashboardTransactionItem> recentTransactions;
   final List<DashboardCategoryShare> categoryBreakdowns;
+  final List<DailyCashFlowPoint> dailyCashFlow;
 
   const FinancialSummary({
     required this.totalBalance,
@@ -73,6 +90,7 @@ class FinancialSummary extends Equatable {
     required this.periodEnd,
     this.recentTransactions = const [],
     this.categoryBreakdowns = const [],
+    this.dailyCashFlow = const [],
   });
 
   @override
@@ -86,5 +104,6 @@ class FinancialSummary extends Equatable {
         periodEnd,
         recentTransactions,
         categoryBreakdowns,
+        dailyCashFlow,
       ];
 }

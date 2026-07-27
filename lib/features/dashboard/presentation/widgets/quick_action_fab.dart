@@ -188,9 +188,12 @@ class QuickActionFabState extends State<QuickActionFab> {
         ],
       ),
       child: FloatingActionButton(
-        onPressed: () => openSpeedDial(context),
+        onPressed: () {
+          HapticFeedback.heavyImpact();
+          widget.onAddExpense?.call();
+        },
         backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
+        foregroundColor: Colors.black,
         elevation: 0,
         child: Icon(Icons.add_rounded, size: 30.sp),
       ),

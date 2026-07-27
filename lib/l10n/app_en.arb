@@ -8,6 +8,38 @@
   "@totalBalance": {
     "description": "Header title for total balance overview"
   },
+  "overspent": "Overspent",
+  "@overspent": {
+    "description": "Label shown when net balance is negative"
+  },
+  "netPositive": "Positive",
+  "@netPositive": {
+    "description": "Label shown when net balance is positive"
+  },
+  "thisMonth": "This month",
+  "@thisMonth": {
+    "description": "Label for this month period on dashboard cards"
+  },
+  "netWorth": "NET WORTH",
+  "@netWorth": {
+    "description": "Header title for net worth"
+  },
+  "cashFlow": "CASH FLOW",
+  "@cashFlow": {
+    "description": "Header title for cash flow"
+  },
+  "monthlyBudget": "MONTHLY BUDGET",
+  "@monthlyBudget": {
+    "description": "Header title for monthly budget"
+  },
+  "cashFlowInsights": "CASH FLOW INSIGHTS",
+  "@cashFlowInsights": {
+    "description": "Header title for cash flow insights chart"
+  },
+  "netSavings": "NET SAVINGS",
+  "@netSavings": {
+    "description": "Header title for net savings"
+  },
   "income": "Income",
   "@income": {
     "description": "Label for financial income"
@@ -15,6 +47,14 @@
   "expenses": "Expenses",
   "@expenses": {
     "description": "Label for financial expenses"
+  },
+  "expense": "Expense",
+  "@expense": {
+    "description": "Label for expense"
+  },
+  "all": "All",
+  "@all": {
+    "description": "Generic all option label"
   },
   "addTransaction": "Add Transaction",
   "@addTransaction": {
@@ -332,7 +372,7 @@
   "@resetViaSecurityAnswer": {
     "description": "Option to reset PIN using security question"
   },
-  "selectQuestionToVerify": "Select security question to answer:",
+  "selectQuestionToVerify": "Select security question to verify:",
   "@selectQuestionToVerify": {
     "description": "Instruction label when resetting PIN via security question"
   },
@@ -388,5 +428,157 @@
   "jul22Date": "Jul 22, 2026",
   "@jul22Date": {
     "description": "Sample transaction date"
+  },
+  "overview": "Overview",
+  "@overview": {
+    "description": "Bottom nav item for overview"
+  },
+  "activity": "Activity",
+  "@activity": {
+    "description": "Bottom nav item for activity"
+  },
+  "budgets": "Budgets",
+  "@budgets": {
+    "description": "Bottom nav item for budgets"
+  },
+  "reports": "Reports",
+  "@reports": {
+    "description": "Bottom nav item for reports"
+  },
+  "logTransaction": "Log Transaction",
+  "@logTransaction": {
+    "description": "Title for logging a transaction"
+  },
+  "amountLabel": "AMOUNT",
+  "@amountLabel": {
+    "description": "Label for amount display"
+  },
+  "categoryLabel": "CATEGORY",
+  "@categoryLabel": {
+    "description": "Label for category selector"
+  },
+  "saveTransaction": "Save Transaction",
+  "@saveTransaction": {
+    "description": "Button to save transaction"
+  },
+  "searchCategoryHint": "Search by category or note...",
+  "@searchCategoryHint": {
+    "description": "Placeholder hint for searching transactions"
+  },
+  "noTransactionsFound": "No transactions found",
+  "@noTransactionsFound": {
+    "description": "Title for empty transactions state"
+  },
+  "noCategoriesFound": "No categories found",
+  "@noCategoriesFound": {
+    "description": "Empty state message when no categories match search"
+  },
+  "noTransactionsDesc": "Log a new expense or income to get started.",
+  "@noTransactionsDesc": {
+    "description": "Description for empty transactions state"
+  },
+  "noBudgetsSet": "No Budgets Set",
+  "@noBudgetsSet": {
+    "description": "Title for empty budgets state"
+  },
+  "noBudgetsDesc": "Set monthly limits for categories to manage your spending smartly.",
+  "@noBudgetsDesc": {
+    "description": "Description for empty budgets state"
+  },
+  "setFirstBudget": "Set First Budget",
+  "@setFirstBudget": {
+    "description": "Action button for setting first budget"
+  },
+  "setMonthlyBudget": "Set Monthly Budget",
+  "@setMonthlyBudget": {
+    "description": "Title for setting monthly budget modal"
+  },
+  "targetMonthlyAmount": "TARGET MONTHLY AMOUNT",
+  "@targetMonthlyAmount": {
+    "description": "Label for target monthly amount input"
+  },
+  "overallMonthlyLimit": "Overall Monthly Limit",
+  "@overallMonthlyLimit": {
+    "description": "Label for overall monthly limit chip"
+  },
+  "saveBudget": "Save Budget",
+  "@saveBudget": {
+    "description": "Button text to save budget"
+  },
+  "enterTargetAmountError": "Please enter a valid target amount",
+  "@enterTargetAmountError": {
+    "description": "Error message when budget target amount is invalid"
+  },
+  "netSavingsThisPeriod": "NET SAVINGS THIS PERIOD",
+  "@netSavingsThisPeriod": {
+    "description": "Label for net savings in reports"
+  },
+  "expenseBreakdownByCategory": "EXPENSE BREAKDOWN BY CATEGORY",
+  "@expenseBreakdownByCategory": {
+    "description": "Section header for expense breakdown by category"
+  },
+  "savingsRate": "Savings Rate",
+  "@savingsRate": {
+    "description": "Label for savings rate stat"
+  },
+  "noFinancialReportsYet": "No Financial Reports Yet",
+  "@noFinancialReportsYet": {
+    "description": "Title for empty reports state"
+  },
+  "noReportsDesc": "Start logging transactions to view detailed spending breakdowns and cash flow insights.",
+  "@noReportsDesc": {
+    "description": "Description for empty reports state"
+  },
+  "welcomeFinancialJourney": "Welcome to your financial journey.",
+  "@welcomeFinancialJourney": {
+    "description": "Welcome header on empty dashboard view"
+  },
+  "emptyDashboardDesc": "You haven''t added any transactions yet. Let''s start tracking your wealth today.",
+  "@emptyDashboardDesc": {
+    "description": "Empty state subtitle on dashboard view"
+  },
+  "addFirstTransaction": "Add Your First Transaction",
+  "@addFirstTransaction": {
+    "description": "CTA button to add first transaction"
+  },
+  "showBalances": "Show Balances",
+  "@showBalances": {
+    "description": "Tooltip to show balances"
+  },
+  "hideBalances": "Hide Balances (Privacy Mode)",
+  "@hideBalances": {
+    "description": "Tooltip to hide balances"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Tooltip for settings button"
+  },
+  "remainingBudget": "REMAINING BUDGET",
+  "@remainingBudget": {
+    "description": "Label for remaining monthly budget"
+  },
+  "selectCategoryError": "Please select a category",
+  "@selectCategoryError": {
+    "description": "Error text when category is not selected"
+  },
+  "enterAmountError": "Please enter a valid amount",
+  "@enterAmountError": {
+    "description": "Error text when transaction amount is zero or invalid"
+  },
+  "transfer": "Transfer",
+  "@transfer": {
+    "description": "Label for account transfer"
+  },
+  "transferFee": "Transfer Fee (Optional)",
+  "@transferFee": {
+    "description": "Label for transfer fee"
+  },
+  "fromAccount": "From Category / Account",
+  "@fromAccount": {
+    "description": "Label for source account in transfer"
+  },
+  "toAccount": "To Category / Account",
+  "@toAccount": {
+    "description": "Label for destination account in transfer"
   }
 }

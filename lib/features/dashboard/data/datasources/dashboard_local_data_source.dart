@@ -101,6 +101,35 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
       );
     });
 
+    // Compute daily cash flow for current month (grouped by day-of-month)
+    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+    final dailyIncome = List<double>.filled(daysInMonth + 1, 0.0);
+    final dailyExpense = List<double>.filled(daysInMonth + 1, 0.0);
+
+    for (final tx in allTransactions) {
+      final date = tx.timestamp;
+      if (date.year == now.year && date.month == now.month) {
+        final day = date.day;
+        final amount = tx.amount / 100.0;
+        if (tx.type == TransactionType.income) {
+          dailyIncome[day] += amount;
+        } else if (tx.type == TransactionType.expense) {
+          dailyExpense[day] += amount;
+        }
+      }
+    }
+
+    // Build list of DailyCashFlowPoint for days 1..today
+    final cashFlowPoints = <DailyCashFlowPoint>[];
+    final lastDay = now.day;
+    for (int d = 1; d <= lastDay; d++) {
+      cashFlowPoints.add(DailyCashFlowPoint(
+        day: d,
+        income: dailyIncome[d],
+        expense: dailyExpense[d],
+      ));
+    }
+
     return FinancialSummaryModel(
       totalBalance: totalBalance,
       totalIncome: totalIncome,
@@ -111,6 +140,7 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
       periodEnd: now,
       recentTransactions: recentItems,
       categoryBreakdowns: breakdowns,
+      dailyCashFlow: cashFlowPoints,
     );
   }
 }

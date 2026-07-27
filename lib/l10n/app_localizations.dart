@@ -106,6 +106,54 @@ abstract class AppLocalizations {
   /// **'TOTAL BALANCE'**
   String get totalBalance;
 
+  /// Label shown when net balance is negative
+  ///
+  /// In en, this message translates to:
+  /// **'Overspent'**
+  String get overspent;
+
+  /// Label shown when net balance is positive
+  ///
+  /// In en, this message translates to:
+  /// **'Positive'**
+  String get netPositive;
+
+  /// Label for this month period on dashboard cards
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get thisMonth;
+
+  /// Header title for net worth
+  ///
+  /// In en, this message translates to:
+  /// **'NET WORTH'**
+  String get netWorth;
+
+  /// Header title for cash flow
+  ///
+  /// In en, this message translates to:
+  /// **'CASH FLOW'**
+  String get cashFlow;
+
+  /// Header title for monthly budget
+  ///
+  /// In en, this message translates to:
+  /// **'MONTHLY BUDGET'**
+  String get monthlyBudget;
+
+  /// Header title for cash flow insights chart
+  ///
+  /// In en, this message translates to:
+  /// **'CASH FLOW INSIGHTS'**
+  String get cashFlowInsights;
+
+  /// Header title for net savings
+  ///
+  /// In en, this message translates to:
+  /// **'NET SAVINGS'**
+  String get netSavings;
+
   /// Label for financial income
   ///
   /// In en, this message translates to:
@@ -117,6 +165,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Expenses'**
   String get expenses;
+
+  /// Label for expense
+  ///
+  /// In en, this message translates to:
+  /// **'Expense'**
+  String get expense;
+
+  /// Generic all option label
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
 
   /// Button text to add a new transaction
   ///
@@ -595,7 +655,7 @@ abstract class AppLocalizations {
   /// Instruction label when resetting PIN via security question
   ///
   /// In en, this message translates to:
-  /// **'Select security question to answer:'**
+  /// **'Select security question to verify:'**
   String get selectQuestionToVerify;
 
   /// Label for security question
@@ -669,6 +729,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Jul 22, 2026'**
   String get jul22Date;
+
+  /// Bottom nav item for overview
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get overview;
+
+  /// Bottom nav item for activity
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activity;
+
+  /// Bottom nav item for budgets
+  ///
+  /// In en, this message translates to:
+  /// **'Budgets'**
+  String get budgets;
+
+  /// Bottom nav item for reports
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reports;
+
+  /// Title for logging a transaction
+  ///
+  /// In en, this message translates to:
+  /// **'Log Transaction'**
+  String get logTransaction;
+
+  /// Label for amount display
+  ///
+  /// In en, this message translates to:
+  /// **'AMOUNT'**
+  String get amountLabel;
+
+  /// Label for category selector
+  ///
+  /// In en, this message translates to:
+  /// **'CATEGORY'**
+  String get categoryLabel;
+
+  /// Button to save transaction
+  ///
+  /// In en, this message translates to:
+  /// **'Save Transaction'**
+  String get saveTransaction;
+
+  /// Placeholder hint for searching transactions
+  ///
+  /// In en, this message translates to:
+  /// **'Search by category or note...'**
+  String get searchCategoryHint;
+
+  /// Title for empty transactions state
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions found'**
+  String get noTransactionsFound;
+
+  /// Empty state message when no categories match search
+  ///
+  /// In en, this message translates to:
+  /// **'No categories found'**
+  String get noCategoriesFound;
+
+  /// Description for empty transactions state
+  ///
+  /// In en, this message translates to:
+  /// **'Log a new expense or income to get started.'**
+  String get noTransactionsDesc;
+
+  /// Title for empty budgets state
+  ///
+  /// In en, this message translates to:
+  /// **'No Budgets Set'**
+  String get noBudgetsSet;
+
+  /// Description for empty budgets state
+  ///
+  /// In en, this message translates to:
+  /// **'Set monthly limits for categories to manage your spending smartly.'**
+  String get noBudgetsDesc;
+
+  /// Action button for setting first budget
+  ///
+  /// In en, this message translates to:
+  /// **'Set First Budget'**
+  String get setFirstBudget;
+
+  /// Title for setting monthly budget modal
+  ///
+  /// In en, this message translates to:
+  /// **'Set Monthly Budget'**
+  String get setMonthlyBudget;
+
+  /// Label for target monthly amount input
+  ///
+  /// In en, this message translates to:
+  /// **'TARGET MONTHLY AMOUNT'**
+  String get targetMonthlyAmount;
+
+  /// Label for overall monthly limit chip
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Monthly Limit'**
+  String get overallMonthlyLimit;
+
+  /// Button text to save budget
+  ///
+  /// In en, this message translates to:
+  /// **'Save Budget'**
+  String get saveBudget;
+
+  /// Error message when budget target amount is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid target amount'**
+  String get enterTargetAmountError;
+
+  /// Label for net savings in reports
+  ///
+  /// In en, this message translates to:
+  /// **'NET SAVINGS THIS PERIOD'**
+  String get netSavingsThisPeriod;
+
+  /// Section header for expense breakdown by category
+  ///
+  /// In en, this message translates to:
+  /// **'EXPENSE BREAKDOWN BY CATEGORY'**
+  String get expenseBreakdownByCategory;
+
+  /// Label for savings rate stat
+  ///
+  /// In en, this message translates to:
+  /// **'Savings Rate'**
+  String get savingsRate;
+
+  /// Title for empty reports state
+  ///
+  /// In en, this message translates to:
+  /// **'No Financial Reports Yet'**
+  String get noFinancialReportsYet;
+
+  /// Description for empty reports state
+  ///
+  /// In en, this message translates to:
+  /// **'Start logging transactions to view detailed spending breakdowns and cash flow insights.'**
+  String get noReportsDesc;
+
+  /// Welcome header on empty dashboard view
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to your financial journey.'**
+  String get welcomeFinancialJourney;
+
+  /// Empty state subtitle on dashboard view
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'\'t added any transactions yet. Let\'\'s start tracking your wealth today.'**
+  String get emptyDashboardDesc;
+
+  /// CTA button to add first transaction
+  ///
+  /// In en, this message translates to:
+  /// **'Add Your First Transaction'**
+  String get addFirstTransaction;
+
+  /// Tooltip to show balances
+  ///
+  /// In en, this message translates to:
+  /// **'Show Balances'**
+  String get showBalances;
+
+  /// Tooltip to hide balances
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Balances (Privacy Mode)'**
+  String get hideBalances;
+
+  /// Tooltip for settings button
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// Label for remaining monthly budget
+  ///
+  /// In en, this message translates to:
+  /// **'REMAINING BUDGET'**
+  String get remainingBudget;
+
+  /// Error text when category is not selected
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a category'**
+  String get selectCategoryError;
+
+  /// Error text when transaction amount is zero or invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid amount'**
+  String get enterAmountError;
+
+  /// Label for account transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer'**
+  String get transfer;
+
+  /// Label for transfer fee
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Fee (Optional)'**
+  String get transferFee;
+
+  /// Label for source account in transfer
+  ///
+  /// In en, this message translates to:
+  /// **'From Category / Account'**
+  String get fromAccount;
+
+  /// Label for destination account in transfer
+  ///
+  /// In en, this message translates to:
+  /// **'To Category / Account'**
+  String get toAccount;
 }
 
 class _AppLocalizationsDelegate

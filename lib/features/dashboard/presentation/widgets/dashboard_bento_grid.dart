@@ -8,8 +8,9 @@ import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../domain/entities/financial_summary.dart';
 
-/// Bento Grid section displaying Total Net Balance, Monthly Expenses, Monthly Income, and Budget Progress.
-/// Supports Privacy Mode balance obfuscation (`•••••`) and monospaced typography (`JetBrainsMono`) for all figures.
+/// Bento Grid section displaying Net Balance (compact), Monthly Expenses, and Monthly Income.
+/// Budget tracking has been removed — the Budget tab handles that in full detail.
+/// Supports Privacy Mode balance obfuscation (`•••••`) and monospaced typography for all figures.
 class DashboardBentoGrid extends StatelessWidget {
   final FinancialSummary summary;
   final ValueNotifier<bool> isPrivacyModeNotifier;
@@ -22,7 +23,7 @@ class DashboardBentoGrid extends StatelessWidget {
 
   String _formatAmount(double amount, String symbol, bool isPrivacyMode) {
     if (isPrivacyMode) return '$symbol •••••';
-    final formatted = amount.toStringAsFixed(2).replaceAllMapped(
+    final formatted = amount.abs().toStringAsFixed(2).replaceAllMapped(
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (Match m) => '${m[1]},',
         );
@@ -37,68 +38,92 @@ class DashboardBentoGrid extends StatelessWidget {
     final l10n = context.l10n;
 
     final symbol = summary.currencySymbol;
-    final spentPct = summary.totalExpense > 0
-        ? (summary.totalExpense / summary.monthlyBudgetLimit).clamp(0.0, 1.0)
-        : 0.0;
-    final remainingBudget = summary.monthlyBudgetLimit - summary.totalExpense;
+    final isNegativeBalance = summary.totalBalance < 0;
+
+    // Balance color: green when positive, red when negative, muted when zero
+    final balanceColor = summary.totalBalance > 0
+        ? AppColors.semanticGreen
+        : isNegativeBalance
+            ? AppColors.semanticRed
+            : colorScheme.onSurfaceVariant;
 
     return ValueListenableBuilder<bool>(
       valueListenable: isPrivacyModeNotifier,
       builder: (context, isPrivacyMode, _) {
         return Column(
           children: [
-            // Net Total Balance Header Card
+            // Compact Net Balance row — less prominent than expense/income cards
             GlassContainer(
-              padding: EdgeInsets.all(20.w),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // Balance icon tinted with balance color
+                  Container(
+                    width: 36.w,
+                    height: 36.w,
+                    decoration: BoxDecoration(
+                      color: balanceColor.withAlpha((0.15 * 255).round()),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Icon(
+                      isNegativeBalance
+                          ? Icons.trending_down_rounded
+                          : Icons.account_balance_rounded,
+                      color: balanceColor,
+                      size: 20.sp,
+                    ),
+                  ),
+                  horizontalMarginSmall,
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n.totalBalance,
+                        l10n.totalBalance.toUpperCase(),
                         style: (textTheme.labelSmall ?? const TextStyle())
                             .copyWith(
                           fontWeight: FontWeights.bold,
                           color: colorScheme.onSurfaceVariant,
-                          letterSpacing: 1.2,
+                          letterSpacing: 1.0,
                         ),
                       ),
-                      verticalMarginXXSmall,
+                      SizedBox(height: 2.h),
                       Text(
-                        _formatAmount(
-                            summary.totalBalance, symbol, isPrivacyMode),
-                        style: (customTypography.amountLarge).copyWith(
-                          color: colorScheme.onSurface,
+                        isPrivacyMode
+                            ? '$symbol •••••'
+                            : '${isNegativeBalance ? '-' : ''}${_formatAmount(summary.totalBalance, symbol, false)}',
+                        style: customTypography.labelMediumMono.copyWith(
+                          color: balanceColor,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeights.bold,
                         ),
                       ),
                     ],
                   ),
-                  Container(
-                    width: 48.w,
-                    height: 48.w,
-                    decoration: BoxDecoration(
-                      color:
-                          colorScheme.primary.withAlpha((0.15 * 255).round()),
-                      borderRadius: BorderRadius.circular(14.r),
-                      border: Border.all(
-                        color:
-                            colorScheme.primary.withAlpha((0.3 * 255).round()),
+                  const Spacer(),
+                  // Net change pill
+                  if (!isPrivacyMode)
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                      decoration: BoxDecoration(
+                        color: balanceColor.withAlpha((0.12 * 255).round()),
+                        borderRadius: BorderRadius.circular(20.r),
+                      ),
+                      child: Text(
+                        isNegativeBalance ? l10n.overspent : l10n.netPositive,
+                        style: (textTheme.labelSmall ?? const TextStyle())
+                            .copyWith(
+                          color: balanceColor,
+                          fontWeight: FontWeights.bold,
+                        ),
                       ),
                     ),
-                    child: Icon(
-                      Icons.account_balance_rounded,
-                      color: colorScheme.primary,
-                      size: 26.sp,
-                    ),
-                  ),
                 ],
               ),
             ),
             verticalMarginSmall,
 
-            // 3-Card Bento Grid Layout
+            // Two-card row: Expenses | Income
             Row(
               children: [
                 // Monthly Expenses Bento Card
@@ -136,11 +161,10 @@ class DashboardBentoGrid extends StatelessWidget {
                         ),
                         verticalMarginXXSmall,
                         Text(
-                          '↑ 12% vs last month',
+                          l10n.thisMonth,
                           style: (textTheme.labelSmall ?? const TextStyle())
                               .copyWith(
-                            color: AppColors.semanticRed,
-                            fontWeight: FontWeights.bold,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -184,7 +208,7 @@ class DashboardBentoGrid extends StatelessWidget {
                         ),
                         verticalMarginXXSmall,
                         Text(
-                          'On track for goals',
+                          l10n.thisMonth,
                           style: (textTheme.labelSmall ?? const TextStyle())
                               .copyWith(
                             color: colorScheme.onSurfaceVariant,
@@ -195,74 +219,6 @@ class DashboardBentoGrid extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-            verticalMarginSmall,
-
-            // Monthly Budget Progress Bento Card
-            GlassContainer(
-              padding: EdgeInsets.all(16.w),
-              borderStrokeColor:
-                  colorScheme.primary.withAlpha((0.2 * 255).round()),
-              backgroundColor:
-                  colorScheme.primary.withAlpha((0.05 * 255).round()),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.account_balance_wallet_outlined,
-                              color: colorScheme.primary, size: 18.sp),
-                          horizontalMarginXXSmall,
-                          Text(
-                            'REMAINING BUDGET',
-                            style: (textTheme.labelSmall ?? const TextStyle())
-                                .copyWith(
-                              fontWeight: FontWeights.bold,
-                              color: colorScheme.primary,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        '${(spentPct * 100).toInt()}% limit spent',
-                        style: (textTheme.labelSmall ?? const TextStyle())
-                            .copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeights.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  verticalMarginXXSmall,
-                  Text(
-                    _formatAmount(remainingBudget, symbol, isPrivacyMode),
-                    style: (customTypography.amountDisplay).copyWith(
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                  verticalMarginSmall,
-
-                  // Spending Progress Bar
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4.r),
-                    child: LinearProgressIndicator(
-                      value: spentPct,
-                      minHeight: 6.h,
-                      backgroundColor:
-                          Colors.white.withAlpha((0.1 * 255).round()),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        spentPct > 0.85
-                            ? AppColors.semanticRed
-                            : colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ),
           ],
         );

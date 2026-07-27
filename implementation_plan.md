@@ -10,12 +10,15 @@ It integrates and optimizes the UI/UX designs from `design/stitch/screens` follo
 
 The application adheres to the **Modern Fiscal Core** design system specified in [`design/stitch/screens/modern_fiscal_core/DESIGN.md`](file:///Users/rojanshrestha/Documents/rojan/personalProjects/expendly/design/stitch/screens/modern_fiscal_core/DESIGN.md).
 
-### Visual & Architectural Principles
-- **Theme & Palette:** Deep **Midnight Slate** (`#0E1513`) base, high-contrast **Teal** (`#57F1DB`) primary accents, and desaturated semantic colors (`#FB7185` for Expense, `#34D399` for Income).
+### Visual & Architectural Principles (STRICT)
+- **Theme & Palette:** Deep **Midnight Slate** (`#0E1513`) base, high-contrast **Teal** (`#57F1DB`) primary accents, and desaturated semantic colors (`#FB7185` for Expense, `#34D399` for Income). All colors MUST be derived from `context.colorScheme`.
 - **Surface Elevation:** 3-tier tonal surface elevation (`#0F172A`, `#1E293B`, `#334155`) with 1px semi-transparent borders (`rgba(255,255,255,0.1)`) and glassmorphic backdrop blurs (20px blur with 60% opacity) for top headers and floating action elements.
-- **Typography:** Dual typography strategy using **Hanken Grotesk** for titles/headings and **JetBrains Mono** for precise monetary figures, timestamps, and metadata.
+- **Typography:** Dual typography strategy using **Hanken Grotesk** for titles/headings (`context.textTheme`) and **JetBrains Mono** for precise monetary figures, timestamps, and metadata (`context.customTypography`).
 - **Micro-Interactions:** Physical touch feedback (0.98x compression scale on tap, subtle teal glow on active/focus state).
 - **Privacy Mode:** One-tap balance obfuscation (hides numerical figures with `•••••` across dashboard and transaction views).
+- **Standardized Component Standard (`AppTextField`):** Direct usage of un-styled raw `TextField` widgets is strictly prohibited across all screens. All text fields, search bars, and numeric inputs MUST use `AppTextField` (`lib/core/widgets/app_text_field.dart`) or core widgets in `lib/core/widgets/`.
+- **Tap-Outside Unfocus Rule:** All text fields and interactive form screens MUST automatically dismiss soft keyboard focus when tapping outside input boundaries (`onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus()`).
+- **100% Localization Standard (`context.l10n`):** All user-facing static texts, titles, action buttons, hints, and error messages MUST be loaded via `context.l10n` localization getters. No hardcoded text strings in presentation widgets.
 - **State Management & Rebuild Optimization Policy (STRICT):** Direct usage of `setState` is strictly prohibited throughout the application. All local UI states, reactive toggles, keypad entries, and search query filters MUST use lightweight `ValueNotifier` and `ValueListenableBuilder` to isolate widget rebuilds and maximize runtime rendering performance.
 
 ---
@@ -171,13 +174,17 @@ The application utilizes **Drift** (SQLite in Dart) as its local database engine
 
 ---
 
-## 4. User Review Required
+## 4. User Review Required & Mandatory Architectural Guidelines
 
 > [!NOTE]
 > All data and features operate **100% offline**. Data storage, calculation engines, analytics, budget alerts, and backups reside on the local device.
 
 > [!IMPORTANT]
-> **Database Versioning & Migration:** Upgrading the Drift database schema from version `1` to `2` includes migration rules to initialize default accounts and preserve existing transactions.
+> **Mandatory UI & Component Standards:**
+> 1. **Custom Reusable Widgets (`AppTextField`):** Direct usage of un-styled raw `TextField` widgets is strictly prohibited across all screens. All text fields, search bars, and numeric inputs MUST use `AppTextField` (`lib/core/widgets/app_text_field.dart`) or core widgets in `lib/core/widgets/`.
+> 2. **Tap-Outside Unfocus Rule:** All text fields and interactive form screens MUST automatically dismiss soft keyboard focus when tapping outside input boundaries (`onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus()`).
+> 3. **100% Localization Standard (`context.l10n`):** All user-facing static texts, titles, action buttons, hints, and error messages MUST be loaded via `context.l10n` localization getters. No hardcoded text strings in presentation widgets.
+> 4. **Theme Context Enforcement:** All colors, elevation tints, and typography scales MUST be derived dynamically from `context.colorScheme`, `context.textTheme`, and `context.customTypography`.
 
 ---
 
@@ -223,8 +230,9 @@ The implementation is structured into **10 sequential phases**:
 - Complete color tokens matching `modern_fiscal_core/DESIGN.md`.
 - Dual typography setup: **Hanken Grotesk** for UI text and **JetBrains Mono** for numbers, amounts, and dates.
 - Glassmorphic backdrop blur container (`GlassContainer`) with border stroke.
-- Custom numerical keypad (`CustomKeypad`) with inline decimal & clear actions.
+- Custom numeric keypad (`CustomKeypad`) with inline decimal & clear actions.
 - Tactile press feedback (`0.98x` scale compression).
+- Standardized text input component (`AppTextField`) enforcing tap-outside keyboard dismiss.
 - Universal status alerts & toast manager (`StatusComponents`).
 
 #### Modified & Created Files:
@@ -232,6 +240,7 @@ The implementation is structured into **10 sequential phases**:
 - **[MODIFY]** [`app_theme.dart`](file:///Users/rojanshrestha/Documents/rojan/personalProjects/expendly/lib/core/theme/app_theme.dart)
 - **[NEW]** [`app_colors.dart`](file:///Users/rojanshrestha/Documents/rojan/personalProjects/expendly/lib/core/theme/app_colors.dart)
 - **[NEW]** [`glass_container.dart`](file:///Users/rojanshrestha/Documents/rojan/personalProjects/expendly/lib/core/widgets/glass_container.dart)
+- **[NEW]** [`app_text_field.dart`](file:///Users/rojanshrestha/Documents/rojan/personalProjects/expendly/lib/core/widgets/app_text_field.dart)
 - **[NEW]** [`custom_keypad.dart`](file:///Users/rojanshrestha/Documents/rojan/personalProjects/expendly/lib/core/widgets/custom_keypad.dart)
 - **[NEW]** [`status_components.dart`](file:///Users/rojanshrestha/Documents/rojan/personalProjects/expendly/lib/core/widgets/status_components.dart)
 
@@ -278,8 +287,8 @@ The implementation is structured into **10 sequential phases**:
 
 #### Key Features & Optimizations:
 - **Feature Highlights Carousel:** 3-slide introduction emphasizing privacy, offline-first local storage, and smart budgeting.
-- **Currency Setup:** Searchable currency selector supporting global fiat currencies.
-- **Multi-Account / Initial Balance Setup:** Create initial Cash Wallet and Bank Account with starting balances.
+- **Currency Setup:** Searchable currency selector supporting global fiat currencies using `AppTextField`.
+- **Multi-Account / Initial Balance Setup:** Create initial Cash Wallet and Bank Account with starting balances using `AccountConfigCard` & `AppTextField`.
 - **Optional Security PIN & Biometrics Config:** Step to set up a 4-digit PIN during onboarding.
 - **Security Verification Screen:** Lock screen with shake animation on invalid PIN and biometric authentication button.
 
@@ -302,7 +311,7 @@ The implementation is structured into **10 sequential phases**:
 **Goal:** Implement main application shell, bottom navigation, and modern dashboard with financial metrics.
 
 #### Key Features & Optimizations:
-- **Glassmorphic Navigation Bar:** Floating bottom navigation with active tab indicator and backdrop blur.
+- **Glassmorphic Navigation Bar:** Floating bottom navigation switching between 4 tabs (**Overview**, **Activity**, **Budgets**, **Reports**).
 - **Quick Action Speed Dial FAB:** Modal trigger allowing quick choice of Add Expense, Add Income, or Account Transfer.
 - **Privacy Mode Toggle:** Eye icon header button to obfuscate/reveal monetary amounts (`•••••`).
 - **Financial Summary Card:** Gradient card showing Total Net Worth, Monthly Income, Monthly Expense, and Cash Flow indicator.
@@ -328,10 +337,10 @@ The implementation is structured into **10 sequential phases**:
 **Goal:** Build full transaction capability, including entry form, transfer mode, receipt attachments, details, and search/filter.
 
 #### Key Features & Optimizations:
-- **Modern Add Transaction Modal:** Custom numeric keypad input with category selector, account selector, date picker, note field, and tag input.
+- **Modern Add Transaction Modal:** Custom numeric keypad input with category selector, account selector, date picker, `AppTextField` note input, and tag input.
 - **Account Transfer Modal:** Dedicated flow to transfer funds between accounts with automatic balance update.
 - **Receipt Photo Attachment:** Capture or pick receipt image stored locally in app documents directory.
-- **All Transactions Screen:** Infinite scrolling or month-grouped list of transactions with category icons.
+- **All Transactions Screen (`AllTransactionsPage`):** Date-grouped list of transactions (Today, Yesterday, Older) with `AppTextField` search bar.
 - **Transaction Details View:** Detailed breakdown showing category, account, timestamp, note, tag chips, and receipt viewer.
 - **Search & Filter Drawer:** Filter by date range, transaction type, category, account, and keyword search.
 
@@ -354,9 +363,9 @@ The implementation is structured into **10 sequential phases**:
 **Goal:** Implement category budgeting, overall monthly cap, threshold warnings, and savings goals.
 
 #### Key Features & Optimizations:
-- **Budgets Overview:** Monthly total spending vs budget limit, category-specific progress bars with percentage indicators.
+- **Budgets Overview (`BudgetsOverviewPage`):** Monthly total spending vs budget limit, category-specific progress bars with percentage indicators.
 - **Threshold Alert System:** Soft red glowing animation and notification tag when budget usage exceeds 90%.
-- **Create Budget Modal:** Set monthly budget caps for specific categories or overall spending limit.
+- **Create Budget Modal (`CreateNewBudgetModal`):** Set monthly budget caps for specific categories or overall spending limit using `AppTextField` (`isAmount: true`).
 - **Savings Goals Module:** Track goals (e.g., Emergency Fund, Vacation, New Gadget) with target amounts, target dates, and progress deposit buttons.
 
 #### Modified & Created Files:
@@ -377,7 +386,7 @@ The implementation is structured into **10 sequential phases**:
 **Goal:** Provide visual analytics, category expense breakdown, period filters, and financial forecasting.
 
 #### Key Features & Optimizations:
-- **Refined Analytics Screen:** Bar charts comparing Income vs Expense over time, Donut chart for category distribution.
+- **Refined Analytics Screen (`RefinedReportsPage`):** Bar charts comparing Income vs Expense over time, distribution chart for category breakdown.
 - **Period Filter:** Dynamic filter for Weekly, Monthly, Quarterly, Yearly, or Custom Date Range.
 - **Category Insights View:** Detailed deep-dive into highest spending categories with month-over-month percentage change.
 - **Cash Flow Forecast:** End-of-month projected balance prediction based on average daily spending speed and upcoming recurring bills.
@@ -449,7 +458,7 @@ The implementation is structured into **10 sequential phases**:
 #### Modified & Created Files:
 - **[NEW]** [`test/core/services/encryption_service_test.dart`](file:///Users/rojanshrestha/Documents/rojan/personalProjects/expendly/test/core/services/encryption_service_test.dart)
 - **[NEW]** [`test/core/services/preference_service_test.dart`](file:///Users/rojanshrestha/Documents/rojan/personalProjects/expendly/test/core/services/preference_service_test.dart)
-- **[NEW]** [`test/features/transactions/transaction_bloc_test.dart`](file:///Users/rojanshrestha/Documents/rojan/personalProjects/expendly/test/features/transactions/transaction_bloc_test.dart)
+- **[NEW]** [`test/features/transactions/transaction_test.dart`](file:///Users/rojanshrestha/Documents/rojan/personalProjects/expendly/test/features/transactions/transaction_test.dart)
 
 #### Verification:
 - Execute `flutter analyze` and `fvm flutter test` to confirm 100% clean build and green unit test suite.

@@ -275,7 +275,7 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
 
             // Welcome Copy
             Text(
-              'Welcome to your financial journey.',
+              context.l10n.welcomeFinancialJourney,
               textAlign: TextAlign.center,
               style: (textTheme.headlineSmall ?? const TextStyle()).copyWith(
                 fontWeight: FontWeights.bold,
@@ -287,7 +287,7 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
             ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 320.w),
               child: Text(
-                "You haven't added any transactions yet. Let's start tracking your wealth today.",
+                context.l10n.emptyDashboardDesc,
                 textAlign: TextAlign.center,
                 style: (textTheme.bodyMedium ?? const TextStyle()).copyWith(
                   color: colorScheme.onSurfaceVariant,
@@ -301,7 +301,7 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
             ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 320.w),
               child: AppButton(
-                text: 'Add Your First Transaction',
+                text: context.l10n.addFirstTransaction,
                 icon: const Icon(Icons.add_rounded),
                 onPressed: widget.onAddTransaction,
               ),

@@ -11,6 +11,7 @@ class FinancialSummaryModel extends FinancialSummary {
     required super.periodEnd,
     super.recentTransactions = const [],
     super.categoryBreakdowns = const [],
+    super.dailyCashFlow = const [],
   });
 
   factory FinancialSummaryModel.fromJson(Map<String, dynamic> json) {

@@ -15,10 +15,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalBalance => 'TOTAL BALANCE';
 
   @override
+  String get overspent => 'Overspent';
+
+  @override
+  String get netPositive => 'Positive';
+
+  @override
+  String get thisMonth => 'This month';
+
+  @override
+  String get netWorth => 'NET WORTH';
+
+  @override
+  String get cashFlow => 'CASH FLOW';
+
+  @override
+  String get monthlyBudget => 'MONTHLY BUDGET';
+
+  @override
+  String get cashFlowInsights => 'CASH FLOW INSIGHTS';
+
+  @override
+  String get netSavings => 'NET SAVINGS';
+
+  @override
   String get income => 'Income';
 
   @override
   String get expenses => 'Expenses';
+
+  @override
+  String get expense => 'Expense';
+
+  @override
+  String get all => 'All';
 
   @override
   String get addTransaction => 'Add Transaction';
@@ -270,7 +300,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetViaSecurityAnswer => 'Reset via Secret Answer';
 
   @override
-  String get selectQuestionToVerify => 'Select security question to answer:';
+  String get selectQuestionToVerify => 'Select security question to verify:';
 
   @override
   String get securityQuestionLabel => 'Security Recovery Question';
@@ -310,4 +340,122 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get jul22Date => 'Jul 22, 2026';
+
+  @override
+  String get overview => 'Overview';
+
+  @override
+  String get activity => 'Activity';
+
+  @override
+  String get budgets => 'Budgets';
+
+  @override
+  String get reports => 'Reports';
+
+  @override
+  String get logTransaction => 'Log Transaction';
+
+  @override
+  String get amountLabel => 'AMOUNT';
+
+  @override
+  String get categoryLabel => 'CATEGORY';
+
+  @override
+  String get saveTransaction => 'Save Transaction';
+
+  @override
+  String get searchCategoryHint => 'Search by category or note...';
+
+  @override
+  String get noTransactionsFound => 'No transactions found';
+
+  @override
+  String get noCategoriesFound => 'No categories found';
+
+  @override
+  String get noTransactionsDesc =>
+      'Log a new expense or income to get started.';
+
+  @override
+  String get noBudgetsSet => 'No Budgets Set';
+
+  @override
+  String get noBudgetsDesc =>
+      'Set monthly limits for categories to manage your spending smartly.';
+
+  @override
+  String get setFirstBudget => 'Set First Budget';
+
+  @override
+  String get setMonthlyBudget => 'Set Monthly Budget';
+
+  @override
+  String get targetMonthlyAmount => 'TARGET MONTHLY AMOUNT';
+
+  @override
+  String get overallMonthlyLimit => 'Overall Monthly Limit';
+
+  @override
+  String get saveBudget => 'Save Budget';
+
+  @override
+  String get enterTargetAmountError => 'Please enter a valid target amount';
+
+  @override
+  String get netSavingsThisPeriod => 'NET SAVINGS THIS PERIOD';
+
+  @override
+  String get expenseBreakdownByCategory => 'EXPENSE BREAKDOWN BY CATEGORY';
+
+  @override
+  String get savingsRate => 'Savings Rate';
+
+  @override
+  String get noFinancialReportsYet => 'No Financial Reports Yet';
+
+  @override
+  String get noReportsDesc =>
+      'Start logging transactions to view detailed spending breakdowns and cash flow insights.';
+
+  @override
+  String get welcomeFinancialJourney => 'Welcome to your financial journey.';
+
+  @override
+  String get emptyDashboardDesc =>
+      'You haven\'t added any transactions yet. Let\'s start tracking your wealth today.';
+
+  @override
+  String get addFirstTransaction => 'Add Your First Transaction';
+
+  @override
+  String get showBalances => 'Show Balances';
+
+  @override
+  String get hideBalances => 'Hide Balances (Privacy Mode)';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get remainingBudget => 'REMAINING BUDGET';
+
+  @override
+  String get selectCategoryError => 'Please select a category';
+
+  @override
+  String get enterAmountError => 'Please enter a valid amount';
+
+  @override
+  String get transfer => 'Transfer';
+
+  @override
+  String get transferFee => 'Transfer Fee (Optional)';
+
+  @override
+  String get fromAccount => 'From Category / Account';
+
+  @override
+  String get toAccount => 'To Category / Account';
 }

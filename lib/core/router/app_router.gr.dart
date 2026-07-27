@@ -8,7 +8,7 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i9;
+import 'package:auto_route/auto_route.dart' as _i10;
 import 'package:expendly/features/dashboard/presentation/pages/dashboard_page.dart'
     as _i3;
 import 'package:expendly/features/onboarding/presentation/pages/account_setup_page.dart'
@@ -18,65 +18,73 @@ import 'package:expendly/features/onboarding/presentation/pages/currency_setup_p
 import 'package:expendly/features/onboarding/presentation/pages/final_setup_page.dart'
     as _i4;
 import 'package:expendly/features/onboarding/presentation/pages/onboarding_carousel_page.dart'
-    as _i5;
-import 'package:expendly/features/onboarding/presentation/pages/onboarding_security_setup_page.dart'
     as _i6;
-import 'package:expendly/features/security/presentation/pages/security_verification_page.dart'
+import 'package:expendly/features/onboarding/presentation/pages/onboarding_security_setup_page.dart'
     as _i7;
-import 'package:expendly/features/splash/presentation/pages/splash_page.dart'
+import 'package:expendly/features/security/presentation/pages/security_verification_page.dart'
     as _i8;
+import 'package:expendly/features/splash/presentation/pages/splash_page.dart'
+    as _i9;
+import 'package:expendly/features/transactions/presentation/pages/modern_add_transaction_page.dart'
+    as _i5;
 
-abstract class $AppRouter extends _i9.RootStackRouter {
+abstract class $AppRouter extends _i10.RootStackRouter {
   $AppRouter({super.navigatorKey});
 
   @override
-  final Map<String, _i9.PageFactory> pagesMap = {
+  final Map<String, _i10.PageFactory> pagesMap = {
     AccountSetupRoute.name: (routeData) {
-      return _i9.AutoRoutePage<dynamic>(
+      return _i10.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const _i1.AccountSetupPage(),
       );
     },
     CurrencySetupRoute.name: (routeData) {
-      return _i9.AutoRoutePage<dynamic>(
+      return _i10.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const _i2.CurrencySetupPage(),
       );
     },
     DashboardRoute.name: (routeData) {
-      return _i9.AutoRoutePage<dynamic>(
+      return _i10.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const _i3.DashboardPage(),
       );
     },
     FinalSetupRoute.name: (routeData) {
-      return _i9.AutoRoutePage<dynamic>(
+      return _i10.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const _i4.FinalSetupPage(),
       );
     },
-    OnboardingCarouselRoute.name: (routeData) {
-      return _i9.AutoRoutePage<dynamic>(
+    ModernAddTransactionRoute.name: (routeData) {
+      return _i10.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i5.OnboardingCarouselPage(),
+        child: const _i5.ModernAddTransactionPage(),
+      );
+    },
+    OnboardingCarouselRoute.name: (routeData) {
+      return _i10.AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const _i6.OnboardingCarouselPage(),
       );
     },
     OnboardingSecuritySetupRoute.name: (routeData) {
-      return _i9.AutoRoutePage<dynamic>(
+      return _i10.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i6.OnboardingSecuritySetupPage(),
+        child: const _i7.OnboardingSecuritySetupPage(),
       );
     },
     SecurityVerificationRoute.name: (routeData) {
-      return _i9.AutoRoutePage<dynamic>(
+      return _i10.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i7.SecurityVerificationPage(),
+        child: const _i8.SecurityVerificationPage(),
       );
     },
     SplashRoute.name: (routeData) {
-      return _i9.AutoRoutePage<dynamic>(
+      return _i10.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i8.SplashPage(),
+        child: const _i9.SplashPage(),
       );
     },
   };
@@ -84,8 +92,8 @@ abstract class $AppRouter extends _i9.RootStackRouter {
 
 /// generated route for
 /// [_i1.AccountSetupPage]
-class AccountSetupRoute extends _i9.PageRouteInfo<void> {
-  const AccountSetupRoute({List<_i9.PageRouteInfo>? children})
+class AccountSetupRoute extends _i10.PageRouteInfo<void> {
+  const AccountSetupRoute({List<_i10.PageRouteInfo>? children})
       : super(
           AccountSetupRoute.name,
           initialChildren: children,
@@ -93,13 +101,13 @@ class AccountSetupRoute extends _i9.PageRouteInfo<void> {
 
   static const String name = 'AccountSetupRoute';
 
-  static const _i9.PageInfo<void> page = _i9.PageInfo<void>(name);
+  static const _i10.PageInfo<void> page = _i10.PageInfo<void>(name);
 }
 
 /// generated route for
 /// [_i2.CurrencySetupPage]
-class CurrencySetupRoute extends _i9.PageRouteInfo<void> {
-  const CurrencySetupRoute({List<_i9.PageRouteInfo>? children})
+class CurrencySetupRoute extends _i10.PageRouteInfo<void> {
+  const CurrencySetupRoute({List<_i10.PageRouteInfo>? children})
       : super(
           CurrencySetupRoute.name,
           initialChildren: children,
@@ -107,13 +115,13 @@ class CurrencySetupRoute extends _i9.PageRouteInfo<void> {
 
   static const String name = 'CurrencySetupRoute';
 
-  static const _i9.PageInfo<void> page = _i9.PageInfo<void>(name);
+  static const _i10.PageInfo<void> page = _i10.PageInfo<void>(name);
 }
 
 /// generated route for
 /// [_i3.DashboardPage]
-class DashboardRoute extends _i9.PageRouteInfo<void> {
-  const DashboardRoute({List<_i9.PageRouteInfo>? children})
+class DashboardRoute extends _i10.PageRouteInfo<void> {
+  const DashboardRoute({List<_i10.PageRouteInfo>? children})
       : super(
           DashboardRoute.name,
           initialChildren: children,
@@ -121,13 +129,13 @@ class DashboardRoute extends _i9.PageRouteInfo<void> {
 
   static const String name = 'DashboardRoute';
 
-  static const _i9.PageInfo<void> page = _i9.PageInfo<void>(name);
+  static const _i10.PageInfo<void> page = _i10.PageInfo<void>(name);
 }
 
 /// generated route for
 /// [_i4.FinalSetupPage]
-class FinalSetupRoute extends _i9.PageRouteInfo<void> {
-  const FinalSetupRoute({List<_i9.PageRouteInfo>? children})
+class FinalSetupRoute extends _i10.PageRouteInfo<void> {
+  const FinalSetupRoute({List<_i10.PageRouteInfo>? children})
       : super(
           FinalSetupRoute.name,
           initialChildren: children,
@@ -135,13 +143,27 @@ class FinalSetupRoute extends _i9.PageRouteInfo<void> {
 
   static const String name = 'FinalSetupRoute';
 
-  static const _i9.PageInfo<void> page = _i9.PageInfo<void>(name);
+  static const _i10.PageInfo<void> page = _i10.PageInfo<void>(name);
 }
 
 /// generated route for
-/// [_i5.OnboardingCarouselPage]
-class OnboardingCarouselRoute extends _i9.PageRouteInfo<void> {
-  const OnboardingCarouselRoute({List<_i9.PageRouteInfo>? children})
+/// [_i5.ModernAddTransactionPage]
+class ModernAddTransactionRoute extends _i10.PageRouteInfo<void> {
+  const ModernAddTransactionRoute({List<_i10.PageRouteInfo>? children})
+      : super(
+          ModernAddTransactionRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'ModernAddTransactionRoute';
+
+  static const _i10.PageInfo<void> page = _i10.PageInfo<void>(name);
+}
+
+/// generated route for
+/// [_i6.OnboardingCarouselPage]
+class OnboardingCarouselRoute extends _i10.PageRouteInfo<void> {
+  const OnboardingCarouselRoute({List<_i10.PageRouteInfo>? children})
       : super(
           OnboardingCarouselRoute.name,
           initialChildren: children,
@@ -149,13 +171,13 @@ class OnboardingCarouselRoute extends _i9.PageRouteInfo<void> {
 
   static const String name = 'OnboardingCarouselRoute';
 
-  static const _i9.PageInfo<void> page = _i9.PageInfo<void>(name);
+  static const _i10.PageInfo<void> page = _i10.PageInfo<void>(name);
 }
 
 /// generated route for
-/// [_i6.OnboardingSecuritySetupPage]
-class OnboardingSecuritySetupRoute extends _i9.PageRouteInfo<void> {
-  const OnboardingSecuritySetupRoute({List<_i9.PageRouteInfo>? children})
+/// [_i7.OnboardingSecuritySetupPage]
+class OnboardingSecuritySetupRoute extends _i10.PageRouteInfo<void> {
+  const OnboardingSecuritySetupRoute({List<_i10.PageRouteInfo>? children})
       : super(
           OnboardingSecuritySetupRoute.name,
           initialChildren: children,
@@ -163,13 +185,13 @@ class OnboardingSecuritySetupRoute extends _i9.PageRouteInfo<void> {
 
   static const String name = 'OnboardingSecuritySetupRoute';
 
-  static const _i9.PageInfo<void> page = _i9.PageInfo<void>(name);
+  static const _i10.PageInfo<void> page = _i10.PageInfo<void>(name);
 }
 
 /// generated route for
-/// [_i7.SecurityVerificationPage]
-class SecurityVerificationRoute extends _i9.PageRouteInfo<void> {
-  const SecurityVerificationRoute({List<_i9.PageRouteInfo>? children})
+/// [_i8.SecurityVerificationPage]
+class SecurityVerificationRoute extends _i10.PageRouteInfo<void> {
+  const SecurityVerificationRoute({List<_i10.PageRouteInfo>? children})
       : super(
           SecurityVerificationRoute.name,
           initialChildren: children,
@@ -177,13 +199,13 @@ class SecurityVerificationRoute extends _i9.PageRouteInfo<void> {
 
   static const String name = 'SecurityVerificationRoute';
 
-  static const _i9.PageInfo<void> page = _i9.PageInfo<void>(name);
+  static const _i10.PageInfo<void> page = _i10.PageInfo<void>(name);
 }
 
 /// generated route for
-/// [_i8.SplashPage]
-class SplashRoute extends _i9.PageRouteInfo<void> {
-  const SplashRoute({List<_i9.PageRouteInfo>? children})
+/// [_i9.SplashPage]
+class SplashRoute extends _i10.PageRouteInfo<void> {
+  const SplashRoute({List<_i10.PageRouteInfo>? children})
       : super(
           SplashRoute.name,
           initialChildren: children,
@@ -191,5 +213,5 @@ class SplashRoute extends _i9.PageRouteInfo<void> {
 
   static const String name = 'SplashRoute';
 
-  static const _i9.PageInfo<void> page = _i9.PageInfo<void>(name);
+  static const _i10.PageInfo<void> page = _i10.PageInfo<void>(name);
 }

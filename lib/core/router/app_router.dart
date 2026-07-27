@@ -14,5 +14,6 @@ class AppRouter extends $AppRouter {
         AutoRoute(page: FinalSetupRoute.page),
         AutoRoute(page: SecurityVerificationRoute.page),
         AutoRoute(page: DashboardRoute.page),
+        AutoRoute(page: ModernAddTransactionRoute.page),
       ];
 }

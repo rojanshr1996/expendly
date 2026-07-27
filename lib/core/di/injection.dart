@@ -1,6 +1,23 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../features/analytics/data/datasources/analytics_local_datasource.dart';
+import '../../features/analytics/data/repositories/analytics_repository_impl.dart';
+import '../../features/analytics/domain/repositories/analytics_repository.dart';
+import '../../features/analytics/presentation/cubit/analytics_cubit.dart';
+import '../../features/budgets/data/datasources/budget_local_datasource.dart';
+import '../../features/budgets/data/repositories/budget_repository_impl.dart';
+import '../../features/budgets/domain/repositories/budget_repository.dart';
+import '../../features/budgets/presentation/cubit/budget_cubit.dart';
+import '../../features/dashboard/data/datasources/dashboard_local_data_source.dart';
+import '../../features/dashboard/data/repositories/dashboard_repository_impl.dart';
+import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
+import '../../features/dashboard/domain/usecases/get_financial_summary.dart';
+import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
+import '../../features/transactions/data/datasources/transaction_local_datasource.dart';
+import '../../features/transactions/data/repositories/transaction_repository_impl.dart';
+import '../../features/transactions/domain/repositories/transaction_repository.dart';
+import '../../features/transactions/presentation/cubit/transaction_cubit.dart';
 import '../config/app_config.dart';
 import '../database/app_database.dart';
 import '../services/encryption_service.dart';
@@ -18,31 +35,35 @@ final GetIt getIt = GetIt.instance;
   asExtension: true,
 )
 Future<void> configureDependencies([String? environment]) async {
+  getIt.allowReassignment = true;
+
   // Register AppConfig instance into GetIt if available
   if (getIt.isRegistered<AppConfig>()) {
     getIt.unregister<AppConfig>();
   }
   getIt.registerSingleton<AppConfig>(AppConfig.instance);
 
-  // Register AppDatabase singleton
+  // Initialize generated injectable dependencies
+  try {
+    getIt.init(environment: environment);
+  } catch (_) {}
+
+  // Ensure Core Services are registered
   if (!getIt.isRegistered<AppDatabase>()) {
     getIt.registerLazySingleton<AppDatabase>(() => AppDatabase());
   }
 
-  // Register SecureStorageService singleton
   if (!getIt.isRegistered<SecureStorageService>()) {
     getIt.registerLazySingleton<SecureStorageService>(
         () => SecureStorageService());
   }
 
-  // Register EncryptionService singleton
   if (!getIt.isRegistered<EncryptionService>()) {
     getIt.registerLazySingleton<EncryptionService>(
       () => EncryptionService(getIt<SecureStorageService>()),
     );
   }
 
-  // Register PreferenceService singleton and initialize SharedPreferences & SecureStorage
   if (!getIt.isRegistered<PreferenceService>()) {
     final prefsService = PreferenceService(getIt<SecureStorageService>());
     await prefsService.init();
@@ -51,21 +72,75 @@ Future<void> configureDependencies([String? environment]) async {
     await getIt<PreferenceService>().init();
   }
 
-  // Initialize generated injectable dependencies
-  try {
-    getIt.init(environment: environment);
-  } catch (e) {
-    // Fallback manual registration for core services if generated init is unavailable
-    if (!getIt.isRegistered<AppLogger>()) {
-      getIt.registerLazySingleton<AppLogger>(() => AppLogger());
-    }
-    if (!getIt.isRegistered<NotificationService>()) {
-      getIt.registerLazySingleton<NotificationService>(
-          () => NotificationService());
-    }
-    if (!getIt.isRegistered<RemoteConfigService>()) {
-      getIt.registerLazySingleton<RemoteConfigService>(
-          () => RemoteConfigService());
-    }
+  if (!getIt.isRegistered<AppLogger>()) {
+    getIt.registerLazySingleton<AppLogger>(() => AppLogger());
+  }
+  if (!getIt.isRegistered<NotificationService>()) {
+    getIt.registerLazySingleton<NotificationService>(
+        () => NotificationService());
+  }
+  if (!getIt.isRegistered<RemoteConfigService>()) {
+    getIt.registerLazySingleton<RemoteConfigService>(
+        () => RemoteConfigService());
+  }
+
+  // Feature Datasources & Repositories Registration
+  if (!getIt.isRegistered<TransactionLocalDataSource>()) {
+    getIt.registerLazySingleton<TransactionLocalDataSource>(
+        () => TransactionLocalDataSourceImpl(getIt<AppDatabase>()));
+  }
+  if (!getIt.isRegistered<TransactionRepository>()) {
+    getIt.registerLazySingleton<TransactionRepository>(
+        () => TransactionRepositoryImpl(getIt<TransactionLocalDataSource>()));
+  }
+  if (!getIt.isRegistered<TransactionCubit>()) {
+    getIt.registerFactory<TransactionCubit>(
+        () => TransactionCubit(getIt<TransactionRepository>()));
+  }
+
+  if (!getIt.isRegistered<BudgetLocalDataSource>()) {
+    getIt.registerLazySingleton<BudgetLocalDataSource>(
+        () => BudgetLocalDataSourceImpl(getIt<AppDatabase>()));
+  }
+  if (!getIt.isRegistered<BudgetRepository>()) {
+    getIt.registerLazySingleton<BudgetRepository>(
+        () => BudgetRepositoryImpl(getIt<BudgetLocalDataSource>()));
+  }
+  if (!getIt.isRegistered<BudgetCubit>()) {
+    getIt.registerFactory<BudgetCubit>(
+        () => BudgetCubit(getIt<BudgetRepository>()));
+  }
+
+  if (!getIt.isRegistered<AnalyticsLocalDataSource>()) {
+    getIt.registerLazySingleton<AnalyticsLocalDataSource>(
+        () => AnalyticsLocalDataSourceImpl(getIt<AppDatabase>()));
+  }
+  if (!getIt.isRegistered<AnalyticsRepository>()) {
+    getIt.registerLazySingleton<AnalyticsRepository>(
+        () => AnalyticsRepositoryImpl(getIt<AnalyticsLocalDataSource>()));
+  }
+  if (!getIt.isRegistered<AnalyticsCubit>()) {
+    getIt.registerFactory<AnalyticsCubit>(
+        () => AnalyticsCubit(getIt<AnalyticsRepository>()));
+  }
+
+  if (!getIt.isRegistered<DashboardLocalDataSource>()) {
+    getIt.registerLazySingleton<DashboardLocalDataSource>(
+        () => DashboardLocalDataSourceImpl(
+              getIt<AppDatabase>(),
+              getIt<PreferenceService>(),
+            ));
+  }
+  if (!getIt.isRegistered<DashboardRepository>()) {
+    getIt.registerLazySingleton<DashboardRepository>(
+        () => DashboardRepositoryImpl(getIt<DashboardLocalDataSource>()));
+  }
+  if (!getIt.isRegistered<GetFinancialSummary>()) {
+    getIt.registerLazySingleton<GetFinancialSummary>(
+        () => GetFinancialSummary(getIt<DashboardRepository>()));
+  }
+  if (!getIt.isRegistered<DashboardCubit>()) {
+    getIt.registerFactory<DashboardCubit>(
+        () => DashboardCubit(getIt<GetFinancialSummary>()));
   }
 }

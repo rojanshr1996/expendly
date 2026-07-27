@@ -6,8 +6,12 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
+import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/usecase/usecase.dart';
+import '../../../analytics/presentation/pages/refined_reports_page.dart';
+import '../../../budgets/presentation/pages/budgets_overview_page.dart';
+import '../../../transactions/presentation/pages/all_transactions_page.dart';
 import '../../domain/entities/financial_summary.dart';
 import '../../domain/repositories/dashboard_repository.dart';
 import '../../domain/usecases/get_financial_summary.dart';
@@ -41,6 +45,14 @@ class _DashboardPageState extends State<DashboardPage> {
     super.dispose();
   }
 
+  void _openAddTransaction(BuildContext context) async {
+    final result = await context.router.push(const ModernAddTransactionRoute());
+    if (!mounted) return;
+    if (result == true) {
+      context.read<DashboardCubit>().loadDashboardData();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -52,152 +64,203 @@ class _DashboardPageState extends State<DashboardPage> {
             ..loadDashboardData();
         }
       },
-      child: Scaffold(
-        backgroundColor: context.colorScheme.surface,
-        body: Column(
-          children: [
-            // Glass Header
-            DashboardHeader(
-              isPrivacyModeNotifier: _isPrivacyModeNotifier,
-              onSettingsPressed: () {},
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            backgroundColor: context.colorScheme.surface,
+            body: ValueListenableBuilder<int>(
+              valueListenable: _currentTabNotifier,
+              builder: (context, currentTab, _) {
+                return IndexedStack(
+                  index: currentTab,
+                  children: [
+                    // Tab 0: Overview
+                    _buildOverviewTab(context),
+
+                    // Tab 1: Activity / All Transactions
+                    AllTransactionsPage(
+                        isPrivacyModeNotifier: _isPrivacyModeNotifier),
+
+                    // Tab 2: Budgets Overview
+                    BudgetsOverviewPage(
+                        isPrivacyModeNotifier: _isPrivacyModeNotifier),
+
+                    // Tab 3: Reports & Analytics
+                    RefinedReportsPage(
+                        isPrivacyModeNotifier: _isPrivacyModeNotifier),
+                  ],
+                );
+              },
             ),
 
-            // Scrollable Dashboard Body
-            Expanded(
-              child: BlocBuilder<DashboardCubit, DashboardState>(
-                builder: (context, state) {
-                  if (state is DashboardLoading) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                          color: context.colorScheme.primary),
-                    );
-                  }
-
-                  if (state is DashboardError) {
-                    return Center(
-                      child: Text(
-                        context.l10n.errorMessage(state.message),
-                        style:
-                            (context.textTheme.bodyLarge ?? const TextStyle())
-                                .copyWith(
-                          color: context.colorScheme.error,
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (state is DashboardLoaded) {
-                    final summary = state.summary;
-                    final bool isEmptyState =
-                        summary.recentTransactions.isEmpty &&
-                            summary.totalIncome == 0 &&
-                            summary.totalExpense == 0;
-
-                    if (isEmptyState) {
-                      return EmptyDashboardView(
-                        onAddTransaction: () {
-                          _fabKey.currentState?.openSpeedDial(context);
-                        },
-                      );
-                    }
-
-                    return SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 600),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              verticalMarginSmall,
-
-                              // Summary Bento Grid Cards
-                              DashboardBentoGrid(
-                                summary: summary,
-                                isPrivacyModeNotifier: _isPrivacyModeNotifier,
-                              ),
-                              verticalMarginMedium,
-
-                              // Cash Flow Summary Section
-                              const DashboardCashFlowChart(),
-                              verticalMarginMedium,
-
-                              // Recent Activity Section
-                              DashboardRecentActivity(
-                                transactions: summary.recentTransactions,
-                                currencySymbol: summary.currencySymbol,
-                                isPrivacyModeNotifier: _isPrivacyModeNotifier,
-                                onSeeAllPressed: () {},
-                              ),
-                              verticalMarginLarge,
-                            ],
-                          ).defaultCanvasPadding(),
-                        ),
-                      ),
-                    );
-                  }
-
-                  return const SizedBox.shrink();
-                },
-              ),
+            // Quick Action Speed Dial FAB
+            floatingActionButton: QuickActionFab(
+              key: _fabKey,
+              onAddExpense: () => _openAddTransaction(context),
+              onAddIncome: () => _openAddTransaction(context),
+              onTransfer: () => _openAddTransaction(context),
             ),
-          ],
-        ),
 
-        // Quick Action Speed Dial FAB
-        floatingActionButton: QuickActionFab(key: _fabKey),
+            // Bottom Navigation Bar
+            bottomNavigationBar: ValueListenableBuilder<int>(
+              valueListenable: _currentTabNotifier,
+              builder: (context, currentTab, _) {
+                final colorScheme = context.colorScheme;
+                final customTypography = context.customTypography;
 
-        // Bottom Navigation Bar
-        bottomNavigationBar: ValueListenableBuilder<int>(
-          valueListenable: _currentTabNotifier,
-          builder: (context, currentTab, _) {
-            final colorScheme = context.colorScheme;
-            final customTypography = context.customTypography;
-
-            return Container(
-              decoration: const BoxDecoration(
-                color: AppColors.surfaceContainerLow,
-                border: Border(
-                  top: BorderSide(color: AppColors.glassStroke, width: 1.0),
-                ),
-              ),
-              child: BottomNavigationBar(
-                currentIndex: currentTab,
-                onTap: (index) => _currentTabNotifier.value = index,
-                backgroundColor: AppColors.surfaceContainerLow,
-                selectedItemColor: colorScheme.primary,
-                unselectedItemColor: AppColors.outline,
-                selectedLabelStyle: customTypography.labelMediumMono,
-                unselectedLabelStyle: customTypography.labelMediumMono,
-                type: BottomNavigationBarType.fixed,
-                elevation: 0,
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.dashboard_outlined),
-                    activeIcon: Icon(Icons.dashboard_rounded),
-                    label: 'Overview',
+                return Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerLow,
+                    border: Border(
+                      top: BorderSide(
+                          color: colorScheme.outlineVariant, width: 1.0),
+                    ),
                   ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.receipt_long_outlined),
-                    activeIcon: Icon(Icons.receipt_long_rounded),
-                    label: 'Activity',
+                  child: BottomNavigationBar(
+                    currentIndex: currentTab,
+                    onTap: (index) => _currentTabNotifier.value = index,
+                    backgroundColor: colorScheme.surfaceContainerLow,
+                    selectedItemColor: colorScheme.primary,
+                    unselectedItemColor: colorScheme.outline,
+                    selectedLabelStyle: customTypography.labelMediumMono,
+                    unselectedLabelStyle: customTypography.labelMediumMono,
+                    type: BottomNavigationBarType.fixed,
+                    elevation: 0,
+                    items: [
+                      BottomNavigationBarItem(
+                        icon: const Icon(Icons.dashboard_outlined),
+                        activeIcon: const Icon(Icons.dashboard_rounded),
+                        label: context.l10n.overview,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: const Icon(Icons.receipt_long_outlined),
+                        activeIcon: const Icon(Icons.receipt_long_rounded),
+                        label: context.l10n.activity,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: const Icon(Icons.account_balance_wallet_outlined),
+                        activeIcon:
+                            const Icon(Icons.account_balance_wallet_rounded),
+                        label: context.l10n.budgets,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: const Icon(Icons.bar_chart_outlined),
+                        activeIcon: const Icon(Icons.bar_chart_rounded),
+                        label: context.l10n.reports,
+                      ),
+                    ],
                   ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.account_balance_wallet_outlined),
-                    activeIcon: Icon(Icons.account_balance_wallet_rounded),
-                    label: 'Budgets',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.bar_chart_outlined),
-                    activeIcon: Icon(Icons.bar_chart_rounded),
-                    label: 'Reports',
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+                );
+              },
+            ),
+          );
+        },
       ),
+    );
+  }
+
+  Widget _buildOverviewTab(BuildContext context) {
+    return Column(
+      children: [
+        // Glass Header
+        DashboardHeader(
+          isPrivacyModeNotifier: _isPrivacyModeNotifier,
+          onSettingsPressed: () {},
+        ),
+
+        // Scrollable Dashboard Body
+        Expanded(
+          child: BlocBuilder<DashboardCubit, DashboardState>(
+            builder: (context, state) {
+              if (state is DashboardLoading) {
+                return Center(
+                  child: CircularProgressIndicator(
+                      color: context.colorScheme.primary),
+                );
+              }
+
+              if (state is DashboardError) {
+                return Center(
+                  child: Text(
+                    context.l10n.errorMessage(state.message),
+                    style: (context.textTheme.bodyLarge ?? const TextStyle())
+                        .copyWith(
+                      color: context.colorScheme.error,
+                    ),
+                  ),
+                );
+              }
+
+              if (state is DashboardLoaded) {
+                final summary = state.summary;
+                final bool isEmptyState = summary.recentTransactions.isEmpty &&
+                    summary.totalIncome == 0 &&
+                    summary.totalExpense == 0;
+
+                if (isEmptyState) {
+                  return EmptyDashboardView(
+                    onAddTransaction: () {
+                      _openAddTransaction(context);
+                    },
+                  );
+                }
+
+                return RefreshIndicator(
+                  color: AppColors.primary,
+                  onRefresh: () =>
+                      context.read<DashboardCubit>().loadDashboardData(),
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 600),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            verticalMarginSmall,
+
+                            // Summary Bento Grid Cards
+                            DashboardBentoGrid(
+                              summary: summary,
+                              isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                            ),
+                            verticalMarginMedium,
+
+                            // Cash Flow Summary Section
+                            const DashboardCashFlowChart(),
+                            verticalMarginMedium,
+
+                            // Recent Activity Section
+                            DashboardRecentActivity(
+                              transactions: summary.recentTransactions,
+                              currencySymbol: summary.currencySymbol,
+                              isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                              onSeeAllPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute<void>(
+                                    builder: (_) => AllTransactionsPage(
+                                      isPrivacyModeNotifier:
+                                          _isPrivacyModeNotifier,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            verticalMarginLarge,
+                          ],
+                        ).defaultCanvasPadding(),
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ],
     );
   }
 }
