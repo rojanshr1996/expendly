@@ -466,6 +466,12 @@ abstract class AppLocalizations {
   /// **'PINs do not match. Please try again.'**
   String get pinMismatchError;
 
+  /// Error toast when user tries to save security questions without answering both
+  ///
+  /// In en, this message translates to:
+  /// **'Please answer both security questions to protect your PIN.'**
+  String get securityQuestionsRequired;
+
   /// Title on final setup completion page
   ///
   /// In en, this message translates to:

@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
 
@@ -12,8 +14,52 @@ import '../utils/app_logger.dart';
 /// Top-level background message handler required by Firebase Messaging.
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  WidgetsFlutterBinding.ensureInitialized();
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp();
+  }
   AppLogger.i('FCM Handling background message: ${message.messageId}');
+
+  final notification = message.notification;
+  if (notification != null) {
+    final bgNotifications = FlutterLocalNotificationsPlugin();
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const iosSettings = DarwinInitializationSettings();
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+      macOS: iosSettings,
+    );
+
+    await bgNotifications.initialize(initSettings);
+
+    const androidDetails = AndroidNotificationDetails(
+      NotificationService.channelId,
+      NotificationService.channelName,
+      channelDescription: NotificationService.channelDescription,
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
+    );
+
+    const notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
+    );
+
+    await bgNotifications.show(
+      message.messageId.hashCode,
+      notification.title ?? 'Expendly Alert',
+      notification.body ?? '',
+      notificationDetails,
+      payload: jsonEncode(message.data),
+    );
+  }
 }
 
 @lazySingleton

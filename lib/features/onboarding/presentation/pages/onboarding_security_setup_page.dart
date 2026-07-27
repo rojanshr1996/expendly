@@ -122,23 +122,30 @@ class _OnboardingSecuritySetupPageState
   }
 
   void _saveSecurityConfiguration() async {
+    final ans1 = _answer1Controller.text.trim();
+    final ans2 = _answer2Controller.text.trim();
+
+    if (ans1.isEmpty || ans2.isEmpty) {
+      HapticFeedback.vibrate();
+      StatusComponents.showToast(
+        context,
+        message: context.l10n.securityQuestionsRequired,
+        isError: true,
+      );
+      return;
+    }
+
     final prefs = getIt<PreferenceService>();
     final confirmPin = _confirmPinNotifier.value;
     final q1 = context.l10n.recoveryQuestion1;
     final q2 = context.l10n.recoveryQuestion2;
-    final ans1 = _answer1Controller.text.trim();
-    final ans2 = _answer2Controller.text.trim();
 
     await prefs.setSecurityPin(confirmPin);
     await prefs.setSecurityQuestion1(q1);
-    if (ans1.isNotEmpty) {
-      await prefs.setSecurityAnswer1(ans1);
-    }
+    await prefs.setSecurityAnswer1(ans1);
 
     await prefs.setSecurityQuestion2(q2);
-    if (ans2.isNotEmpty) {
-      await prefs.setSecurityAnswer2(ans2);
-    }
+    await prefs.setSecurityAnswer2(ans2);
 
     if (mounted) {
       StatusComponents.showToast(
@@ -171,11 +178,16 @@ class _OnboardingSecuritySetupPageState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Top Progress Header
-                OnboardingHeader(
-                  progress: 0.90,
-                  stepLabel: l10n.setupStep4,
-                  titleLabel: l10n.stepSecurity,
-                  onSkip: _onSkip,
+                ValueListenableBuilder<bool>(
+                  valueListenable: _isPinSetNotifier,
+                  builder: (context, isPinSet, _) {
+                    return OnboardingHeader(
+                      progress: 0.90,
+                      stepLabel: l10n.setupStep4,
+                      titleLabel: l10n.stepSecurity,
+                      onSkip: isPinSet ? null : _onSkip,
+                    );
+                  },
                 ),
 
                 // Content View: Switch between PIN setup & 2 Secret Recovery Questions setup

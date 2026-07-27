@@ -86,14 +86,19 @@ class AppTextField extends StatelessWidget {
     // If isAmount is true, use monospaced typography (JetBrains Mono).
     // Otherwise, use Hanken Grotesk from theme context.
     final defaultStyle = isAmount
-        ? (customTypography.amountDisplay).copyWith(color: colorScheme.onSurface)
-        : (textTheme.bodyLarge ?? const TextStyle()).copyWith(color: colorScheme.onSurface);
+        ? (customTypography.amountDisplay)
+            .copyWith(color: colorScheme.onSurface)
+        : (textTheme.bodyLarge ?? const TextStyle())
+            .copyWith(color: colorScheme.onSurface);
 
     final defaultHintStyle = isAmount
-        ? (customTypography.labelMediumMono).copyWith(color: AppColors.onSurfaceVariant)
-        : (textTheme.bodyMedium ?? const TextStyle()).copyWith(color: AppColors.onSurfaceVariant);
+        ? (customTypography.labelMediumMono)
+            .copyWith(color: AppColors.onSurfaceVariant)
+        : (textTheme.bodyMedium ?? const TextStyle())
+            .copyWith(color: AppColors.onSurfaceVariant);
 
-    final defaultLabelStyle = (textTheme.labelMedium ?? const TextStyle()).copyWith(
+    final defaultLabelStyle =
+        (textTheme.labelMedium ?? const TextStyle()).copyWith(
       color: colorScheme.onSurfaceVariant,
     );
 
@@ -114,7 +119,8 @@ class AppTextField extends StatelessWidget {
           onChanged: onChanged,
           onFieldSubmitted: onSubmitted,
           onTap: onTap,
-          onTapOutside: onTapOutside ?? (_) => FocusManager.instance.primaryFocus?.unfocus(),
+          onTapOutside: onTapOutside ??
+              (_) => FocusManager.instance.primaryFocus?.unfocus(),
           validator: validator,
           obscureText: obscureText,
           readOnly: readOnly,
@@ -123,7 +129,10 @@ class AppTextField extends StatelessWidget {
           maxLines: maxLines,
           minLines: minLines,
           maxLength: maxLength,
-          keyboardType: keyboardType ?? (isAmount ? const TextInputType.numberWithOptions(decimal: true) : null),
+          keyboardType: keyboardType ??
+              (isAmount
+                  ? const TextInputType.numberWithOptions(decimal: true)
+                  : null),
           textInputAction: textInputAction,
           style: style ?? defaultStyle,
           decoration: InputDecoration(

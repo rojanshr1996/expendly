@@ -248,6 +248,10 @@
   "@pinMismatchError": {
     "description": "Error text when PIN entry doesn't match"
   },
+  "securityQuestionsRequired": "Please answer both security questions to protect your PIN.",
+  "@securityQuestionsRequired": {
+    "description": "Error toast when user tries to save security questions without answering both"
+  },
   "youAreAllSet": "You''re all set!",
   "@youAreAllSet": {
     "description": "Title on final setup completion page"

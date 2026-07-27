@@ -203,6 +203,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pinMismatchError => 'PINs do not match. Please try again.';
 
   @override
+  String get securityQuestionsRequired =>
+      'Please answer both security questions to protect your PIN.';
+
+  @override
   String get youAreAllSet => 'You\'re all set!';
 
   @override

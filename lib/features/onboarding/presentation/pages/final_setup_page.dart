@@ -8,7 +8,6 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/preference_service.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/glass_container.dart';
 
@@ -21,8 +20,13 @@ class FinalSetupPage extends StatefulWidget {
 }
 
 class _FinalSetupPageState extends State<FinalSetupPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
+  late final AnimationController _entranceController;
   late final AnimationController _pulseController;
+  late final Animation<double> _scaleAnimation;
+  late final Animation<double> _fadeAnimation;
+  late final Animation<double> _iconRotateAnimation;
+
   final ValueNotifier<bool> _enableBiometricsNotifier =
       ValueNotifier<bool>(false);
   final ValueNotifier<bool> _enableNotificationsNotifier =
@@ -32,14 +36,48 @@ class _FinalSetupPageState extends State<FinalSetupPage>
   @override
   void initState() {
     super.initState();
+
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _entranceController,
+        curve: Curves.elasticOut,
+      ),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _entranceController,
+        curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
+      ),
+    );
+
+    _iconRotateAnimation = Tween<double>(begin: -0.25, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _entranceController,
+        curve: const Interval(0.1, 0.8, curve: Curves.easeOutBack),
+      ),
+    );
+
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
+    );
+
+    _entranceController.forward().then((_) {
+      if (mounted) {
+        _pulseController.repeat(reverse: true);
+      }
+    });
   }
 
   @override
   void dispose() {
+    _entranceController.dispose();
     _pulseController.dispose();
     _enableBiometricsNotifier.dispose();
     _enableNotificationsNotifier.dispose();
@@ -68,6 +106,7 @@ class _FinalSetupPageState extends State<FinalSetupPage>
     final prefs = getIt<PreferenceService>();
     final textTheme = context.textTheme;
     final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
     final customTypography = context.customTypography;
     final l10n = context.l10n;
 
@@ -82,37 +121,47 @@ class _FinalSetupPageState extends State<FinalSetupPage>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Celebratory Hero Graphic
+                  // Celebratory Animated Hero Graphic
                   AnimatedBuilder(
-                    animation: _pulseController,
+                    animation: Listenable.merge(
+                        [_entranceController, _pulseController]),
                     builder: (context, child) {
-                      final scale = 1.0 + (_pulseController.value * 0.05);
-                      return Transform.scale(
-                        scale: scale,
-                        child: Container(
-                          width: 140.w,
-                          height: 140.w,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.surfaceLow,
-                            border: Border.all(
-                              color: colorScheme.primary
-                                  .withAlpha((0.3 * 255).round()),
-                              width: 1.5,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
+                      final pulseScale = 1.0 + (_pulseController.value * 0.05);
+                      final currentScale = _scaleAnimation.value * pulseScale;
+
+                      return FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: Transform.scale(
+                          scale: currentScale,
+                          child: Container(
+                            width: 140.w,
+                            height: 140.w,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: customColors.surfaceLow,
+                              border: Border.all(
                                 color: colorScheme.primary
-                                    .withAlpha((0.2 * 255).round()),
-                                blurRadius: 30.r,
-                                spreadRadius: 5.r,
+                                    .withAlpha((0.3 * 255).round()),
+                                width: 1.5,
                               ),
-                            ],
-                          ),
-                          child: Icon(
-                            Icons.task_alt_rounded,
-                            size: 64.sp,
-                            color: colorScheme.primary,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: colorScheme.primary.withAlpha(
+                                      (0.2 * _fadeAnimation.value * 255)
+                                          .round()),
+                                  blurRadius: 30.r,
+                                  spreadRadius: 5.r,
+                                ),
+                              ],
+                            ),
+                            child: RotationTransition(
+                              turns: _iconRotateAnimation,
+                              child: Icon(
+                                Icons.task_alt_rounded,
+                                size: 64.sp,
+                                color: colorScheme.primary,
+                              ),
+                            ),
                           ),
                         ),
                       );
@@ -232,7 +281,7 @@ class _FinalSetupPageState extends State<FinalSetupPage>
                         Container(
                           padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
-                            color: AppColors.surfaceContainer,
+                            color: colorScheme.surfaceContainer,
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
@@ -290,7 +339,7 @@ class _FinalSetupPageState extends State<FinalSetupPage>
                         Container(
                           padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
-                            color: AppColors.surfaceContainer,
+                            color: colorScheme.surfaceContainer,
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(

@@ -20,10 +20,8 @@ class AccountSetupPage extends StatefulWidget {
 }
 
 class _AccountSetupPageState extends State<AccountSetupPage> {
-  final TextEditingController _cashBalanceController =
-      TextEditingController(text: '0.00');
-  final TextEditingController _bankBalanceController =
-      TextEditingController(text: '0.00');
+  final TextEditingController _cashBalanceController = TextEditingController();
+  final TextEditingController _bankBalanceController = TextEditingController();
 
   void _onContinue() {
     // In final setup, we seed these initial balances into Drift DB accounts

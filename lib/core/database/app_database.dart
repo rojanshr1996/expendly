@@ -5,6 +5,8 @@ import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import 'package:injectable/injectable.dart';
+
 import 'enums/database_enums.dart';
 import 'tables/attachments.dart';
 import 'tables/budgets.dart';
@@ -15,6 +17,7 @@ import 'tables/transactions.dart';
 
 part 'app_database.g.dart';
 
+@lazySingleton
 @DriftDatabase(tables: [
   Categories,
   Subcategories,

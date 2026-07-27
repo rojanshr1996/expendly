@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 enum AppFlavor {
   dev,
   qa,
@@ -21,10 +23,14 @@ class AppConfig {
   static AppConfig? _instance;
 
   static AppConfig get instance {
-    assert(
-      _instance != null,
-      'AppConfig must be initialized in main_[flavor].dart before accessing instance.',
-    );
+    if (_instance == null) {
+      return const AppConfig(
+        flavor: AppFlavor.dev,
+        appName: 'Expendly',
+        enableLogging: kDebugMode,
+        showFlavorBanner: false,
+      );
+    }
     return _instance!;
   }
 

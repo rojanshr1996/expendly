@@ -22,6 +22,7 @@ import '../../features/dashboard/domain/usecases/get_financial_summary.dart'
     as _i119;
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart'
     as _i24;
+import '../database/app_database.dart' as _i982;
 import '../services/encryption_service.dart' as _i180;
 import '../services/notification_service.dart' as _i941;
 import '../services/preference_service.dart' as _i605;
@@ -42,23 +43,26 @@ extension GetItInjectableX on _i174.GetIt {
       environmentFilter,
     );
     final registerModule = _$RegisterModule();
+    gh.lazySingleton<_i558.FlutterSecureStorage>(
+        () => registerModule.secureStorage);
     gh.lazySingleton<_i924.AppLogger>(() => _i924.AppLogger());
     gh.lazySingleton<_i858.RemoteConfigService>(
         () => _i858.RemoteConfigService());
     gh.lazySingleton<_i941.NotificationService>(
         () => _i941.NotificationService());
-    gh.lazySingleton<_i558.FlutterSecureStorage>(
-        () => registerModule.secureStorage);
-    gh.lazySingleton<_i838.DashboardLocalDataSource>(
-        () => _i838.DashboardLocalDataSourceImpl());
-    gh.lazySingleton<_i665.DashboardRepository>(() =>
-        _i509.DashboardRepositoryImpl(gh<_i838.DashboardLocalDataSource>()));
     gh.lazySingleton<_i535.SecureStorageService>(
         () => _i535.SecureStorageService(gh<_i558.FlutterSecureStorage>()));
     gh.lazySingleton<_i180.EncryptionService>(
         () => _i180.EncryptionService(gh<_i535.SecureStorageService>()));
     gh.lazySingleton<_i605.PreferenceService>(
         () => _i605.PreferenceService(gh<_i535.SecureStorageService>()));
+    gh.lazySingleton<_i838.DashboardLocalDataSource>(
+        () => _i838.DashboardLocalDataSourceImpl(
+              gh<_i982.AppDatabase>(),
+              gh<_i605.PreferenceService>(),
+            ));
+    gh.lazySingleton<_i665.DashboardRepository>(() =>
+        _i509.DashboardRepositoryImpl(gh<_i838.DashboardLocalDataSource>()));
     gh.lazySingleton<_i119.GetFinancialSummary>(
         () => _i119.GetFinancialSummary(gh<_i665.DashboardRepository>()));
     gh.factory<_i24.DashboardCubit>(
