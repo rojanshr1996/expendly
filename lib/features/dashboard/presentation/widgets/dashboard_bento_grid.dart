@@ -5,12 +5,13 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
+import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../domain/entities/financial_summary.dart';
 
 /// Bento Grid section displaying Net Balance (compact), Monthly Expenses, and Monthly Income.
-/// Budget tracking has been removed — the Budget tab handles that in full detail.
-/// Supports Privacy Mode balance obfuscation (`•••••`) and monospaced typography for all figures.
+/// Uses [CompactAmountText] to format amounts >= 100,000 using K, M, B notation and prevents layout overflows.
+/// Tapping an amount displays an interactive overlay tooltip showing the full exact un-truncated amount.
 class DashboardBentoGrid extends StatelessWidget {
   final FinancialSummary summary;
   final ValueNotifier<bool> isPrivacyModeNotifier;
@@ -20,15 +21,6 @@ class DashboardBentoGrid extends StatelessWidget {
     required this.summary,
     required this.isPrivacyModeNotifier,
   });
-
-  String _formatAmount(double amount, String symbol, bool isPrivacyMode) {
-    if (isPrivacyMode) return '$symbol •••••';
-    final formatted = amount.abs().toStringAsFixed(2).replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (Match m) => '${m[1]},',
-        );
-    return '$symbol$formatted';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,32 +66,34 @@ class DashboardBentoGrid extends StatelessWidget {
                     ),
                   ),
                   horizontalMarginSmall,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.totalBalance.toUpperCase(),
-                        style: (textTheme.labelSmall ?? const TextStyle())
-                            .copyWith(
-                          fontWeight: FontWeights.bold,
-                          color: colorScheme.onSurfaceVariant,
-                          letterSpacing: 1.0,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.totalBalance.toUpperCase(),
+                          style: (textTheme.labelSmall ?? const TextStyle())
+                              .copyWith(
+                            fontWeight: FontWeights.bold,
+                            color: colorScheme.onSurfaceVariant,
+                            letterSpacing: 1.0,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 2.h),
-                      Text(
-                        isPrivacyMode
-                            ? '$symbol •••••'
-                            : '${isNegativeBalance ? '-' : ''}${_formatAmount(summary.totalBalance, symbol, false)}',
-                        style: customTypography.labelMediumMono.copyWith(
-                          color: balanceColor,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeights.bold,
+                        SizedBox(height: 2.h),
+                        CompactAmountText(
+                          amount: summary.totalBalance,
+                          currencySymbol: symbol,
+                          isPrivacyMode: isPrivacyMode,
+                          style: customTypography.labelMediumMono.copyWith(
+                            color: balanceColor,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeights.bold,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  const Spacer(),
+                  horizontalMarginSmall,
                   // Net change pill
                   if (!isPrivacyMode)
                     Container(
@@ -150,14 +144,14 @@ class DashboardBentoGrid extends StatelessWidget {
                           ],
                         ),
                         verticalMarginXXSmall,
-                        Text(
-                          _formatAmount(
-                              summary.totalExpense, symbol, isPrivacyMode),
+                        CompactAmountText(
+                          amount: summary.totalExpense,
+                          currencySymbol: symbol,
+                          isPrivacyMode: isPrivacyMode,
                           style: (customTypography.amountDisplay).copyWith(
                             color: AppColors.semanticRed,
                             fontSize: 20.sp,
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
                         verticalMarginXXSmall,
                         Text(
@@ -197,14 +191,14 @@ class DashboardBentoGrid extends StatelessWidget {
                           ],
                         ),
                         verticalMarginXXSmall,
-                        Text(
-                          _formatAmount(
-                              summary.totalIncome, symbol, isPrivacyMode),
+                        CompactAmountText(
+                          amount: summary.totalIncome,
+                          currencySymbol: symbol,
+                          isPrivacyMode: isPrivacyMode,
                           style: (customTypography.amountDisplay).copyWith(
                             color: AppColors.semanticGreen,
                             fontSize: 20.sp,
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
                         verticalMarginXXSmall,
                         Text(

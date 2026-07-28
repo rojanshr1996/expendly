@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../constants/margin_constants.dart';
 import '../extensions/context_extensions.dart';
 import '../extensions/padding_extensions.dart';
+import '../extensions/shimmer_extensions.dart';
 import '../theme/app_colors.dart';
+
 import 'glass_container.dart';
 
 /// Feedback & Status Components matching modern design system standards.
@@ -221,14 +223,11 @@ class AppLoadingIndicator extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            width: 36.w,
-            height: 36.w,
-            child: const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              strokeWidth: 3.0,
-            ),
-          ),
+          ShimmerBox(
+            width: 48.w,
+            height: 48.w,
+            borderRadius: BorderRadius.circular(12.r),
+          ).animateShimmer(),
           if (message != null) ...[
             verticalMarginSmall,
             Text(
@@ -239,5 +238,6 @@ class AppLoadingIndicator extends StatelessWidget {
         ],
       ),
     );
+
   }
 }

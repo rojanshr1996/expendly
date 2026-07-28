@@ -3,6 +3,8 @@ import 'package:injectable/injectable.dart';
 
 import '../../../../core/database/app_database.dart';
 import '../../../../core/database/enums/database_enums.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/services/preference_service.dart';
 import '../../domain/entities/transaction_item.dart';
 
 abstract class TransactionLocalDataSource {
@@ -14,6 +16,7 @@ abstract class TransactionLocalDataSource {
     required int categoryId,
     required DateTime timestamp,
     String? note,
+    PaymentMethod? paymentMethod,
     String currencyCode = 'USD',
   });
   Future<void> deleteTransaction(int id);
@@ -35,7 +38,9 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
     ])
       ..orderBy([
         OrderingTerm(
-            expression: _db.transactions.timestamp, mode: OrderingMode.desc)
+            expression: _db.transactions.timestamp, mode: OrderingMode.desc),
+        OrderingTerm(
+            expression: _db.transactions.id, mode: OrderingMode.desc),
       ]);
 
     final rows = await query.get();
@@ -55,13 +60,13 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
         categoryColorHex: cat.color,
         timestamp: tx.timestamp,
         note: tx.note,
+        paymentMethod: tx.paymentMethod,
       );
     }).toList();
   }
 
   @override
-  Future<List<TransactionItem>> getTransactionsByType(
-      TransactionType type) async {
+  Future<List<TransactionItem>> getTransactionsByType(TransactionType type) async {
     final query = _db.select(_db.transactions).join([
       innerJoin(
         _db.categories,
@@ -71,8 +76,11 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
       ..where(_db.transactions.type.equals(type.index))
       ..orderBy([
         OrderingTerm(
-            expression: _db.transactions.timestamp, mode: OrderingMode.desc)
+            expression: _db.transactions.timestamp, mode: OrderingMode.desc),
+        OrderingTerm(
+            expression: _db.transactions.id, mode: OrderingMode.desc),
       ]);
+
 
     final rows = await query.get();
 
@@ -91,6 +99,7 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
         categoryColorHex: cat.color,
         timestamp: tx.timestamp,
         note: tx.note,
+        paymentMethod: tx.paymentMethod,
       );
     }).toList();
   }
@@ -102,16 +111,24 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
     required int categoryId,
     required DateTime timestamp,
     String? note,
+    PaymentMethod? paymentMethod,
     String currencyCode = 'USD',
   }) async {
     final minorUnits = (amount * 100).round();
+    final effectiveCurrencyCode = currencyCode == 'USD'
+        ? (getIt.isRegistered<PreferenceService>()
+            ? getIt<PreferenceService>().currencyCode
+            : currencyCode)
+        : currencyCode;
+
     final companion = TransactionsCompanion.insert(
       type: type,
       amount: minorUnits,
-      currencyCode: Value(currencyCode),
+      currencyCode: Value(effectiveCurrencyCode),
       categoryId: categoryId,
       timestamp: timestamp,
       note: Value(note),
+      paymentMethod: Value(paymentMethod),
     );
     return await _db.into(_db.transactions).insert(companion);
   }

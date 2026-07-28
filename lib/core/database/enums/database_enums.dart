@@ -5,7 +5,9 @@ enum TransactionType {
 }
 
 enum BudgetPeriod {
+  weekly,
   monthly,
+  yearly,
 }
 
 enum RecurrenceFrequency {
@@ -14,3 +16,10 @@ enum RecurrenceFrequency {
   monthly,
   yearly,
 }
+
+enum PaymentMethod {
+  card,
+  cash,
+  account,
+}
+

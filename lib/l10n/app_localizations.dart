@@ -772,6 +772,30 @@ abstract class AppLocalizations {
   /// **'CATEGORY'**
   String get categoryLabel;
 
+  /// Label for payment method selector
+  ///
+  /// In en, this message translates to:
+  /// **'PAYMENT METHOD'**
+  String get paymentMethodLabel;
+
+  /// Card payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get paymentCard;
+
+  /// Cash payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get paymentCash;
+
+  /// Account payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get paymentAccount;
+
   /// Button to save transaction
   ///
   /// In en, this message translates to:
@@ -957,6 +981,402 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'To Category / Account'**
   String get toAccount;
+
+  /// Premium badge text
+  ///
+  /// In en, this message translates to:
+  /// **'PREMIUM'**
+  String get premium;
+
+  /// Title for pro upgrade card
+  ///
+  /// In en, this message translates to:
+  /// **'Go Pro for Unlimited Flow'**
+  String get goProTitle;
+
+  /// Description for pro upgrade card
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock advanced analytics, multi-currency support, and cloud-sync across all your devices.'**
+  String get goProDesc;
+
+  /// Button text for upgrading to premium
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade Now — \$9.99/mo'**
+  String get upgradeNow;
+
+  /// Section header for account settings
+  ///
+  /// In en, this message translates to:
+  /// **'ACCOUNT'**
+  String get accountSection;
+
+  /// Label for personal profile tile
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Profile'**
+  String get personalProfile;
+
+  /// Subtitle for personal profile tile
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your identity and bio'**
+  String get personalProfileDesc;
+
+  /// Label for subscription plan tile
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription Plan'**
+  String get subscriptionPlan;
+
+  /// Subtitle for subscription plan tile
+  ///
+  /// In en, this message translates to:
+  /// **'Free Tier • Manage Billing'**
+  String get subscriptionPlanDesc;
+
+  /// Section header for security settings
+  ///
+  /// In en, this message translates to:
+  /// **'SECURITY'**
+  String get securitySection;
+
+  /// Label for biometric authentication setting
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric Authentication'**
+  String get biometricAuth;
+
+  /// Label for change PIN setting
+  ///
+  /// In en, this message translates to:
+  /// **'Change Security PIN'**
+  String get changeSecurityPin;
+
+  /// Section header for appearance settings
+  ///
+  /// In en, this message translates to:
+  /// **'APPEARANCE'**
+  String get appearanceSection;
+
+  /// Label for theme setting
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get themeLabel;
+
+  /// Value display for dark mode theme
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
+
+  /// Label for primary currency setting
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Currency'**
+  String get primaryCurrency;
+
+  /// Section header for data management settings
+  ///
+  /// In en, this message translates to:
+  /// **'DATA MANAGEMENT'**
+  String get dataManagementSection;
+
+  /// Label for cloud backup setting
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud Backup'**
+  String get cloudBackup;
+
+  /// Status for last cloud backup
+  ///
+  /// In en, this message translates to:
+  /// **'Last: Today 08:42'**
+  String get cloudBackupLast;
+
+  /// Label for exporting data as CSV
+  ///
+  /// In en, this message translates to:
+  /// **'Export Data (.CSV)'**
+  String get exportDataCsv;
+
+  /// Label for clearing local cache
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Local Cache'**
+  String get clearLocalCache;
+
+  /// Footer tagline on settings screen
+  ///
+  /// In en, this message translates to:
+  /// **'Made with precision for your financial peace.'**
+  String get settingsFooterTagline;
+
+  /// Label for exporting AES-256 encrypted backup
+  ///
+  /// In en, this message translates to:
+  /// **'Export Encrypted Data (AES-256)'**
+  String get exportEncryptedData;
+
+  /// Label for importing AES-256 encrypted backup
+  ///
+  /// In en, this message translates to:
+  /// **'Import Encrypted Data (AES-256)'**
+  String get importEncryptedData;
+
+  /// Subtitle for export data setting
+  ///
+  /// In en, this message translates to:
+  /// **'Create an AES-256 encrypted backup file'**
+  String get exportEncryptedDataDesc;
+
+  /// Subtitle for import data setting
+  ///
+  /// In en, this message translates to:
+  /// **'Restore backup using encryption key or PIN'**
+  String get importEncryptedDataDesc;
+
+  /// Success message after export
+  ///
+  /// In en, this message translates to:
+  /// **'Data exported & encrypted successfully!'**
+  String get exportSuccess;
+
+  /// Success message after import
+  ///
+  /// In en, this message translates to:
+  /// **'Data restored successfully!'**
+  String get importSuccess;
+
+  /// Label for passphrase input prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Passphrase / PIN (Optional)'**
+  String get passphrasePrompt;
+
+  /// Hint text for passphrase input
+  ///
+  /// In en, this message translates to:
+  /// **'Enter PIN/key or leave empty for default'**
+  String get passphraseHint;
+
+  /// Label for payload import dialog textfield
+  ///
+  /// In en, this message translates to:
+  /// **'Paste Encrypted Data Payload'**
+  String get pasteEncryptedPayload;
+
+  /// Account ID label with ID placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'ACCOUNT ID: {id}'**
+  String accountId(String id);
+
+  /// Label for full name input field
+  ///
+  /// In en, this message translates to:
+  /// **'FULL NAME'**
+  String get fullNameLabel;
+
+  /// Placeholder hint for full name input
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get yourNameHint;
+
+  /// Validation message for missing name
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name'**
+  String get pleaseEnterYourName;
+
+  /// Label for email address input field
+  ///
+  /// In en, this message translates to:
+  /// **'EMAIL ADDRESS'**
+  String get emailAddressLabel;
+
+  /// Placeholder hint for email input
+  ///
+  /// In en, this message translates to:
+  /// **'email@example.com'**
+  String get emailHint;
+
+  /// Label for professional bio input field
+  ///
+  /// In en, this message translates to:
+  /// **'PROFESSIONAL BIO'**
+  String get professionalBioLabel;
+
+  /// Placeholder hint for professional bio input
+  ///
+  /// In en, this message translates to:
+  /// **'Briefly describe your financial focus...'**
+  String get bioHint;
+
+  /// Button label for saving changes
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// Button label for discarding changes
+  ///
+  /// In en, this message translates to:
+  /// **'Discard Changes'**
+  String get discardChanges;
+
+  /// Toast message when profile is saved
+  ///
+  /// In en, this message translates to:
+  /// **'Personal profile saved successfully!'**
+  String get profileSavedSuccess;
+
+  /// Toast message when changes are discarded
+  ///
+  /// In en, this message translates to:
+  /// **'Changes discarded'**
+  String get changesDiscarded;
+
+  /// Error message when photo selection fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to select photo: {error}'**
+  String failedToSelectPhoto(String error);
+
+  /// Error message when profile saving fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save profile: {error}'**
+  String failedToSaveProfile(String error);
+
+  /// Title for profile editing sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// Title for initial profile setup sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Set Up Profile'**
+  String get setUpProfile;
+
+  /// Instruction below avatar picker
+  ///
+  /// In en, this message translates to:
+  /// **'Tap avatar to choose photo from gallery'**
+  String get tapAvatarChoosePhoto;
+
+  /// Title for account transfer option
+  ///
+  /// In en, this message translates to:
+  /// **'Account Transfer'**
+  String get accountTransfer;
+
+  /// Description for export modal
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an optional encryption PIN/passphrase to protect your backup with AES-256.'**
+  String get exportPromptDesc;
+
+  /// Button to trigger encrypted export
+  ///
+  /// In en, this message translates to:
+  /// **'Export & Encrypt (AES-256)'**
+  String get exportEncryptButton;
+
+  /// Button to copy encrypted export payload
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Encrypted Text'**
+  String get copyEncryptedText;
+
+  /// Generic done button label
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// Toast message when payload copied
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypted payload copied to clipboard!'**
+  String get encryptedPayloadCopied;
+
+  /// Hint text for pasting encrypted payload
+  ///
+  /// In en, this message translates to:
+  /// **'Paste ivBase64:cipherTextBase64 here...'**
+  String get pastePayloadHint;
+
+  /// Validation error for missing payload
+  ///
+  /// In en, this message translates to:
+  /// **'Please paste an encrypted payload.'**
+  String get pleasePastePayload;
+
+  /// Button to trigger payload decryption
+  ///
+  /// In en, this message translates to:
+  /// **'Decrypt & Restore Data'**
+  String get decryptRestoreData;
+
+  /// Subtitle for CSV export option
+  ///
+  /// In en, this message translates to:
+  /// **'Export unencrypted .csv for Sheets or Excel'**
+  String get exportCsvDesc;
+
+  /// Toast message for CSV export destination
+  ///
+  /// In en, this message translates to:
+  /// **'CSV exported to {filename}'**
+  String csvExportedTo(String filename);
+
+  /// Toast message for CSV export error
+  ///
+  /// In en, this message translates to:
+  /// **'CSV Export failed: {error}'**
+  String csvExportFailed(String error);
+
+  /// Toast message for export error
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed: {error}'**
+  String exportFailed(String error);
+
+  /// Toast message for import error
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed: Invalid payload or decryption key.'**
+  String get importFailedKey;
+
+  /// Placeholder hint for transaction note
+  ///
+  /// In en, this message translates to:
+  /// **'Add note (optional)...'**
+  String get addNoteHint;
+
+  /// Fallback label for source category
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get source;
+
+  /// Fallback label for destination category
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get destination;
+
+  /// Button to create new budget
+  ///
+  /// In en, this message translates to:
+  /// **'Create Budget'**
+  String get createBudget;
 }
 
 class _AppLocalizationsDelegate

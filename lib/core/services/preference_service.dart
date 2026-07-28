@@ -14,6 +14,7 @@ class PreferenceService {
   static const String keyLegacySecurityPin = 'security_pin';
   static const String keyBiometricsEnabled = 'biometrics_enabled';
   static const String keyThemeMode = 'theme_mode';
+  static const String keyActivityViewMode = 'activity_view_mode';
 
   final SecureStorageService _secureStorage;
   SharedPreferences? _prefs;
@@ -27,6 +28,7 @@ class PreferenceService {
   String? _securityPin;
   bool _biometricsEnabled = false;
   String _themeMode = 'dark';
+  String _activityViewMode = 'calendar';
 
   bool get isOnboardingCompleted => _onboardingCompleted;
   String get currencyCode => _currencyCode;
@@ -35,6 +37,7 @@ class PreferenceService {
   bool get isSecurityPinSet => _securityPin != null && _securityPin!.isNotEmpty;
   bool get isBiometricsEnabled => _biometricsEnabled;
   String get themeMode => _themeMode;
+  String get activityViewMode => _activityViewMode;
 
   /// Initialize preference cache from persistent SharedPreferences and SecureStorage
   Future<void> init() async {
@@ -44,6 +47,7 @@ class PreferenceService {
     _currencySymbol = _prefs?.getString(keyCurrencySymbol) ?? '\$';
     _biometricsEnabled = _prefs?.getBool(keyBiometricsEnabled) ?? false;
     _themeMode = _prefs?.getString(keyThemeMode) ?? 'dark';
+    _activityViewMode = _prefs?.getString(keyActivityViewMode) ?? 'calendar';
 
     // Check for legacy security PIN in SharedPreferences & migrate to SecureStorage
     final legacyPin = _prefs?.getString(keyLegacySecurityPin);
@@ -96,6 +100,12 @@ class PreferenceService {
     _themeMode = mode;
     await _prefs?.setString(keyThemeMode, mode);
     AppLogger.i('Preference persisted: ThemeMode set to $mode');
+  }
+
+  Future<void> setActivityViewMode(String mode) async {
+    _activityViewMode = mode;
+    await _prefs?.setString(keyActivityViewMode, mode);
+    AppLogger.i('Preference persisted: ActivityViewMode set to $mode');
   }
 
   // Security Recovery Question & Answer helpers

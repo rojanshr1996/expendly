@@ -4,6 +4,8 @@ import '../../domain/entities/budget_item.dart';
 import '../../domain/repositories/budget_repository.dart';
 import '../datasources/budget_local_datasource.dart';
 
+import '../../../../core/database/enums/database_enums.dart';
+
 @LazySingleton(as: BudgetRepository)
 class BudgetRepositoryImpl implements BudgetRepository {
   final BudgetLocalDataSource _localDataSource;
@@ -17,10 +19,16 @@ class BudgetRepositoryImpl implements BudgetRepository {
   Future<int> setBudget({
     int? categoryId,
     required double targetAmount,
+    BudgetPeriod period = BudgetPeriod.monthly,
+    bool notifyAtThreshold = true,
+    int thresholdPercentage = 80,
   }) =>
       _localDataSource.setBudget(
         categoryId: categoryId,
         targetAmount: targetAmount,
+        period: period,
+        notifyAtThreshold: notifyAtThreshold,
+        thresholdPercentage: thresholdPercentage,
       );
 
   @override

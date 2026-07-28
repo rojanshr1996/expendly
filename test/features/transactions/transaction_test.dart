@@ -77,4 +77,22 @@ void main() {
     expect(loaded.filteredTransactions, hasLength(1));
     expect(loaded.filteredTransactions.first.note, equals('Coffee'));
   });
+
+  test('Should store and retrieve transaction with paymentMethod', () async {
+    final categories = await db.select(db.categories).get();
+    final firstCat = categories.first;
+
+    await cubit.addTransaction(
+      type: TransactionType.expense,
+      amount: 25.0,
+      categoryId: firstCat.id,
+      timestamp: DateTime.now(),
+      note: 'Card Payment',
+      paymentMethod: PaymentMethod.card,
+    );
+
+    final loaded = cubit.state as TransactionLoaded;
+    expect(loaded.transactions, hasLength(1));
+    expect(loaded.transactions.first.paymentMethod, equals(PaymentMethod.card));
+  });
 }

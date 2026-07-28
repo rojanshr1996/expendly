@@ -26,6 +26,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
     required int categoryId,
     required DateTime timestamp,
     String? note,
+    PaymentMethod? paymentMethod,
     String currencyCode = 'USD',
   }) =>
       _localDataSource.addTransaction(
@@ -34,8 +35,10 @@ class TransactionRepositoryImpl implements TransactionRepository {
         categoryId: categoryId,
         timestamp: timestamp,
         note: note,
+        paymentMethod: paymentMethod,
         currencyCode: currencyCode,
       );
+
 
   @override
   Future<void> deleteTransaction(int id) =>

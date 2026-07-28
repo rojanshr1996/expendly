@@ -15,4 +15,8 @@ class Budgets extends Table {
   IntColumn get month => integer().nullable()();
   TextColumn get currencyCode =>
       text().withLength(min: 3, max: 3).withDefault(const Constant('USD'))();
+  BoolColumn get notifyAtThreshold =>
+      boolean().withDefault(const Constant(true))();
+  IntColumn get thresholdPercentage =>
+      integer().withDefault(const Constant(80))();
 }

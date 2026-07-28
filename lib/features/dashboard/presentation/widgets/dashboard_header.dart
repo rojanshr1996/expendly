@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/margin_constants.dart';
+import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/font_weights.dart';
+import '../../../profile/presentation/cubit/profile_cubit.dart';
+import '../../../profile/presentation/cubit/profile_state.dart';
+import '../../../profile/presentation/widgets/user_avatar.dart';
 
 /// Top App Bar matching the Modern Fiscal Core glass header specs.
 /// Includes user profile avatar ring, app title, privacy mode toggle (hides balance with •••••), and settings.
@@ -36,38 +41,50 @@ class DashboardHeader extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                // User Avatar with glowing primary ring
-                Container(
-                  width: 38.w,
-                  height: 38.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: colorScheme.surfaceContainerHigh,
-                    border: Border.all(
-                      color: colorScheme.primary.withAlpha((0.3 * 255).round()),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.person_rounded,
-                      color: colorScheme.primary,
-                      size: 22.sp,
-                    ),
-                  ),
-                ),
-                horizontalMarginSmall,
+            BlocBuilder<ProfileCubit, ProfileState>(
+              bloc: getIt<ProfileCubit>(),
+              builder: (context, state) {
+                final profile = state is ProfileLoaded ? state.profile : null;
 
-                Text(
-                  context.l10n.appName,
-                  style: (textTheme.titleLarge ?? const TextStyle()).copyWith(
-                    fontWeight: FontWeights.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-              ],
+                return Row(
+                  children: [
+                    // User Avatar with glowing primary ring
+                    UserAvatar(
+                      imagePath: profile?.imagePath,
+                      radius: 19.w,
+                      borderWidth: 1.5,
+                      iconSize: 22.sp,
+                    ),
+                    horizontalMarginSmall,
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          profile != null && profile.name.isNotEmpty
+                              ? profile.name
+                              : context.l10n.appName,
+                          style: (textTheme.titleMedium ?? const TextStyle()).copyWith(
+                            fontWeight: FontWeights.bold,
+                            color: colorScheme.onSurface,
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                        if (profile != null && profile.name.isNotEmpty)
+                          Text(
+                            context.l10n.appName,
+                            style: TextStyle(
+                              color: colorScheme.onSurfaceVariant,
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                );
+              },
             ),
             Row(
               children: [

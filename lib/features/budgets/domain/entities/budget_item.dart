@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/database/enums/database_enums.dart';
+
 class BudgetItem extends Equatable {
   final int id;
   final int? categoryId;
@@ -8,6 +10,9 @@ class BudgetItem extends Equatable {
   final String categoryColorHex;
   final double targetAmount;
   final double spentAmount;
+  final BudgetPeriod period;
+  final bool notifyAtThreshold;
+  final int thresholdPercentage;
 
   const BudgetItem({
     required this.id,
@@ -17,6 +22,9 @@ class BudgetItem extends Equatable {
     required this.categoryColorHex,
     required this.targetAmount,
     required this.spentAmount,
+    this.period = BudgetPeriod.monthly,
+    this.notifyAtThreshold = true,
+    this.thresholdPercentage = 80,
   });
 
   double get progressPercentage {
@@ -26,7 +34,8 @@ class BudgetItem extends Equatable {
   }
 
   bool get isOverBudget => spentAmount > targetAmount;
-  bool get isWarning => progressPercentage >= 0.9 && !isOverBudget;
+  bool get isWarning =>
+      progressPercentage >= (thresholdPercentage / 100.0) && !isOverBudget;
 
   @override
   List<Object?> get props => [
@@ -37,5 +46,8 @@ class BudgetItem extends Equatable {
         categoryColorHex,
         targetAmount,
         spentAmount,
+        period,
+        notifyAtThreshold,
+        thresholdPercentage,
       ];
 }

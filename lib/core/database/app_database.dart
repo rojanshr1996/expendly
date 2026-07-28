@@ -2,10 +2,9 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-
-import 'package:injectable/injectable.dart';
 
 import 'enums/database_enums.dart';
 import 'tables/attachments.dart';
@@ -14,6 +13,7 @@ import 'tables/categories.dart';
 import 'tables/recurring_transactions.dart';
 import 'tables/tags.dart';
 import 'tables/transactions.dart';
+import 'tables/user_profiles.dart';
 
 part 'app_database.g.dart';
 
@@ -27,14 +27,15 @@ part 'app_database.g.dart';
   Attachments,
   Budgets,
   RecurringTransactions,
+  UserProfiles,
 ])
 class AppDatabase extends _$AppDatabase {
   @factoryMethod
   AppDatabase() : super(_openConnection());
-  AppDatabase.forTesting(QueryExecutor e) : super(e);
+  AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -50,14 +51,21 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(budgets, budgets.year);
           await m.addColumn(budgets, budgets.month);
           await m.addColumn(budgets, budgets.currencyCode);
-          await m.addColumn(
-              recurringTransactions, recurringTransactions.isAutoCreate);
-          await m.addColumn(
-              recurringTransactions, recurringTransactions.isActive);
-          await m.addColumn(
-              recurringTransactions, recurringTransactions.lastProcessedDate);
+          await m.addColumn(recurringTransactions, recurringTransactions.isAutoCreate);
+          await m.addColumn(recurringTransactions, recurringTransactions.isActive);
+          await m.addColumn(recurringTransactions, recurringTransactions.lastProcessedDate);
           await m.addColumn(categories, categories.isDefault);
           await m.addColumn(categories, categories.sortOrder);
+        }
+        if (from < 3) {
+          await m.addColumn(transactions, transactions.paymentMethod);
+        }
+        if (from < 4) {
+          await m.addColumn(budgets, budgets.notifyAtThreshold);
+          await m.addColumn(budgets, budgets.thresholdPercentage);
+        }
+        if (from < 5) {
+          await m.createTable(userProfiles);
         }
       },
     );

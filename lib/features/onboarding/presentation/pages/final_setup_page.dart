@@ -6,7 +6,9 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/database/app_database.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/extensions/shimmer_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
+
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/glass_container.dart';
@@ -398,16 +400,13 @@ class _FinalSetupPageState extends State<FinalSetupPage>
                         return ElevatedButton(
                           onPressed: isLoading ? null : _onGetStarted,
                           child: isLoading
-                              ? SizedBox(
-                                  width: 24.w,
-                                  height: 24.w,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        colorScheme.onPrimary),
-                                  ),
-                                )
+                              ? ShimmerBox(
+                                  width: 80.w,
+                                  height: 16.h,
+                                  borderRadius: BorderRadius.circular(4.r),
+                                ).animateShimmer()
                               : Text(l10n.getStarted),
+
                         );
                       },
                     ),

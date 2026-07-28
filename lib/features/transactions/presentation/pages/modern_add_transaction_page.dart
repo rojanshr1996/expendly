@@ -1,7 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/constants/margin_constants.dart';
+import '../../../../core/constants/padding_constants.dart';
 import '../../../../core/database/app_database.dart';
 import '../../../../core/database/enums/database_enums.dart';
 import '../../../../core/di/injection.dart';
@@ -19,21 +22,16 @@ class ModernAddTransactionPage extends StatefulWidget {
   const ModernAddTransactionPage({super.key});
 
   @override
-  State<ModernAddTransactionPage> createState() =>
-      _ModernAddTransactionPageState();
+  State<ModernAddTransactionPage> createState() => _ModernAddTransactionPageState();
 }
 
 class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
-  final ValueNotifier<TransactionType> _typeNotifier =
-      ValueNotifier<TransactionType>(TransactionType.expense);
-  final ValueNotifier<String> _amountStringNotifier =
-      ValueNotifier<String>('0');
-  final ValueNotifier<CategoryItem?> _selectedCategoryNotifier =
-      ValueNotifier<CategoryItem?>(null);
-  final ValueNotifier<CategoryItem?> _destinationCategoryNotifier =
-      ValueNotifier<CategoryItem?>(null);
-  final ValueNotifier<DateTime> _dateNotifier =
-      ValueNotifier<DateTime>(DateTime.now());
+  final ValueNotifier<TransactionType> _typeNotifier = ValueNotifier<TransactionType>(TransactionType.expense);
+  final ValueNotifier<String> _amountStringNotifier = ValueNotifier<String>('0');
+  final ValueNotifier<CategoryItem?> _selectedCategoryNotifier = ValueNotifier<CategoryItem?>(null);
+  final ValueNotifier<CategoryItem?> _destinationCategoryNotifier = ValueNotifier<CategoryItem?>(null);
+  final ValueNotifier<DateTime> _dateNotifier = ValueNotifier<DateTime>(DateTime.now());
+  final ValueNotifier<PaymentMethod> _paymentMethodNotifier = ValueNotifier<PaymentMethod>(PaymentMethod.card);
   final TextEditingController _noteController = TextEditingController();
   final TextEditingController _feeController = TextEditingController();
 
@@ -69,11 +67,16 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
         }
       }
 
-      _expenseCategories = expense;
-      _incomeCategories = income;
-
-      if (_expenseCategories.isNotEmpty) {
-        _selectedCategoryNotifier.value = _expenseCategories.first;
+      // setState() ensures the widget rebuilds after the async load so categories
+      // are visible immediately without requiring a tab switch.
+      if (mounted) {
+        setState(() {
+          _expenseCategories = expense;
+          _incomeCategories = income;
+        });
+        if (_expenseCategories.isNotEmpty) {
+          _selectedCategoryNotifier.value = _expenseCategories.first;
+        }
       }
     } catch (_) {}
   }
@@ -85,6 +88,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
     _selectedCategoryNotifier.dispose();
     _destinationCategoryNotifier.dispose();
     _dateNotifier.dispose();
+    _paymentMethodNotifier.dispose();
     _noteController.dispose();
     _feeController.dispose();
     super.dispose();
@@ -175,18 +179,18 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: Column(
                 children: [
-                  const SizedBox(height: 16),
+                  verticalMarginMedium,
 
                   // Segmented Type Selector (Expense / Income / Transfer)
                   ValueListenableBuilder<TransactionType>(
                     valueListenable: _typeNotifier,
                     builder: (context, type, _) {
                       return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 24),
-                        padding: const EdgeInsets.all(4),
+                        margin: horizontalPaddingLarge,
+                        padding: allXXSmall,
                         decoration: BoxDecoration(
                           color: colorScheme.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(16.r),
                         ),
                         child: Row(
                           children: [
@@ -196,34 +200,28 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 onTap: () {
                                   _typeNotifier.value = TransactionType.expense;
                                   if (_expenseCategories.isNotEmpty) {
-                                    _selectedCategoryNotifier.value =
-                                        _expenseCategories.first;
+                                    _selectedCategoryNotifier.value = _expenseCategories.first;
                                   }
                                 },
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 200),
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
+                                  margin: horizontalPaddingTiny,
+                                  padding: verticalPaddingSmall,
                                   decoration: BoxDecoration(
                                     color: type == TransactionType.expense
-                                        ? colorScheme.error
-                                            .withAlpha((0.2 * 255).round())
+                                        ? colorScheme.error.withAlpha((0.2 * 255).round())
                                         : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(12.r),
                                     border: type == TransactionType.expense
-                                        ? Border.all(
-                                            color: colorScheme.error,
-                                            width: 1.5)
+                                        ? Border.all(color: colorScheme.error, width: 1.5)
                                         : null,
                                   ),
                                   child: Center(
                                     child: Text(
                                       context.l10n.expense,
-                                      style: customTypography.bodyLargeBold
-                                          .copyWith(
-                                        color: type == TransactionType.expense
-                                            ? colorScheme.error
-                                            : colorScheme.outline,
+                                      style: customTypography.bodyLargeBold.copyWith(
+                                        color:
+                                            type == TransactionType.expense ? colorScheme.error : colorScheme.outline,
                                       ),
                                     ),
                                   ),
@@ -236,34 +234,28 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 onTap: () {
                                   _typeNotifier.value = TransactionType.income;
                                   if (_incomeCategories.isNotEmpty) {
-                                    _selectedCategoryNotifier.value =
-                                        _incomeCategories.first;
+                                    _selectedCategoryNotifier.value = _incomeCategories.first;
                                   }
                                 },
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 200),
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
+                                  margin: horizontalPaddingTiny,
+                                  padding: verticalPaddingSmall,
                                   decoration: BoxDecoration(
                                     color: type == TransactionType.income
-                                        ? colorScheme.primary
-                                            .withAlpha((0.2 * 255).round())
+                                        ? colorScheme.primary.withAlpha((0.2 * 255).round())
                                         : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(12.r),
                                     border: type == TransactionType.income
-                                        ? Border.all(
-                                            color: colorScheme.primary,
-                                            width: 1.5)
+                                        ? Border.all(color: colorScheme.primary, width: 1.5)
                                         : null,
                                   ),
                                   child: Center(
                                     child: Text(
                                       context.l10n.income,
-                                      style: customTypography.bodyLargeBold
-                                          .copyWith(
-                                        color: type == TransactionType.income
-                                            ? colorScheme.primary
-                                            : colorScheme.outline,
+                                      style: customTypography.bodyLargeBold.copyWith(
+                                        color:
+                                            type == TransactionType.income ? colorScheme.primary : colorScheme.outline,
                                       ),
                                     ),
                                   ),
@@ -274,38 +266,31 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                             Expanded(
                               child: GestureDetector(
                                 onTap: () {
-                                  _typeNotifier.value =
-                                      TransactionType.transfer;
+                                  _typeNotifier.value = TransactionType.transfer;
                                   if (_expenseCategories.isNotEmpty) {
-                                    _selectedCategoryNotifier.value =
-                                        _expenseCategories.first;
+                                    _selectedCategoryNotifier.value = _expenseCategories.first;
                                   }
                                   if (_incomeCategories.isNotEmpty) {
-                                    _destinationCategoryNotifier.value =
-                                        _incomeCategories.first;
+                                    _destinationCategoryNotifier.value = _incomeCategories.first;
                                   }
                                 },
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 200),
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
+                                  margin: horizontalPaddingTiny,
+                                  padding: verticalPaddingSmall,
                                   decoration: BoxDecoration(
                                     color: type == TransactionType.transfer
-                                        ? colorScheme.secondary
-                                            .withAlpha((0.2 * 255).round())
+                                        ? colorScheme.secondary.withAlpha((0.2 * 255).round())
                                         : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(12.r),
                                     border: type == TransactionType.transfer
-                                        ? Border.all(
-                                            color: colorScheme.secondary,
-                                            width: 1.5)
+                                        ? Border.all(color: colorScheme.secondary, width: 1.5)
                                         : null,
                                   ),
                                   child: Center(
                                     child: Text(
                                       context.l10n.transfer,
-                                      style: customTypography.bodyLargeBold
-                                          .copyWith(
+                                      style: customTypography.bodyLargeBold.copyWith(
                                         color: type == TransactionType.transfer
                                             ? colorScheme.secondary
                                             : colorScheme.outline,
@@ -321,7 +306,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                     },
                   ),
 
-                  const SizedBox(height: 24),
+                  verticalMarginLarge,
 
                   // Amount Display with Dynamic Signup Currency Symbol
                   ValueListenableBuilder<String>(
@@ -330,8 +315,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                       return ValueListenableBuilder<TransactionType>(
                         valueListenable: _typeNotifier,
                         builder: (context, type, _) {
-                          final currencySymbol =
-                              getIt<PreferenceService>().currencySymbol;
+                          final currencySymbol = getIt<PreferenceService>().currencySymbol;
                           final color = type == TransactionType.income
                               ? colorScheme.primary
                               : type == TransactionType.transfer
@@ -342,21 +326,19 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                             children: [
                               Text(
                                 context.l10n.amountLabel,
-                                style:
-                                    customTypography.labelMediumMono.copyWith(
+                                style: customTypography.labelMediumMono.copyWith(
                                   color: colorScheme.outline,
                                   letterSpacing: 1.5,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              verticalMarginXSmall,
                               FittedBox(
                                 fit: BoxFit.scaleDown,
                                 child: Text(
                                   '$currencySymbol $amountStr',
-                                  style: customTypography.headlineLargeMonoBold
-                                      .copyWith(
+                                  style: customTypography.headlineLargeMonoBold.copyWith(
                                     color: color,
-                                    fontSize: 42,
+                                    fontSize: 42.sp,
                                   ),
                                 ),
                               ),
@@ -367,7 +349,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                     },
                   ),
 
-                  const SizedBox(height: 24),
+                  verticalMarginLarge,
 
                   // Category / Transfer Account Selection Fields
                   ValueListenableBuilder<TransactionType>(
@@ -375,80 +357,63 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                     builder: (context, currentType, _) {
                       if (currentType == TransactionType.transfer) {
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          padding: horizontalPaddingLarge,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // From Account / Category
                               Text(
                                 context.l10n.fromAccount,
-                                style:
-                                    customTypography.labelMediumMono.copyWith(
+                                style: customTypography.labelMediumMono.copyWith(
                                   color: colorScheme.outline,
                                   letterSpacing: 1.2,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              verticalMarginXSmall,
                               ValueListenableBuilder<CategoryItem?>(
                                 valueListenable: _selectedCategoryNotifier,
                                 builder: (context, fromCat, _) {
                                   final name = fromCat?.name ?? 'Source';
-                                  final catColor = _parseColor(
-                                      fromCat?.colorHex ?? '#57F1DB',
-                                      colorScheme.primary);
-                                  final iconData =
-                                      _getIconData(fromCat?.icon ?? 'category');
+                                  final catColor = _parseColor(fromCat?.colorHex ?? '#57F1DB', colorScheme.primary);
+                                  final iconData = _getIconData(fromCat?.icon ?? 'category');
 
                                   return InkWell(
                                     onTap: () async {
-                                      final picked =
-                                          await CategoryPickerSheet.show(
+                                      final picked = await CategoryPickerSheet.show(
                                         context: context,
                                         categories:
-                                            _expenseCategories.isNotEmpty
-                                                ? _expenseCategories
-                                                : _incomeCategories,
+                                            _expenseCategories.isNotEmpty ? _expenseCategories : _incomeCategories,
                                         selectedCategory: fromCat,
                                         initialType: TransactionType.expense,
                                       );
                                       if (picked != null) {
-                                        _selectedCategoryNotifier.value =
-                                            picked;
+                                        _selectedCategoryNotifier.value = picked;
                                       }
                                     },
-                                    borderRadius: BorderRadius.circular(16),
+                                    borderRadius: BorderRadius.circular(16.r),
                                     child: Container(
-                                      height: 52,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16),
+                                      height: 52.h,
+                                      padding: horizontalPaddingMedium,
                                       decoration: BoxDecoration(
                                         color: colorScheme.surfaceContainerHigh,
-                                        borderRadius: BorderRadius.circular(16),
-                                        border: Border.all(
-                                            color: colorScheme.outlineVariant),
+                                        borderRadius: BorderRadius.circular(16.r),
+                                        border: Border.all(color: colorScheme.outlineVariant),
                                       ),
                                       child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
                                             children: [
-                                              Icon(iconData,
-                                                  color: catColor, size: 20),
-                                              const SizedBox(width: 12),
+                                              Icon(iconData, color: catColor, size: 20.sp),
+                                              horizontalMarginSmall,
                                               Text(
                                                 name,
-                                                style: customTypography
-                                                    .bodyLargeBold
-                                                    .copyWith(
-                                                        color: colorScheme
-                                                            .onSurface),
+                                                style: customTypography.bodyLargeBold
+                                                    .copyWith(color: colorScheme.onSurface),
                                               ),
                                             ],
                                           ),
-                                          Icon(Icons.unfold_more_rounded,
-                                              color: colorScheme.outline,
-                                              size: 20),
+                                          Icon(Icons.unfold_more_rounded, color: colorScheme.outline, size: 20.sp),
                                         ],
                                       ),
                                     ),
@@ -456,77 +421,61 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 },
                               ),
 
-                              const SizedBox(height: 16),
+                              verticalMarginMedium,
 
                               // To Account / Category
                               Text(
                                 context.l10n.toAccount,
-                                style:
-                                    customTypography.labelMediumMono.copyWith(
+                                style: customTypography.labelMediumMono.copyWith(
                                   color: colorScheme.outline,
                                   letterSpacing: 1.2,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              verticalMarginXSmall,
                               ValueListenableBuilder<CategoryItem?>(
                                 valueListenable: _destinationCategoryNotifier,
                                 builder: (context, toCat, _) {
                                   final name = toCat?.name ?? 'Destination';
-                                  final catColor = _parseColor(
-                                      toCat?.colorHex ?? '#34D399',
-                                      colorScheme.secondary);
-                                  final iconData =
-                                      _getIconData(toCat?.icon ?? 'category');
+                                  final catColor = _parseColor(toCat?.colorHex ?? '#34D399', colorScheme.secondary);
+                                  final iconData = _getIconData(toCat?.icon ?? 'category');
 
                                   return InkWell(
                                     onTap: () async {
-                                      final picked =
-                                          await CategoryPickerSheet.show(
+                                      final picked = await CategoryPickerSheet.show(
                                         context: context,
-                                        categories: _incomeCategories.isNotEmpty
-                                            ? _incomeCategories
-                                            : _expenseCategories,
+                                        categories:
+                                            _incomeCategories.isNotEmpty ? _incomeCategories : _expenseCategories,
                                         selectedCategory: toCat,
                                         initialType: TransactionType.income,
                                       );
                                       if (picked != null) {
-                                        _destinationCategoryNotifier.value =
-                                            picked;
+                                        _destinationCategoryNotifier.value = picked;
                                       }
                                     },
-                                    borderRadius: BorderRadius.circular(16),
+                                    borderRadius: BorderRadius.circular(16.r),
                                     child: Container(
-                                      height: 52,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16),
+                                      height: 52.h,
+                                      padding: horizontalPaddingMedium,
                                       decoration: BoxDecoration(
                                         color: colorScheme.surfaceContainerHigh,
-                                        borderRadius: BorderRadius.circular(16),
-                                        border: Border.all(
-                                            color: colorScheme.outlineVariant),
+                                        borderRadius: BorderRadius.circular(16.r),
+                                        border: Border.all(color: colorScheme.outlineVariant),
                                       ),
                                       child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
                                             children: [
-                                              Icon(iconData,
-                                                  color: catColor, size: 20),
-                                              const SizedBox(width: 12),
+                                              Icon(iconData, color: catColor, size: 20.sp),
+                                              horizontalMarginSmall,
                                               Text(
                                                 name,
-                                                style: customTypography
-                                                    .bodyLargeBold
-                                                    .copyWith(
-                                                        color: colorScheme
-                                                            .onSurface),
+                                                style: customTypography.bodyLargeBold
+                                                    .copyWith(color: colorScheme.onSurface),
                                               ),
                                             ],
                                           ),
-                                          Icon(Icons.unfold_more_rounded,
-                                              color: colorScheme.outline,
-                                              size: 20),
+                                          Icon(Icons.unfold_more_rounded, color: colorScheme.outline, size: 20.sp),
                                         ],
                                       ),
                                     ),
@@ -534,24 +483,23 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 },
                               ),
 
-                              const SizedBox(height: 16),
+                              verticalMarginMedium,
 
                               // Transfer Fee Field
                               Text(
                                 context.l10n.transferFee,
-                                style:
-                                    customTypography.labelMediumMono.copyWith(
+                                style: customTypography.labelMediumMono.copyWith(
                                   color: colorScheme.outline,
                                   letterSpacing: 1.2,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              verticalMarginXSmall,
                               AppTextField(
                                 controller: _feeController,
                                 hintText: 'e.g. 5.00',
                                 isAmount: true,
                                 fillColor: colorScheme.surfaceContainerHigh,
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(16.r),
                               ),
                             ],
                           ),
@@ -559,12 +507,11 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                       }
 
                       // Expense or Income Category Selector
-                      final categories = currentType == TransactionType.expense
-                          ? _expenseCategories
-                          : _incomeCategories;
+                      final categories =
+                          currentType == TransactionType.expense ? _expenseCategories : _incomeCategories;
 
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: horizontalPaddingLarge,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -575,22 +522,17 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 letterSpacing: 1.2,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            verticalMarginXSmall,
                             ValueListenableBuilder<CategoryItem?>(
                               valueListenable: _selectedCategoryNotifier,
                               builder: (context, selectedCat, _) {
-                                final catName = selectedCat?.name ??
-                                    context.l10n.categoryLabel;
-                                final catColor = _parseColor(
-                                    selectedCat?.colorHex ?? '#57F1DB',
-                                    colorScheme.primary);
-                                final iconData = _getIconData(
-                                    selectedCat?.icon ?? 'category');
+                                final catName = selectedCat?.name ?? context.l10n.categoryLabel;
+                                final catColor = _parseColor(selectedCat?.colorHex ?? '#57F1DB', colorScheme.primary);
+                                final iconData = _getIconData(selectedCat?.icon ?? 'category');
 
                                 return InkWell(
                                   onTap: () async {
-                                    final picked =
-                                        await CategoryPickerSheet.show(
+                                    final picked = await CategoryPickerSheet.show(
                                       context: context,
                                       categories: categories,
                                       selectedCategory: selectedCat,
@@ -600,45 +542,39 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                       _selectedCategoryNotifier.value = picked;
                                     }
                                   },
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(16.r),
                                   child: Container(
-                                    height: 56,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16),
+                                    height: 56.h,
+                                    padding: horizontalPaddingMedium,
                                     decoration: BoxDecoration(
                                       color: colorScheme.surfaceContainerHigh,
-                                      borderRadius: BorderRadius.circular(16),
+                                      borderRadius: BorderRadius.circular(16.r),
                                       border: Border.all(
                                         color: colorScheme.outlineVariant,
                                         width: 1.0,
                                       ),
                                     ),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Row(
                                           children: [
                                             Container(
-                                              padding: const EdgeInsets.all(8),
+                                              padding: allXSmall,
                                               decoration: BoxDecoration(
-                                                color: catColor.withAlpha(
-                                                    (0.2 * 255).round()),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
+                                                color: catColor.withAlpha((0.2 * 255).round()),
+                                                borderRadius: BorderRadius.circular(10.r),
                                               ),
                                               child: Icon(
                                                 iconData,
                                                 color: catColor,
-                                                size: 20,
+                                                size: 20.sp,
                                               ),
                                             ),
-                                            const SizedBox(width: 12),
+                                            horizontalMarginSmall,
                                             Text(
                                               catName,
-                                              style: customTypography
-                                                  .bodyLargeBold
-                                                  .copyWith(
+                                              style: customTypography.bodyLargeBold.copyWith(
                                                 color: colorScheme.onSurface,
                                               ),
                                             ),
@@ -647,7 +583,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                         Icon(
                                           Icons.unfold_more_rounded,
                                           color: colorScheme.outline,
-                                          size: 22,
+                                          size: 22.sp,
                                         ),
                                       ],
                                     ),
@@ -661,94 +597,153 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                     },
                   ),
 
-                  const SizedBox(height: 20),
-
-                  // Note Input & Date Picker (Consistent 52px height & 16px radius)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Row(
-                      children: [
-                        // Date Selector Button matching AppTextField height
-                        ValueListenableBuilder<DateTime>(
-                          valueListenable: _dateNotifier,
-                          builder: (context, selectedDate, _) {
-                            return InkWell(
-                              onTap: () async {
-                                final picked = await showDatePicker(
-                                  context: context,
-                                  initialDate: selectedDate,
-                                  firstDate: DateTime(2020),
-                                  lastDate: DateTime(2100),
-                                );
-                                if (picked != null) {
-                                  _dateNotifier.value = picked;
-                                }
-                              },
-                              borderRadius: BorderRadius.circular(16),
-                              child: Container(
-                                height: 52,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 14),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.surfaceContainerHigh,
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: colorScheme.outlineVariant,
-                                    width: 1.0,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
+                  // Payment Method Selection (Expense & Transfer)
+                  ValueListenableBuilder<TransactionType>(
+                    valueListenable: _typeNotifier,
+                    builder: (context, currentType, _) {
+                      if (currentType != TransactionType.expense && currentType != TransactionType.transfer) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: horizontalPaddingLarge,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            verticalMarginMedium,
+                            Text(
+                              context.l10n.paymentMethodLabel,
+                              style: customTypography.labelMediumMono.copyWith(
+                                color: colorScheme.outline,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            verticalMarginXSmall,
+                            ValueListenableBuilder<PaymentMethod>(
+                              valueListenable: _paymentMethodNotifier,
+                              builder: (context, selectedMethod, _) {
+                                return Row(
                                   children: [
-                                    Icon(
-                                      Icons.calendar_today_rounded,
-                                      size: 18,
-                                      color: colorScheme.primary,
+                                    _buildPaymentMethodOption(
+                                      context,
+                                      method: PaymentMethod.card,
+                                      label: context.l10n.paymentCard,
+                                      icon: Icons.credit_card_rounded,
+                                      isSelected: selectedMethod == PaymentMethod.card,
                                     ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                                      style:
-                                          customTypography.bodyMedium.copyWith(
-                                        color: colorScheme.onSurface,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                    horizontalMarginSmall,
+                                    _buildPaymentMethodOption(
+                                      context,
+                                      method: PaymentMethod.cash,
+                                      label: context.l10n.paymentCash,
+                                      icon: Icons.payments_rounded,
+                                      isSelected: selectedMethod == PaymentMethod.cash,
+                                    ),
+                                    horizontalMarginSmall,
+                                    _buildPaymentMethodOption(
+                                      context,
+                                      method: PaymentMethod.account,
+                                      label: context.l10n.paymentAccount,
+                                      icon: Icons.account_balance_rounded,
+                                      isSelected: selectedMethod == PaymentMethod.account,
                                     ),
                                   ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-
-                        const SizedBox(width: 12),
-
-                        // Note Field using custom AppTextField component
-                        Expanded(
-                          child: AppTextField(
-                            controller: _noteController,
-                            hintText: 'Add note (optional)...',
-                            prefixIcon: Icon(
-                              Icons.sticky_note_2_outlined,
-                              color: colorScheme.outline,
-                              size: 18,
+                                );
+                              },
                             ),
-                            fillColor: colorScheme.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
+                          ],
                         ),
-                      ],
+                      );
+                    },
+                  ),
+
+                  verticalMargin20,
+
+                  // Note Input & Date Picker (Consistent height & 16px radius)
+                  Padding(
+                    padding: horizontalPaddingLarge,
+                    child: IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Date Selector Button matching AppTextField height
+                          ValueListenableBuilder<DateTime>(
+                            valueListenable: _dateNotifier,
+                            builder: (context, selectedDate, _) {
+                              return InkWell(
+                                onTap: () async {
+                                  final picked = await showDatePicker(
+                                    context: context,
+                                    initialDate: selectedDate,
+                                    firstDate: DateTime(2020),
+                                    lastDate: DateTime(2100),
+                                  );
+                                  if (picked != null) {
+                                    _dateNotifier.value = picked;
+                                  }
+                                },
+                                borderRadius: BorderRadius.circular(16.r),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.surfaceContainerHigh,
+                                    borderRadius: BorderRadius.circular(16.r),
+                                    border: Border.all(
+                                      color: colorScheme.outlineVariant,
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.calendar_today_rounded,
+                                        size: 18.sp,
+                                        color: colorScheme.primary,
+                                      ),
+                                      horizontalMarginXSmall,
+                                      Text(
+                                        '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                                        style: customTypography.bodyMedium.copyWith(
+                                          color: colorScheme.onSurface,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+
+                          horizontalMarginSmall,
+
+                          // Note Field using custom AppTextField component
+                          Expanded(
+                            child: AppTextField(
+                              controller: _noteController,
+                              hintText: 'Add note (optional)...',
+                              prefixIcon: Icon(
+                                Icons.sticky_note_2_outlined,
+                                color: colorScheme.outline,
+                                size: 18.sp,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+                              fillColor: colorScheme.surfaceContainerHigh,
+                              borderRadius: BorderRadius.circular(16.r),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  verticalMarginLarge,
                 ],
               ),
             ),
             bottomNavigationBar: Builder(
               builder: (context) {
-                final isKeyboardOpen =
-                    MediaQuery.of(context).viewInsets.bottom > 0;
+                final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -756,15 +751,15 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                     if (!isKeyboardOpen)
                       Container(
                         color: colorScheme.surfaceContainerLow,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: verticalPaddingSmall,
                         child: Column(
                           children: [
                             _buildKeypadRow(['1', '2', '3']),
-                            const SizedBox(height: 8),
+                            verticalMarginXSmall,
                             _buildKeypadRow(['4', '5', '6']),
-                            const SizedBox(height: 8),
+                            verticalMarginXSmall,
                             _buildKeypadRow(['7', '8', '9']),
-                            const SizedBox(height: 8),
+                            verticalMarginXSmall,
                             _buildKeypadRow(['.', '0', '<']),
                           ],
                         ),
@@ -773,36 +768,31 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                     Container(
                       color: colorScheme.surfaceContainerLow,
                       padding: EdgeInsets.only(
-                        left: 24,
-                        right: 24,
-                        top: 12,
-                        bottom: 12 + MediaQuery.of(context).viewPadding.bottom,
+                        left: 24.w,
+                        right: 24.w,
+                        top: 12.h,
+                        bottom: 12.h + MediaQuery.of(context).viewPadding.bottom,
                       ),
                       child: Builder(
                         builder: (blocContext) {
                           return ElevatedButton(
                             onPressed: () {
-                              final amount = double.tryParse(
-                                      _amountStringNotifier.value) ??
-                                  0.0;
+                              final amount = double.tryParse(_amountStringNotifier.value) ?? 0.0;
                               if (amount <= 0) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content:
-                                        Text(context.l10n.enterAmountError),
+                                    content: Text(context.l10n.enterAmountError),
                                     backgroundColor: colorScheme.error,
                                   ),
                                 );
                                 return;
                               }
 
-                              final selectedCat =
-                                  _selectedCategoryNotifier.value;
+                              final selectedCat = _selectedCategoryNotifier.value;
                               if (selectedCat == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content:
-                                        Text(context.l10n.selectCategoryError),
+                                    content: Text(context.l10n.selectCategoryError),
                                     backgroundColor: colorScheme.error,
                                   ),
                                 );
@@ -811,42 +801,40 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
 
                               String? noteText;
                               final baseNote = _noteController.text.trim();
-                              final fee =
-                                  double.tryParse(_feeController.text.trim());
+                              final fee = double.tryParse(_feeController.text.trim());
 
-                              if (_typeNotifier.value ==
-                                  TransactionType.transfer) {
-                                final destCat =
-                                    _destinationCategoryNotifier.value;
+                              if (_typeNotifier.value == TransactionType.transfer) {
+                                final destCat = _destinationCategoryNotifier.value;
                                 final feePart = (fee != null && fee > 0)
                                     ? ' (Fee: ${getIt<PreferenceService>().currencySymbol}$fee)'
                                     : '';
                                 final transferDesc =
                                     'Transfer: ${selectedCat.name} → ${destCat?.name ?? "Destination"}$feePart';
-                                noteText = baseNote.isNotEmpty
-                                    ? '$transferDesc | $baseNote'
-                                    : transferDesc;
+                                noteText = baseNote.isNotEmpty ? '$transferDesc | $baseNote' : transferDesc;
                               } else {
-                                noteText =
-                                    baseNote.isNotEmpty ? baseNote : null;
+                                noteText = baseNote.isNotEmpty ? baseNote : null;
                               }
 
-                              blocContext
-                                  .read<TransactionCubit>()
-                                  .addTransaction(
+                              final PaymentMethod? paymentMethod = (_typeNotifier.value == TransactionType.expense ||
+                                      _typeNotifier.value == TransactionType.transfer)
+                                  ? _paymentMethodNotifier.value
+                                  : null;
+
+                              blocContext.read<TransactionCubit>().addTransaction(
                                     type: _typeNotifier.value,
                                     amount: amount,
                                     categoryId: selectedCat.id,
                                     timestamp: _dateNotifier.value,
                                     note: noteText,
+                                    paymentMethod: paymentMethod,
                                   );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: colorScheme.primary,
                               foregroundColor: Colors.black,
-                              minimumSize: const Size(double.infinity, 52),
+                              minimumSize: Size(double.infinity, 52.h),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(16.r),
                               ),
                               elevation: 0,
                             ),
@@ -854,7 +842,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                               context.l10n.saveTransaction,
                               style: customTypography.bodyLargeBold.copyWith(
                                 color: Colors.black,
-                                fontSize: 18,
+                                fontSize: 18.sp,
                               ),
                             ),
                           );
@@ -878,20 +866,18 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
       children: keys.map((key) {
         return InkWell(
           onTap: () => _onKeypadTap(key),
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(32.r),
           child: Container(
-            width: 72,
-            height: 48,
+            width: 72.w,
+            height: 48.h,
             alignment: Alignment.center,
             child: key == '<'
-                ? Icon(Icons.backspace_outlined,
-                    color: colorScheme.onSurface, size: 22)
+                ? Icon(Icons.backspace_outlined, color: colorScheme.onSurface, size: 22.sp)
                 : Text(
                     key,
-                    style: context.customTypography.headlineMediumMonoBold
-                        .copyWith(
+                    style: context.customTypography.headlineMediumMonoBold.copyWith(
                       color: colorScheme.onSurface,
-                      fontSize: 22,
+                      fontSize: 22.sp,
                     ),
                   ),
           ),
@@ -939,5 +925,60 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
       default:
         return Icons.category_rounded;
     }
+  }
+
+  Widget _buildPaymentMethodOption(
+    BuildContext context, {
+    required PaymentMethod method,
+    required String label,
+    required IconData icon,
+    required bool isSelected,
+  }) {
+    final colorScheme = context.colorScheme;
+    final customTypography = context.customTypography;
+    final activeColor = colorScheme.primary;
+
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          _paymentMethodNotifier.value = method;
+        },
+        borderRadius: BorderRadius.circular(16.r),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          height: 48.h,
+          padding: EdgeInsets.symmetric(horizontal: 8.w),
+          decoration: BoxDecoration(
+            color: isSelected ? activeColor.withAlpha((0.15 * 255).round()) : colorScheme.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(
+              color: isSelected ? activeColor : colorScheme.outlineVariant,
+              width: isSelected ? 1.5 : 1.0,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 18.sp,
+                color: isSelected ? activeColor : colorScheme.outline,
+              ),
+              SizedBox(width: 6.w),
+              Flexible(
+                child: Text(
+                  label,
+                  overflow: TextOverflow.ellipsis,
+                  style: customTypography.bodyMedium.copyWith(
+                    color: isSelected ? colorScheme.onSurface : colorScheme.outline,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

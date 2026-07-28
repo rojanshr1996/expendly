@@ -363,6 +363,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryLabel => 'CATEGORY';
 
   @override
+  String get paymentMethodLabel => 'PAYMENT METHOD';
+
+  @override
+  String get paymentCard => 'Card';
+
+  @override
+  String get paymentCash => 'Cash';
+
+  @override
+  String get paymentAccount => 'Account';
+
+  @override
   String get saveTransaction => 'Save Transaction';
 
   @override
@@ -458,4 +470,220 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toAccount => 'To Category / Account';
+
+  @override
+  String get premium => 'PREMIUM';
+
+  @override
+  String get goProTitle => 'Go Pro for Unlimited Flow';
+
+  @override
+  String get goProDesc =>
+      'Unlock advanced analytics, multi-currency support, and cloud-sync across all your devices.';
+
+  @override
+  String get upgradeNow => 'Upgrade Now — \$9.99/mo';
+
+  @override
+  String get accountSection => 'ACCOUNT';
+
+  @override
+  String get personalProfile => 'Personal Profile';
+
+  @override
+  String get personalProfileDesc => 'Manage your identity and bio';
+
+  @override
+  String get subscriptionPlan => 'Subscription Plan';
+
+  @override
+  String get subscriptionPlanDesc => 'Free Tier • Manage Billing';
+
+  @override
+  String get securitySection => 'SECURITY';
+
+  @override
+  String get biometricAuth => 'Biometric Authentication';
+
+  @override
+  String get changeSecurityPin => 'Change Security PIN';
+
+  @override
+  String get appearanceSection => 'APPEARANCE';
+
+  @override
+  String get themeLabel => 'Theme';
+
+  @override
+  String get darkMode => 'Dark Mode';
+
+  @override
+  String get primaryCurrency => 'Primary Currency';
+
+  @override
+  String get dataManagementSection => 'DATA MANAGEMENT';
+
+  @override
+  String get cloudBackup => 'Cloud Backup';
+
+  @override
+  String get cloudBackupLast => 'Last: Today 08:42';
+
+  @override
+  String get exportDataCsv => 'Export Data (.CSV)';
+
+  @override
+  String get clearLocalCache => 'Clear Local Cache';
+
+  @override
+  String get settingsFooterTagline =>
+      'Made with precision for your financial peace.';
+
+  @override
+  String get exportEncryptedData => 'Export Encrypted Data (AES-256)';
+
+  @override
+  String get importEncryptedData => 'Import Encrypted Data (AES-256)';
+
+  @override
+  String get exportEncryptedDataDesc =>
+      'Create an AES-256 encrypted backup file';
+
+  @override
+  String get importEncryptedDataDesc =>
+      'Restore backup using encryption key or PIN';
+
+  @override
+  String get exportSuccess => 'Data exported & encrypted successfully!';
+
+  @override
+  String get importSuccess => 'Data restored successfully!';
+
+  @override
+  String get passphrasePrompt => 'Passphrase / PIN (Optional)';
+
+  @override
+  String get passphraseHint => 'Enter PIN/key or leave empty for default';
+
+  @override
+  String get pasteEncryptedPayload => 'Paste Encrypted Data Payload';
+
+  @override
+  String accountId(String id) {
+    return 'ACCOUNT ID: $id';
+  }
+
+  @override
+  String get fullNameLabel => 'FULL NAME';
+
+  @override
+  String get yourNameHint => 'Your name';
+
+  @override
+  String get pleaseEnterYourName => 'Please enter your name';
+
+  @override
+  String get emailAddressLabel => 'EMAIL ADDRESS';
+
+  @override
+  String get emailHint => 'email@example.com';
+
+  @override
+  String get professionalBioLabel => 'PROFESSIONAL BIO';
+
+  @override
+  String get bioHint => 'Briefly describe your financial focus...';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get discardChanges => 'Discard Changes';
+
+  @override
+  String get profileSavedSuccess => 'Personal profile saved successfully!';
+
+  @override
+  String get changesDiscarded => 'Changes discarded';
+
+  @override
+  String failedToSelectPhoto(String error) {
+    return 'Failed to select photo: $error';
+  }
+
+  @override
+  String failedToSaveProfile(String error) {
+    return 'Failed to save profile: $error';
+  }
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get setUpProfile => 'Set Up Profile';
+
+  @override
+  String get tapAvatarChoosePhoto => 'Tap avatar to choose photo from gallery';
+
+  @override
+  String get accountTransfer => 'Account Transfer';
+
+  @override
+  String get exportPromptDesc =>
+      'Enter an optional encryption PIN/passphrase to protect your backup with AES-256.';
+
+  @override
+  String get exportEncryptButton => 'Export & Encrypt (AES-256)';
+
+  @override
+  String get copyEncryptedText => 'Copy Encrypted Text';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get encryptedPayloadCopied => 'Encrypted payload copied to clipboard!';
+
+  @override
+  String get pastePayloadHint => 'Paste ivBase64:cipherTextBase64 here...';
+
+  @override
+  String get pleasePastePayload => 'Please paste an encrypted payload.';
+
+  @override
+  String get decryptRestoreData => 'Decrypt & Restore Data';
+
+  @override
+  String get exportCsvDesc => 'Export unencrypted .csv for Sheets or Excel';
+
+  @override
+  String csvExportedTo(String filename) {
+    return 'CSV exported to $filename';
+  }
+
+  @override
+  String csvExportFailed(String error) {
+    return 'CSV Export failed: $error';
+  }
+
+  @override
+  String exportFailed(String error) {
+    return 'Export failed: $error';
+  }
+
+  @override
+  String get importFailedKey =>
+      'Import failed: Invalid payload or decryption key.';
+
+  @override
+  String get addNoteHint => 'Add note (optional)...';
+
+  @override
+  String get source => 'Source';
+
+  @override
+  String get destination => 'Destination';
+
+  @override
+  String get createBudget => 'Create Budget';
 }

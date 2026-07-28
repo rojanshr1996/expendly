@@ -10,7 +10,9 @@ abstract class TransactionRepository {
     required int categoryId,
     required DateTime timestamp,
     String? note,
+    PaymentMethod? paymentMethod,
     String currencyCode = 'USD',
   });
+
   Future<void> deleteTransaction(int id);
 }

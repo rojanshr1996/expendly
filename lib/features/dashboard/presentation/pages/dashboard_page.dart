@@ -8,9 +8,12 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/services/preference_service.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../../../analytics/presentation/pages/refined_reports_page.dart';
 import '../../../budgets/presentation/pages/budgets_overview_page.dart';
+import '../../../budgets/presentation/cubit/budget_cubit.dart';
+import '../../../profile/presentation/cubit/profile_cubit.dart';
 import '../../../transactions/presentation/pages/all_transactions_page.dart';
 import '../../domain/entities/financial_summary.dart';
 import '../../domain/repositories/dashboard_repository.dart';
@@ -21,6 +24,7 @@ import '../widgets/dashboard_bento_grid.dart';
 import '../widgets/dashboard_cash_flow_chart.dart';
 import '../widgets/dashboard_header.dart';
 import '../widgets/dashboard_recent_activity.dart';
+import '../widgets/dashboard_shimmer.dart';
 import '../widgets/empty_dashboard_view.dart';
 import '../widgets/quick_action_fab.dart';
 
@@ -35,8 +39,15 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final ValueNotifier<bool> _isPrivacyModeNotifier = ValueNotifier<bool>(false);
   final ValueNotifier<int> _currentTabNotifier = ValueNotifier<int>(0);
-  final GlobalKey<QuickActionFabState> _fabKey =
-      GlobalKey<QuickActionFabState>();
+  final GlobalKey<QuickActionFabState> _fabKey = GlobalKey<QuickActionFabState>();
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      getIt<ProfileCubit>().loadProfile();
+    } catch (_) {}
+  }
 
   @override
   void dispose() {
@@ -46,10 +57,14 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void _openAddTransaction(BuildContext context) async {
+    final dashboardCubit = context.read<DashboardCubit>();
     final result = await context.router.push(const ModernAddTransactionRoute());
     if (!mounted) return;
     if (result == true) {
-      context.read<DashboardCubit>().loadDashboardData();
+      dashboardCubit.loadDashboardData();
+      try {
+        getIt<BudgetCubit>().loadBudgets();
+      } catch (_) {}
     }
   }
 
@@ -60,8 +75,7 @@ class _DashboardPageState extends State<DashboardPage> {
         try {
           return getIt<DashboardCubit>()..loadDashboardData();
         } catch (_) {
-          return DashboardCubit(_FallbackGetFinancialSummary())
-            ..loadDashboardData();
+          return DashboardCubit(_FallbackGetFinancialSummary())..loadDashboardData();
         }
       },
       child: Builder(
@@ -78,27 +92,55 @@ class _DashboardPageState extends State<DashboardPage> {
                     _buildOverviewTab(context),
 
                     // Tab 1: Activity / All Transactions
-                    AllTransactionsPage(
-                        isPrivacyModeNotifier: _isPrivacyModeNotifier),
+                    AllTransactionsPage(isPrivacyModeNotifier: _isPrivacyModeNotifier),
 
                     // Tab 2: Budgets Overview
-                    BudgetsOverviewPage(
-                        isPrivacyModeNotifier: _isPrivacyModeNotifier),
+                    BudgetsOverviewPage(isPrivacyModeNotifier: _isPrivacyModeNotifier),
 
                     // Tab 3: Reports & Analytics
-                    RefinedReportsPage(
-                        isPrivacyModeNotifier: _isPrivacyModeNotifier),
+                    RefinedReportsPage(isPrivacyModeNotifier: _isPrivacyModeNotifier),
                   ],
                 );
               },
             ),
 
-            // Quick Action Speed Dial FAB
-            floatingActionButton: QuickActionFab(
-              key: _fabKey,
-              onAddExpense: () => _openAddTransaction(context),
-              onAddIncome: () => _openAddTransaction(context),
-              onTransfer: () => _openAddTransaction(context),
+            // Floating Action Button with tab-aware routing
+            floatingActionButton: ValueListenableBuilder<int>(
+              valueListenable: _currentTabNotifier,
+              builder: (context, currentTab, _) {
+                if (currentTab == 2) {
+                  // Budget Tab: FAB opens Add Budget screen
+                  return Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.colorScheme.primary
+                              .withAlpha((0.4 * 255).round()),
+                          blurRadius: 16,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: FloatingActionButton(
+                      onPressed: () async {
+                        await context.router.push(CreateNewBudgetRoute());
+                      },
+                      backgroundColor: context.colorScheme.primary,
+                      foregroundColor: Colors.black,
+                      elevation: 0,
+                      child: const Icon(Icons.add_rounded, size: 30),
+                    ),
+                  );
+                }
+
+                return QuickActionFab(
+                  key: _fabKey,
+                  onAddExpense: () => _openAddTransaction(context),
+                  onAddIncome: () => _openAddTransaction(context),
+                  onTransfer: () => _openAddTransaction(context),
+                );
+              },
             ),
 
             // Bottom Navigation Bar
@@ -112,8 +154,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerLow,
                     border: Border(
-                      top: BorderSide(
-                          color: colorScheme.outlineVariant, width: 1.0),
+                      top: BorderSide(color: colorScheme.outlineVariant, width: 1.0),
                     ),
                   ),
                   child: BottomNavigationBar(
@@ -139,8 +180,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                       BottomNavigationBarItem(
                         icon: const Icon(Icons.account_balance_wallet_outlined),
-                        activeIcon:
-                            const Icon(Icons.account_balance_wallet_rounded),
+                        activeIcon: const Icon(Icons.account_balance_wallet_rounded),
                         label: context.l10n.budgets,
                       ),
                       BottomNavigationBarItem(
@@ -165,7 +205,9 @@ class _DashboardPageState extends State<DashboardPage> {
         // Glass Header
         DashboardHeader(
           isPrivacyModeNotifier: _isPrivacyModeNotifier,
-          onSettingsPressed: () {},
+          onSettingsPressed: () {
+            context.router.push(const SettingsRoute());
+          },
         ),
 
         // Scrollable Dashboard Body
@@ -173,18 +215,14 @@ class _DashboardPageState extends State<DashboardPage> {
           child: BlocBuilder<DashboardCubit, DashboardState>(
             builder: (context, state) {
               if (state is DashboardLoading) {
-                return Center(
-                  child: CircularProgressIndicator(
-                      color: context.colorScheme.primary),
-                );
+                return const DashboardShimmer();
               }
 
               if (state is DashboardError) {
                 return Center(
                   child: Text(
                     context.l10n.errorMessage(state.message),
-                    style: (context.textTheme.bodyLarge ?? const TextStyle())
-                        .copyWith(
+                    style: (context.textTheme.bodyLarge ?? const TextStyle()).copyWith(
                       color: context.colorScheme.error,
                     ),
                   ),
@@ -193,9 +231,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
               if (state is DashboardLoaded) {
                 final summary = state.summary;
-                final bool isEmptyState = summary.recentTransactions.isEmpty &&
-                    summary.totalIncome == 0 &&
-                    summary.totalExpense == 0;
+                final bool isEmptyState =
+                    summary.recentTransactions.isEmpty && summary.totalIncome == 0 && summary.totalExpense == 0;
 
                 if (isEmptyState) {
                   return EmptyDashboardView(
@@ -207,8 +244,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
                 return RefreshIndicator(
                   color: AppColors.primary,
-                  onRefresh: () =>
-                      context.read<DashboardCubit>().loadDashboardData(),
+                  onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Center(
@@ -240,8 +276,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   context,
                                   MaterialPageRoute<void>(
                                     builder: (_) => AllTransactionsPage(
-                                      isPrivacyModeNotifier:
-                                          _isPrivacyModeNotifier,
+                                      isPrivacyModeNotifier: _isPrivacyModeNotifier,
                                     ),
                                   ),
                                 );
@@ -277,7 +312,7 @@ class _FallbackGetFinancialSummary implements GetFinancialSummary {
       totalIncome: 0.0,
       totalExpense: 0.0,
       monthlyBudgetLimit: 5000.00,
-      currencySymbol: '\$',
+      currencySymbol: getIt<PreferenceService>().currencySymbol,
       periodStart: DateTime(now.year, now.month, 1),
       periodEnd: now,
       recentTransactions: const [],

@@ -5,10 +5,12 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
+import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../domain/entities/financial_summary.dart';
 
 /// Section displaying recent transactions with category icons, desaturated semantic colors, and monospaced amounts.
+/// Uses [CompactAmountText] for scale down fitting and tap-to-view full exact amount tooltip.
 class DashboardRecentActivity extends StatelessWidget {
   final List<DashboardTransactionItem> transactions;
   final String currencySymbol;
@@ -57,14 +59,6 @@ class DashboardRecentActivity extends StatelessWidget {
     } catch (_) {
       return AppColors.primary;
     }
-  }
-
-  String _formatAmount(
-      double amount, bool isIncome, String symbol, bool isPrivacy) {
-    if (isPrivacy) return '$symbol •••••';
-    final formatted = amount.toStringAsFixed(2);
-    final sign = isIncome ? '+' : '-';
-    return '$sign$symbol$formatted';
   }
 
   @override
@@ -136,9 +130,8 @@ class DashboardRecentActivity extends StatelessWidget {
                             children: [
                               Text(
                                 tx.title,
-                                style:
-                                    (textTheme.bodyLarge ?? const TextStyle())
-                                        .copyWith(
+                                style: (textTheme.bodyLarge ?? const TextStyle())
+                                    .copyWith(
                                   fontWeight: FontWeights.bold,
                                   color: colorScheme.onSurface,
                                 ),
@@ -146,9 +139,8 @@ class DashboardRecentActivity extends StatelessWidget {
                               ),
                               Text(
                                 tx.categoryName,
-                                style:
-                                    (textTheme.bodyMedium ?? const TextStyle())
-                                        .copyWith(
+                                style: (textTheme.bodyMedium ?? const TextStyle())
+                                    .copyWith(
                                   color: colorScheme.onSurfaceVariant,
                                 ),
                               ),
@@ -160,11 +152,13 @@ class DashboardRecentActivity extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(
-                              _formatAmount(tx.amount, tx.isIncome,
-                                  currencySymbol, isPrivacyMode),
-                              style:
-                                  (customTypography.labelMediumMono).copyWith(
+                            CompactAmountText(
+                              amount: tx.amount,
+                              currencySymbol: currencySymbol,
+                              isPrivacyMode: isPrivacyMode,
+                              showSign: true,
+                              isIncome: tx.isIncome,
+                              style: (customTypography.labelMediumMono).copyWith(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeights.bold,
                                 color: tx.isIncome

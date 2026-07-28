@@ -4,12 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/database/app_database.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/datasources/analytics_local_datasource.dart';
 import '../../data/repositories/analytics_repository_impl.dart';
 import '../../domain/entities/analytics_report.dart';
 import '../cubit/analytics_cubit.dart';
 import '../cubit/analytics_state.dart';
+import '../widgets/reports_shimmer.dart';
+
 
 class RefinedReportsPage extends StatelessWidget {
   final ValueNotifier<bool>? isPrivacyModeNotifier;
@@ -52,14 +55,14 @@ class RefinedReportsPage extends StatelessWidget {
             body: BlocBuilder<AnalyticsCubit, AnalyticsState>(
               builder: (context, state) {
                 if (state is AnalyticsLoading) {
-                  return Center(
-                    child:
-                        CircularProgressIndicator(color: colorScheme.primary),
-                  );
+                  return const ReportsShimmer();
                 }
+
 
                 if (state is AnalyticsLoaded) {
                   final report = state.report;
+                  final currencySymbol =
+                      getIt<PreferenceService>().currencySymbol;
                   final isEmpty = report.totalIncome == 0 &&
                       report.totalExpense == 0 &&
                       report.categoryBreakdowns.isEmpty;
@@ -143,7 +146,7 @@ class RefinedReportsPage extends StatelessWidget {
                                   builder: (context, isPrivacy, _) {
                                     final text = isPrivacy
                                         ? '•••••'
-                                        : '\$${report.netSavings.toStringAsFixed(2)}';
+                                        : '$currencySymbol${report.netSavings.toStringAsFixed(2)}';
                                     return Text(
                                       text,
                                       style: customTypography
@@ -171,7 +174,7 @@ class RefinedReportsPage extends StatelessWidget {
                                     _StatBox(
                                       label: context.l10n.income,
                                       value:
-                                          '\$${report.totalIncome.toStringAsFixed(2)}',
+                                          '$currencySymbol${report.totalIncome.toStringAsFixed(2)}',
                                       valueColor: colorScheme.secondary,
                                       isPrivacyModeNotifier:
                                           isPrivacyModeNotifier,
@@ -179,7 +182,7 @@ class RefinedReportsPage extends StatelessWidget {
                                     _StatBox(
                                       label: context.l10n.expenses,
                                       value:
-                                          '\$${report.totalExpense.toStringAsFixed(2)}',
+                                          '$currencySymbol${report.totalExpense.toStringAsFixed(2)}',
                                       valueColor: colorScheme.error,
                                       isPrivacyModeNotifier:
                                           isPrivacyModeNotifier,
@@ -321,9 +324,11 @@ class _CategoryBreakdownRow extends StatelessWidget {
               ValueListenableBuilder<bool>(
                 valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
                 builder: (context, isPrivacy, _) {
+                  final currencySymbol =
+                      getIt<PreferenceService>().currencySymbol;
                   final textStr = isPrivacy
                       ? '•••••'
-                      : '\$${item.amount.toStringAsFixed(2)}';
+                      : '$currencySymbol${item.amount.toStringAsFixed(2)}';
                   return Text(
                     textStr,
                     style: customTypography.headlineMediumMonoBold.copyWith(

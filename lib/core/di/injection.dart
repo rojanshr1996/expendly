@@ -14,19 +14,23 @@ import '../../features/dashboard/data/repositories/dashboard_repository_impl.dar
 import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
 import '../../features/dashboard/domain/usecases/get_financial_summary.dart';
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
+import '../../features/profile/data/datasources/profile_local_datasource.dart';
+import '../../features/profile/data/repositories/profile_repository_impl.dart';
+import '../../features/profile/domain/repositories/profile_repository.dart';
+import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../../features/transactions/data/datasources/transaction_local_datasource.dart';
 import '../../features/transactions/data/repositories/transaction_repository_impl.dart';
 import '../../features/transactions/domain/repositories/transaction_repository.dart';
 import '../../features/transactions/presentation/cubit/transaction_cubit.dart';
 import '../config/app_config.dart';
 import '../database/app_database.dart';
+import '../services/data_export_import_service.dart';
 import '../services/encryption_service.dart';
 import '../services/notification_service.dart';
 import '../services/preference_service.dart';
 import '../services/remote_config_service.dart';
 import '../services/secure_storage_service.dart';
 import '../utils/app_logger.dart';
-import 'injection.config.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -38,36 +42,34 @@ Future<void> configureDependencies([String? environment]) async {
   getIt.allowReassignment = true;
 
   // Register AppConfig instance into GetIt if available
-  if (getIt.isRegistered<AppConfig>()) {
-    getIt.unregister<AppConfig>();
+  if (!getIt.isRegistered<AppConfig>()) {
+    getIt.registerLazySingleton<AppConfig>(() => AppConfig.instance);
   }
-  getIt.registerSingleton<AppConfig>(AppConfig.instance);
 
-  // Initialize generated injectable dependencies
-  try {
-    getIt.init(environment: environment);
-  } catch (_) {}
-
-  // Ensure Core Services are registered
+  // Core Database & Services Registration
   if (!getIt.isRegistered<AppDatabase>()) {
     getIt.registerLazySingleton<AppDatabase>(() => AppDatabase());
   }
-
   if (!getIt.isRegistered<SecureStorageService>()) {
     getIt.registerLazySingleton<SecureStorageService>(
         () => SecureStorageService());
   }
-
   if (!getIt.isRegistered<EncryptionService>()) {
     getIt.registerLazySingleton<EncryptionService>(
-      () => EncryptionService(getIt<SecureStorageService>()),
-    );
+        () => EncryptionService(getIt<SecureStorageService>()));
   }
-
   if (!getIt.isRegistered<PreferenceService>()) {
-    final prefsService = PreferenceService(getIt<SecureStorageService>());
-    await prefsService.init();
-    getIt.registerSingleton<PreferenceService>(prefsService);
+    final prefService = PreferenceService(getIt<SecureStorageService>());
+    await prefService.init();
+    getIt.registerLazySingleton<PreferenceService>(() => prefService);
+  }
+  if (!getIt.isRegistered<DataExportImportService>()) {
+    getIt.registerLazySingleton<DataExportImportService>(() =>
+        DataExportImportService(
+          getIt<AppDatabase>(),
+          getIt<EncryptionService>(),
+          getIt<PreferenceService>(),
+        ));
   } else {
     await getIt<PreferenceService>().init();
   }
@@ -85,6 +87,19 @@ Future<void> configureDependencies([String? environment]) async {
   }
 
   // Feature Datasources & Repositories Registration
+  if (!getIt.isRegistered<ProfileLocalDataSource>()) {
+    getIt.registerLazySingleton<ProfileLocalDataSource>(
+        () => ProfileLocalDataSourceImpl(getIt<AppDatabase>()));
+  }
+  if (!getIt.isRegistered<ProfileRepository>()) {
+    getIt.registerLazySingleton<ProfileRepository>(
+        () => ProfileRepositoryImpl(getIt<ProfileLocalDataSource>()));
+  }
+  if (!getIt.isRegistered<ProfileCubit>()) {
+    getIt.registerLazySingleton<ProfileCubit>(
+        () => ProfileCubit(getIt<ProfileRepository>()));
+  }
+
   if (!getIt.isRegistered<TransactionLocalDataSource>()) {
     getIt.registerLazySingleton<TransactionLocalDataSource>(
         () => TransactionLocalDataSourceImpl(getIt<AppDatabase>()));
@@ -107,7 +122,7 @@ Future<void> configureDependencies([String? environment]) async {
         () => BudgetRepositoryImpl(getIt<BudgetLocalDataSource>()));
   }
   if (!getIt.isRegistered<BudgetCubit>()) {
-    getIt.registerFactory<BudgetCubit>(
+    getIt.registerLazySingleton<BudgetCubit>(
         () => BudgetCubit(getIt<BudgetRepository>()));
   }
 

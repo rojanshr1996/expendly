@@ -2,19 +2,36 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../domain/entities/financial_summary.dart';
 import '../cubit/dashboard_cubit.dart';
 import '../cubit/dashboard_state.dart';
 
-/// Animated line chart showing daily income vs expense for the current month.
-/// Data is sourced from the database via [DashboardCubit].
-/// Uses fl_chart with a draw animation triggered on first build.
+enum ChartTimeFilter { weekly, monthly, threeMonths, sixMonths }
+
+/// Helper model for aggregated bar data groups
+class _BarDataGroup {
+  final String label;
+  final double income;
+  final double expense;
+
+  const _BarDataGroup({
+    required this.label,
+    required this.income,
+    required this.expense,
+  });
+}
+
+/// Swipable Chart Carousel offering two dynamic visual views with Date Range Filtering, Clear Indices,
+/// and smooth animated header transitions:
+/// Filters: [1W] [1M (Default: Current Month)] [3M] [6M]
+/// Page 1: Smooth Gradient Line Chart (Cash Flow Trajectory)
+/// Page 2: Dual Side-by-Side Bar Chart (Income vs Expense Comparison)
 class DashboardCashFlowChart extends StatefulWidget {
   const DashboardCashFlowChart({super.key});
 
@@ -22,333 +39,787 @@ class DashboardCashFlowChart extends StatefulWidget {
   State<DashboardCashFlowChart> createState() => _DashboardCashFlowChartState();
 }
 
-class _DashboardCashFlowChartState extends State<DashboardCashFlowChart>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
+class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
+  late final PageController _pageController;
+  int _currentPage = 0;
+
+  // Default filter is 1M (Current Month)
+  ChartTimeFilter _selectedFilter = ChartTimeFilter.monthly;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    );
-    // Start animation after first frame
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _controller.forward();
-    });
+    _pageController = PageController();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<DashboardCubit, DashboardState>(
-      builder: (context, state) {
-        if (state is! DashboardLoaded) return const SizedBox.shrink();
-        final points = state.summary.dailyCashFlow;
-        if (points.isEmpty) return const SizedBox.shrink();
+  List<DailyCashFlowPoint> _filterPoints(List<DailyCashFlowPoint> allPoints) {
+    if (allPoints.isEmpty) return allPoints;
+    final now = DateTime.now();
 
-        return _CashFlowLineChart(
-          points: points,
-          animation: _animation,
-          currencySymbol: state.summary.currencySymbol,
-        );
-      },
-    );
+    switch (_selectedFilter) {
+      case ChartTimeFilter.weekly:
+        // Last 7 days
+        final cutoff = DateTime(now.year, now.month, now.day).subtract(const Duration(days: 6));
+        return allPoints.where((p) => !p.date.isBefore(cutoff)).toList();
+
+      case ChartTimeFilter.monthly:
+        // Current Month (Default)
+        return allPoints
+            .where((p) => p.date.year == now.year && p.date.month == now.month)
+            .toList();
+
+      case ChartTimeFilter.threeMonths:
+        // Last 90 days
+        final cutoff = DateTime(now.year, now.month, now.day).subtract(const Duration(days: 90));
+        return allPoints.where((p) => !p.date.isBefore(cutoff)).toList();
+
+      case ChartTimeFilter.sixMonths:
+        // Last 180 days
+        final cutoff = DateTime(now.year, now.month, now.day).subtract(const Duration(days: 180));
+        return allPoints.where((p) => !p.date.isBefore(cutoff)).toList();
+    }
   }
-}
-
-class _CashFlowLineChart extends StatelessWidget {
-  final List<DailyCashFlowPoint> points;
-  final Animation<double> animation;
-  final String currencySymbol;
-
-  const _CashFlowLineChart({
-    required this.points,
-    required this.animation,
-    required this.currencySymbol,
-  });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textTheme = context.textTheme;
-    final customTypography = context.customTypography;
 
-    const incomeColor = AppColors.semanticGreen;
-    const expenseColor = AppColors.semanticRed;
+    return BlocBuilder<DashboardCubit, DashboardState>(
+      builder: (context, state) {
+        if (state is! DashboardLoaded) return const SizedBox.shrink();
+        final rawPoints = state.summary.dailyCashFlow;
+        final filteredPoints = _filterPoints(rawPoints);
 
-    // Build FlSpots for income and expense
-    final incomeSpots =
-        points.map((p) => FlSpot(p.day.toDouble(), p.income)).toList();
-    final expenseSpots =
-        points.map((p) => FlSpot(p.day.toDouble(), p.expense)).toList();
-
-    // Find max Y for scaling
-    final allValues = points
-        .expand((p) => [p.income, p.expense])
-        .where((v) => v > 0)
-        .toList();
-    final maxY =
-        allValues.isEmpty ? 100.0 : allValues.reduce((a, b) => a > b ? a : b);
-    final yInterval = _niceInterval(maxY);
-
-    // X axis: show only a few labels to avoid clutter
-    final totalDays = points.length;
-    final xInterval = totalDays <= 7 ? 1.0 : (totalDays / 5).ceilToDouble();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Section header
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              context.l10n.cashFlow,
-              style: (textTheme.titleMedium ?? const TextStyle()).copyWith(
-                fontWeight: FontWeights.bold,
-                color: colorScheme.onSurface,
-              ),
-            ),
+            // Top Header Row with Subtle Animated Title Switch & Carousel Page Dots
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildLegend(incomeColor, context.l10n.income, textTheme),
-                horizontalMarginSmall,
-                _buildLegend(expenseColor, context.l10n.expenses, textTheme),
-              ],
-            ),
-          ],
-        ),
-        verticalMarginSmall,
-
-        GlassContainer(
-          padding: EdgeInsets.only(
-            top: 20.h,
-            bottom: 8.h,
-            left: 8.w,
-            right: 16.w,
-          ),
-          child: AnimatedBuilder(
-            animation: animation,
-            builder: (context, _) {
-              final progress = animation.value;
-              // Clip the spots to animate the draw from left to right
-              final animatedIncome = _clipSpots(incomeSpots, progress);
-              final animatedExpense = _clipSpots(expenseSpots, progress);
-
-              return SizedBox(
-                height: 180.h,
-                child: LineChart(
-                  LineChartData(
-                    minX: 1,
-                    maxX: totalDays.toDouble(),
-                    minY: 0,
-                    maxY: maxY * 1.15, // 15% headroom
-                    clipData: const FlClipData.all(),
-                    gridData: FlGridData(
-                      show: true,
-                      drawVerticalLine: false,
-                      horizontalInterval: yInterval,
-                      getDrawingHorizontalLine: (_) => FlLine(
-                        color: colorScheme.outlineVariant
-                            .withAlpha((0.4 * 255).round()),
-                        strokeWidth: 1,
-                        dashArray: [4, 4],
+                // Animated Switcher for Subtle Fade & Slide Header Transition
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  switchInCurve: Curves.easeOutCubic,
+                  switchOutCurve: Curves.easeInCubic,
+                  transitionBuilder: (child, animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0.0, 0.15),
+                          end: Offset.zero,
+                        ).animate(animation),
+                        child: child,
                       ),
-                    ),
-                    borderData: FlBorderData(show: false),
-                    titlesData: FlTitlesData(
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 44.w,
-                          interval: yInterval,
-                          getTitlesWidget: (value, meta) {
-                            if (value == 0) return const SizedBox.shrink();
-                            return Text(
-                              _formatCompact(value, currencySymbol),
-                              style: customTypography.labelMediumMono.copyWith(
-                                fontSize: 9.sp,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            );
-                          },
-                        ),
+                    );
+                  },
+                  child: Row(
+                    key: ValueKey<int>(_currentPage),
+                    children: [
+                      Icon(
+                        _currentPage == 0
+                            ? Icons.show_chart_rounded
+                            : Icons.bar_chart_rounded,
+                        color: const Color(0xFF00E5FF),
+                        size: 20.sp,
                       ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 20.h,
-                          interval: xInterval,
-                          getTitlesWidget: (value, meta) {
-                            final day = value.toInt();
-                            if (day < 1 || day > totalDays) {
-                              return const SizedBox.shrink();
-                            }
-                            return Text(
-                              '$day',
-                              style: customTypography.labelMediumMono.copyWith(
-                                fontSize: 9.sp,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
-                      rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
-                    ),
-                    lineTouchData: LineTouchData(
-                      touchTooltipData: LineTouchTooltipData(
-                        getTooltipColor: (_) =>
-                            colorScheme.surfaceContainerHigh,
-                        getTooltipItems: (touchedSpots) {
-                          return touchedSpots.map((spot) {
-                            final isIncome = spot.barIndex == 0;
-                            return LineTooltipItem(
-                              '${isIncome ? '▲' : '▼'} $currencySymbol${spot.y.toStringAsFixed(2)}',
-                              (textTheme.labelSmall ?? const TextStyle())
-                                  .copyWith(
-                                color: isIncome ? incomeColor : expenseColor,
-                                fontWeight: FontWeights.bold,
-                              ),
-                            );
-                          }).toList();
-                        },
-                      ),
-                    ),
-                    lineBarsData: [
-                      // Income line
-                      LineChartBarData(
-                        spots: animatedIncome,
-                        isCurved: true,
-                        curveSmoothness: 0.35,
-                        color: incomeColor,
-                        barWidth: 2.5,
-                        isStrokeCapRound: true,
-                        dotData: FlDotData(
-                          show: true,
-                          getDotPainter: (spot, pct, bar, idx) =>
-                              FlDotCirclePainter(
-                            radius: 3,
-                            color: incomeColor,
-                            strokeWidth: 1.5,
-                            strokeColor: colorScheme.surface,
-                          ),
-                        ),
-                        belowBarData: BarAreaData(
-                          show: true,
-                          gradient: LinearGradient(
-                            colors: [
-                              incomeColor.withAlpha((0.25 * 255).round()),
-                              incomeColor.withAlpha((0.02 * 255).round()),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                        ),
-                      ),
-                      // Expense line
-                      LineChartBarData(
-                        spots: animatedExpense,
-                        isCurved: true,
-                        curveSmoothness: 0.35,
-                        color: expenseColor,
-                        barWidth: 2.5,
-                        isStrokeCapRound: true,
-                        dotData: FlDotData(
-                          show: true,
-                          getDotPainter: (spot, pct, bar, idx) =>
-                              FlDotCirclePainter(
-                            radius: 3,
-                            color: expenseColor,
-                            strokeWidth: 1.5,
-                            strokeColor: colorScheme.surface,
-                          ),
-                        ),
-                        belowBarData: BarAreaData(
-                          show: true,
-                          gradient: LinearGradient(
-                            colors: [
-                              expenseColor.withAlpha((0.2 * 255).round()),
-                              expenseColor.withAlpha((0.01 * 255).round()),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
+                      horizontalMarginXXSmall,
+                      Text(
+                        _currentPage == 0
+                            ? '${context.l10n.cashFlow} Trend'
+                            : 'Income vs Expense',
+                        style: (textTheme.titleMedium ?? const TextStyle()).copyWith(
+                          fontWeight: FontWeights.bold,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                     ],
                   ),
                 ),
-              );
-            },
-          ),
-        ),
-      ],
+
+                // Carousel Dots Indicator
+                Row(
+                  children: [
+                    _buildDotIndicator(0),
+                    SizedBox(width: 6.w),
+                    _buildDotIndicator(1),
+                  ],
+                ),
+              ],
+            ),
+            verticalMarginSmall,
+
+            // Date Range Filter Selector Pills: [1W] [1M (Default)] [3M] [6M]
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                _buildFilterPill('1W', ChartTimeFilter.weekly),
+                SizedBox(width: 6.w),
+                _buildFilterPill('1M', ChartTimeFilter.monthly),
+                SizedBox(width: 6.w),
+                _buildFilterPill('3M', ChartTimeFilter.threeMonths),
+                SizedBox(width: 6.w),
+                _buildFilterPill('6M', ChartTimeFilter.sixMonths),
+              ],
+            ),
+            verticalMarginSmall,
+
+            // Chart Carousel PageView Container
+            SizedBox(
+              height: 255.h,
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() => _currentPage = index);
+                },
+                children: [
+                  // Page 1: Smooth Gradient Line Chart
+                  _SmoothLineChartPage(
+                    points: filteredPoints,
+                    filter: _selectedFilter,
+                    currencySymbol: state.summary.currencySymbol,
+                  ),
+
+                  // Page 2: Dual-Bar Side-by-Side Chart (Supports all filters)
+                  _DualBarChartPage(
+                    points: filteredPoints,
+                    filter: _selectedFilter,
+                    currencySymbol: state.summary.currencySymbol,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  /// Clips spots to simulate a left-to-right draw animation.
-  List<FlSpot> _clipSpots(List<FlSpot> spots, double progress) {
-    if (spots.isEmpty) return spots;
-    if (progress >= 1.0) return spots;
-    final maxX = spots.last.x;
-    final minX = spots.first.x;
-    final cutX = minX + (maxX - minX) * progress;
-    return spots.where((s) => s.x <= cutX).toList();
-  }
+  Widget _buildFilterPill(String label, ChartTimeFilter filter) {
+    final isSelected = _selectedFilter == filter;
+    final colorScheme = context.colorScheme;
 
-  /// Returns a "nice" Y interval for the grid lines.
-  double _niceInterval(double maxY) {
-    if (maxY <= 0) return 50;
-    if (maxY <= 100) return 25;
-    if (maxY <= 500) return 100;
-    if (maxY <= 2000) return 500;
-    if (maxY <= 10000) return 2000;
-    return (maxY / 4).roundToDouble();
-  }
-
-  /// Compact number formatting for axis labels (e.g. 1200 → "1.2k").
-  String _formatCompact(double value, String symbol) {
-    if (value >= 1000) {
-      return '$symbol${(value / 1000).toStringAsFixed(1)}k';
-    }
-    return '$symbol${value.toStringAsFixed(0)}';
-  }
-
-  Widget _buildLegend(Color color, String label, TextTheme textTheme) {
-    return Row(
-      children: [
-        Container(
-          width: 12.w,
-          height: 3.h,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2.r),
+    return GestureDetector(
+      onTap: () {
+        setState(() => _selectedFilter = filter);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF00E5FF).withAlpha((0.25 * 255).round())
+              : colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF00E5FF)
+                : colorScheme.outlineVariant.withAlpha((0.3 * 255).round()),
+            width: 1.0,
           ),
         ),
-        horizontalMarginXXSmall,
-        Text(
+        child: Text(
           label,
-          style: (textTheme.labelSmall ?? const TextStyle()).copyWith(
-            color: AppColors.onSurfaceVariant,
+          style: TextStyle(
+            color: isSelected ? const Color(0xFF00E5FF) : colorScheme.onSurfaceVariant,
+            fontSize: 11.sp,
+            fontWeight: isSelected ? FontWeights.bold : FontWeights.medium,
+            fontFamily: 'JetBrainsMono',
           ),
         ),
-      ],
+      ),
     );
+  }
+
+  Widget _buildDotIndicator(int pageIndex) {
+    final isActive = _currentPage == pageIndex;
+    return GestureDetector(
+      onTap: () {
+        _pageController.animateToPage(
+          pageIndex,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        width: isActive ? 18.w : 7.w,
+        height: 7.h,
+        decoration: BoxDecoration(
+          color: isActive
+              ? const Color(0xFF00E5FF)
+              : context.colorScheme.outlineVariant.withAlpha((0.5 * 255).round()),
+          borderRadius: BorderRadius.circular(4.r),
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// PAGE 1: SMOOTH GRADIENT LINE CHART (Cash Flow Trajectory)
+// =============================================================================
+class _SmoothLineChartPage extends StatelessWidget {
+  final List<DailyCashFlowPoint> points;
+  final ChartTimeFilter filter;
+  final String currencySymbol;
+
+  const _SmoothLineChartPage({
+    required this.points,
+    required this.filter,
+    required this.currencySymbol,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final customTypography = context.customTypography;
+
+    const cyanPrimary = Color(0xFF00E5FF);
+    const cyanSecondary = Color(0xFF00F5D4);
+
+    // Build spots dynamically based on filtered points
+    final spots = <FlSpot>[];
+    if (points.isNotEmpty) {
+      for (int i = 0; i < points.length; i++) {
+        final p = points[i];
+        final val = p.income > 0 ? p.income : p.expense;
+        spots.add(FlSpot((i + 1).toDouble(), val));
+      }
+    } else {
+      // Fallback display spots
+      spots.addAll(const [
+        FlSpot(1, 30),
+        FlSpot(2, 20),
+        FlSpot(3, 18),
+        FlSpot(4, 32),
+        FlSpot(5, 50),
+        FlSpot(6, 32),
+        FlSpot(7, 40),
+      ]);
+    }
+
+    final maxY = spots.map((s) => s.y).fold(0.0, (a, b) => a > b ? a : b);
+    final topY = maxY <= 0 ? 100.0 : maxY * 1.25;
+
+    return GlassContainer(
+      padding: EdgeInsets.only(
+        top: 14.h,
+        bottom: 12.h,
+        left: 12.w,
+        right: 18.w,
+      ),
+      backgroundColor: const Color(0xFF19222D),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Clear On-Chart Index & Legend Header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 8.w,
+                    height: 8.w,
+                    decoration: const BoxDecoration(
+                      color: cyanPrimary,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  SizedBox(width: 6.w),
+                  Text(
+                    'Net Cash Flow Trajectory',
+                    style: customTypography.labelMediumMono.copyWith(
+                      color: Colors.white,
+                      fontSize: 11.sp,
+                      fontWeight: FontWeights.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2E3B4E),
+                  borderRadius: BorderRadius.circular(6.r),
+                ),
+                child: Text(
+                  'Values in ($currencySymbol)',
+                  style: customTypography.labelMediumMono.copyWith(
+                    color: const Color(0xFF8A9BAE),
+                    fontSize: 9.sp,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+
+          // Line Chart Canvas
+          Expanded(
+            child: LineChart(
+              LineChartData(
+                minX: 1,
+                maxX: spots.length.toDouble(),
+                minY: 0,
+                maxY: topY,
+                clipData: const FlClipData.none(),
+
+                // Grid Lines
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: true,
+                  drawHorizontalLine: true,
+                  horizontalInterval: (topY / 3).clamp(1.0, double.infinity),
+                  verticalInterval: (spots.length / 4).clamp(1.0, double.infinity),
+                  getDrawingHorizontalLine: (value) => FlLine(
+                    color: const Color(0xFF2E3B4E).withAlpha((0.5 * 255).round()),
+                    strokeWidth: 1,
+                  ),
+                  getDrawingVerticalLine: (value) => FlLine(
+                    color: const Color(0xFF2E3B4E).withAlpha((0.5 * 255).round()),
+                    strokeWidth: 1,
+                  ),
+                ),
+
+                borderData: FlBorderData(show: false),
+
+                // Axes Labels
+                titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 42.w,
+                      interval: (topY / 3).clamp(1.0, double.infinity),
+                      getTitlesWidget: (value, meta) {
+                        if (value <= 0) return const SizedBox.shrink();
+                        return Text(
+                          '$currencySymbol${_formatCompact(value)}',
+                          style: customTypography.labelMediumMono.copyWith(
+                            fontSize: 10.sp,
+                            color: const Color(0xFF8A9BAE),
+                            fontWeight: FontWeights.bold,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 22.h,
+                      interval: (spots.length / 3).clamp(1.0, double.infinity),
+                      getTitlesWidget: (value, meta) {
+                        final idx = value.toInt();
+                        if (idx < 1 || idx > spots.length) return const SizedBox.shrink();
+
+                        String label = '';
+                        if (points.isNotEmpty && idx - 1 < points.length) {
+                          final d = points[idx - 1].date;
+                          if (filter == ChartTimeFilter.weekly) {
+                            label = DateFormat('E').format(d).toUpperCase();
+                          } else if (filter == ChartTimeFilter.monthly) {
+                            label = 'D${d.day}';
+                          } else {
+                            label = DateFormat('MMM').format(d).toUpperCase();
+                          }
+                        } else {
+                          final defaultLabels = ['MAR', 'JUN', 'SEP', 'DEC'];
+                          final labelIndex = ((idx - 1) / (spots.length / 3)).clamp(0, 3).toInt();
+                          label = defaultLabels[labelIndex];
+                        }
+
+                        return Padding(
+                          padding: EdgeInsets.only(top: 6.h),
+                          child: Text(
+                            label,
+                            style: customTypography.labelMediumMono.copyWith(
+                              fontSize: 10.sp,
+                              color: const Color(0xFF8A9BAE),
+                              fontWeight: FontWeights.bold,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                ),
+
+                // Floating White Tooltip & Touch Indicator
+                lineTouchData: LineTouchData(
+                  enabled: true,
+                  getTouchedSpotIndicator: (barData, spotIndexes) {
+                    return spotIndexes.map((spotIndex) {
+                      return TouchedSpotIndicatorData(
+                        const FlLine(
+                          color: cyanPrimary,
+                          strokeWidth: 2,
+                        ),
+                        FlDotData(
+                          show: true,
+                          getDotPainter: (spot, percent, barData, index) {
+                            return FlDotCirclePainter(
+                              radius: 6.r,
+                              color: cyanPrimary,
+                              strokeWidth: 3.r,
+                              strokeColor: Colors.white,
+                            );
+                          },
+                        ),
+                      );
+                    }).toList();
+                  },
+                  touchTooltipData: LineTouchTooltipData(
+                    getTooltipColor: (_) => Colors.white,
+                    tooltipBorder: BorderSide.none,
+                    tooltipPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                    tooltipMargin: 12,
+                    getTooltipItems: (touchedSpots) {
+                      return touchedSpots.map((spot) {
+                        return LineTooltipItem(
+                          '$currencySymbol${spot.y.toStringAsFixed(1)}',
+                          TextStyle(
+                            color: cyanPrimary,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeights.bold,
+                            fontFamily: 'JetBrainsMono',
+                          ),
+                        );
+                      }).toList();
+                    },
+                  ),
+                ),
+
+                // Main Smooth Curve
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: true,
+                    curveSmoothness: 0.45,
+                    gradient: const LinearGradient(
+                      colors: [cyanPrimary, cyanSecondary],
+                    ),
+                    barWidth: 3.5,
+                    isStrokeCapRound: true,
+                    dotData: const FlDotData(show: false),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [
+                          cyanPrimary.withAlpha((0.45 * 255).round()),
+                          cyanSecondary.withAlpha((0.02 * 255).round()),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatCompact(double value) {
+    if (value >= 1000) {
+      return '${(value / 1000).toStringAsFixed(0)}k';
+    }
+    return value.toStringAsFixed(0);
+  }
+}
+
+// =============================================================================
+// PAGE 2: DUAL SIDE-BY-SIDE BAR CHART (Income vs Expense Breakdown)
+// =============================================================================
+class _DualBarChartPage extends StatelessWidget {
+  final List<DailyCashFlowPoint> points;
+  final ChartTimeFilter filter;
+  final String currencySymbol;
+
+  const _DualBarChartPage({
+    required this.points,
+    required this.filter,
+    required this.currencySymbol,
+  });
+
+  List<_BarDataGroup> _getBarGroups() {
+    if (points.isEmpty) {
+      // Fallback display groups
+      return const [
+        _BarDataGroup(label: 'Mn', income: 2.5, expense: 6.0),
+        _BarDataGroup(label: 'Te', income: 7.5, expense: 6.0),
+        _BarDataGroup(label: 'Wd', income: 9.0, expense: 2.5),
+        _BarDataGroup(label: 'Tu', income: 9.5, expense: 8.8),
+        _BarDataGroup(label: 'Fr', income: 8.5, expense: 3.0),
+        _BarDataGroup(label: 'St', income: 9.8, expense: 1.2),
+        _BarDataGroup(label: 'Sn', income: 5.0, expense: 1.0),
+      ];
+    }
+
+    final groups = <_BarDataGroup>[];
+
+    if (filter == ChartTimeFilter.weekly) {
+      // 7 Daily Groups for Weekly Filter
+      final count = points.length.clamp(0, 7);
+      final startIndex = points.length - count;
+      for (int i = 0; i < count; i++) {
+        final p = points[startIndex + i];
+        final label = DateFormat('E').format(p.date).substring(0, 2);
+        groups.add(_BarDataGroup(label: label, income: p.income, expense: p.expense));
+      }
+    } else if (filter == ChartTimeFilter.monthly) {
+      // 4 Weekly Groups for Monthly Filter (W1, W2, W3, W4)
+      final w1 = points.where((p) => p.date.day >= 1 && p.date.day <= 7);
+      final w2 = points.where((p) => p.date.day >= 8 && p.date.day <= 14);
+      final w3 = points.where((p) => p.date.day >= 15 && p.date.day <= 21);
+      final w4 = points.where((p) => p.date.day >= 22);
+
+      final wList = [
+        MapEntry('W1', w1),
+        MapEntry('W2', w2),
+        MapEntry('W3', w3),
+        MapEntry('W4', w4),
+      ];
+
+      for (final entry in wList) {
+        final inc = entry.value.fold(0.0, (sum, p) => sum + p.income);
+        final exp = entry.value.fold(0.0, (sum, p) => sum + p.expense);
+        groups.add(_BarDataGroup(label: entry.key, income: inc, expense: exp));
+      }
+    } else if (filter == ChartTimeFilter.threeMonths) {
+      // 3 Monthly Groups for 3M Filter
+      final monthMap = <String, Map<String, double>>{};
+      for (final p in points) {
+        final key = DateFormat('MMM').format(p.date).toUpperCase();
+        monthMap.putIfAbsent(key, () => {'income': 0.0, 'expense': 0.0});
+        monthMap[key]!['income'] = (monthMap[key]!['income'] ?? 0.0) + p.income;
+        monthMap[key]!['expense'] = (monthMap[key]!['expense'] ?? 0.0) + p.expense;
+      }
+      monthMap.forEach((key, val) {
+        groups.add(_BarDataGroup(label: key, income: val['income']!, expense: val['expense']!));
+      });
+    } else if (filter == ChartTimeFilter.sixMonths) {
+      // 6 Monthly Groups for 6M Filter
+      final monthMap = <String, Map<String, double>>{};
+      for (final p in points) {
+        final key = DateFormat('MMM').format(p.date).toUpperCase();
+        monthMap.putIfAbsent(key, () => {'income': 0.0, 'expense': 0.0});
+        monthMap[key]!['income'] = (monthMap[key]!['income'] ?? 0.0) + p.income;
+        monthMap[key]!['expense'] = (monthMap[key]!['expense'] ?? 0.0) + p.expense;
+      }
+      monthMap.forEach((key, val) {
+        groups.add(_BarDataGroup(label: key, income: val['income']!, expense: val['expense']!));
+      });
+    }
+
+    return groups.isEmpty
+        ? [const _BarDataGroup(label: 'N/A', income: 0, expense: 0)]
+        : groups;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final customTypography = context.customTypography;
+
+    const cyanColor = Color(0xFF00E5FF);
+    const pinkColor = Color(0xFFFF2A6D);
+
+    final barDataGroups = _getBarGroups();
+    final maxVal = barDataGroups
+        .expand((g) => [g.income, g.expense])
+        .fold(0.0, (a, b) => a > b ? a : b);
+    final topY = maxVal <= 0 ? 10.0 : maxVal * 1.25;
+
+    return GlassContainer(
+      padding: EdgeInsets.only(
+        top: 14.h,
+        bottom: 12.h,
+        left: 12.w,
+        right: 16.w,
+      ),
+      backgroundColor: const Color(0xFF1B2A4A),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Clear On-Chart Index & Color Legends Header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  _buildLegendDot(cyanColor),
+                  SizedBox(width: 4.w),
+                  Text(
+                    'Income',
+                    style: customTypography.labelMediumMono.copyWith(
+                      color: Colors.white,
+                      fontSize: 10.sp,
+                      fontWeight: FontWeights.bold,
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  _buildLegendDot(pinkColor),
+                  SizedBox(width: 4.w),
+                  Text(
+                    'Expense',
+                    style: customTypography.labelMediumMono.copyWith(
+                      color: Colors.white,
+                      fontSize: 10.sp,
+                      fontWeight: FontWeights.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF283A5D),
+                  borderRadius: BorderRadius.circular(6.r),
+                ),
+                child: Text(
+                  'Comparison ($currencySymbol)',
+                  style: customTypography.labelMediumMono.copyWith(
+                    color: const Color(0xFF8A9BAE),
+                    fontSize: 9.sp,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+
+          // Bar Chart Canvas
+          Expanded(
+            child: BarChart(
+              BarChartData(
+                maxY: topY,
+                alignment: BarChartAlignment.spaceAround,
+                gridData: const FlGridData(show: false),
+                borderData: FlBorderData(show: false),
+                titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 42.w,
+                      interval: (topY / 2).clamp(1.0, double.infinity),
+                      getTitlesWidget: (value, meta) {
+                        if (value <= 0) return const SizedBox.shrink();
+                        return Text(
+                          '$currencySymbol${_formatCompact(value)}',
+                          style: customTypography.labelMediumMono.copyWith(
+                            fontSize: 10.sp,
+                            color: const Color(0xFF7C8BA1),
+                            fontWeight: FontWeights.bold,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 22.h,
+                      getTitlesWidget: (value, meta) {
+                        final idx = value.toInt();
+                        if (idx < 0 || idx >= barDataGroups.length) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: EdgeInsets.only(top: 4.h),
+                          child: Text(
+                            barDataGroups[idx].label,
+                            style: customTypography.labelMediumMono.copyWith(
+                              fontSize: 10.sp,
+                              color: const Color(0xFF8A9BAE),
+                              fontWeight: FontWeights.bold,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  topTitles:
+                      const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles:
+                      const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                ),
+                barTouchData: BarTouchData(
+                  touchTooltipData: BarTouchTooltipData(
+                    getTooltipColor: (_) => Colors.white,
+                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                      final isIncome = rodIndex == 0;
+                      return BarTooltipItem(
+                        '${isIncome ? "Income" : "Expense"}: $currencySymbol${rod.toY.toStringAsFixed(1)}',
+                        TextStyle(
+                          color: isIncome ? cyanColor : pinkColor,
+                          fontSize: 11.sp,
+                          fontWeight: FontWeights.bold,
+                          fontFamily: 'JetBrainsMono',
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                barGroups: List.generate(barDataGroups.length, (i) {
+                  final g = barDataGroups[i];
+
+                  return BarChartGroupData(
+                    x: i,
+                    barsSpace: 4.w,
+                    barRods: [
+                      // Cyan Bar (Income)
+                      BarChartRodData(
+                        toY: g.income <= 0 ? 0.3 : g.income,
+                        color: cyanColor,
+                        width: 7.w,
+                        borderRadius: BorderRadius.circular(6.r),
+                      ),
+                      // Pink Bar (Expense)
+                      BarChartRodData(
+                        toY: g.expense <= 0 ? 0.3 : g.expense,
+                        color: pinkColor,
+                        width: 7.w,
+                        borderRadius: BorderRadius.circular(6.r),
+                      ),
+                    ],
+                  );
+                }),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegendDot(Color color) {
+    return Container(
+      width: 8.w,
+      height: 8.w,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+
+  String _formatCompact(double value) {
+    if (value >= 1000) {
+      return '${(value / 1000).toStringAsFixed(0)}K';
+    }
+    return value.toStringAsFixed(0);
   }
 }

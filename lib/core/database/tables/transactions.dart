@@ -24,4 +24,6 @@ class Transactions extends Table {
       .references(RecurringTransactions, #id, onDelete: KeyAction.setNull)();
   DateTimeColumn get timestamp => dateTime()();
   TextColumn get note => text().nullable()();
+  IntColumn get paymentMethod => intEnum<PaymentMethod>().nullable()();
 }
+

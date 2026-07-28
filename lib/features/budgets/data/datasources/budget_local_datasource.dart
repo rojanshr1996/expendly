@@ -3,6 +3,8 @@ import 'package:injectable/injectable.dart';
 
 import '../../../../core/database/app_database.dart';
 import '../../../../core/database/enums/database_enums.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/services/preference_service.dart';
 import '../../domain/entities/budget_item.dart';
 
 abstract class BudgetLocalDataSource {
@@ -10,6 +12,9 @@ abstract class BudgetLocalDataSource {
   Future<int> setBudget({
     int? categoryId,
     required double targetAmount,
+    BudgetPeriod period = BudgetPeriod.monthly,
+    bool notifyAtThreshold = true,
+    int thresholdPercentage = 80,
   });
   Future<void> deleteBudget(int id);
 }
@@ -57,6 +62,9 @@ class BudgetLocalDataSourceImpl implements BudgetLocalDataSource {
           categoryColorHex: cat?.color ?? '#57F1DB',
           targetAmount: b.targetAmount / 100.0,
           spentAmount: spent,
+          period: b.period,
+          notifyAtThreshold: b.notifyAtThreshold,
+          thresholdPercentage: b.thresholdPercentage,
         ),
       );
     }
@@ -68,9 +76,13 @@ class BudgetLocalDataSourceImpl implements BudgetLocalDataSource {
   Future<int> setBudget({
     int? categoryId,
     required double targetAmount,
+    BudgetPeriod period = BudgetPeriod.monthly,
+    bool notifyAtThreshold = true,
+    int thresholdPercentage = 80,
   }) async {
     final now = DateTime.now();
     final minorUnits = (targetAmount * 100).round();
+    final currencyCode = getIt<PreferenceService>().currencyCode;
 
     // Check if budget for category exists
     final query = _db.select(_db.budgets);
@@ -82,21 +94,18 @@ class BudgetLocalDataSourceImpl implements BudgetLocalDataSource {
     final existing = await query.getSingleOrNull();
 
     if (existing != null) {
-      await (_db.update(_db.budgets)..where((b) => b.id.equals(existing.id)))
-          .write(BudgetsCompanion(
-        targetAmount: Value(minorUnits),
-        year: Value(now.year),
-        month: Value(now.month),
-      ));
-      return existing.id;
+      throw StateError('A budget already exists for this category.');
     } else {
       return await _db.into(_db.budgets).insert(
             BudgetsCompanion.insert(
               categoryId: Value(categoryId),
               targetAmount: minorUnits,
-              period: BudgetPeriod.monthly,
+              period: period,
               year: Value(now.year),
               month: Value(now.month),
+              currencyCode: Value(currencyCode),
+              notifyAtThreshold: Value(notifyAtThreshold),
+              thresholdPercentage: Value(thresholdPercentage),
             ),
           );
     }

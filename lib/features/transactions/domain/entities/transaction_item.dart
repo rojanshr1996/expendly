@@ -12,6 +12,7 @@ class TransactionItem extends Equatable {
   final String categoryColorHex;
   final DateTime timestamp;
   final String? note;
+  final PaymentMethod? paymentMethod;
 
   const TransactionItem({
     required this.id,
@@ -24,6 +25,7 @@ class TransactionItem extends Equatable {
     required this.categoryColorHex,
     required this.timestamp,
     this.note,
+    this.paymentMethod,
   });
 
   bool get isIncome => type == TransactionType.income;
@@ -41,5 +43,7 @@ class TransactionItem extends Equatable {
         categoryColorHex,
         timestamp,
         note,
+        paymentMethod,
       ];
 }
+

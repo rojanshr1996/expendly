@@ -457,7 +457,24 @@
   "@categoryLabel": {
     "description": "Label for category selector"
   },
+  "paymentMethodLabel": "PAYMENT METHOD",
+  "@paymentMethodLabel": {
+    "description": "Label for payment method selector"
+  },
+  "paymentCard": "Card",
+  "@paymentCard": {
+    "description": "Card payment method"
+  },
+  "paymentCash": "Cash",
+  "@paymentCash": {
+    "description": "Cash payment method"
+  },
+  "paymentAccount": "Account",
+  "@paymentAccount": {
+    "description": "Account payment method"
+  },
   "saveTransaction": "Save Transaction",
+
   "@saveTransaction": {
     "description": "Button to save transaction"
   },
@@ -580,5 +597,299 @@
   "toAccount": "To Category / Account",
   "@toAccount": {
     "description": "Label for destination account in transfer"
+  },
+  "premium": "PREMIUM",
+  "@premium": {
+    "description": "Premium badge text"
+  },
+  "goProTitle": "Go Pro for Unlimited Flow",
+  "@goProTitle": {
+    "description": "Title for pro upgrade card"
+  },
+  "goProDesc": "Unlock advanced analytics, multi-currency support, and cloud-sync across all your devices.",
+  "@goProDesc": {
+    "description": "Description for pro upgrade card"
+  },
+  "upgradeNow": "Upgrade Now — $9.99/mo",
+  "@upgradeNow": {
+    "description": "Button text for upgrading to premium"
+  },
+  "accountSection": "ACCOUNT",
+  "@accountSection": {
+    "description": "Section header for account settings"
+  },
+  "personalProfile": "Personal Profile",
+  "@personalProfile": {
+    "description": "Label for personal profile tile"
+  },
+  "personalProfileDesc": "Manage your identity and bio",
+  "@personalProfileDesc": {
+    "description": "Subtitle for personal profile tile"
+  },
+  "subscriptionPlan": "Subscription Plan",
+  "@subscriptionPlan": {
+    "description": "Label for subscription plan tile"
+  },
+  "subscriptionPlanDesc": "Free Tier • Manage Billing",
+  "@subscriptionPlanDesc": {
+    "description": "Subtitle for subscription plan tile"
+  },
+  "securitySection": "SECURITY",
+  "@securitySection": {
+    "description": "Section header for security settings"
+  },
+  "biometricAuth": "Biometric Authentication",
+  "@biometricAuth": {
+    "description": "Label for biometric authentication setting"
+  },
+  "changeSecurityPin": "Change Security PIN",
+  "@changeSecurityPin": {
+    "description": "Label for change PIN setting"
+  },
+  "appearanceSection": "APPEARANCE",
+  "@appearanceSection": {
+    "description": "Section header for appearance settings"
+  },
+  "themeLabel": "Theme",
+  "@themeLabel": {
+    "description": "Label for theme setting"
+  },
+  "darkMode": "Dark Mode",
+  "@darkMode": {
+    "description": "Value display for dark mode theme"
+  },
+  "primaryCurrency": "Primary Currency",
+  "@primaryCurrency": {
+    "description": "Label for primary currency setting"
+  },
+  "dataManagementSection": "DATA MANAGEMENT",
+  "@dataManagementSection": {
+    "description": "Section header for data management settings"
+  },
+  "cloudBackup": "Cloud Backup",
+  "@cloudBackup": {
+    "description": "Label for cloud backup setting"
+  },
+  "cloudBackupLast": "Last: Today 08:42",
+  "@cloudBackupLast": {
+    "description": "Status for last cloud backup"
+  },
+  "exportDataCsv": "Export Data (.CSV)",
+  "@exportDataCsv": {
+    "description": "Label for exporting data as CSV"
+  },
+  "clearLocalCache": "Clear Local Cache",
+  "@clearLocalCache": {
+    "description": "Label for clearing local cache"
+  },
+  "settingsFooterTagline": "Made with precision for your financial peace.",
+  "@settingsFooterTagline": {
+    "description": "Footer tagline on settings screen"
+  },
+  "exportEncryptedData": "Export Encrypted Data (AES-256)",
+  "@exportEncryptedData": {
+    "description": "Label for exporting AES-256 encrypted backup"
+  },
+  "importEncryptedData": "Import Encrypted Data (AES-256)",
+  "@importEncryptedData": {
+    "description": "Label for importing AES-256 encrypted backup"
+  },
+  "exportEncryptedDataDesc": "Create an AES-256 encrypted backup file",
+  "@exportEncryptedDataDesc": {
+    "description": "Subtitle for export data setting"
+  },
+  "importEncryptedDataDesc": "Restore backup using encryption key or PIN",
+  "@importEncryptedDataDesc": {
+    "description": "Subtitle for import data setting"
+  },
+  "exportSuccess": "Data exported & encrypted successfully!",
+  "@exportSuccess": {
+    "description": "Success message after export"
+  },
+  "importSuccess": "Data restored successfully!",
+  "@importSuccess": {
+    "description": "Success message after import"
+  },
+  "passphrasePrompt": "Passphrase / PIN (Optional)",
+  "@passphrasePrompt": {
+    "description": "Label for passphrase input prompt"
+  },
+  "passphraseHint": "Enter PIN/key or leave empty for default",
+  "@passphraseHint": {
+    "description": "Hint text for passphrase input"
+  },
+  "pasteEncryptedPayload": "Paste Encrypted Data Payload",
+  "@pasteEncryptedPayload": {
+    "description": "Label for payload import dialog textfield"
+  },
+  "accountId": "ACCOUNT ID: {id}",
+  "@accountId": {
+    "description": "Account ID label with ID placeholder",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "fullNameLabel": "FULL NAME",
+  "@fullNameLabel": {
+    "description": "Label for full name input field"
+  },
+  "yourNameHint": "Your name",
+  "@yourNameHint": {
+    "description": "Placeholder hint for full name input"
+  },
+  "pleaseEnterYourName": "Please enter your name",
+  "@pleaseEnterYourName": {
+    "description": "Validation message for missing name"
+  },
+  "emailAddressLabel": "EMAIL ADDRESS",
+  "@emailAddressLabel": {
+    "description": "Label for email address input field"
+  },
+  "emailHint": "email@example.com",
+  "@emailHint": {
+    "description": "Placeholder hint for email input"
+  },
+  "professionalBioLabel": "PROFESSIONAL BIO",
+  "@professionalBioLabel": {
+    "description": "Label for professional bio input field"
+  },
+  "bioHint": "Briefly describe your financial focus...",
+  "@bioHint": {
+    "description": "Placeholder hint for professional bio input"
+  },
+  "saveChanges": "Save Changes",
+  "@saveChanges": {
+    "description": "Button label for saving changes"
+  },
+  "discardChanges": "Discard Changes",
+  "@discardChanges": {
+    "description": "Button label for discarding changes"
+  },
+  "profileSavedSuccess": "Personal profile saved successfully!",
+  "@profileSavedSuccess": {
+    "description": "Toast message when profile is saved"
+  },
+  "changesDiscarded": "Changes discarded",
+  "@changesDiscarded": {
+    "description": "Toast message when changes are discarded"
+  },
+  "failedToSelectPhoto": "Failed to select photo: {error}",
+  "@failedToSelectPhoto": {
+    "description": "Error message when photo selection fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSaveProfile": "Failed to save profile: {error}",
+  "@failedToSaveProfile": {
+    "description": "Error message when profile saving fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfile": "Edit Profile",
+  "@editProfile": {
+    "description": "Title for profile editing sheet"
+  },
+  "setUpProfile": "Set Up Profile",
+  "@setUpProfile": {
+    "description": "Title for initial profile setup sheet"
+  },
+  "tapAvatarChoosePhoto": "Tap avatar to choose photo from gallery",
+  "@tapAvatarChoosePhoto": {
+    "description": "Instruction below avatar picker"
+  },
+  "accountTransfer": "Account Transfer",
+  "@accountTransfer": {
+    "description": "Title for account transfer option"
+  },
+  "exportPromptDesc": "Enter an optional encryption PIN/passphrase to protect your backup with AES-256.",
+  "@exportPromptDesc": {
+    "description": "Description for export modal"
+  },
+  "exportEncryptButton": "Export & Encrypt (AES-256)",
+  "@exportEncryptButton": {
+    "description": "Button to trigger encrypted export"
+  },
+  "copyEncryptedText": "Copy Encrypted Text",
+  "@copyEncryptedText": {
+    "description": "Button to copy encrypted export payload"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Generic done button label"
+  },
+  "encryptedPayloadCopied": "Encrypted payload copied to clipboard!",
+  "@encryptedPayloadCopied": {
+    "description": "Toast message when payload copied"
+  },
+  "pastePayloadHint": "Paste ivBase64:cipherTextBase64 here...",
+  "@pastePayloadHint": {
+    "description": "Hint text for pasting encrypted payload"
+  },
+  "pleasePastePayload": "Please paste an encrypted payload.",
+  "@pleasePastePayload": {
+    "description": "Validation error for missing payload"
+  },
+  "decryptRestoreData": "Decrypt & Restore Data",
+  "@decryptRestoreData": {
+    "description": "Button to trigger payload decryption"
+  },
+  "exportCsvDesc": "Export unencrypted .csv for Sheets or Excel",
+  "@exportCsvDesc": {
+    "description": "Subtitle for CSV export option"
+  },
+  "csvExportedTo": "CSV exported to {filename}",
+  "@csvExportedTo": {
+    "description": "Toast message for CSV export destination",
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "csvExportFailed": "CSV Export failed: {error}",
+  "@csvExportFailed": {
+    "description": "Toast message for CSV export error",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Export failed: {error}",
+  "@exportFailed": {
+    "description": "Toast message for export error",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importFailedKey": "Import failed: Invalid payload or decryption key.",
+  "@importFailedKey": {
+    "description": "Toast message for import error"
+  },
+  "addNoteHint": "Add note (optional)...",
+  "@addNoteHint": {
+    "description": "Placeholder hint for transaction note"
+  },
+  "source": "Source",
+  "@source": {
+    "description": "Fallback label for source category"
+  },
+  "destination": "Destination",
+  "@destination": {
+    "description": "Fallback label for destination category"
+  },
+  "createBudget": "Create Budget",
+  "@createBudget": {
+    "description": "Button to create new budget"
   }
 }

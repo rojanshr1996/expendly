@@ -154,7 +154,7 @@ class QuickActionFabState extends State<QuickActionFab> {
                         color: colorScheme.primary, size: 20.sp),
                   ),
                   title: Text(
-                    'Account Transfer',
+                    l10n.accountTransfer,
                     style: (textTheme.bodyLarge ?? const TextStyle())
                         .copyWith(fontWeight: FontWeights.bold),
                   ),

@@ -1,14 +1,33 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../../core/database/enums/database_enums.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/events/transaction_events.dart';
+import '../../../dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../domain/repositories/budget_repository.dart';
 import 'budget_state.dart';
 
-@injectable
+@lazySingleton
 class BudgetCubit extends Cubit<BudgetState> {
   final BudgetRepository _repository;
 
-  BudgetCubit(this._repository) : super(BudgetInitial());
+  BudgetCubit(this._repository) : super(BudgetInitial()) {
+    TransactionEvents.transactionUpdated.addListener(_onTransactionUpdated);
+  }
+
+  void _onTransactionUpdated() {
+    if (!isClosed) {
+      loadBudgets();
+    }
+  }
+
+  @override
+  Future<void> close() {
+    TransactionEvents.transactionUpdated
+        .removeListener(_onTransactionUpdated);
+    return super.close();
+  }
 
   Future<void> loadBudgets() async {
     emit(BudgetLoading());
@@ -23,16 +42,28 @@ class BudgetCubit extends Cubit<BudgetState> {
   Future<void> setBudget({
     int? categoryId,
     required double targetAmount,
+    BudgetPeriod period = BudgetPeriod.monthly,
+    bool notifyAtThreshold = true,
+    int thresholdPercentage = 80,
   }) async {
     try {
       await _repository.setBudget(
         categoryId: categoryId,
         targetAmount: targetAmount,
+        period: period,
+        notifyAtThreshold: notifyAtThreshold,
+        thresholdPercentage: thresholdPercentage,
       );
       emit(const BudgetActionSuccess('Budget saved successfully'));
       await loadBudgets();
+      _refreshDashboard();
     } catch (e) {
-      emit(BudgetError('Failed to save budget: ${e.toString()}'));
+      final msg = e
+          .toString()
+          .replaceAll('StateError: ', '')
+          .replaceAll('Exception: ', '')
+          .replaceAll('Failed to save budget: ', '');
+      emit(BudgetError(msg));
     }
   }
 
@@ -41,8 +72,15 @@ class BudgetCubit extends Cubit<BudgetState> {
       await _repository.deleteBudget(id);
       emit(const BudgetActionSuccess('Budget removed'));
       await loadBudgets();
+      _refreshDashboard();
     } catch (e) {
       emit(BudgetError('Failed to delete budget: ${e.toString()}'));
     }
+  }
+
+  void _refreshDashboard() {
+    try {
+      getIt<DashboardCubit>().loadDashboardData();
+    } catch (_) {}
   }
 }
