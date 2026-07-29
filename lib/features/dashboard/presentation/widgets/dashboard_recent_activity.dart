@@ -1,12 +1,16 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/margin_constants.dart';
+import '../../../../core/database/enums/database_enums.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
+import '../../../transactions/domain/entities/transaction_item.dart';
 import '../../domain/entities/financial_summary.dart';
 
 /// Section displaying recent transactions with category icons, desaturated semantic colors, and monospaced amounts.
@@ -104,79 +108,104 @@ class DashboardRecentActivity extends StatelessWidget {
 
                 return Container(
                   margin: EdgeInsets.only(bottom: 12.h),
-                  child: GlassContainer(
-                    padding: EdgeInsets.all(12.w),
-                    child: Row(
-                      children: [
-                        // Category Icon Avatar
-                        Container(
-                          width: 42.w,
-                          height: 42.w,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.r),
-                            color: color.withAlpha((0.15 * 255).round()),
-                            border: Border.all(
-                              color: color.withAlpha((0.3 * 255).round()),
+                  child: InkWell(
+                    onTap: () {
+                      final item = TransactionItem(
+                        id: tx.id,
+                        type: tx.isIncome
+                            ? TransactionType.income
+                            : TransactionType.expense,
+                        amount: tx.amount,
+                        currencyCode: currencySymbol,
+                        categoryId: 0,
+                        categoryName: tx.categoryName,
+                        categoryIcon: tx.iconName,
+                        categoryColorHex: tx.colorHex,
+                        timestamp: DateTime.now(),
+                        note: tx.title != tx.categoryName ? tx.title : null,
+                      );
+                      context.router.push(
+                        TransactionDetailsRoute(
+                          transaction: item,
+                          isPrivacyModeNotifier: isPrivacyModeNotifier,
+                        ),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(16.r),
+                    child: GlassContainer(
+                      padding: EdgeInsets.all(12.w),
+                      child: Row(
+                        children: [
+                          // Category Icon Avatar
+                          Container(
+                            width: 42.w,
+                            height: 42.w,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.r),
+                              color: color.withAlpha((0.15 * 255).round()),
+                              border: Border.all(
+                                color: color.withAlpha((0.3 * 255).round()),
+                              ),
+                            ),
+                            child: Icon(iconData, color: color, size: 20.sp),
+                          ),
+                          horizontalMarginSmall,
+
+                          // Title & Category
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  tx.title,
+                                  style: (textTheme.bodyLarge ?? const TextStyle())
+                                      .copyWith(
+                                    fontWeight: FontWeights.bold,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  tx.categoryName,
+                                  style: (textTheme.bodyMedium ?? const TextStyle())
+                                      .copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Icon(iconData, color: color, size: 20.sp),
-                        ),
-                        horizontalMarginSmall,
 
-                        // Title & Category
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          // Amount & Date
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text(
-                                tx.title,
-                                style: (textTheme.bodyLarge ?? const TextStyle())
-                                    .copyWith(
+                              CompactAmountText(
+                                amount: tx.amount,
+                                currencySymbol: currencySymbol,
+                                isPrivacyMode: isPrivacyMode,
+                                showSign: true,
+                                isIncome: tx.isIncome,
+                                style: (customTypography.labelMediumMono).copyWith(
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeights.bold,
-                                  color: colorScheme.onSurface,
+                                  color: tx.isIncome
+                                      ? AppColors.semanticGreen
+                                      : AppColors.semanticRed,
                                 ),
-                                overflow: TextOverflow.ellipsis,
                               ),
+                              verticalMarginXXSmall,
                               Text(
-                                tx.categoryName,
-                                style: (textTheme.bodyMedium ?? const TextStyle())
-                                    .copyWith(
+                                l10n.today,
+                                style: customTypography.labelMediumMono.copyWith(
+                                  fontSize: 10.sp,
                                   color: colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-
-                        // Amount & Date
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            CompactAmountText(
-                              amount: tx.amount,
-                              currencySymbol: currencySymbol,
-                              isPrivacyMode: isPrivacyMode,
-                              showSign: true,
-                              isIncome: tx.isIncome,
-                              style: (customTypography.labelMediumMono).copyWith(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeights.bold,
-                                color: tx.isIncome
-                                    ? AppColors.semanticGreen
-                                    : AppColors.semanticRed,
-                              ),
-                            ),
-                            verticalMarginXXSmall,
-                            Text(
-                              l10n.today,
-                              style: customTypography.labelMediumMono.copyWith(
-                                fontSize: 10.sp,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );

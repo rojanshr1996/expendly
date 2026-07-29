@@ -14,12 +14,15 @@ import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/category_picker_sheet.dart';
 import '../../../dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../domain/entities/category_item.dart';
+import '../../domain/entities/transaction_item.dart';
 import '../cubit/transaction_cubit.dart';
 import '../cubit/transaction_state.dart';
 
 @RoutePage()
 class ModernAddTransactionPage extends StatefulWidget {
-  const ModernAddTransactionPage({super.key});
+  final TransactionItem? initialTransaction;
+
+  const ModernAddTransactionPage({super.key, this.initialTransaction});
 
   @override
   State<ModernAddTransactionPage> createState() => _ModernAddTransactionPageState();
@@ -74,7 +77,34 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
           _expenseCategories = expense;
           _incomeCategories = income;
         });
-        if (_expenseCategories.isNotEmpty) {
+
+        if (widget.initialTransaction != null) {
+          final tx = widget.initialTransaction!;
+          _typeNotifier.value = tx.type;
+          _amountStringNotifier.value = tx.amount.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+          _dateNotifier.value = tx.timestamp;
+          if (tx.paymentMethod != null) {
+            _paymentMethodNotifier.value = tx.paymentMethod!;
+          }
+          if (tx.note != null) {
+            _noteController.text = tx.note!;
+          }
+
+          final allCats = [...expense, ...income];
+          CategoryItem? foundCat;
+          try {
+            foundCat = allCats.firstWhere((c) => c.id == tx.categoryId);
+          } catch (_) {
+            foundCat = CategoryItem(
+              id: tx.categoryId,
+              name: tx.categoryName,
+              icon: tx.categoryIcon,
+              colorHex: tx.categoryColorHex,
+              type: tx.type,
+            );
+          }
+          _selectedCategoryNotifier.value = foundCat;
+        } else if (_expenseCategories.isNotEmpty) {
           _selectedCategoryNotifier.value = _expenseCategories.first;
         }
       }
@@ -128,8 +158,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
     final textTheme = context.textTheme;
     final customTypography = context.customTypography;
 
-    return BlocProvider(
-      create: (_) => getIt<TransactionCubit>(),
+    return BlocProvider.value(
+      value: getIt<TransactionCubit>(),
       child: BlocListener<TransactionCubit, TransactionState>(
         listener: (context, state) {
           if (state is TransactionActionSuccess) {
@@ -166,7 +196,9 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                 onPressed: () => context.router.maybePop(),
               ),
               title: Text(
-                context.l10n.logTransaction,
+                widget.initialTransaction != null
+                    ? 'Edit Transaction'
+                    : context.l10n.logTransaction,
                 style: (textTheme.titleLarge ?? const TextStyle()).copyWith(
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -820,14 +852,26 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   ? _paymentMethodNotifier.value
                                   : null;
 
-                              blocContext.read<TransactionCubit>().addTransaction(
-                                    type: _typeNotifier.value,
-                                    amount: amount,
-                                    categoryId: selectedCat.id,
-                                    timestamp: _dateNotifier.value,
-                                    note: noteText,
-                                    paymentMethod: paymentMethod,
-                                  );
+                              if (widget.initialTransaction != null) {
+                                blocContext.read<TransactionCubit>().updateTransaction(
+                                      id: widget.initialTransaction!.id,
+                                      type: _typeNotifier.value,
+                                      amount: amount,
+                                      categoryId: selectedCat.id,
+                                      timestamp: _dateNotifier.value,
+                                      note: noteText,
+                                      paymentMethod: paymentMethod,
+                                    );
+                              } else {
+                                blocContext.read<TransactionCubit>().addTransaction(
+                                      type: _typeNotifier.value,
+                                      amount: amount,
+                                      categoryId: selectedCat.id,
+                                      timestamp: _dateNotifier.value,
+                                      note: noteText,
+                                      paymentMethod: paymentMethod,
+                                    );
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: colorScheme.primary,
@@ -839,7 +883,9 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                               elevation: 0,
                             ),
                             child: Text(
-                              context.l10n.saveTransaction,
+                              widget.initialTransaction != null
+                                  ? 'Update Transaction'
+                                  : context.l10n.saveTransaction,
                               style: customTypography.bodyLargeBold.copyWith(
                                 color: Colors.black,
                                 fontSize: 18.sp,

@@ -8,6 +8,7 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
+import '../../../../core/services/biometric_auth_service.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
@@ -94,10 +95,35 @@ class _ResetPinModalState extends State<ResetPinModal> {
     super.dispose();
   }
 
-  void _resetViaBiometrics() {
-    HapticFeedback.heavyImpact();
+  void _resetViaBiometrics() async {
+    HapticFeedback.lightImpact();
     _errorMessageNotifier.value = null;
-    _currentStepNotifier.value = ResetPinStep.enterNewPin;
+    if (!mounted) return;
+    final reason = context.l10n.biometricReason;
+    final notAvailableMsg = context.l10n.biometricNotAvailable;
+    final failedMsg = context.l10n.biometricAuthFailed;
+
+    final bioService = getIt<BiometricAuthService>();
+    final isAvailable = await bioService.isBiometricAvailable();
+
+    if (!isAvailable) {
+      if (mounted) {
+        _errorMessageNotifier.value = notAvailableMsg;
+      }
+      return;
+    }
+
+    final authenticated = await bioService.authenticate(
+      localizedReason: reason,
+    );
+
+    if (authenticated) {
+      HapticFeedback.heavyImpact();
+      _errorMessageNotifier.value = null;
+      _currentStepNotifier.value = ResetPinStep.enterNewPin;
+    } else if (mounted) {
+      _errorMessageNotifier.value = failedMsg;
+    }
   }
 
   void _verifySecretAnswer() async {

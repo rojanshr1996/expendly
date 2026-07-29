@@ -9,7 +9,7 @@ import '../../features/budgets/data/datasources/budget_local_datasource.dart';
 import '../../features/budgets/data/repositories/budget_repository_impl.dart';
 import '../../features/budgets/domain/repositories/budget_repository.dart';
 import '../../features/budgets/presentation/cubit/budget_cubit.dart';
-import '../../features/dashboard/data/datasources/dashboard_local_data_source.dart';
+import '../../features/dashboard/data/datasources/dashboard_local_datasource.dart';
 import '../../features/dashboard/data/repositories/dashboard_repository_impl.dart';
 import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
 import '../../features/dashboard/domain/usecases/get_financial_summary.dart';

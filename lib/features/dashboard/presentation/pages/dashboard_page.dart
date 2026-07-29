@@ -1,18 +1,19 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/preference_service.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../../../analytics/presentation/pages/refined_reports_page.dart';
-import '../../../budgets/presentation/pages/budgets_overview_page.dart';
 import '../../../budgets/presentation/cubit/budget_cubit.dart';
+import '../../../budgets/presentation/pages/budgets_overview_page.dart';
 import '../../../profile/presentation/cubit/profile_cubit.dart';
 import '../../../transactions/presentation/pages/all_transactions_page.dart';
 import '../../domain/entities/financial_summary.dart';
@@ -58,7 +59,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void _openAddTransaction(BuildContext context) async {
     final dashboardCubit = context.read<DashboardCubit>();
-    final result = await context.router.push(const ModernAddTransactionRoute());
+    final result = await context.router.push(ModernAddTransactionRoute());
     if (!mounted) return;
     if (result == true) {
       dashboardCubit.loadDashboardData();
@@ -70,14 +71,18 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) {
+    return BlocProvider.value(
+      value: () {
         try {
-          return getIt<DashboardCubit>()..loadDashboardData();
+          final cubit = getIt<DashboardCubit>();
+          if (!cubit.isClosed) {
+            cubit.loadDashboardData();
+          }
+          return cubit;
         } catch (_) {
           return DashboardCubit(_FallbackGetFinancialSummary())..loadDashboardData();
         }
-      },
+      }(),
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -85,21 +90,38 @@ class _DashboardPageState extends State<DashboardPage> {
             body: ValueListenableBuilder<int>(
               valueListenable: _currentTabNotifier,
               builder: (context, currentTab, _) {
-                return IndexedStack(
-                  index: currentTab,
-                  children: [
-                    // Tab 0: Overview
-                    _buildOverviewTab(context),
+                return AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  switchInCurve: Curves.easeOutCubic,
+                  switchOutCurve: Curves.easeInCubic,
+                  transitionBuilder: (child, animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: ScaleTransition(
+                        scale: Tween<double>(begin: 0.98, end: 1.0).animate(animation),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: KeyedSubtree(
+                    key: ValueKey('tab_$currentTab'),
+                    child: IndexedStack(
+                      index: currentTab,
+                      children: [
+                        // Tab 0: Overview
+                        _buildOverviewTab(context),
 
-                    // Tab 1: Activity / All Transactions
-                    AllTransactionsPage(isPrivacyModeNotifier: _isPrivacyModeNotifier),
+                        // Tab 1: Activity / All Transactions
+                        AllTransactionsPage(isPrivacyModeNotifier: _isPrivacyModeNotifier),
 
-                    // Tab 2: Budgets Overview
-                    BudgetsOverviewPage(isPrivacyModeNotifier: _isPrivacyModeNotifier),
+                        // Tab 2: Budgets Overview
+                        BudgetsOverviewPage(isPrivacyModeNotifier: _isPrivacyModeNotifier),
 
-                    // Tab 3: Reports & Analytics
-                    RefinedReportsPage(isPrivacyModeNotifier: _isPrivacyModeNotifier),
-                  ],
+                        // Tab 3: Reports & Analytics
+                        RefinedReportsPage(isPrivacyModeNotifier: _isPrivacyModeNotifier),
+                      ],
+                    ),
+                  ),
                 );
               },
             ),
@@ -210,92 +232,145 @@ class _DashboardPageState extends State<DashboardPage> {
           },
         ),
 
-        // Scrollable Dashboard Body
+        // Scrollable Dashboard Body with Smooth Animated Shimmer Cross-Fade
         Expanded(
           child: BlocBuilder<DashboardCubit, DashboardState>(
             builder: (context, state) {
-              if (state is DashboardLoading) {
-                return const DashboardShimmer();
-              }
+              final isLoading = state is DashboardLoading;
 
-              if (state is DashboardError) {
-                return Center(
-                  child: Text(
-                    context.l10n.errorMessage(state.message),
-                    style: (context.textTheme.bodyLarge ?? const TextStyle()).copyWith(
-                      color: context.colorScheme.error,
-                    ),
-                  ),
-                );
-              }
-
-              if (state is DashboardLoaded) {
-                final summary = state.summary;
-                final bool isEmptyState =
-                    summary.recentTransactions.isEmpty && summary.totalIncome == 0 && summary.totalExpense == 0;
-
-                if (isEmptyState) {
-                  return EmptyDashboardView(
-                    onAddTransaction: () {
-                      _openAddTransaction(context);
-                    },
-                  );
-                }
-
-                return RefreshIndicator(
-                  color: AppColors.primary,
-                  onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 600),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            verticalMarginSmall,
-
-                            // Summary Bento Grid Cards
-                            DashboardBentoGrid(
-                              summary: summary,
-                              isPrivacyModeNotifier: _isPrivacyModeNotifier,
-                            ),
-                            verticalMarginMedium,
-
-                            // Cash Flow Summary Section
-                            const DashboardCashFlowChart(),
-                            verticalMarginMedium,
-
-                            // Recent Activity Section
-                            DashboardRecentActivity(
-                              transactions: summary.recentTransactions,
-                              currencySymbol: summary.currencySymbol,
-                              isPrivacyModeNotifier: _isPrivacyModeNotifier,
-                              onSeeAllPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute<void>(
-                                    builder: (_) => AllTransactionsPage(
-                                      isPrivacyModeNotifier: _isPrivacyModeNotifier,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            verticalMarginLarge,
-                          ],
-                        ).defaultCanvasPadding(),
-                      ),
-                    ),
-                  ),
-                );
-              }
-
-              return const SizedBox.shrink();
+              return AnimatedCrossFade(
+                duration: const Duration(milliseconds: 550),
+                firstCurve: Curves.easeOutCubic,
+                secondCurve: Curves.easeInCubic,
+                sizeCurve: Curves.easeInOutCubic,
+                crossFadeState: isLoading
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
+                firstChild: const DashboardShimmer(key: ValueKey('shimmer')),
+                secondChild: _buildLoadedOrErrorContent(context, state),
+              );
             },
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildLoadedOrErrorContent(BuildContext context, DashboardState state) {
+    if (state is DashboardError) {
+      return Center(
+        key: const ValueKey('error'),
+        child: Text(
+          context.l10n.errorMessage(state.message),
+          style: (context.textTheme.bodyLarge ?? const TextStyle()).copyWith(
+            color: context.colorScheme.error,
+          ),
+        ),
+      );
+    }
+
+    if (state is DashboardLoaded) {
+      final summary = state.summary;
+      final bool isEmptyState =
+          summary.recentTransactions.isEmpty && summary.totalIncome == 0 && summary.totalExpense == 0;
+
+      if (isEmptyState) {
+        return EmptyDashboardView(
+          key: const ValueKey('empty'),
+          onAddTransaction: () {
+            _openAddTransaction(context);
+          },
+        );
+      }
+
+      return RefreshIndicator(
+        key: const ValueKey('loaded_content'),
+        color: AppColors.primary,
+        onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  verticalMarginSmall,
+
+                  // Summary Bento Grid Cards (Stagger Delay 0ms)
+                  _StaggeredEntrance(
+                    delayMs: 0,
+                    child: DashboardBentoGrid(
+                      summary: summary,
+                      isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                    ),
+                  ),
+                  verticalMarginMedium,
+
+                  // Cash Flow Summary Section (Stagger Delay 100ms)
+                  const _StaggeredEntrance(
+                    delayMs: 100,
+                    child: DashboardCashFlowChart(),
+                  ),
+                  verticalMarginMedium,
+
+                  // Recent Activity Section (Stagger Delay 200ms)
+                  _StaggeredEntrance(
+                    delayMs: 200,
+                    child: DashboardRecentActivity(
+                      transactions: summary.recentTransactions,
+                      currencySymbol: summary.currencySymbol,
+                      isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                      onSeeAllPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (_) => AllTransactionsPage(
+                              isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  verticalMarginLarge,
+                ],
+              ).defaultCanvasPadding(),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return const SizedBox.shrink(key: ValueKey('none'));
+  }
+}
+
+class _StaggeredEntrance extends StatelessWidget {
+  final Widget child;
+  final int delayMs;
+
+  const _StaggeredEntrance({
+    required this.child,
+    this.delayMs = 0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.2, end: 1.0),
+      duration: Duration(milliseconds: 500 + delayMs),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, (1.0 - value) * 12.h),
+            child: child,
+          ),
+        );
+      },
+      child: child,
     );
   }
 }

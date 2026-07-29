@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../domain/entities/analytics_report.dart';
@@ -11,6 +12,12 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
   AnalyticsRepositoryImpl(this._localDataSource);
 
   @override
-  Future<AnalyticsReport> getAnalyticsReport() =>
-      _localDataSource.getAnalyticsReport();
+  Future<AnalyticsReport> getAnalyticsReport({
+    String period = 'Monthly',
+    DateTimeRange? customRange,
+  }) =>
+      _localDataSource.getAnalyticsReport(
+        period: period,
+        customRange: customRange,
+      );
 }

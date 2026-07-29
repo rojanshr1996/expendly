@@ -56,8 +56,11 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
   }
 
   Future<void> _checkInitialState() async {
-    final status = await _remoteConfig.checkUpdateStatus();
-    _updateStatusNotifier.value = status;
+    final status = await _remoteConfig.checkUpdateStatus(fetchRemote: true);
+    if (mounted) {
+      _isMaintenanceNotifier.value = _remoteConfig.isMaintenanceMode;
+      _updateStatusNotifier.value = status;
+    }
   }
 
   Future<void> _openStoreUrl() async {

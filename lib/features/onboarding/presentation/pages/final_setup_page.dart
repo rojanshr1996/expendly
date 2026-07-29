@@ -9,9 +9,11 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/shimmer_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
 
+import '../../../../core/services/biometric_auth_service.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/glass_container.dart';
+import '../../../../core/widgets/status_components.dart';
 
 @RoutePage()
 class FinalSetupPage extends StatefulWidget {
@@ -322,8 +324,44 @@ class _FinalSetupPageState extends State<FinalSetupPage>
                             return Switch.adaptive(
                               value: enableBiometrics,
                               activeColor: colorScheme.primary,
-                              onChanged: (val) =>
-                                  _enableBiometricsNotifier.value = val,
+                              onChanged: (val) async {
+                                if (val) {
+                                  if (!context.mounted) return;
+                                  final reason = context.l10n.biometricReason;
+                                  final notAvailableMsg = context.l10n.biometricNotAvailable;
+                                  final failedMsg = context.l10n.biometricAuthFailed;
+
+                                  final bioService = getIt<BiometricAuthService>();
+                                  final isAvailable = await bioService.isBiometricAvailable();
+                                  if (!isAvailable) {
+                                    if (context.mounted) {
+                                      StatusComponents.showToast(
+                                        context,
+                                        message: notAvailableMsg,
+                                        isError: true,
+                                      );
+                                    }
+                                    return;
+                                  }
+
+                                  final authenticated = await bioService.authenticate(
+                                    localizedReason: reason,
+                                  );
+
+                                  if (!authenticated) {
+                                    if (context.mounted) {
+                                      StatusComponents.showToast(
+                                        context,
+                                        message: failedMsg,
+                                        isError: true,
+                                      );
+                                    }
+                                    return;
+                                  }
+                                }
+
+                                _enableBiometricsNotifier.value = val;
+                              },
                             );
                           },
                         ),

@@ -642,6 +642,18 @@
   "@biometricAuth": {
     "description": "Label for biometric authentication setting"
   },
+  "biometricReason": "Please authenticate to access Expendly",
+  "@biometricReason": {
+    "description": "Reason shown in local_auth prompt"
+  },
+  "biometricNotAvailable": "Biometric authentication is not available or enrolled on this device.",
+  "@biometricNotAvailable": {
+    "description": "Error message when biometrics is unavailable"
+  },
+  "biometricAuthFailed": "Biometric authentication failed.",
+  "@biometricAuthFailed": {
+    "description": "Error message when biometric authentication fails"
+  },
   "changeSecurityPin": "Change Security PIN",
   "@changeSecurityPin": {
     "description": "Label for change PIN setting"
@@ -891,5 +903,279 @@
   "createBudget": "Create Budget",
   "@createBudget": {
     "description": "Button to create new budget"
+  },
+  "selectMonthAndYear": "SELECT MONTH & YEAR",
+  "@selectMonthAndYear": {
+    "description": "DatePicker header text on activity page"
+  },
+  "calendarView": "Calendar View",
+  "@calendarView": {
+    "description": "Tooltip for calendar view mode"
+  },
+  "listView": "List View",
+  "@listView": {
+    "description": "Tooltip for list view mode"
+  },
+  "clearDateFilter": "Clear Date Filter",
+  "@clearDateFilter": {
+    "description": "Tooltip to reset date range filter"
+  },
+  "filterByDateRangeAllTime": "Filter by Date Range (All Time)",
+  "@filterByDateRangeAllTime": {
+    "description": "Default label when date range is empty"
+  },
+  "noTransactionsOnDate": "No transactions on {date}",
+  "@noTransactionsOnDate": {
+    "description": "Empty state message for selected single date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "noTransactionsInDateRange": "No transactions found in selected date range",
+  "@noTransactionsInDateRange": {
+    "description": "Empty state message for selected date range"
+  },
+  "transactionsCount": "{count, plural, =1{1 Transaction} other{{count} Transactions}}",
+  "@transactionsCount": {
+    "description": "Header text showing count of transactions on a date",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "transactionDetails": "Transaction Details",
+  "@transactionDetails": {
+    "description": "Page title for transaction details screen"
+  },
+  "transactionType": "Transaction Type",
+  "@transactionType": {
+    "description": "Label for transaction type field"
+  },
+  "categoryLabel": "Category",
+  "@categoryLabel": {
+    "description": "Label for category field"
+  },
+  "dateAndTimeLabel": "Date & Time",
+  "@dateAndTimeLabel": {
+    "description": "Label for date and time field"
+  },
+  "paymentMethodLabel": "Payment Method",
+  "@paymentMethodLabel": {
+    "description": "Label for payment method field"
+  },
+  "noteLabel": "Note",
+  "@noteLabel": {
+    "description": "Label for note field"
+  },
+  "transactionIdLabel": "Transaction ID",
+  "@transactionIdLabel": {
+    "description": "Label for transaction ID field"
+  },
+  "deleteTransaction": "Delete Transaction",
+  "@deleteTransaction": {
+    "description": "Button label to delete a transaction"
+  },
+  "deleteTransactionConfirmTitle": "Delete Transaction?",
+  "@deleteTransactionConfirmTitle": {
+    "description": "Title for delete transaction confirmation modal"
+  },
+  "deleteTransactionConfirmDesc": "Are you sure you want to delete this transaction? This action cannot be undone.",
+  "@deleteTransactionConfirmDesc": {
+    "description": "Description for delete transaction confirmation modal"
+  },
+  "transactionDeletedSuccess": "Transaction deleted successfully",
+  "@transactionDeletedSuccess": {
+    "description": "Toast message when transaction is deleted"
+  },
+  "cardPaymentMethod": "Card",
+  "@cardPaymentMethod": {
+    "description": "Label for card payment method"
+  },
+  "cashPaymentMethod": "Cash",
+  "@cashPaymentMethod": {
+    "description": "Label for cash payment method"
+  },
+  "accountPaymentMethod": "Bank Account",
+  "@accountPaymentMethod": {
+    "description": "Label for bank account payment method"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Generic confirm button text"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button text"
+  },
+  "changeSecurityPinTitle": "Change Security PIN",
+  "@changeSecurityPinTitle": {
+    "description": "Title for change security PIN modal"
+  },
+  "enterCurrentPin": "Enter Current PIN",
+  "@enterCurrentPin": {
+    "description": "Instruction prompt for entering current PIN"
+  },
+  "enterNewPin": "Enter New 4-Digit PIN",
+  "@enterNewPin": {
+    "description": "Instruction prompt for entering new PIN"
+  },
+  "confirmNewPin": "Confirm New 4-Digit PIN",
+  "@confirmNewPin": {
+    "description": "Instruction prompt for confirming new PIN"
+  },
+  "incorrectCurrentPin": "Incorrect current PIN. Please try again.",
+  "@incorrectCurrentPin": {
+    "description": "Toast message for wrong current PIN"
+  },
+  "pinsDoNotMatch": "PINs do not match. Please try again.",
+  "@pinsDoNotMatch": {
+    "description": "Toast message when new PIN and confirmation PIN mismatch"
+  },
+  "pinChangedSuccess": "Security PIN updated successfully",
+  "@pinChangedSuccess": {
+    "description": "Toast message when PIN is updated successfully"
+  },
+  "supportAndLegalSection": "SUPPORT & LEGAL",
+  "@supportAndLegalSection": {
+    "description": "Settings section header for support and legal options"
+  },
+  "aboutExpendly": "About Expendly",
+  "@aboutExpendly": {
+    "description": "Menu title for About page"
+  },
+  "aboutExpendlySubtitle": "Version 1.0.0 • Modern Fiscal Core",
+  "@aboutExpendlySubtitle": {
+    "description": "Subtitle for About page menu item"
+  },
+  "termsAndConditions": "Terms & Conditions",
+  "@termsAndConditions": {
+    "description": "Menu title for Terms & Conditions page"
+  },
+  "termsDesc": "Privacy policy, data ownership, & terms of service",
+  "@termsDesc": {
+    "description": "Subtitle for Terms & Conditions menu item"
+  },
+  "helpAndSupport": "Help & Support",
+  "@helpAndSupport": {
+    "description": "Menu title for Help & Support page"
+  },
+  "helpSupportDesc": "FAQs, troubleshooting, & contact info",
+  "@helpSupportDesc": {
+    "description": "Subtitle for Help & Support menu item"
+  },
+  "faqTitle": "Frequently Asked Questions",
+  "@faqTitle": {
+    "description": "Section header for FAQs"
+  },
+  "faq1Q": "Is my financial data uploaded to any cloud server?",
+  "@faq1Q": {
+    "description": "FAQ 1 Question"
+  },
+  "faq1A": "No. Expendly is 100% offline-first. All data, transactions, and settings reside exclusively on your device, encrypted with hardware-backed AES-256.",
+  "@faq1A": {
+    "description": "FAQ 1 Answer"
+  },
+  "faq2Q": "How do I backup or transfer my data?",
+  "@faq2Q": {
+    "description": "FAQ 2 Question"
+  },
+  "faq2A": "Go to Settings > Data Management. You can export an encrypted payload or CSV file, and restore it anytime using your passphrase.",
+  "@faq2A": {
+    "description": "FAQ 2 Answer"
+  },
+  "faq3Q": "What happens if I forget my security PIN?",
+  "@faq3Q": {
+    "description": "FAQ 3 Question"
+  },
+  "faq3A": "You can reset your PIN using your security recovery questions setup during onboarding.",
+  "@faq3A": {
+    "description": "FAQ 3 Answer"
+  },
+  "faq4Q": "How do I change my primary currency?",
+  "@faq4Q": {
+    "description": "FAQ 4 Question"
+  },
+  "faq4A": "Your primary currency display can be configured in Settings > Appearance > Primary Currency.",
+  "@faq4A": {
+    "description": "FAQ 4 Answer"
+  },
+  "termsTitle1": "1. Local Data Ownership",
+  "@termsTitle1": {
+    "description": "Terms Section 1 Title"
+  },
+  "termsBody1": "Expendly does not collect, transmit, or monetize your personal financial records. All databases, encrypted keys, and preferences are stored locally on your device.",
+  "@termsBody1": {
+    "description": "Terms Section 1 Body"
+  },
+  "termsTitle2": "2. Encryption & Security",
+  "@termsTitle2": {
+    "description": "Terms Section 2 Title"
+  },
+  "termsBody2": "Security PINs and master encryption keys are secured via Android EncryptedSharedPreferences and iOS Keychain Services (hardware-backed key storage).",
+  "@termsBody2": {
+    "description": "Terms Section 2 Body"
+  },
+  "termsTitle3": "3. User Backup Responsibility",
+  "@termsTitle3": {
+    "description": "Terms Section 3 Title"
+  },
+  "termsBody3": "Because Expendly has zero server backends, you are responsible for maintaining encrypted backups of your ledger when switching devices.",
+  "@termsBody3": {
+    "description": "Terms Section 3 Body"
+  },
+  "termsTitle4": "4. Disclaimer & Liability",
+  "@termsTitle4": {
+    "description": "Terms Section 4 Title"
+  },
+  "termsBody4": "The app is provided 'as is' without warranty. The developers are not liable for lost data resulting from hardware failure, un-backed up device wipes, or forgotten PINs.",
+  "@termsBody4": {
+    "description": "Terms Section 4 Body"
+  },
+  "askQuestionTitle": "Have a Question or Feedback?",
+  "@askQuestionTitle": {
+    "description": "Header title for help and support inquiry form"
+  },
+  "askQuestionDesc": "Type your question or feedback below. Submitting will prepare your message and launch your default email client.",
+  "@askQuestionDesc": {
+    "description": "Subheading description for support inquiry form"
+  },
+  "questionHint": "Type your question or feedback in detail...",
+  "@questionHint": {
+    "description": "Placeholder hint for support question input"
+  },
+  "sendQuestion": "Send Email",
+  "@sendQuestion": {
+    "description": "Button label to submit question via email"
+  },
+  "emptyQuestionError": "Please enter your question before submitting.",
+  "@emptyQuestionError": {
+    "description": "Toast error when question field is empty"
+  },
+  "logout": "Log Out",
+  "@logout": {
+    "description": "Label for logging out"
+  },
+  "logoutSubtitle": "Lock session with Security PIN",
+  "@logoutSubtitle": {
+    "description": "Subtitle for logout tile in settings"
+  },
+  "logoutConfirmTitle": "Log Out of Expendly?",
+  "@logoutConfirmTitle": {
+    "description": "Title for logout confirmation dialog"
+  },
+  "logoutConfirmMessage": "Are you sure you want to log out? Your session will be locked and will require your Security PIN or Biometrics to unlock.",
+  "@logoutConfirmMessage": {
+    "description": "Message for logout confirmation dialog"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button label"
+  },
+  "noSecurityPinForLogout": "Security PIN is not set up. Please create a PIN in settings first.",
+  "@noSecurityPinForLogout": {
+    "description": "Error toast when user attempts logout without a PIN configured"
   }
 }

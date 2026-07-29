@@ -19,6 +19,16 @@ abstract class TransactionLocalDataSource {
     PaymentMethod? paymentMethod,
     String currencyCode = 'USD',
   });
+  Future<void> updateTransaction({
+    required int id,
+    required TransactionType type,
+    required double amount,
+    required int categoryId,
+    required DateTime timestamp,
+    String? note,
+    PaymentMethod? paymentMethod,
+    String currencyCode = 'USD',
+  });
   Future<void> deleteTransaction(int id);
 }
 
@@ -131,6 +141,37 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
       paymentMethod: Value(paymentMethod),
     );
     return await _db.into(_db.transactions).insert(companion);
+  }
+
+  @override
+  Future<void> updateTransaction({
+    required int id,
+    required TransactionType type,
+    required double amount,
+    required int categoryId,
+    required DateTime timestamp,
+    String? note,
+    PaymentMethod? paymentMethod,
+    String currencyCode = 'USD',
+  }) async {
+    final minorUnits = (amount * 100).round();
+    final effectiveCurrencyCode = currencyCode == 'USD'
+        ? (getIt.isRegistered<PreferenceService>()
+            ? getIt<PreferenceService>().currencyCode
+            : currencyCode)
+        : currencyCode;
+
+    final companion = TransactionsCompanion(
+      id: Value(id),
+      type: Value(type),
+      amount: Value(minorUnits),
+      currencyCode: Value(effectiveCurrencyCode),
+      categoryId: Value(categoryId),
+      timestamp: Value(timestamp),
+      note: Value(note),
+      paymentMethod: Value(paymentMethod),
+    );
+    await _db.update(_db.transactions).replace(companion);
   }
 
   @override

@@ -39,6 +39,27 @@ class TransactionRepositoryImpl implements TransactionRepository {
         currencyCode: currencyCode,
       );
 
+  @override
+  Future<void> updateTransaction({
+    required int id,
+    required TransactionType type,
+    required double amount,
+    required int categoryId,
+    required DateTime timestamp,
+    String? note,
+    PaymentMethod? paymentMethod,
+    String currencyCode = 'USD',
+  }) =>
+      _localDataSource.updateTransaction(
+        id: id,
+        type: type,
+        amount: amount,
+        categoryId: categoryId,
+        timestamp: timestamp,
+        note: note,
+        paymentMethod: paymentMethod,
+        currencyCode: currencyCode,
+      );
 
   @override
   Future<void> deleteTransaction(int id) =>

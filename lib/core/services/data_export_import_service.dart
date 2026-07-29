@@ -12,6 +12,7 @@ import '../database/enums/database_enums.dart';
 import '../di/injection.dart';
 import '../events/transaction_events.dart';
 import '../utils/app_logger.dart';
+import '../../features/analytics/domain/entities/analytics_report.dart';
 import '../../features/budgets/presentation/cubit/budget_cubit.dart';
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import 'encryption_service.dart';
@@ -31,6 +32,89 @@ class DataExportImportService {
     this._encryptionService,
     this._preferenceService,
   );
+
+  /// Exports a detailed Financial Analytics Report into Downloads/Expendly folder.
+  Future<String> exportAnalyticsReportToCsv({
+    required AnalyticsReport report,
+    String periodName = 'Monthly',
+    bool openAfterExport = true,
+  }) async {
+    try {
+      final currency = _preferenceService.currencyCode;
+      final buffer = StringBuffer();
+
+      buffer.writeln('===============================================');
+      buffer.writeln('EXPENDLY FINANCIAL ANALYTICS & TREND REPORT');
+      buffer.writeln('Generated Date,${DateTime.now().toIso8601String().substring(0, 19)}');
+      buffer.writeln('Period,${report.periodName}');
+      buffer.writeln('Currency,$currency');
+      buffer.writeln('===============================================');
+      buffer.writeln('');
+
+      // KPI Summary Section
+      buffer.writeln('--- FINANCIAL SUMMARY ---');
+      buffer.writeln('Metric,Amount');
+      buffer.writeln('Total Income,${report.totalIncome.toStringAsFixed(2)}');
+      buffer.writeln('Total Expenses,${report.totalExpense.toStringAsFixed(2)}');
+      buffer.writeln('Net Savings,${report.netSavings.toStringAsFixed(2)}');
+      buffer.writeln('Savings Rate,${report.savingsRatePercentage.toStringAsFixed(1)}%');
+      buffer.writeln('Average Daily Spend,${report.avgDailySpend.toStringAsFixed(2)}');
+      buffer.writeln('Budget Health,${report.budgetHealthPercentage.toStringAsFixed(0)}% (${report.budgetHealthStatus})');
+      buffer.writeln('');
+
+      // Top Category Insights
+      if (report.topCategoryName != null) {
+        buffer.writeln('--- HIGHLIGHT INSIGHTS ---');
+        buffer.writeln('Top Expense Category,"${report.topCategoryName}"');
+        buffer.writeln('Top Category Share,${report.topCategoryPercentage?.toStringAsFixed(1)}%');
+        buffer.writeln('');
+      }
+
+      // Category Breakdown Table
+      buffer.writeln('--- CATEGORY BREAKDOWN ---');
+      buffer.writeln('Category,Amount,Percentage Share');
+      for (final cat in report.categoryBreakdowns) {
+        final catEscaped = cat.categoryName.replaceAll('"', '""');
+        buffer.writeln('"$catEscaped",${cat.amount.toStringAsFixed(2)},${cat.percentage.toStringAsFixed(1)}%');
+      }
+      buffer.writeln('');
+
+      // Detailed Transactions
+      final categoriesList = await _db.select(_db.categories).get();
+      final transactionsList = await _db.select(_db.transactions).get();
+      final categoryMap = {for (var c in categoriesList) c.id: c.name};
+
+      buffer.writeln('--- ITEMIZATION LIST ---');
+      buffer.writeln('ID,Date,Type,Category,Amount,Payment Method,Note');
+      for (final t in transactionsList) {
+        final catName = categoryMap[t.categoryId] ?? 'Uncategorized';
+        final amountFormatted = (t.amount / 100.0).toStringAsFixed(2);
+        final dateStr = t.timestamp.toIso8601String().replaceAll('T', ' ').substring(0, 19);
+        final typeStr = t.type.name.toUpperCase();
+        final pmStr = t.paymentMethod?.name.toUpperCase() ?? '';
+        final noteEscaped = (t.note ?? '').replaceAll('"', '""');
+
+        buffer.writeln('${t.id},"$dateStr","$typeStr","$catName",$amountFormatted,"$pmStr","$noteEscaped"');
+      }
+
+      final exportDir = await _getExportDirectory();
+      final fileName = 'expendly_financial_report_${report.periodName.toLowerCase()}_${DateTime.now().millisecondsSinceEpoch}.csv';
+      final filePath = p.join(exportDir.path, fileName);
+      final file = File(filePath);
+      await file.writeAsString(buffer.toString());
+
+      AppLogger.i('DataExportImportService: Financial Report exported to $filePath');
+
+      if (openAfterExport) {
+        await OpenFile.open(filePath, type: 'text/csv');
+      }
+
+      return filePath;
+    } catch (e, stack) {
+      AppLogger.e('DataExportImportService: Analytics CSV Export failed', e, stack);
+      rethrow;
+    }
+  }
 
   /// Exports all application data into an AES-256 encrypted .expendly file.
   Future<Map<String, dynamic>> exportEncryptedData({String? passphrase}) async {

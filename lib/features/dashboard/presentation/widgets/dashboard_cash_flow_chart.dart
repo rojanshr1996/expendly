@@ -365,7 +365,17 @@ class _SmoothLineChartPage extends StatelessWidget {
 
           // Line Chart Canvas
           Expanded(
-            child: LineChart(
+            child: TweenAnimationBuilder<double>(
+              key: ValueKey('line_${filter.name}_${points.length}_${points.isNotEmpty ? points.first.date.millisecondsSinceEpoch : 0}'),
+              tween: Tween<double>(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 900),
+              curve: Curves.easeOutCubic,
+              builder: (context, animValue, _) {
+                final animatedSpots = spots
+                    .map((s) => FlSpot(s.x, s.y * animValue))
+                    .toList();
+
+                return LineChart(
               LineChartData(
                 minX: 1,
                 maxX: spots.length.toDouble(),
@@ -503,7 +513,7 @@ class _SmoothLineChartPage extends StatelessWidget {
                 // Main Smooth Curve
                 lineBarsData: [
                   LineChartBarData(
-                    spots: spots,
+                    spots: animatedSpots,
                     isCurved: true,
                     curveSmoothness: 0.45,
                     gradient: const LinearGradient(
@@ -526,11 +536,15 @@ class _SmoothLineChartPage extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-          ),
-        ],
+              duration: const Duration(milliseconds: 150),
+              curve: Curves.easeOutCubic,
+            );
+          },
+        ),
       ),
-    );
+    ],
+  ),
+);
   }
 
   String _formatCompact(double value) {
@@ -703,7 +717,13 @@ class _DualBarChartPage extends StatelessWidget {
 
           // Bar Chart Canvas
           Expanded(
-            child: BarChart(
+            child: TweenAnimationBuilder<double>(
+              key: ValueKey('bar_${filter.name}_${barDataGroups.length}_${points.isNotEmpty ? points.first.date.millisecondsSinceEpoch : 0}'),
+              tween: Tween<double>(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 900),
+              curve: Curves.easeOutCubic,
+              builder: (context, animValue, _) {
+                return BarChart(
               BarChartData(
                 maxY: topY,
                 alignment: BarChartAlignment.spaceAround,
@@ -776,20 +796,23 @@ class _DualBarChartPage extends StatelessWidget {
                 barGroups: List.generate(barDataGroups.length, (i) {
                   final g = barDataGroups[i];
 
+                  final incVal = g.income <= 0 ? 0.3 * animValue : g.income * animValue;
+                  final expVal = g.expense <= 0 ? 0.3 * animValue : g.expense * animValue;
+
                   return BarChartGroupData(
                     x: i,
                     barsSpace: 4.w,
                     barRods: [
                       // Cyan Bar (Income)
                       BarChartRodData(
-                        toY: g.income <= 0 ? 0.3 : g.income,
+                        toY: incVal.clamp(0.1, double.infinity),
                         color: cyanColor,
                         width: 7.w,
                         borderRadius: BorderRadius.circular(6.r),
                       ),
                       // Pink Bar (Expense)
                       BarChartRodData(
-                        toY: g.expense <= 0 ? 0.3 : g.expense,
+                        toY: expVal.clamp(0.1, double.infinity),
                         color: pinkColor,
                         width: 7.w,
                         borderRadius: BorderRadius.circular(6.r),
@@ -798,11 +821,15 @@ class _DualBarChartPage extends StatelessWidget {
                   );
                 }),
               ),
-            ),
-          ),
-        ],
+              duration: const Duration(milliseconds: 150),
+              curve: Curves.easeOutCubic,
+            );
+          },
+        ),
       ),
-    );
+    ],
+  ),
+);
   }
 
   Widget _buildLegendDot(Color color) {

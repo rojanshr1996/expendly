@@ -365,7 +365,7 @@ class _CreateNewBudgetPageState extends State<CreateNewBudgetPage> {
                                       'Notify me when I reach $_thresholdPercentage%',
                                       style: customTypography.bodyMedium.copyWith(
                                         color: colorScheme.outline,
-                                        fontSize: 13,
+                                        fontSize: 13.sp,
                                       ),
                                     ),
                                   ],

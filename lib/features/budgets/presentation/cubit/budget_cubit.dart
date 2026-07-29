@@ -30,11 +30,14 @@ class BudgetCubit extends Cubit<BudgetState> {
   }
 
   Future<void> loadBudgets() async {
+    if (isClosed) return;
     emit(BudgetLoading());
     try {
       final budgets = await _repository.getBudgets();
+      if (isClosed) return;
       emit(BudgetLoaded(budgets));
     } catch (e) {
+      if (isClosed) return;
       emit(BudgetError(e.toString()));
     }
   }
@@ -46,6 +49,7 @@ class BudgetCubit extends Cubit<BudgetState> {
     bool notifyAtThreshold = true,
     int thresholdPercentage = 80,
   }) async {
+    if (isClosed) return;
     try {
       await _repository.setBudget(
         categoryId: categoryId,
@@ -54,6 +58,7 @@ class BudgetCubit extends Cubit<BudgetState> {
         notifyAtThreshold: notifyAtThreshold,
         thresholdPercentage: thresholdPercentage,
       );
+      if (isClosed) return;
       emit(const BudgetActionSuccess('Budget saved successfully'));
       await loadBudgets();
       _refreshDashboard();
@@ -63,17 +68,21 @@ class BudgetCubit extends Cubit<BudgetState> {
           .replaceAll('StateError: ', '')
           .replaceAll('Exception: ', '')
           .replaceAll('Failed to save budget: ', '');
+      if (isClosed) return;
       emit(BudgetError(msg));
     }
   }
 
   Future<void> deleteBudget(int id) async {
+    if (isClosed) return;
     try {
       await _repository.deleteBudget(id);
+      if (isClosed) return;
       emit(const BudgetActionSuccess('Budget removed'));
       await loadBudgets();
       _refreshDashboard();
     } catch (e) {
+      if (isClosed) return;
       emit(BudgetError('Failed to delete budget: ${e.toString()}'));
     }
   }

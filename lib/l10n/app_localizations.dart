@@ -766,16 +766,16 @@ abstract class AppLocalizations {
   /// **'AMOUNT'**
   String get amountLabel;
 
-  /// Label for category selector
+  /// Label for category field
   ///
   /// In en, this message translates to:
-  /// **'CATEGORY'**
+  /// **'Category'**
   String get categoryLabel;
 
-  /// Label for payment method selector
+  /// Label for payment method field
   ///
   /// In en, this message translates to:
-  /// **'PAYMENT METHOD'**
+  /// **'Payment Method'**
   String get paymentMethodLabel;
 
   /// Card payment method
@@ -1047,6 +1047,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Biometric Authentication'**
   String get biometricAuth;
+
+  /// Reason shown in local_auth prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Please authenticate to access Expendly'**
+  String get biometricReason;
+
+  /// Error message when biometrics is unavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric authentication is not available or enrolled on this device.'**
+  String get biometricNotAvailable;
+
+  /// Error message when biometric authentication fails
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric authentication failed.'**
+  String get biometricAuthFailed;
 
   /// Label for change PIN setting
   ///
@@ -1377,6 +1395,384 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create Budget'**
   String get createBudget;
+
+  /// DatePicker header text on activity page
+  ///
+  /// In en, this message translates to:
+  /// **'SELECT MONTH & YEAR'**
+  String get selectMonthAndYear;
+
+  /// Tooltip for calendar view mode
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar View'**
+  String get calendarView;
+
+  /// Tooltip for list view mode
+  ///
+  /// In en, this message translates to:
+  /// **'List View'**
+  String get listView;
+
+  /// Tooltip to reset date range filter
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Date Filter'**
+  String get clearDateFilter;
+
+  /// Default label when date range is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Date Range (All Time)'**
+  String get filterByDateRangeAllTime;
+
+  /// Empty state message for selected single date
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions on {date}'**
+  String noTransactionsOnDate(String date);
+
+  /// Empty state message for selected date range
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions found in selected date range'**
+  String get noTransactionsInDateRange;
+
+  /// Header text showing count of transactions on a date
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 Transaction} other{{count} Transactions}}'**
+  String transactionsCount(int count);
+
+  /// Page title for transaction details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Details'**
+  String get transactionDetails;
+
+  /// Label for transaction type field
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Type'**
+  String get transactionType;
+
+  /// Label for date and time field
+  ///
+  /// In en, this message translates to:
+  /// **'Date & Time'**
+  String get dateAndTimeLabel;
+
+  /// Label for note field
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get noteLabel;
+
+  /// Label for transaction ID field
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction ID'**
+  String get transactionIdLabel;
+
+  /// Button label to delete a transaction
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Transaction'**
+  String get deleteTransaction;
+
+  /// Title for delete transaction confirmation modal
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Transaction?'**
+  String get deleteTransactionConfirmTitle;
+
+  /// Description for delete transaction confirmation modal
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this transaction? This action cannot be undone.'**
+  String get deleteTransactionConfirmDesc;
+
+  /// Toast message when transaction is deleted
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction deleted successfully'**
+  String get transactionDeletedSuccess;
+
+  /// Label for card payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get cardPaymentMethod;
+
+  /// Label for cash payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get cashPaymentMethod;
+
+  /// Label for bank account payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Account'**
+  String get accountPaymentMethod;
+
+  /// Generic confirm button text
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// Cancel button label
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// Title for change security PIN modal
+  ///
+  /// In en, this message translates to:
+  /// **'Change Security PIN'**
+  String get changeSecurityPinTitle;
+
+  /// Instruction prompt for entering current PIN
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Current PIN'**
+  String get enterCurrentPin;
+
+  /// Instruction prompt for entering new PIN
+  ///
+  /// In en, this message translates to:
+  /// **'Enter New 4-Digit PIN'**
+  String get enterNewPin;
+
+  /// Instruction prompt for confirming new PIN
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm New 4-Digit PIN'**
+  String get confirmNewPin;
+
+  /// Toast message for wrong current PIN
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect current PIN. Please try again.'**
+  String get incorrectCurrentPin;
+
+  /// Toast message when new PIN and confirmation PIN mismatch
+  ///
+  /// In en, this message translates to:
+  /// **'PINs do not match. Please try again.'**
+  String get pinsDoNotMatch;
+
+  /// Toast message when PIN is updated successfully
+  ///
+  /// In en, this message translates to:
+  /// **'Security PIN updated successfully'**
+  String get pinChangedSuccess;
+
+  /// Settings section header for support and legal options
+  ///
+  /// In en, this message translates to:
+  /// **'SUPPORT & LEGAL'**
+  String get supportAndLegalSection;
+
+  /// Menu title for About page
+  ///
+  /// In en, this message translates to:
+  /// **'About Expendly'**
+  String get aboutExpendly;
+
+  /// Subtitle for About page menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Version 1.0.0 • Modern Fiscal Core'**
+  String get aboutExpendlySubtitle;
+
+  /// Menu title for Terms & Conditions page
+  ///
+  /// In en, this message translates to:
+  /// **'Terms & Conditions'**
+  String get termsAndConditions;
+
+  /// Subtitle for Terms & Conditions menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy, data ownership, & terms of service'**
+  String get termsDesc;
+
+  /// Menu title for Help & Support page
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get helpAndSupport;
+
+  /// Subtitle for Help & Support menu item
+  ///
+  /// In en, this message translates to:
+  /// **'FAQs, troubleshooting, & contact info'**
+  String get helpSupportDesc;
+
+  /// Section header for FAQs
+  ///
+  /// In en, this message translates to:
+  /// **'Frequently Asked Questions'**
+  String get faqTitle;
+
+  /// FAQ 1 Question
+  ///
+  /// In en, this message translates to:
+  /// **'Is my financial data uploaded to any cloud server?'**
+  String get faq1Q;
+
+  /// FAQ 1 Answer
+  ///
+  /// In en, this message translates to:
+  /// **'No. Expendly is 100% offline-first. All data, transactions, and settings reside exclusively on your device, encrypted with hardware-backed AES-256.'**
+  String get faq1A;
+
+  /// FAQ 2 Question
+  ///
+  /// In en, this message translates to:
+  /// **'How do I backup or transfer my data?'**
+  String get faq2Q;
+
+  /// FAQ 2 Answer
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Settings > Data Management. You can export an encrypted payload or CSV file, and restore it anytime using your passphrase.'**
+  String get faq2A;
+
+  /// FAQ 3 Question
+  ///
+  /// In en, this message translates to:
+  /// **'What happens if I forget my security PIN?'**
+  String get faq3Q;
+
+  /// FAQ 3 Answer
+  ///
+  /// In en, this message translates to:
+  /// **'You can reset your PIN using your security recovery questions setup during onboarding.'**
+  String get faq3A;
+
+  /// FAQ 4 Question
+  ///
+  /// In en, this message translates to:
+  /// **'How do I change my primary currency?'**
+  String get faq4Q;
+
+  /// FAQ 4 Answer
+  ///
+  /// In en, this message translates to:
+  /// **'Your primary currency display can be configured in Settings > Appearance > Primary Currency.'**
+  String get faq4A;
+
+  /// Terms Section 1 Title
+  ///
+  /// In en, this message translates to:
+  /// **'1. Local Data Ownership'**
+  String get termsTitle1;
+
+  /// Terms Section 1 Body
+  ///
+  /// In en, this message translates to:
+  /// **'Expendly does not collect, transmit, or monetize your personal financial records. All databases, encrypted keys, and preferences are stored locally on your device.'**
+  String get termsBody1;
+
+  /// Terms Section 2 Title
+  ///
+  /// In en, this message translates to:
+  /// **'2. Encryption & Security'**
+  String get termsTitle2;
+
+  /// Terms Section 2 Body
+  ///
+  /// In en, this message translates to:
+  /// **'Security PINs and master encryption keys are secured via Android EncryptedSharedPreferences and iOS Keychain Services (hardware-backed key storage).'**
+  String get termsBody2;
+
+  /// Terms Section 3 Title
+  ///
+  /// In en, this message translates to:
+  /// **'3. User Backup Responsibility'**
+  String get termsTitle3;
+
+  /// Terms Section 3 Body
+  ///
+  /// In en, this message translates to:
+  /// **'Because Expendly has zero server backends, you are responsible for maintaining encrypted backups of your ledger when switching devices.'**
+  String get termsBody3;
+
+  /// Terms Section 4 Title
+  ///
+  /// In en, this message translates to:
+  /// **'4. Disclaimer & Liability'**
+  String get termsTitle4;
+
+  /// Terms Section 4 Body
+  ///
+  /// In en, this message translates to:
+  /// **'The app is provided \'as is\' without warranty. The developers are not liable for lost data resulting from hardware failure, un-backed up device wipes, or forgotten PINs.'**
+  String get termsBody4;
+
+  /// Header title for help and support inquiry form
+  ///
+  /// In en, this message translates to:
+  /// **'Have a Question or Feedback?'**
+  String get askQuestionTitle;
+
+  /// Subheading description for support inquiry form
+  ///
+  /// In en, this message translates to:
+  /// **'Type your question or feedback below. Submitting will prepare your message and launch your default email client.'**
+  String get askQuestionDesc;
+
+  /// Placeholder hint for support question input
+  ///
+  /// In en, this message translates to:
+  /// **'Type your question or feedback in detail...'**
+  String get questionHint;
+
+  /// Button label to submit question via email
+  ///
+  /// In en, this message translates to:
+  /// **'Send Email'**
+  String get sendQuestion;
+
+  /// Toast error when question field is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your question before submitting.'**
+  String get emptyQuestionError;
+
+  /// Label for logging out
+  ///
+  /// In en, this message translates to:
+  /// **'Log Out'**
+  String get logout;
+
+  /// Subtitle for logout tile in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Lock session with Security PIN'**
+  String get logoutSubtitle;
+
+  /// Title for logout confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Log Out of Expendly?'**
+  String get logoutConfirmTitle;
+
+  /// Message for logout confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out? Your session will be locked and will require your Security PIN or Biometrics to unlock.'**
+  String get logoutConfirmMessage;
+
+  /// Error toast when user attempts logout without a PIN configured
+  ///
+  /// In en, this message translates to:
+  /// **'Security PIN is not set up. Please create a PIN in settings first.'**
+  String get noSecurityPinForLogout;
 }
 
 class _AppLocalizationsDelegate

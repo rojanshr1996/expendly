@@ -360,10 +360,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get amountLabel => 'AMOUNT';
 
   @override
-  String get categoryLabel => 'CATEGORY';
+  String get categoryLabel => 'Category';
 
   @override
-  String get paymentMethodLabel => 'PAYMENT METHOD';
+  String get paymentMethodLabel => 'Payment Method';
 
   @override
   String get paymentCard => 'Card';
@@ -504,6 +504,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get biometricAuth => 'Biometric Authentication';
+
+  @override
+  String get biometricReason => 'Please authenticate to access Expendly';
+
+  @override
+  String get biometricNotAvailable =>
+      'Biometric authentication is not available or enrolled on this device.';
+
+  @override
+  String get biometricAuthFailed => 'Biometric authentication failed.';
 
   @override
   String get changeSecurityPin => 'Change Security PIN';
@@ -686,4 +696,217 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createBudget => 'Create Budget';
+
+  @override
+  String get selectMonthAndYear => 'SELECT MONTH & YEAR';
+
+  @override
+  String get calendarView => 'Calendar View';
+
+  @override
+  String get listView => 'List View';
+
+  @override
+  String get clearDateFilter => 'Clear Date Filter';
+
+  @override
+  String get filterByDateRangeAllTime => 'Filter by Date Range (All Time)';
+
+  @override
+  String noTransactionsOnDate(String date) {
+    return 'No transactions on $date';
+  }
+
+  @override
+  String get noTransactionsInDateRange =>
+      'No transactions found in selected date range';
+
+  @override
+  String transactionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Transactions',
+      one: '1 Transaction',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get transactionDetails => 'Transaction Details';
+
+  @override
+  String get transactionType => 'Transaction Type';
+
+  @override
+  String get dateAndTimeLabel => 'Date & Time';
+
+  @override
+  String get noteLabel => 'Note';
+
+  @override
+  String get transactionIdLabel => 'Transaction ID';
+
+  @override
+  String get deleteTransaction => 'Delete Transaction';
+
+  @override
+  String get deleteTransactionConfirmTitle => 'Delete Transaction?';
+
+  @override
+  String get deleteTransactionConfirmDesc =>
+      'Are you sure you want to delete this transaction? This action cannot be undone.';
+
+  @override
+  String get transactionDeletedSuccess => 'Transaction deleted successfully';
+
+  @override
+  String get cardPaymentMethod => 'Card';
+
+  @override
+  String get cashPaymentMethod => 'Cash';
+
+  @override
+  String get accountPaymentMethod => 'Bank Account';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get changeSecurityPinTitle => 'Change Security PIN';
+
+  @override
+  String get enterCurrentPin => 'Enter Current PIN';
+
+  @override
+  String get enterNewPin => 'Enter New 4-Digit PIN';
+
+  @override
+  String get confirmNewPin => 'Confirm New 4-Digit PIN';
+
+  @override
+  String get incorrectCurrentPin => 'Incorrect current PIN. Please try again.';
+
+  @override
+  String get pinsDoNotMatch => 'PINs do not match. Please try again.';
+
+  @override
+  String get pinChangedSuccess => 'Security PIN updated successfully';
+
+  @override
+  String get supportAndLegalSection => 'SUPPORT & LEGAL';
+
+  @override
+  String get aboutExpendly => 'About Expendly';
+
+  @override
+  String get aboutExpendlySubtitle => 'Version 1.0.0 • Modern Fiscal Core';
+
+  @override
+  String get termsAndConditions => 'Terms & Conditions';
+
+  @override
+  String get termsDesc => 'Privacy policy, data ownership, & terms of service';
+
+  @override
+  String get helpAndSupport => 'Help & Support';
+
+  @override
+  String get helpSupportDesc => 'FAQs, troubleshooting, & contact info';
+
+  @override
+  String get faqTitle => 'Frequently Asked Questions';
+
+  @override
+  String get faq1Q => 'Is my financial data uploaded to any cloud server?';
+
+  @override
+  String get faq1A =>
+      'No. Expendly is 100% offline-first. All data, transactions, and settings reside exclusively on your device, encrypted with hardware-backed AES-256.';
+
+  @override
+  String get faq2Q => 'How do I backup or transfer my data?';
+
+  @override
+  String get faq2A =>
+      'Go to Settings > Data Management. You can export an encrypted payload or CSV file, and restore it anytime using your passphrase.';
+
+  @override
+  String get faq3Q => 'What happens if I forget my security PIN?';
+
+  @override
+  String get faq3A =>
+      'You can reset your PIN using your security recovery questions setup during onboarding.';
+
+  @override
+  String get faq4Q => 'How do I change my primary currency?';
+
+  @override
+  String get faq4A =>
+      'Your primary currency display can be configured in Settings > Appearance > Primary Currency.';
+
+  @override
+  String get termsTitle1 => '1. Local Data Ownership';
+
+  @override
+  String get termsBody1 =>
+      'Expendly does not collect, transmit, or monetize your personal financial records. All databases, encrypted keys, and preferences are stored locally on your device.';
+
+  @override
+  String get termsTitle2 => '2. Encryption & Security';
+
+  @override
+  String get termsBody2 =>
+      'Security PINs and master encryption keys are secured via Android EncryptedSharedPreferences and iOS Keychain Services (hardware-backed key storage).';
+
+  @override
+  String get termsTitle3 => '3. User Backup Responsibility';
+
+  @override
+  String get termsBody3 =>
+      'Because Expendly has zero server backends, you are responsible for maintaining encrypted backups of your ledger when switching devices.';
+
+  @override
+  String get termsTitle4 => '4. Disclaimer & Liability';
+
+  @override
+  String get termsBody4 =>
+      'The app is provided as is without warranty. The developers are not liable for lost data resulting from hardware failure, un-backed up device wipes, or forgotten PINs.';
+
+  @override
+  String get askQuestionTitle => 'Have a Question or Feedback?';
+
+  @override
+  String get askQuestionDesc =>
+      'Type your question or feedback below. Submitting will prepare your message and launch your default email client.';
+
+  @override
+  String get questionHint => 'Type your question or feedback in detail...';
+
+  @override
+  String get sendQuestion => 'Send Email';
+
+  @override
+  String get emptyQuestionError =>
+      'Please enter your question before submitting.';
+
+  @override
+  String get logout => 'Log Out';
+
+  @override
+  String get logoutSubtitle => 'Lock session with Security PIN';
+
+  @override
+  String get logoutConfirmTitle => 'Log Out of Expendly?';
+
+  @override
+  String get logoutConfirmMessage =>
+      'Are you sure you want to log out? Your session will be locked and will require your Security PIN or Biometrics to unlock.';
+
+  @override
+  String get noSecurityPinForLogout =>
+      'Security PIN is not set up. Please create a PIN in settings first.';
 }

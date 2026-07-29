@@ -35,6 +35,7 @@ class PreferenceService {
   String get currencySymbol => _currencySymbol;
   String? get securityPin => _securityPin;
   bool get isSecurityPinSet => _securityPin != null && _securityPin!.isNotEmpty;
+  bool get canLogout => isSecurityPinSet;
   bool get isBiometricsEnabled => _biometricsEnabled;
   String get themeMode => _themeMode;
   String get activityViewMode => _activityViewMode;
@@ -106,6 +107,11 @@ class PreferenceService {
     _activityViewMode = mode;
     await _prefs?.setString(keyActivityViewMode, mode);
     AppLogger.i('Preference persisted: ActivityViewMode set to $mode');
+  }
+
+  /// Lock session logging out user to security verification screen
+  Future<void> logout() async {
+    AppLogger.i('User logged out. Session locked via Security PIN.');
   }
 
   // Security Recovery Question & Answer helpers

@@ -11,6 +11,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
+import 'package:local_auth/local_auth.dart' as _i152;
 
 import '../../features/analytics/data/datasources/analytics_local_datasource.dart'
     as _i378;
@@ -27,8 +28,8 @@ import '../../features/budgets/data/repositories/budget_repository_impl.dart'
 import '../../features/budgets/domain/repositories/budget_repository.dart'
     as _i1021;
 import '../../features/budgets/presentation/cubit/budget_cubit.dart' as _i32;
-import '../../features/dashboard/data/datasources/dashboard_local_data_source.dart'
-    as _i838;
+import '../../features/dashboard/data/datasources/dashboard_local_datasource.dart'
+    as _i806;
 import '../../features/dashboard/data/repositories/dashboard_repository_impl.dart'
     as _i509;
 import '../../features/dashboard/domain/repositories/dashboard_repository.dart'
@@ -53,6 +54,7 @@ import '../../features/transactions/domain/repositories/transaction_repository.d
 import '../../features/transactions/presentation/cubit/transaction_cubit.dart'
     as _i1035;
 import '../database/app_database.dart' as _i982;
+import '../services/biometric_auth_service.dart' as _i919;
 import '../services/data_export_import_service.dart' as _i115;
 import '../services/encryption_service.dart' as _i180;
 import '../services/notification_service.dart' as _i941;
@@ -77,6 +79,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i982.AppDatabase>(() => _i982.AppDatabase());
     gh.lazySingleton<_i558.FlutterSecureStorage>(
         () => registerModule.secureStorage);
+    gh.lazySingleton<_i152.LocalAuthentication>(
+        () => registerModule.localAuthentication);
     gh.lazySingleton<_i924.AppLogger>(() => _i924.AppLogger());
     gh.lazySingleton<_i858.RemoteConfigService>(
         () => _i858.RemoteConfigService());
@@ -90,6 +94,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i1046.ProfileLocalDataSourceImpl(gh<_i982.AppDatabase>()));
     gh.lazySingleton<_i1044.AnalyticsRepository>(() =>
         _i425.AnalyticsRepositoryImpl(gh<_i378.AnalyticsLocalDataSource>()));
+    gh.lazySingleton<_i919.BiometricAuthService>(
+        () => _i919.BiometricAuthService(gh<_i152.LocalAuthentication>()));
     gh.lazySingleton<_i334.BudgetLocalDataSource>(
         () => _i334.BudgetLocalDataSourceImpl(gh<_i982.AppDatabase>()));
     gh.lazySingleton<_i535.SecureStorageService>(
@@ -119,13 +125,13 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i1035.TransactionCubit(gh<_i421.TransactionRepository>()));
     gh.lazySingleton<_i36.ProfileCubit>(
         () => _i36.ProfileCubit(gh<_i894.ProfileRepository>()));
-    gh.lazySingleton<_i838.DashboardLocalDataSource>(
-        () => _i838.DashboardLocalDataSourceImpl(
+    gh.lazySingleton<_i806.DashboardLocalDataSource>(
+        () => _i806.DashboardLocalDataSourceImpl(
               gh<_i982.AppDatabase>(),
               gh<_i605.PreferenceService>(),
             ));
     gh.lazySingleton<_i665.DashboardRepository>(() =>
-        _i509.DashboardRepositoryImpl(gh<_i838.DashboardLocalDataSource>()));
+        _i509.DashboardRepositoryImpl(gh<_i806.DashboardLocalDataSource>()));
     gh.lazySingleton<_i119.GetFinancialSummary>(
         () => _i119.GetFinancialSummary(gh<_i665.DashboardRepository>()));
     gh.factory<_i24.DashboardCubit>(

@@ -8,6 +8,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
+import '../../../../core/services/biometric_auth_service.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_keypad.dart';
@@ -24,11 +25,15 @@ class SecurityVerificationPage extends StatefulWidget {
 }
 
 class _SecurityVerificationPageState extends State<SecurityVerificationPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   final ValueNotifier<String> _enteredPinNotifier = ValueNotifier<String>('');
+  final ValueNotifier<bool> _isSuccessNotifier = ValueNotifier<bool>(false);
 
   late final AnimationController _shakeController;
   late final Animation<double> _shakeAnimation;
+
+  late final AnimationController _successController;
+  late final Animation<double> _successAnimation;
 
   @override
   void initState() {
@@ -40,17 +45,48 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
     _shakeAnimation = Tween<double>(begin: 0.0, end: 12.0)
         .chain(CurveTween(curve: Curves.elasticIn))
         .animate(_shakeController);
+
+    _successController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 450),
+    );
+    _successAnimation = CurvedAnimation(
+      parent: _successController,
+      curve: Curves.easeOutCubic,
+    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndAutoTriggerBiometrics();
+    });
+  }
+
+  void _checkAndAutoTriggerBiometrics() async {
+    final prefs = getIt<PreferenceService>();
+    if (prefs.isBiometricsEnabled) {
+      _onBiometricsPressed(autoTrigger: true);
+    }
   }
 
   @override
   void dispose() {
     _shakeController.dispose();
+    _successController.dispose();
     _enteredPinNotifier.dispose();
+    _isSuccessNotifier.dispose();
     super.dispose();
   }
 
+  Future<void> _handleSuccess() async {
+    HapticFeedback.heavyImpact();
+    _isSuccessNotifier.value = true;
+    await _successController.forward(from: 0.0);
+    if (mounted) {
+      context.router.replaceAll([const DashboardRoute()]);
+    }
+  }
+
   void _onKeyPress(String value) {
-    if (_enteredPinNotifier.value.length < 4) {
+    if (_enteredPinNotifier.value.length < 4 && !_isSuccessNotifier.value) {
       _enteredPinNotifier.value += value;
       if (_enteredPinNotifier.value.length == 4) {
         _verifyPin();
@@ -59,7 +95,7 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
   }
 
   void _onDeletePress() {
-    if (_enteredPinNotifier.value.isNotEmpty) {
+    if (_enteredPinNotifier.value.isNotEmpty && !_isSuccessNotifier.value) {
       _enteredPinNotifier.value = _enteredPinNotifier.value
           .substring(0, _enteredPinNotifier.value.length - 1);
     }
@@ -70,8 +106,7 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
     final targetPin = prefs.securityPin ?? '1234';
 
     if (_enteredPinNotifier.value == targetPin) {
-      HapticFeedback.heavyImpact();
-      context.router.replaceAll([const DashboardRoute()]);
+      await _handleSuccess();
     } else {
       HapticFeedback.vibrate();
       _shakeController.forward(from: 0.0);
@@ -85,10 +120,43 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
     }
   }
 
-  void _onBiometricsPressed() {
+  void _onBiometricsPressed({bool autoTrigger = false}) async {
+    if (_isSuccessNotifier.value) return;
     HapticFeedback.lightImpact();
-    // Simulate biometric unlock success
-    context.router.replaceAll([const DashboardRoute()]);
+    if (!mounted) return;
+    final reason = context.l10n.biometricReason;
+    final notAvailableMsg = context.l10n.biometricNotAvailable;
+    final failedMsg = context.l10n.biometricAuthFailed;
+
+    final bioService = getIt<BiometricAuthService>();
+    final isAvailable = await bioService.isBiometricAvailable();
+
+    if (!isAvailable) {
+      if (!autoTrigger && mounted) {
+        StatusComponents.showToast(
+          context,
+          message: notAvailableMsg,
+          isError: true,
+        );
+      }
+      return;
+    }
+
+    final authenticated = await bioService.authenticate(
+      localizedReason: reason,
+    );
+
+    if (authenticated) {
+      if (mounted) {
+        await _handleSuccess();
+      }
+    } else if (!autoTrigger && mounted) {
+      StatusComponents.showToast(
+        context,
+        message: failedMsg,
+        isError: true,
+      );
+    }
   }
 
   @override
@@ -97,47 +165,91 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
     final textTheme = context.textTheme;
     final customTypography = context.customTypography;
     final l10n = context.l10n;
+    final isBiometricsEnabled = getIt<PreferenceService>().isBiometricsEnabled;
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 450),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Scrollable Top Header & PIN Dots Section
-                Expanded(
-                  child: Center(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          verticalMarginSmall,
-                          Container(
-                            width: 72.w,
-                            height: 72.w,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.surfaceLow,
-                              border: Border.all(color: AppColors.glassStroke),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: colorScheme.primary
-                                      .withAlpha((0.2 * 255).round()),
-                                  blurRadius: 20.r,
-                                ),
-                              ],
+        child: AnimatedBuilder(
+          animation: _successAnimation,
+          builder: (context, child) {
+            final progress = _successAnimation.value;
+            final opacity = (1.0 - (progress * 0.9)).clamp(0.0, 1.0);
+            final scale = 1.0 + (progress * 0.05);
+
+            return Opacity(
+              opacity: opacity,
+              child: Transform.scale(
+                scale: scale,
+                child: child,
+              ),
+            );
+          },
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 450),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Scrollable Top Header & PIN Dots Section
+                  Expanded(
+                    child: Center(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            verticalMarginSmall,
+                            ValueListenableBuilder<bool>(
+                              valueListenable: _isSuccessNotifier,
+                              builder: (context, isSuccess, _) {
+                                final iconColor = isSuccess
+                                    ? AppColors.semanticGreen
+                                    : colorScheme.primary;
+                                return AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  width: 72.w,
+                                  height: 72.w,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isSuccess
+                                        ? AppColors.semanticGreen.withValues(alpha: 0.2)
+                                        : AppColors.surfaceLow,
+                                    border: Border.all(
+                                      color: isSuccess
+                                          ? AppColors.semanticGreen
+                                          : AppColors.glassStroke,
+                                      width: isSuccess ? 2.0 : 1.0,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: iconColor.withValues(
+                                            alpha: isSuccess ? 0.6 : 0.2),
+                                        blurRadius: isSuccess ? 30.r : 20.r,
+                                        spreadRadius: isSuccess ? 4.r : 0,
+                                      ),
+                                    ],
+                                  ),
+                                  child: AnimatedSwitcher(
+                                    duration: const Duration(milliseconds: 300),
+                                    transitionBuilder: (child, animation) =>
+                                        ScaleTransition(
+                                      scale: animation,
+                                      child: child,
+                                    ),
+                                    child: Icon(
+                                      isSuccess
+                                          ? Icons.lock_open_rounded
+                                          : Icons.lock_outline_rounded,
+                                      key: ValueKey(isSuccess),
+                                      size: 32.sp,
+                                      color: iconColor,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
-                            child: Icon(
-                              Icons.lock_outline_rounded,
-                              size: 32.sp,
-                              color: colorScheme.primary,
-                            ),
-                          ),
-                          verticalMarginSmall,
+                            verticalMarginSmall,
                           Text(
                             l10n.unlockToContinue,
                             style: customTypography.headlineLargeMobile,
@@ -220,22 +332,24 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TextButton.icon(
-                          onPressed: _onBiometricsPressed,
-                          icon: Icon(
-                            Icons.fingerprint_rounded,
-                            color: colorScheme.primary,
-                            size: 20.sp,
-                          ),
-                          label: Text(
-                            l10n.useBiometrics,
-                            style: (textTheme.bodyMedium ?? const TextStyle())
-                                .copyWith(
+                        if (isBiometricsEnabled) ...[
+                          TextButton.icon(
+                            onPressed: _onBiometricsPressed,
+                            icon: Icon(
+                              Icons.fingerprint_rounded,
                               color: colorScheme.primary,
+                              size: 20.sp,
+                            ),
+                            label: Text(
+                              l10n.useBiometrics,
+                              style: (textTheme.bodyMedium ?? const TextStyle())
+                                  .copyWith(
+                                color: colorScheme.primary,
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(width: 8.w),
+                          SizedBox(width: 8.w),
+                        ],
                         TextButton.icon(
                           onPressed: () => ResetPinModal.show(context),
                           icon: Icon(
@@ -260,6 +374,7 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

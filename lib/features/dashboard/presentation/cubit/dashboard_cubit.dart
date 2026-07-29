@@ -28,11 +28,14 @@ class DashboardCubit extends Cubit<DashboardState> {
   }
 
   Future<void> loadDashboardData() async {
+    if (isClosed) return;
     emit(DashboardLoading());
     try {
       final summary = await _getFinancialSummary(NoParams());
+      if (isClosed) return;
       emit(DashboardLoaded(summary));
     } catch (e) {
+      if (isClosed) return;
       emit(DashboardError(e.toString()));
     }
   }

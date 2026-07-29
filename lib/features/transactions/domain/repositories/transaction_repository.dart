@@ -14,5 +14,16 @@ abstract class TransactionRepository {
     String currencyCode = 'USD',
   });
 
+  Future<void> updateTransaction({
+    required int id,
+    required TransactionType type,
+    required double amount,
+    required int categoryId,
+    required DateTime timestamp,
+    String? note,
+    PaymentMethod? paymentMethod,
+    String currencyCode = 'USD',
+  });
+
   Future<void> deleteTransaction(int id);
 }

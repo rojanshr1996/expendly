@@ -44,5 +44,7 @@
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Expendly requires Face ID or Touch ID to authenticate and secure your financial ledger.</string>
 </dict>
 </plist>
