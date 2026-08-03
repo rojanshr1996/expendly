@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/database/enums/database_enums.dart';
 import '../../domain/entities/transaction_item.dart';
 
 abstract class TransactionState extends Equatable {
@@ -16,11 +17,13 @@ class TransactionLoaded extends TransactionState {
   final List<TransactionItem> transactions;
   final String searchQuery;
   final int? selectedCategoryId;
+  final TransactionType? selectedType;
 
   const TransactionLoaded({
     required this.transactions,
     this.searchQuery = '',
     this.selectedCategoryId,
+    this.selectedType,
   });
 
   List<TransactionItem> get filteredTransactions {
@@ -31,12 +34,14 @@ class TransactionLoaded extends TransactionState {
               tx.note!.toLowerCase().contains(searchQuery.toLowerCase()));
       final matchesCategory =
           selectedCategoryId == null || tx.categoryId == selectedCategoryId;
-      return matchesSearch && matchesCategory;
+      final matchesType = selectedType == null || tx.type == selectedType;
+      return matchesSearch && matchesCategory && matchesType;
     }).toList();
   }
 
   @override
-  List<Object?> get props => [transactions, searchQuery, selectedCategoryId];
+  List<Object?> get props =>
+      [transactions, searchQuery, selectedCategoryId, selectedType];
 }
 
 class TransactionError extends TransactionState {

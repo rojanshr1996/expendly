@@ -71,6 +71,31 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
+  /// Flushes the WAL into the main database file so the file on disk is
+  /// self-contained and safe to copy for backup.
+  Future<void> checkpointForBackup() async {
+    await customStatement('PRAGMA wal_checkpoint(TRUNCATE);');
+  }
+
+  /// Runs SQLite integrity check. Returns true if the database is healthy.
+  Future<bool> integrityCheck() async {
+    final rows = await customSelect('PRAGMA integrity_check;').get();
+    return rows.first.data.values.first == 'ok';
+  }
+
+  /// Returns the total count of transactions in the database.
+  Future<int> getTransactionCount() async {
+    final count = await (selectOnly(transactions)
+          ..addColumns([transactions.id.count()]))
+        .getSingle();
+    return count.read(transactions.id.count()) ?? 0;
+  }
+
+  /// Checks whether any transactions exist in the database.
+  Future<bool> hasAnyTransactions() async {
+    return (await getTransactionCount()) > 0;
+  }
+
   Future<void> _seedDefaultCategories() async {
     final existing = await select(categories).get();
     if (existing.isEmpty) {

@@ -686,7 +686,7 @@
   "@cloudBackupLast": {
     "description": "Status for last cloud backup"
   },
-  "exportDataCsv": "Export Data (.CSV)",
+  "exportDataCsv": "Share Transactions (.CSV)",
   "@exportDataCsv": {
     "description": "Label for exporting data as CSV"
   },
@@ -721,6 +721,36 @@
   "importSuccess": "Data restored successfully!",
   "@importSuccess": {
     "description": "Success message after import"
+  },
+  "importSuccessWithCount": "Data restored successfully! {count, plural, =0{No transactions restored} =1{1 transaction restored} other{{count} transactions restored}}",
+  "@importSuccessWithCount": {
+    "description": "Success message after import, including how many transactions were restored",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportBackupSummary": "{count, plural, =0{Backup generated with no transactions, encrypted via AES-256.} =1{Backup generated with 1 transaction, encrypted via AES-256.} other{Backup generated with {count} transactions, encrypted via AES-256.}}",
+  "@exportBackupSummary": {
+    "description": "Summary line in the export success dialog describing the generated backup",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fileSavedAt": "File saved at:",
+  "@fileSavedAt": {
+    "description": "Label above the file path of a generated backup"
+  },
+  "orSeparator": "OR",
+  "@orSeparator": {
+    "description": "Divider label between two alternative actions"
+  },
+  "exportFailedGeneric": "Export failed. Please try again.",
+  "@exportFailedGeneric": {
+    "description": "Toast message shown when a backup export fails"
   },
   "passphrasePrompt": "Passphrase / PIN (Optional)",
   "@passphrasePrompt": {
@@ -853,7 +883,7 @@
   "@decryptRestoreData": {
     "description": "Button to trigger payload decryption"
   },
-  "exportCsvDesc": "Export unencrypted .csv for Sheets or Excel",
+  "exportCsvDesc": "Share your transactions data as a CSV file",
   "@exportCsvDesc": {
     "description": "Subtitle for CSV export option"
   },
@@ -875,6 +905,10 @@
       }
     }
   },
+  "csvExportFailedGeneric": "CSV export failed. Please try again.",
+  "@csvExportFailedGeneric": {
+    "description": "Toast message shown when a CSV export fails"
+  },
   "exportFailed": "Export failed: {error}",
   "@exportFailed": {
     "description": "Toast message for export error",
@@ -887,6 +921,57 @@
   "importFailedKey": "Import failed: Invalid payload or decryption key.",
   "@importFailedKey": {
     "description": "Toast message for import error"
+  },
+  "useLatestBackup": "Use Latest Backup File",
+  "@useLatestBackup": {
+    "description": "Button label to import the most recent backup file from storage"
+  },
+  "useLatestBackupHint": "Restore the most recent backup from Download/Expendly",
+  "@useLatestBackupHint": {
+    "description": "Helper text describing the latest backup import option"
+  },
+  "noBackupFileFound": "No backup file found in Download/Expendly folder.",
+  "@noBackupFileFound": {
+    "description": "Message shown when no backup file exists to import"
+  },
+  "backupFolderUnreadable": "Your backup folder was found, but this install can no longer read the files inside it. Backups saved from now on will be restorable.",
+  "@backupFolderUnreadable": {
+    "description": "Inline error in the import sheet when the public Expendly folder exists but its backup files belong to a previous install and cannot be read"
+  },
+  "backupPassphraseNeeded": "Enter the passphrase or Security PIN used for this backup.",
+  "@backupPassphraseNeeded": {
+    "description": "Message shown when the latest backup cannot be decrypted with the provided key"
+  },
+  "restoreFromBackupTitle": "Restore From Backup?",
+  "@restoreFromBackupTitle": {
+    "description": "Title for the confirmation dialog before importing the latest backup"
+  },
+  "restoreFromBackupMessage": "This will replace all current data with \"{fileName}\" ({count} transactions, created {date}). This action cannot be undone. Continue?",
+  "@restoreFromBackupMessage": {
+    "description": "Confirmation message before restoring latest backup",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "restore": "Restore",
+  "@restore": {
+    "description": "Confirm button label to proceed with restore"
+  },
+  "autoBackupLabel": "Auto backup",
+  "@autoBackupLabel": {
+    "description": "Label indicating a backup was created automatically"
+  },
+  "manualBackupLabel": "Manual backup",
+  "@manualBackupLabel": {
+    "description": "Label indicating a backup was created manually"
   },
   "addNoteHint": "Add note (optional)...",
   "@addNoteHint": {
@@ -1177,5 +1262,155 @@
   "noSecurityPinForLogout": "Security PIN is not set up. Please create a PIN in settings first.",
   "@noSecurityPinForLogout": {
     "description": "Error toast when user attempts logout without a PIN configured"
+  },
+  "setupSecurityPin": "Set Security PIN",
+  "@setupSecurityPin": {
+    "description": "Title for setting up security PIN"
+  },
+  "setupSecurityPinDesc": "Create a 4-digit PIN to secure your app",
+  "@setupSecurityPinDesc": {
+    "description": "Subtitle for setting up security PIN"
+  },
+  "pinConfigured": "Security PIN is configured",
+  "@pinConfigured": {
+    "description": "Subtitle when security PIN is already set up"
+  },
+  "pinRequiredForBiometrics": "Please set up a Security PIN first before enabling Biometric Auth.",
+  "@pinRequiredForBiometrics": {
+    "description": "Toast message when enabling biometrics without a PIN configured"
+  },
+  "allowAutoBackup": "Allow Auto Backup",
+  "@allowAutoBackup": {
+    "description": "Label for auto backup switch on account setup page"
+  },
+  "autoBackupSetupDesc": "Automatically snapshot encrypted ledger. Requires Security PIN.",
+  "@autoBackupSetupDesc": {
+    "description": "Subtitle for auto backup switch on account setup page"
+  },
+  "autoBackupTileTitle": "Auto Backup",
+  "@autoBackupTileTitle": {
+    "description": "Title for auto backup tile in settings"
+  },
+  "autoBackupTileDesc": "Automatically snapshot encrypted ledger on changes",
+  "@autoBackupTileDesc": {
+    "description": "Subtitle for auto backup tile in settings"
+  },
+  "pinRequiredForAutoBackup": "Security PIN is required when Auto Backup is enabled.",
+  "@pinRequiredForAutoBackup": {
+    "description": "Toast message when enabling auto backup without a PIN configured"
+  },
+  "pinCompulsoryForBackup": "Security PIN is required for auto backup encryption.",
+  "@pinCompulsoryForBackup": {
+    "description": "Subtitle note on security setup screen when auto backup is active"
+  },
+  "systemBackupHeader": "SYSTEM BACKUP",
+  "@systemBackupHeader": {
+    "description": "Header label for system backup notifications"
+  },
+  "csvBackupTitle": "Auto Backup (CSV)",
+  "@csvBackupTitle": {
+    "description": "Title for the CSV auto-backup status tile in Data Management"
+  },
+  "backupNow": "Backup Now",
+  "@backupNow": {
+    "description": "Button label to trigger an immediate manual backup"
+  },
+  "neverBackedUp": "Never backed up",
+  "@neverBackedUp": {
+    "description": "Subtitle when no backup has been created yet"
+  },
+  "lastBackupTime": "Last backup: {time}",
+  "@lastBackupTime": {
+    "description": "Subtitle showing the timestamp of the last successful backup",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSuccess": "Backup saved to Downloads/Expendly",
+  "@backupSuccess": {
+    "description": "Toast shown after a successful manual backup"
+  },
+  "backupFailed": "Backup failed. Please try again.",
+  "@backupFailed": {
+    "description": "Toast shown when a backup attempt fails"
+  },
+  "restoreCsvTitle": "Restore from Backup",
+  "@restoreCsvTitle": {
+    "description": "Title for the CSV restore tile and bottom sheet"
+  },
+  "restoreCsvDesc": "Import your expendly_backup file to recover your data",
+  "@restoreCsvDesc": {
+    "description": "Subtitle for the CSV restore tile in Data Management"
+  },
+  "backupFileNotFound": "No backup file found. Create a backup first, or use 'Browse' to select a CSV file from another location.",
+  "@backupFileNotFound": {
+    "description": "Message shown in restore sheet when backup file does not exist"
+  },
+  "pinRequiredForRestore": "Enter your Security PIN to authorize the restore.",
+  "@pinRequiredForRestore": {
+    "description": "Label/instruction shown above the PIN field in the CSV restore sheet"
+  },
+  "pinIncorrect": "Incorrect PIN. Please try again.",
+  "@pinIncorrect": {
+    "description": "Error shown in the restore sheet when the entered PIN does not match"
+  },
+  "enterPin": "Security PIN",
+  "@enterPin": {
+    "description": "Label for the PIN text field in the restore sheet"
+  },
+  "csvImportFailed": "Restore failed. The file may be invalid or corrupted.",
+  "@csvImportFailed": {
+    "description": "Error shown when CSV import fails"
+  },
+  "browseBackupFile": "Browse & Select Backup File",
+  "@browseBackupFile": {
+    "description": "Button label to open the system file picker for a CSV backup"
+  },
+  "importSummaryTitle": "Restore Complete",
+  "@importSummaryTitle": {
+    "description": "Title of the dialog shown after a successful CSV import"
+  },
+  "importSummaryBody": "Imported {transactions} transactions, {categories} categories, {budgets} budgets.",
+  "@importSummaryBody": {
+    "description": "Body of the import summary dialog",
+    "placeholders": {
+      "transactions": {
+        "type": "int"
+      },
+      "categories": {
+        "type": "int"
+      },
+      "budgets": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationHeader": "NOTIFICATION",
+  "@notificationHeader": {
+    "description": "Header label for general notifications"
+  },
+
+  "notificationAlert": "Notification Alert",
+  "@notificationAlert": {
+    "description": "Default title when notification title is missing"
+  },
+  "noNotificationBody": "No detailed body text provided.",
+  "@noNotificationBody": {
+    "description": "Fallback text when notification body is empty"
+  },
+  "copyText": "Copy Text",
+  "@copyText": {
+    "description": "Button label to copy notification text"
+  },
+  "contentCopied": "Content copied to clipboard",
+  "@contentCopied": {
+    "description": "Toast message when notification text is copied"
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "Confirmation button label"
   }
 }
+

@@ -54,6 +54,7 @@ import '../../features/transactions/domain/repositories/transaction_repository.d
 import '../../features/transactions/presentation/cubit/transaction_cubit.dart'
     as _i1035;
 import '../database/app_database.dart' as _i982;
+import '../services/backup_service.dart' as _i832;
 import '../services/biometric_auth_service.dart' as _i919;
 import '../services/data_export_import_service.dart' as _i115;
 import '../services/encryption_service.dart' as _i180;
@@ -61,8 +62,12 @@ import '../services/notification_service.dart' as _i941;
 import '../services/preference_service.dart' as _i605;
 import '../services/remote_config_service.dart' as _i858;
 import '../services/secure_storage_service.dart' as _i535;
+import '../services/storage/backup_storage_provider.dart' as _i349;
 import '../utils/app_logger.dart' as _i924;
 import 'register_module.dart' as _i291;
+
+const String _prod = 'prod';
+const String _dev = 'dev';
 
 extension GetItInjectableX on _i174.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -98,6 +103,13 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i919.BiometricAuthService(gh<_i152.LocalAuthentication>()));
     gh.lazySingleton<_i334.BudgetLocalDataSource>(
         () => _i334.BudgetLocalDataSourceImpl(gh<_i982.AppDatabase>()));
+    gh.lazySingleton<_i349.BackupStorageProvider>(
+      () => _i349.AndroidMediaStoreBackupStorageProvider(),
+      registerFor: {
+        _prod,
+        _dev,
+      },
+    );
     gh.lazySingleton<_i535.SecureStorageService>(
         () => _i535.SecureStorageService(gh<_i558.FlutterSecureStorage>()));
     gh.lazySingleton<_i1021.BudgetRepository>(
@@ -113,12 +125,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i180.EncryptionService(gh<_i535.SecureStorageService>()));
     gh.lazySingleton<_i605.PreferenceService>(
         () => _i605.PreferenceService(gh<_i535.SecureStorageService>()));
-    gh.lazySingleton<_i115.DataExportImportService>(
-        () => _i115.DataExportImportService(
-              gh<_i982.AppDatabase>(),
-              gh<_i180.EncryptionService>(),
-              gh<_i605.PreferenceService>(),
-            ));
     gh.lazySingleton<_i894.ProfileRepository>(
         () => _i334.ProfileRepositoryImpl(gh<_i1046.ProfileLocalDataSource>()));
     gh.factory<_i1035.TransactionCubit>(
@@ -130,8 +136,20 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i982.AppDatabase>(),
               gh<_i605.PreferenceService>(),
             ));
+    gh.lazySingleton<_i115.DataExportImportService>(
+        () => _i115.DataExportImportService(
+              gh<_i982.AppDatabase>(),
+              gh<_i605.PreferenceService>(),
+              gh<_i349.BackupStorageProvider>(),
+            ));
     gh.lazySingleton<_i665.DashboardRepository>(() =>
         _i509.DashboardRepositoryImpl(gh<_i806.DashboardLocalDataSource>()));
+    gh.lazySingleton<_i832.BackupService>(() => _i832.BackupService(
+          gh<_i982.AppDatabase>(),
+          gh<_i115.DataExportImportService>(),
+          gh<_i605.PreferenceService>(),
+          gh<_i941.NotificationService>(),
+        ));
     gh.lazySingleton<_i119.GetFinancialSummary>(
         () => _i119.GetFinancialSummary(gh<_i665.DashboardRepository>()));
     gh.factory<_i24.DashboardCubit>(

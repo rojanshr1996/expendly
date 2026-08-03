@@ -124,20 +124,22 @@ class RefinedReportsPage extends StatelessWidget {
     required dynamic customTypography,
     required dynamic l10n,
   }) {
-    if (state is AnalyticsLoading) {
-      return const ReportsShimmer(key: ValueKey('loading'));
-    }
-    if (state is AnalyticsLoaded) {
-      final report = state.report;
-      final currencySymbol = getIt<PreferenceService>().currencySymbol;
-      final isEmpty = report.totalIncome == 0 &&
-          report.totalExpense == 0 &&
-          report.categoryBreakdowns.isEmpty;
+    return ValueListenableBuilder<String>(
+      valueListenable: getIt<PreferenceService>().currencySymbolNotifier,
+      builder: (context, currencySymbol, _) {
+        if (state is AnalyticsLoading) {
+          return const ReportsShimmer(key: ValueKey('loading'));
+        }
+        if (state is AnalyticsLoaded) {
+          final report = state.report;
+          final isEmpty = report.totalIncome == 0 &&
+              report.totalExpense == 0 &&
+              report.categoryBreakdowns.isEmpty;
 
-      return RefreshIndicator(
-        key: ValueKey('content_${report.periodName}'),
-        color: colorScheme.primary,
-        onRefresh: () => context.read<AnalyticsCubit>().loadAnalytics(),
+          return RefreshIndicator(
+            key: ValueKey('content_${report.periodName}'),
+            color: colorScheme.primary,
+            onRefresh: () => context.read<AnalyticsCubit>().loadAnalytics(),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(
             parent: BouncingScrollPhysics(),
@@ -315,6 +317,8 @@ class RefinedReportsPage extends StatelessWidget {
     }
 
     return const SizedBox.shrink(key: ValueKey('none'));
+      },
+    );
   }
 
   Future<void> _exportReport(BuildContext context, AnalyticsReport report) async {

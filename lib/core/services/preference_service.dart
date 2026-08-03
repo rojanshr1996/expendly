@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,11 +16,20 @@ class PreferenceService {
   static const String keyBiometricsEnabled = 'biometrics_enabled';
   static const String keyThemeMode = 'theme_mode';
   static const String keyActivityViewMode = 'activity_view_mode';
+  static const String keyLastSnapshotAt = 'last_snapshot_at';
+  static const String keyLastSnapshotCount = 'last_snapshot_count';
+  static const String keyLastSnapshotError = 'last_snapshot_error';
+  static const String keyPendingRestoreSetup = 'pending_restore_setup';
+  static const String keyBackupPromptShown = 'backup_prompt_shown';
 
   final SecureStorageService _secureStorage;
   SharedPreferences? _prefs;
 
   PreferenceService(this._secureStorage);
+
+  // Reactive ValueNotifiers for app-wide instant UI updates
+  final ValueNotifier<String> currencyCodeNotifier = ValueNotifier<String>('USD');
+  final ValueNotifier<String> currencySymbolNotifier = ValueNotifier<String>('\$');
 
   // In-memory cache for fast sync access
   bool _onboardingCompleted = false;
@@ -29,6 +39,11 @@ class PreferenceService {
   bool _biometricsEnabled = false;
   String _themeMode = 'dark';
   String _activityViewMode = 'calendar';
+  String? _lastSnapshotAt;
+  int _lastSnapshotCount = 0;
+  String? _lastSnapshotError;
+  bool _pendingRestoreSetup = false;
+  bool _backupPromptShown = false;
 
   bool get isOnboardingCompleted => _onboardingCompleted;
   String get currencyCode => _currencyCode;
@@ -39,6 +54,11 @@ class PreferenceService {
   bool get isBiometricsEnabled => _biometricsEnabled;
   String get themeMode => _themeMode;
   String get activityViewMode => _activityViewMode;
+  String? get lastSnapshotAt => _lastSnapshotAt;
+  int get lastSnapshotCount => _lastSnapshotCount;
+  String? get lastSnapshotError => _lastSnapshotError;
+  bool get isPendingRestoreSetup => _pendingRestoreSetup;
+  bool get isBackupPromptShown => _backupPromptShown;
 
   /// Initialize preference cache from persistent SharedPreferences and SecureStorage
   Future<void> init() async {
@@ -46,9 +66,16 @@ class PreferenceService {
     _onboardingCompleted = _prefs?.getBool(keyOnboardingCompleted) ?? false;
     _currencyCode = _prefs?.getString(keyCurrencyCode) ?? 'USD';
     _currencySymbol = _prefs?.getString(keyCurrencySymbol) ?? '\$';
+    currencyCodeNotifier.value = _currencyCode;
+    currencySymbolNotifier.value = _currencySymbol;
     _biometricsEnabled = _prefs?.getBool(keyBiometricsEnabled) ?? false;
     _themeMode = _prefs?.getString(keyThemeMode) ?? 'dark';
     _activityViewMode = _prefs?.getString(keyActivityViewMode) ?? 'calendar';
+    _lastSnapshotAt = _prefs?.getString(keyLastSnapshotAt);
+    _lastSnapshotCount = _prefs?.getInt(keyLastSnapshotCount) ?? 0;
+    _lastSnapshotError = _prefs?.getString(keyLastSnapshotError);
+    _pendingRestoreSetup = _prefs?.getBool(keyPendingRestoreSetup) ?? false;
+    _backupPromptShown = _prefs?.getBool(keyBackupPromptShown) ?? false;
 
     // Check for legacy security PIN in SharedPreferences & migrate to SecureStorage
     final legacyPin = _prefs?.getString(keyLegacySecurityPin);
@@ -76,6 +103,8 @@ class PreferenceService {
       {required String code, required String symbol}) async {
     _currencyCode = code;
     _currencySymbol = symbol;
+    currencyCodeNotifier.value = code;
+    currencySymbolNotifier.value = symbol;
     await _prefs?.setString(keyCurrencyCode, code);
     await _prefs?.setString(keyCurrencySymbol, symbol);
     AppLogger.i('Preference persisted: Currency set to $code ($symbol)');
@@ -142,4 +171,37 @@ class PreferenceService {
       _secureStorage.verifySecurityAnswer2(answer);
 
   Future<bool> hasSecurityAnswer() => _secureStorage.hasSecurityAnswer();
+
+  Future<void> setLastSnapshotAt(String? value) async {
+    _lastSnapshotAt = value;
+    if (value != null) {
+      await _prefs?.setString(keyLastSnapshotAt, value);
+    } else {
+      await _prefs?.remove(keyLastSnapshotAt);
+    }
+  }
+
+  Future<void> setLastSnapshotCount(int count) async {
+    _lastSnapshotCount = count;
+    await _prefs?.setInt(keyLastSnapshotCount, count);
+  }
+
+  Future<void> setLastSnapshotError(String? error) async {
+    _lastSnapshotError = error;
+    if (error != null) {
+      await _prefs?.setString(keyLastSnapshotError, error);
+    } else {
+      await _prefs?.remove(keyLastSnapshotError);
+    }
+  }
+
+  Future<void> setPendingRestoreSetup(bool pending) async {
+    _pendingRestoreSetup = pending;
+    await _prefs?.setBool(keyPendingRestoreSetup, pending);
+  }
+
+  Future<void> setBackupPromptShown(bool shown) async {
+    _backupPromptShown = shown;
+    await _prefs?.setBool(keyBackupPromptShown, shown);
+  }
 }

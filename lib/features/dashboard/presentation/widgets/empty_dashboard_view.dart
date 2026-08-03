@@ -22,8 +22,7 @@ class EmptyDashboardView extends StatefulWidget {
   State<EmptyDashboardView> createState() => _EmptyDashboardViewState();
 }
 
-class _EmptyDashboardViewState extends State<EmptyDashboardView>
-    with TickerProviderStateMixin {
+class _EmptyDashboardViewState extends State<EmptyDashboardView> with TickerProviderStateMixin {
   late final AnimationController _entranceController;
   late final AnimationController _ambientController;
 
@@ -168,16 +167,14 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
               width: 200.w,
               height: 200.w,
               child: AnimatedBuilder(
-                animation:
-                    Listenable.merge([_entranceController, _ambientController]),
+                animation: Listenable.merge([_entranceController, _ambientController]),
                 builder: (context, child) {
                   return Stack(
                     alignment: Alignment.center,
                     children: [
                       // Outer Teal Glow Pulse with ambient breathing
                       Transform.scale(
-                        scale: _glowScaleAnimation.value *
-                            _mainIconPulseAnimation.value,
+                        scale: _glowScaleAnimation.value * _mainIconPulseAnimation.value,
                         child: Opacity(
                           opacity: _glowOpacityAnimation.value,
                           child: Container(
@@ -185,19 +182,14 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
                             height: 180.w,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: colorScheme.primary
-                                  .withAlpha((0.12 * 255).round()),
+                              color: colorScheme.primary.withAlpha((0.12 * 255).round()),
                               boxShadow: [
                                 BoxShadow(
                                   color: colorScheme.primary.withAlpha(
-                                    (0.25 * _mainIconPulseAnimation.value * 255)
-                                        .round()
-                                        .clamp(0, 255),
+                                    (0.25 * _mainIconPulseAnimation.value * 255).round().clamp(0, 255),
                                   ),
-                                  blurRadius:
-                                      (40 * _mainIconPulseAnimation.value).r,
-                                  spreadRadius:
-                                      (10 * _mainIconPulseAnimation.value).r,
+                                  blurRadius: (40 * _mainIconPulseAnimation.value).r,
+                                  spreadRadius: (10 * _mainIconPulseAnimation.value).r,
                                 ),
                               ],
                             ),
@@ -214,8 +206,7 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
                             width: 140.w,
                             height: 140.w,
                             decoration: BoxDecoration(
-                              color: AppColors.surfaceLow
-                                  .withAlpha((0.5 * 255).round()),
+                              color: AppColors.surfaceLow.withAlpha((0.5 * 255).round()),
                               borderRadius: BorderRadius.circular(24.r),
                               border: Border.all(color: AppColors.glassStroke),
                             ),
@@ -317,16 +308,14 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
                     Icon(
                       Icons.verified_user_outlined,
                       size: 15.sp,
-                      color: colorScheme.onSurfaceVariant
-                          .withAlpha((0.6 * 255).round()),
+                      color: colorScheme.onSurfaceVariant.withAlpha((0.6 * 255).round()),
                     ),
                     horizontalMarginXXSmall,
                     Text(
                       'Private & Secure',
                       style: customTypography.labelMediumMono.copyWith(
                         fontSize: 11.sp,
-                        color: colorScheme.onSurfaceVariant
-                            .withAlpha((0.7 * 255).round()),
+                        color: colorScheme.onSurfaceVariant.withAlpha((0.7 * 255).round()),
                       ),
                     ),
                   ],
@@ -346,16 +335,14 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
                     Icon(
                       Icons.cloud_off_rounded,
                       size: 15.sp,
-                      color: colorScheme.onSurfaceVariant
-                          .withAlpha((0.6 * 255).round()),
+                      color: colorScheme.onSurfaceVariant.withAlpha((0.6 * 255).round()),
                     ),
                     horizontalMarginXXSmall,
                     Text(
                       'Offline Ready',
                       style: customTypography.labelMediumMono.copyWith(
                         fontSize: 11.sp,
-                        color: colorScheme.onSurfaceVariant
-                            .withAlpha((0.7 * 255).round()),
+                        color: colorScheme.onSurfaceVariant.withAlpha((0.7 * 255).round()),
                       ),
                     ),
                   ],
@@ -416,9 +403,9 @@ class AnimatedLargeIconCard extends StatelessWidget {
           child: GlassContainer(
             width: containerSize,
             height: containerSize,
+            padding: EdgeInsets.zero,
             borderRadius: borderRadius ?? BorderRadius.circular(24.r),
-            backgroundColor: backgroundColor ??
-                AppColors.surfaceContainerHigh.withAlpha((0.8 * 255).round()),
+            backgroundColor: backgroundColor ?? AppColors.surfaceContainerHigh.withAlpha((0.8 * 255).round()),
             child: Center(
               child: Icon(
                 icon,

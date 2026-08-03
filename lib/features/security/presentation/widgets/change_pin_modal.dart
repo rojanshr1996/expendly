@@ -170,7 +170,9 @@ class _ChangePinModalState extends State<ChangePinModal>
 
             // Header Title
             Text(
-              l10n.changeSecurityPinTitle,
+              _hasExistingPin
+                  ? l10n.changeSecurityPinTitle
+                  : l10n.setupSecurityPin,
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: FontWeights.bold,

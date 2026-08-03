@@ -39,6 +39,8 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
         totalIncome += realAmount;
       } else if (tx.type == TransactionType.expense) {
         totalExpense += realAmount;
+      } else if (tx.type == TransactionType.transfer) {
+        totalExpense += _parseTransferFeeFromNote(tx.note);
       }
     }
 
@@ -62,6 +64,7 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
       recentItems.add(
         DashboardTransactionItem(
           id: tx.id,
+          categoryId: tx.categoryId,
           title: tx.note?.isNotEmpty == true
               ? tx.note!
               : (cat?.name ?? 'Transaction'),
@@ -70,24 +73,38 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
           colorHex: cat?.color ?? '#57F1DB',
           amount: tx.amount / 100.0,
           date: tx.timestamp,
+          type: tx.type,
           isIncome: tx.type == TransactionType.income,
         ),
       );
     }
 
-    // Compute Category Spending Breakdown from user's expense transactions
+    // Compute Category Spending Breakdown from user's expense transactions and transfer fees
     final categoryTotals = <String, Map<String, dynamic>>{};
-    for (final tx
-        in allTransactions.where((t) => t.type == TransactionType.expense)) {
-      final cat = categoryMap[tx.categoryId];
-      final catName = cat?.name ?? 'Other';
-      final color = cat?.color ?? '#FB7185';
-      final double realAmount = tx.amount / 100.0;
-      if (!categoryTotals.containsKey(catName)) {
-        categoryTotals[catName] = {'sum': 0.0, 'color': color};
+    for (final tx in allTransactions) {
+      if (tx.type == TransactionType.expense) {
+        final cat = categoryMap[tx.categoryId];
+        final catName = cat?.name ?? 'Other';
+        final color = cat?.color ?? '#FB7185';
+        final double realAmount = tx.amount / 100.0;
+        if (!categoryTotals.containsKey(catName)) {
+          categoryTotals[catName] = {'sum': 0.0, 'color': color};
+        }
+        categoryTotals[catName]!['sum'] =
+            (categoryTotals[catName]!['sum'] as double) + realAmount;
+      } else if (tx.type == TransactionType.transfer) {
+        final fee = _parseTransferFeeFromNote(tx.note);
+        if (fee > 0) {
+          final cat = categoryMap[tx.categoryId];
+          final catName = cat?.name ?? 'Transfer Fee';
+          final color = cat?.color ?? '#9333EA';
+          if (!categoryTotals.containsKey(catName)) {
+            categoryTotals[catName] = {'sum': 0.0, 'color': color};
+          }
+          categoryTotals[catName]!['sum'] =
+              (categoryTotals[catName]!['sum'] as double) + fee;
+        }
       }
-      categoryTotals[catName]!['sum'] =
-          (categoryTotals[catName]!['sum'] as double) + realAmount;
     }
 
     final breakdowns = <DashboardCategoryShare>[];
@@ -118,6 +135,11 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
           dailyMap[key]!['income'] = (dailyMap[key]!['income'] ?? 0.0) + amount;
         } else if (tx.type == TransactionType.expense) {
           dailyMap[key]!['expense'] = (dailyMap[key]!['expense'] ?? 0.0) + amount;
+        } else if (tx.type == TransactionType.transfer) {
+          final fee = _parseTransferFeeFromNote(tx.note);
+          if (fee > 0) {
+            dailyMap[key]!['expense'] = (dailyMap[key]!['expense'] ?? 0.0) + fee;
+          }
         }
       }
     }
@@ -147,5 +169,15 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
       categoryBreakdowns: breakdowns,
       dailyCashFlow: cashFlowPoints,
     );
+  }
+
+  double _parseTransferFeeFromNote(String? note) {
+    if (note == null || !note.contains('(Fee:')) return 0.0;
+    final regExp = RegExp(r'\(Fee:\s*[^0-9]*([0-9]+(?:\.[0-9]+)?)\)');
+    final match = regExp.firstMatch(note);
+    if (match != null && match.groupCount >= 1) {
+      return double.tryParse(match.group(1)!) ?? 0.0;
+    }
+    return 0.0;
   }
 }

@@ -198,6 +198,7 @@ class _OnboardingSecuritySetupPageState
                       child: ValueListenableBuilder<bool>(
                         valueListenable: _isPinSetNotifier,
                         builder: (context, isPinSet, _) {
+
                           if (!isPinSet) {
                             return Column(
                               mainAxisAlignment: MainAxisAlignment.center,

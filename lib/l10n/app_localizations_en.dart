@@ -540,7 +540,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cloudBackupLast => 'Last: Today 08:42';
 
   @override
-  String get exportDataCsv => 'Export Data (.CSV)';
+  String get exportDataCsv => 'Share Transactions (.CSV)';
 
   @override
   String get clearLocalCache => 'Clear Local Cache';
@@ -568,6 +568,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get importSuccess => 'Data restored successfully!';
+
+  @override
+  String importSuccessWithCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count transactions restored',
+      one: '1 transaction restored',
+      zero: 'No transactions restored',
+    );
+    return 'Data restored successfully! $_temp0';
+  }
+
+  @override
+  String exportBackupSummary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Backup generated with $count transactions, encrypted via AES-256.',
+      one: 'Backup generated with 1 transaction, encrypted via AES-256.',
+      zero: 'Backup generated with no transactions, encrypted via AES-256.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get fileSavedAt => 'File saved at:';
+
+  @override
+  String get orSeparator => 'OR';
+
+  @override
+  String get exportFailedGeneric => 'Export failed. Please try again.';
 
   @override
   String get passphrasePrompt => 'Passphrase / PIN (Optional)';
@@ -664,7 +698,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get decryptRestoreData => 'Decrypt & Restore Data';
 
   @override
-  String get exportCsvDesc => 'Export unencrypted .csv for Sheets or Excel';
+  String get exportCsvDesc => 'Share your transactions data as a CSV file';
 
   @override
   String csvExportedTo(String filename) {
@@ -677,6 +711,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get csvExportFailedGeneric => 'CSV export failed. Please try again.';
+
+  @override
   String exportFailed(String error) {
     return 'Export failed: $error';
   }
@@ -684,6 +721,42 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get importFailedKey =>
       'Import failed: Invalid payload or decryption key.';
+
+  @override
+  String get useLatestBackup => 'Use Latest Backup File';
+
+  @override
+  String get useLatestBackupHint =>
+      'Restore the most recent backup from Download/Expendly';
+
+  @override
+  String get noBackupFileFound =>
+      'No backup file found in Download/Expendly folder.';
+
+  @override
+  String get backupFolderUnreadable =>
+      'Your backup folder was found, but this install can no longer read the files inside it. Backups saved from now on will be restorable.';
+
+  @override
+  String get backupPassphraseNeeded =>
+      'Enter the passphrase or Security PIN used for this backup.';
+
+  @override
+  String get restoreFromBackupTitle => 'Restore From Backup?';
+
+  @override
+  String restoreFromBackupMessage(String fileName, int count, String date) {
+    return 'This will replace all current data with \"$fileName\" ($count transactions, created $date). This action cannot be undone. Continue?';
+  }
+
+  @override
+  String get restore => 'Restore';
+
+  @override
+  String get autoBackupLabel => 'Auto backup';
+
+  @override
+  String get manualBackupLabel => 'Manual backup';
 
   @override
   String get addNoteHint => 'Add note (optional)...';
@@ -909,4 +982,116 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noSecurityPinForLogout =>
       'Security PIN is not set up. Please create a PIN in settings first.';
+
+  @override
+  String get setupSecurityPin => 'Set Security PIN';
+
+  @override
+  String get setupSecurityPinDesc => 'Create a 4-digit PIN to secure your app';
+
+  @override
+  String get pinConfigured => 'Security PIN is configured';
+
+  @override
+  String get pinRequiredForBiometrics =>
+      'Please set up a Security PIN first before enabling Biometric Auth.';
+
+  @override
+  String get allowAutoBackup => 'Allow Auto Backup';
+
+  @override
+  String get autoBackupSetupDesc =>
+      'Automatically snapshot encrypted ledger. Requires Security PIN.';
+
+  @override
+  String get autoBackupTileTitle => 'Auto Backup';
+
+  @override
+  String get autoBackupTileDesc =>
+      'Automatically snapshot encrypted ledger on changes';
+
+  @override
+  String get pinRequiredForAutoBackup =>
+      'Security PIN is required when Auto Backup is enabled.';
+
+  @override
+  String get pinCompulsoryForBackup =>
+      'Security PIN is required for auto backup encryption.';
+
+  @override
+  String get systemBackupHeader => 'SYSTEM BACKUP';
+
+  @override
+  String get csvBackupTitle => 'Auto Backup (CSV)';
+
+  @override
+  String get backupNow => 'Backup Now';
+
+  @override
+  String get neverBackedUp => 'Never backed up';
+
+  @override
+  String lastBackupTime(String time) {
+    return 'Last backup: $time';
+  }
+
+  @override
+  String get backupSuccess => 'Backup saved to Downloads/Expendly';
+
+  @override
+  String get backupFailed => 'Backup failed. Please try again.';
+
+  @override
+  String get restoreCsvTitle => 'Restore from Backup';
+
+  @override
+  String get restoreCsvDesc =>
+      'Import your expendly_backup file to recover your data';
+
+  @override
+  String get backupFileNotFound =>
+      'No backup file found. Create a backup first, or use Browse to select a CSV file from another location.';
+
+  @override
+  String get pinRequiredForRestore =>
+      'Enter your Security PIN to authorize the restore.';
+
+  @override
+  String get pinIncorrect => 'Incorrect PIN. Please try again.';
+
+  @override
+  String get enterPin => 'Security PIN';
+
+  @override
+  String get csvImportFailed =>
+      'Restore failed. The file may be invalid or corrupted.';
+
+  @override
+  String get browseBackupFile => 'Browse & Select Backup File';
+
+  @override
+  String get importSummaryTitle => 'Restore Complete';
+
+  @override
+  String importSummaryBody(int transactions, int categories, int budgets) {
+    return 'Imported $transactions transactions, $categories categories, $budgets budgets.';
+  }
+
+  @override
+  String get notificationHeader => 'NOTIFICATION';
+
+  @override
+  String get notificationAlert => 'Notification Alert';
+
+  @override
+  String get noNotificationBody => 'No detailed body text provided.';
+
+  @override
+  String get copyText => 'Copy Text';
+
+  @override
+  String get contentCopied => 'Content copied to clipboard';
+
+  @override
+  String get ok => 'OK';
 }

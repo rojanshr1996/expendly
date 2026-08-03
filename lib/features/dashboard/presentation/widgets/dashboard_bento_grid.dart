@@ -29,7 +29,6 @@ class DashboardBentoGrid extends StatelessWidget {
     final customTypography = context.customTypography;
     final l10n = context.l10n;
 
-    final symbol = summary.currencySymbol;
     final isNegativeBalance = summary.totalBalance < 0;
 
     // Balance color: green when positive, red when negative, muted when zero
@@ -82,7 +81,6 @@ class DashboardBentoGrid extends StatelessWidget {
                         SizedBox(height: 2.h),
                         CompactAmountText(
                           amount: summary.totalBalance,
-                          currencySymbol: symbol,
                           isPrivacyMode: isPrivacyMode,
                           style: customTypography.labelMediumMono.copyWith(
                             color: balanceColor,
@@ -146,7 +144,6 @@ class DashboardBentoGrid extends StatelessWidget {
                         verticalMarginXXSmall,
                         CompactAmountText(
                           amount: summary.totalExpense,
-                          currencySymbol: symbol,
                           isPrivacyMode: isPrivacyMode,
                           style: (customTypography.amountDisplay).copyWith(
                             color: AppColors.semanticRed,
@@ -193,7 +190,6 @@ class DashboardBentoGrid extends StatelessWidget {
                         verticalMarginXXSmall,
                         CompactAmountText(
                           amount: summary.totalIncome,
-                          currencySymbol: symbol,
                           isPrivacyMode: isPrivacyMode,
                           style: (customTypography.amountDisplay).copyWith(
                             color: AppColors.semanticGreen,

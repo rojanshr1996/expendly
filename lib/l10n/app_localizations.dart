@@ -1117,7 +1117,7 @@ abstract class AppLocalizations {
   /// Label for exporting data as CSV
   ///
   /// In en, this message translates to:
-  /// **'Export Data (.CSV)'**
+  /// **'Share Transactions (.CSV)'**
   String get exportDataCsv;
 
   /// Label for clearing local cache
@@ -1167,6 +1167,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Data restored successfully!'**
   String get importSuccess;
+
+  /// Success message after import, including how many transactions were restored
+  ///
+  /// In en, this message translates to:
+  /// **'Data restored successfully! {count, plural, =0{No transactions restored} =1{1 transaction restored} other{{count} transactions restored}}'**
+  String importSuccessWithCount(int count);
+
+  /// Summary line in the export success dialog describing the generated backup
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Backup generated with no transactions, encrypted via AES-256.} =1{Backup generated with 1 transaction, encrypted via AES-256.} other{Backup generated with {count} transactions, encrypted via AES-256.}}'**
+  String exportBackupSummary(int count);
+
+  /// Label above the file path of a generated backup
+  ///
+  /// In en, this message translates to:
+  /// **'File saved at:'**
+  String get fileSavedAt;
+
+  /// Divider label between two alternative actions
+  ///
+  /// In en, this message translates to:
+  /// **'OR'**
+  String get orSeparator;
+
+  /// Toast message shown when a backup export fails
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed. Please try again.'**
+  String get exportFailedGeneric;
 
   /// Label for passphrase input prompt
   ///
@@ -1345,7 +1375,7 @@ abstract class AppLocalizations {
   /// Subtitle for CSV export option
   ///
   /// In en, this message translates to:
-  /// **'Export unencrypted .csv for Sheets or Excel'**
+  /// **'Share your transactions data as a CSV file'**
   String get exportCsvDesc;
 
   /// Toast message for CSV export destination
@@ -1360,6 +1390,12 @@ abstract class AppLocalizations {
   /// **'CSV Export failed: {error}'**
   String csvExportFailed(String error);
 
+  /// Toast message shown when a CSV export fails
+  ///
+  /// In en, this message translates to:
+  /// **'CSV export failed. Please try again.'**
+  String get csvExportFailedGeneric;
+
   /// Toast message for export error
   ///
   /// In en, this message translates to:
@@ -1371,6 +1407,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import failed: Invalid payload or decryption key.'**
   String get importFailedKey;
+
+  /// Button label to import the most recent backup file from storage
+  ///
+  /// In en, this message translates to:
+  /// **'Use Latest Backup File'**
+  String get useLatestBackup;
+
+  /// Helper text describing the latest backup import option
+  ///
+  /// In en, this message translates to:
+  /// **'Restore the most recent backup from Download/Expendly'**
+  String get useLatestBackupHint;
+
+  /// Message shown when no backup file exists to import
+  ///
+  /// In en, this message translates to:
+  /// **'No backup file found in Download/Expendly folder.'**
+  String get noBackupFileFound;
+
+  /// Inline error in the import sheet when the public Expendly folder exists but its backup files belong to a previous install and cannot be read
+  ///
+  /// In en, this message translates to:
+  /// **'Your backup folder was found, but this install can no longer read the files inside it. Backups saved from now on will be restorable.'**
+  String get backupFolderUnreadable;
+
+  /// Message shown when the latest backup cannot be decrypted with the provided key
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the passphrase or Security PIN used for this backup.'**
+  String get backupPassphraseNeeded;
+
+  /// Title for the confirmation dialog before importing the latest backup
+  ///
+  /// In en, this message translates to:
+  /// **'Restore From Backup?'**
+  String get restoreFromBackupTitle;
+
+  /// Confirmation message before restoring latest backup
+  ///
+  /// In en, this message translates to:
+  /// **'This will replace all current data with \"{fileName}\" ({count} transactions, created {date}). This action cannot be undone. Continue?'**
+  String restoreFromBackupMessage(String fileName, int count, String date);
+
+  /// Confirm button label to proceed with restore
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restore;
+
+  /// Label indicating a backup was created automatically
+  ///
+  /// In en, this message translates to:
+  /// **'Auto backup'**
+  String get autoBackupLabel;
+
+  /// Label indicating a backup was created manually
+  ///
+  /// In en, this message translates to:
+  /// **'Manual backup'**
+  String get manualBackupLabel;
 
   /// Placeholder hint for transaction note
   ///
@@ -1773,6 +1869,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Security PIN is not set up. Please create a PIN in settings first.'**
   String get noSecurityPinForLogout;
+
+  /// Title for setting up security PIN
+  ///
+  /// In en, this message translates to:
+  /// **'Set Security PIN'**
+  String get setupSecurityPin;
+
+  /// Subtitle for setting up security PIN
+  ///
+  /// In en, this message translates to:
+  /// **'Create a 4-digit PIN to secure your app'**
+  String get setupSecurityPinDesc;
+
+  /// Subtitle when security PIN is already set up
+  ///
+  /// In en, this message translates to:
+  /// **'Security PIN is configured'**
+  String get pinConfigured;
+
+  /// Toast message when enabling biometrics without a PIN configured
+  ///
+  /// In en, this message translates to:
+  /// **'Please set up a Security PIN first before enabling Biometric Auth.'**
+  String get pinRequiredForBiometrics;
+
+  /// Label for auto backup switch on account setup page
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Auto Backup'**
+  String get allowAutoBackup;
+
+  /// Subtitle for auto backup switch on account setup page
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically snapshot encrypted ledger. Requires Security PIN.'**
+  String get autoBackupSetupDesc;
+
+  /// Title for auto backup tile in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Backup'**
+  String get autoBackupTileTitle;
+
+  /// Subtitle for auto backup tile in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically snapshot encrypted ledger on changes'**
+  String get autoBackupTileDesc;
+
+  /// Toast message when enabling auto backup without a PIN configured
+  ///
+  /// In en, this message translates to:
+  /// **'Security PIN is required when Auto Backup is enabled.'**
+  String get pinRequiredForAutoBackup;
+
+  /// Subtitle note on security setup screen when auto backup is active
+  ///
+  /// In en, this message translates to:
+  /// **'Security PIN is required for auto backup encryption.'**
+  String get pinCompulsoryForBackup;
+
+  /// Header label for system backup notifications
+  ///
+  /// In en, this message translates to:
+  /// **'SYSTEM BACKUP'**
+  String get systemBackupHeader;
+
+  /// Title for the CSV auto-backup status tile in Data Management
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Backup (CSV)'**
+  String get csvBackupTitle;
+
+  /// Button label to trigger an immediate manual backup
+  ///
+  /// In en, this message translates to:
+  /// **'Backup Now'**
+  String get backupNow;
+
+  /// Subtitle when no backup has been created yet
+  ///
+  /// In en, this message translates to:
+  /// **'Never backed up'**
+  String get neverBackedUp;
+
+  /// Subtitle showing the timestamp of the last successful backup
+  ///
+  /// In en, this message translates to:
+  /// **'Last backup: {time}'**
+  String lastBackupTime(String time);
+
+  /// Toast shown after a successful manual backup
+  ///
+  /// In en, this message translates to:
+  /// **'Backup saved to Downloads/Expendly'**
+  String get backupSuccess;
+
+  /// Toast shown when a backup attempt fails
+  ///
+  /// In en, this message translates to:
+  /// **'Backup failed. Please try again.'**
+  String get backupFailed;
+
+  /// Title for the CSV restore tile and bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Restore from Backup'**
+  String get restoreCsvTitle;
+
+  /// Subtitle for the CSV restore tile in Data Management
+  ///
+  /// In en, this message translates to:
+  /// **'Import your expendly_backup file to recover your data'**
+  String get restoreCsvDesc;
+
+  /// Message shown in restore sheet when backup file does not exist
+  ///
+  /// In en, this message translates to:
+  /// **'No backup file found. Create a backup first, or use \'Browse\' to select a CSV file from another location.'**
+  String get backupFileNotFound;
+
+  /// Label/instruction shown above the PIN field in the CSV restore sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your Security PIN to authorize the restore.'**
+  String get pinRequiredForRestore;
+
+  /// Error shown in the restore sheet when the entered PIN does not match
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect PIN. Please try again.'**
+  String get pinIncorrect;
+
+  /// Label for the PIN text field in the restore sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Security PIN'**
+  String get enterPin;
+
+  /// Error shown when CSV import fails
+  ///
+  /// In en, this message translates to:
+  /// **'Restore failed. The file may be invalid or corrupted.'**
+  String get csvImportFailed;
+
+  /// Button label to open the system file picker for a CSV backup
+  ///
+  /// In en, this message translates to:
+  /// **'Browse & Select Backup File'**
+  String get browseBackupFile;
+
+  /// Title of the dialog shown after a successful CSV import
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Complete'**
+  String get importSummaryTitle;
+
+  /// Body of the import summary dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {transactions} transactions, {categories} categories, {budgets} budgets.'**
+  String importSummaryBody(int transactions, int categories, int budgets);
+
+  /// Header label for general notifications
+  ///
+  /// In en, this message translates to:
+  /// **'NOTIFICATION'**
+  String get notificationHeader;
+
+  /// Default title when notification title is missing
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Alert'**
+  String get notificationAlert;
+
+  /// Fallback text when notification body is empty
+  ///
+  /// In en, this message translates to:
+  /// **'No detailed body text provided.'**
+  String get noNotificationBody;
+
+  /// Button label to copy notification text
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Text'**
+  String get copyText;
+
+  /// Toast message when notification text is copied
+  ///
+  /// In en, this message translates to:
+  /// **'Content copied to clipboard'**
+  String get contentCopied;
+
+  /// Confirmation button label
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
 }
 
 class _AppLocalizationsDelegate

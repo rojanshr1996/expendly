@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
+import 'package:local_auth/local_auth.dart';
+
 import '../../features/analytics/data/datasources/analytics_local_datasource.dart';
 import '../../features/analytics/data/repositories/analytics_repository_impl.dart';
 import '../../features/analytics/domain/repositories/analytics_repository.dart';
@@ -24,13 +26,15 @@ import '../../features/transactions/domain/repositories/transaction_repository.d
 import '../../features/transactions/presentation/cubit/transaction_cubit.dart';
 import '../config/app_config.dart';
 import '../database/app_database.dart';
+import '../services/biometric_auth_service.dart';
+import '../services/backup_service.dart';
 import '../services/data_export_import_service.dart';
-import '../services/encryption_service.dart';
 import '../services/notification_service.dart';
 import '../services/preference_service.dart';
 import '../services/remote_config_service.dart';
 import '../services/secure_storage_service.dart';
 import '../utils/app_logger.dart';
+import 'injection.config.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -41,22 +45,29 @@ final GetIt getIt = GetIt.instance;
 Future<void> configureDependencies([String? environment]) async {
   getIt.allowReassignment = true;
 
+  // Initialize generated injectable dependencies
+  getIt.init(environment: environment);
+
   // Register AppConfig instance into GetIt if available
   if (!getIt.isRegistered<AppConfig>()) {
     getIt.registerLazySingleton<AppConfig>(() => AppConfig.instance);
   }
 
   // Core Database & Services Registration
+  if (!getIt.isRegistered<LocalAuthentication>()) {
+    getIt.registerLazySingleton<LocalAuthentication>(
+        () => LocalAuthentication());
+  }
+  if (!getIt.isRegistered<BiometricAuthService>()) {
+    getIt.registerLazySingleton<BiometricAuthService>(
+        () => BiometricAuthService(getIt<LocalAuthentication>()));
+  }
   if (!getIt.isRegistered<AppDatabase>()) {
     getIt.registerLazySingleton<AppDatabase>(() => AppDatabase());
   }
   if (!getIt.isRegistered<SecureStorageService>()) {
     getIt.registerLazySingleton<SecureStorageService>(
         () => SecureStorageService());
-  }
-  if (!getIt.isRegistered<EncryptionService>()) {
-    getIt.registerLazySingleton<EncryptionService>(
-        () => EncryptionService(getIt<SecureStorageService>()));
   }
   if (!getIt.isRegistered<PreferenceService>()) {
     final prefService = PreferenceService(getIt<SecureStorageService>());
@@ -67,7 +78,6 @@ Future<void> configureDependencies([String? environment]) async {
     getIt.registerLazySingleton<DataExportImportService>(() =>
         DataExportImportService(
           getIt<AppDatabase>(),
-          getIt<EncryptionService>(),
           getIt<PreferenceService>(),
         ));
   } else {
@@ -84,6 +94,15 @@ Future<void> configureDependencies([String? environment]) async {
   if (!getIt.isRegistered<RemoteConfigService>()) {
     getIt.registerLazySingleton<RemoteConfigService>(
         () => RemoteConfigService());
+  }
+
+  if (!getIt.isRegistered<BackupService>()) {
+    getIt.registerLazySingleton<BackupService>(() => BackupService(
+          getIt<AppDatabase>(),
+          getIt<DataExportImportService>(),
+          getIt<PreferenceService>(),
+          getIt<NotificationService>(),
+        ));
   }
 
   // Feature Datasources & Repositories Registration

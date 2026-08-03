@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/database/enums/database_enums.dart';
+
 /// Represents daily aggregated income and expense for the cash flow chart.
 class DailyCashFlowPoint extends Equatable {
   final DateTime date;
@@ -20,34 +22,40 @@ class DailyCashFlowPoint extends Equatable {
 
 class DashboardTransactionItem extends Equatable {
   final int id;
+  final int categoryId;
   final String title;
   final String categoryName;
   final String iconName;
   final String colorHex;
   final double amount;
   final DateTime date;
+  final TransactionType type;
   final bool isIncome;
 
   const DashboardTransactionItem({
     required this.id,
+    this.categoryId = 1,
     required this.title,
     required this.categoryName,
     required this.iconName,
     required this.colorHex,
     required this.amount,
     required this.date,
+    this.type = TransactionType.expense,
     this.isIncome = false,
   });
 
   @override
   List<Object?> get props => [
         id,
+        categoryId,
         title,
         categoryName,
         iconName,
         colorHex,
         amount,
         date,
+        type,
         isIncome,
       ];
 }

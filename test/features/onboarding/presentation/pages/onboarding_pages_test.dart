@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:expendly/core/config/app_config.dart';
-import 'package:expendly/features/onboarding/presentation/widgets/account_config_card.dart';
 import 'package:expendly/features/onboarding/presentation/widgets/onboarding_header.dart';
 import 'package:expendly/features/onboarding/presentation/widgets/onboarding_slide_card.dart';
 import 'package:expendly/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   setUpAll(() {
@@ -71,28 +70,6 @@ void main() {
       expect(find.text('100% Offline Vault'), findsOneWidget);
       expect(find.text('Local hardware encryption with zero cloud data tracking.'), findsOneWidget);
       expect(find.byIcon(Icons.shield_outlined), findsOneWidget);
-    });
-
-    testWidgets('AccountConfigCard renders title, currency symbol, and input field', (tester) async {
-      final controller = TextEditingController(text: '150.00');
-
-      await tester.pumpWidget(
-        wrapWithMaterial(
-          AccountConfigCard(
-            icon: Icons.account_balance_wallet_rounded,
-            iconColor: Colors.teal,
-            title: 'Cash Wallet',
-            accountTypeLabel: 'Physical Wallet',
-            currencySymbol: '\$',
-            amountController: controller,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Cash Wallet'), findsOneWidget);
-      expect(find.text('\$'), findsOneWidget);
-      expect(find.text('150.00'), findsOneWidget);
     });
   });
 }

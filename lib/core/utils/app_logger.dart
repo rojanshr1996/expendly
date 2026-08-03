@@ -27,7 +27,8 @@ class FlavorLogFilter extends LogFilter {
         return event.level.index >= Level.info.index;
       case AppFlavor.prod:
         // PROD logs warning, error, and fatal
-        return event.level.index >= Level.warning.index;
+        // return event.level.index >= Level.warning.index;
+        return event.level.index >= Level.trace.index;
     }
   }
 }

@@ -186,80 +186,141 @@ class _HeroHeaderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final customTypography = context.customTypography;
-    final isIncome = transaction.isIncome;
-    final amountColor =
-        isIncome ? AppColors.semanticGreen : AppColors.semanticRed;
+    final amountColor = transaction.type == TransactionType.income
+        ? AppColors.semanticGreen
+        : transaction.type == TransactionType.transfer
+            ? colorScheme.secondary
+            : AppColors.semanticRed;
 
     return GlassContainer(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
       child: Column(
         children: [
-          // Category Icon Avatar
-          Container(
-            width: 64.w,
-            height: 64.w,
-            decoration: BoxDecoration(
-              color: catColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(
-                color: catColor.withValues(alpha: 0.3),
-                width: 1.5,
+          // Category Icon Avatar (Scale & Fade)
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOutBack,
+            builder: (context, value, child) {
+              return Opacity(
+                opacity: value.clamp(0.0, 1.0),
+                child: Transform.scale(
+                  scale: 0.65 + (value * 0.35),
+                  child: child,
+                ),
+              );
+            },
+            child: Container(
+              width: 64.w,
+              height: 64.w,
+              decoration: BoxDecoration(
+                color: amountColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(
+                  color: amountColor.withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
               ),
-            ),
-            child: Icon(
-              _getIconData(transaction.categoryIcon),
-              color: catColor,
-              size: 32.sp,
+              child: Icon(
+                _getIconData(transaction.categoryIcon),
+                color: amountColor,
+                size: 32.sp,
+              ),
             ),
           ),
           verticalMarginSmall,
 
-          // Category Title
-          Text(
-            transaction.categoryName,
-            style: customTypography.bodyLargeBold.copyWith(
-              color: colorScheme.onSurface,
+          // Category Title (Slide & Fade)
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 450),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, child) {
+              return Opacity(
+                opacity: value.clamp(0.0, 1.0),
+                child: Transform.translate(
+                  offset: Offset(0, (1.0 - value) * -8.h),
+                  child: child,
+                ),
+              );
+            },
+            child: Text(
+              transaction.categoryName,
+              style: customTypography.bodyLargeBold.copyWith(
+                color: colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
           verticalMarginXXSmall,
 
-          // Type Tag Chip
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-            decoration: BoxDecoration(
-              color: amountColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(20.r),
-              border: Border.all(
-                color: amountColor.withValues(alpha: 0.3),
+          // Type Tag Chip (Scale & Fade)
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, child) {
+              return Opacity(
+                opacity: value.clamp(0.0, 1.0),
+                child: Transform.scale(
+                  scale: 0.85 + (value * 0.15),
+                  child: child,
+                ),
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+              decoration: BoxDecoration(
+                color: amountColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(20.r),
+                border: Border.all(
+                  color: amountColor.withValues(alpha: 0.3),
+                ),
               ),
-            ),
-            child: Text(
-              _getTypeLabel(context, transaction.type).toUpperCase(),
-              style: customTypography.labelMediumMono.copyWith(
-                color: amountColor,
-                fontWeight: FontWeights.bold,
-                letterSpacing: 1.1,
+              child: Text(
+                _getTypeLabel(context, transaction.type).toUpperCase(),
+                style: customTypography.labelMediumMono.copyWith(
+                  color: amountColor,
+                  fontWeight: FontWeights.bold,
+                  letterSpacing: 1.1,
+                ),
               ),
             ),
           ),
           verticalMarginMedium,
 
-          // Monetary Amount Display
-          ValueListenableBuilder<bool>(
-            valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
-            builder: (context, isPrivacyMode, _) {
-              return CompactAmountText(
-                amount: transaction.amount,
-                currencySymbol: transaction.currencyCode,
-                isPrivacyMode: isPrivacyMode,
-                showSign: true,
-                isIncome: isIncome,
-                style: customTypography.headlineLargeMonoBold.copyWith(
-                  color: amountColor,
+          // Monetary Amount Display (Bounce Scale & Fade)
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 550),
+            curve: Curves.easeOutBack,
+            builder: (context, value, child) {
+              return Opacity(
+                opacity: value.clamp(0.0, 1.0),
+                child: Transform.scale(
+                  scale: 0.88 + (value * 0.12),
+                  child: child,
                 ),
               );
             },
+            child: ValueListenableBuilder<bool>(
+              valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
+              builder: (context, isPrivacyMode, _) {
+                return CompactAmountText(
+                  amount: transaction.amount,
+                  isPrivacyMode: isPrivacyMode,
+                  showSign: true,
+                  type: transaction.type,
+                  isIncome: transaction.type == TransactionType.income
+                      ? true
+                      : (transaction.type == TransactionType.expense ? false : null),
+                  compact: false,
+                  style: customTypography.headlineLargeMonoBold.copyWith(
+                    color: amountColor,
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -322,46 +383,55 @@ class _MetadataDetailsCard extends StatelessWidget {
     final formattedDateTime =
         DateFormat.yMMMMd(locale).add_jm().format(transaction.timestamp);
 
+    final rows = <Widget>[
+      _DetailRow(
+        icon: Icons.calendar_today_rounded,
+        label: l10n.dateAndTimeLabel,
+        value: formattedDateTime,
+        isMonospace: true,
+      ),
+      _DetailRow(
+        icon: Icons.category_outlined,
+        label: l10n.categoryLabel,
+        value: transaction.categoryName,
+      ),
+      if (transaction.paymentMethod != null)
+        _DetailRow(
+          icon: Icons.account_balance_wallet_outlined,
+          label: l10n.paymentMethodLabel,
+          value: _formatPaymentMethod(context, transaction.paymentMethod!),
+        ),
+      if (transaction.note?.isNotEmpty == true)
+        _DetailRow(
+          icon: Icons.notes_rounded,
+          label: l10n.noteLabel,
+          value: transaction.note!,
+        ),
+      _DetailRow(
+        icon: Icons.tag_rounded,
+        label: l10n.transactionIdLabel,
+        value: '#${transaction.id}',
+        isMonospace: true,
+      ),
+    ];
+
+    final children = <Widget>[];
+    for (int i = 0; i < rows.length; i++) {
+      if (i > 0) {
+        children.add(const Divider(height: 24, color: AppColors.glassStroke));
+      }
+      children.add(
+        _StaggeredEntrance(
+          delayMs: 120 + (i * 45),
+          child: rows[i],
+        ),
+      );
+    }
+
     return GlassContainer(
       padding: EdgeInsets.all(16.w),
       child: Column(
-        children: [
-          _DetailRow(
-            icon: Icons.calendar_today_rounded,
-            label: l10n.dateAndTimeLabel,
-            value: formattedDateTime,
-            isMonospace: true,
-          ),
-          const Divider(height: 24, color: AppColors.glassStroke),
-          _DetailRow(
-            icon: Icons.category_outlined,
-            label: l10n.categoryLabel,
-            value: transaction.categoryName,
-          ),
-          if (transaction.paymentMethod != null) ...[
-            const Divider(height: 24, color: AppColors.glassStroke),
-            _DetailRow(
-              icon: Icons.account_balance_wallet_outlined,
-              label: l10n.paymentMethodLabel,
-              value: _formatPaymentMethod(context, transaction.paymentMethod!),
-            ),
-          ],
-          if (transaction.note?.isNotEmpty == true) ...[
-            const Divider(height: 24, color: AppColors.glassStroke),
-            _DetailRow(
-              icon: Icons.notes_rounded,
-              label: l10n.noteLabel,
-              value: transaction.note!,
-            ),
-          ],
-          const Divider(height: 24, color: AppColors.glassStroke),
-          _DetailRow(
-            icon: Icons.tag_rounded,
-            label: l10n.transactionIdLabel,
-            value: '#${transaction.id}',
-            isMonospace: true,
-          ),
-        ],
+        children: children,
       ),
     );
   }
@@ -440,23 +510,37 @@ class _DeleteTransactionButton extends StatelessWidget {
     final l10n = context.l10n;
     final customTypography = context.customTypography;
 
-    return OutlinedButton.icon(
-      onPressed: onDeletePressed,
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.semanticRed,
-        side: const BorderSide(color: AppColors.semanticRed),
-        padding: EdgeInsets.symmetric(vertical: 14.h),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value.clamp(0.0, 1.0),
+          child: Transform.scale(
+            scale: 0.94 + (value * 0.06),
+            child: child,
+          ),
+        );
+      },
+      child: OutlinedButton.icon(
+        onPressed: onDeletePressed,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.semanticRed,
+          side: const BorderSide(color: AppColors.semanticRed),
+          padding: EdgeInsets.symmetric(vertical: 14.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
         ),
-      ),
-      icon: Icon(Icons.delete_outline_rounded, size: 20.r),
-      label: Text(
-        l10n.deleteTransaction,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: customTypography.bodyLargeBold.copyWith(
-          color: AppColors.semanticRed,
+        icon: Icon(Icons.delete_outline_rounded, size: 20.r),
+        label: Text(
+          l10n.deleteTransaction,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: customTypography.bodyLargeBold.copyWith(
+            color: AppColors.semanticRed,
+          ),
         ),
       ),
     );
@@ -480,7 +564,7 @@ class _StaggeredEntrance extends StatelessWidget {
       curve: Curves.easeOutCubic,
       builder: (context, value, child) {
         return Opacity(
-          opacity: value,
+          opacity: value.clamp(0.0, 1.0),
           child: Transform.translate(
             offset: Offset(0, (1.0 - value) * 16.h),
             child: child,

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../database/enums/database_enums.dart';
+import '../di/injection.dart';
 import '../extensions/amount_formatting_extensions.dart';
 import '../extensions/context_extensions.dart';
+import '../services/preference_service.dart';
 import '../theme/font_weights.dart';
 
 /// Reusable Widget that displays amounts compactly (K, M, B for >= 100,000)
@@ -10,32 +13,37 @@ import '../theme/font_weights.dart';
 /// Tapping the widget displays a sleek tooltip showing the full exact amount.
 class CompactAmountText extends StatelessWidget {
   final num amount;
-  final String currencySymbol;
+  final String? currencySymbol;
   final TextStyle? style;
   final bool isPrivacyMode;
   final bool showSign;
   final bool? isIncome;
+  final TransactionType? type;
+  final bool compact;
 
   const CompactAmountText({
     super.key,
     required this.amount,
-    required this.currencySymbol,
+    this.currencySymbol,
     this.style,
     this.isPrivacyMode = false,
     this.showSign = false,
     this.isIncome,
+    this.type,
+    this.compact = true,
   });
 
-  void _showFullAmountTooltip(BuildContext context) {
-    if (isPrivacyMode) return;
+  void _showFullAmountTooltip(BuildContext context, String effectiveSymbol) {
+    if (isPrivacyMode || !compact) return;
 
     final colorScheme = context.colorScheme;
     final fullFormatted = amount.formatCurrency(
-      currencySymbol,
+      effectiveSymbol,
       isPrivacyMode: false,
       compact: false,
       showSign: showSign,
       isIncome: isIncome,
+      type: type,
     );
 
     final overlay = Overlay.of(context);
@@ -132,29 +140,42 @@ class CompactAmountText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayText = amount.formatCurrency(
-      currencySymbol,
-      isPrivacyMode: isPrivacyMode,
-      compact: true,
-      showSign: showSign,
-      isIncome: isIncome,
-    );
+    final prefs = getIt<PreferenceService>();
 
-    return GestureDetector(
-      onTap: () => _showFullAmountTooltip(context),
-      behavior: HitTestBehavior.opaque,
-      child: Tooltip(
-        message: isPrivacyMode ? '' : 'Tap to see full amount',
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Text(
-            displayText,
-            style: style,
-            maxLines: 1,
+    return ValueListenableBuilder<String>(
+      valueListenable: prefs.currencySymbolNotifier,
+      builder: (context, activeSymbol, _) {
+        final effectiveSymbol =
+            (currencySymbol != null && currencySymbol!.isNotEmpty)
+                ? currencySymbol!
+                : activeSymbol;
+
+        final displayText = amount.formatCurrency(
+          effectiveSymbol,
+          isPrivacyMode: isPrivacyMode,
+          compact: compact,
+          showSign: showSign,
+          isIncome: isIncome,
+          type: type,
+        );
+
+        return GestureDetector(
+          onTap: compact ? () => _showFullAmountTooltip(context, effectiveSymbol) : null,
+          behavior: HitTestBehavior.opaque,
+          child: Tooltip(
+            message: (!compact || isPrivacyMode) ? '' : 'Tap to see full amount',
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text(
+                displayText,
+                style: style,
+                maxLines: 1,
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

@@ -285,10 +285,12 @@ class _TotalBudgetHealthCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final customTypography = context.customTypography;
     final colorScheme = context.colorScheme;
-    final currencySymbol = getIt<PreferenceService>().currencySymbol;
 
-    final double totalSpent =
-        selectedItem != null ? selectedItem!.spentAmount : budgets.fold(0.0, (sum, b) => sum + b.spentAmount);
+    return ValueListenableBuilder<String>(
+      valueListenable: getIt<PreferenceService>().currencySymbolNotifier,
+      builder: (context, currencySymbol, _) {
+        final double totalSpent =
+            selectedItem != null ? selectedItem!.spentAmount : budgets.fold(0.0, (sum, b) => sum + b.spentAmount);
 
     final double totalTarget =
         selectedItem != null ? selectedItem!.targetAmount : budgets.fold(0.0, (sum, b) => sum + b.targetAmount);
@@ -455,7 +457,9 @@ class _TotalBudgetHealthCard extends StatelessWidget {
         ),
       ),
     );
-  }
+  },
+);
+}
 }
 
 class _BudgetCard extends StatelessWidget {
@@ -533,23 +537,27 @@ class _BudgetCard extends StatelessWidget {
                           color: AppColors.onSurface,
                         ),
                       ),
-                      ValueListenableBuilder<bool>(
-                        valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
-                        builder: (context, isPrivacy, _) {
-                          final symbol = getIt<PreferenceService>().currencySymbol;
-                          final spent = item.spentAmount.formatCurrency(
-                            symbol,
-                            isPrivacyMode: isPrivacy,
-                          );
-                          final target = item.targetAmount.formatCurrency(
-                            symbol,
-                            isPrivacyMode: isPrivacy,
-                          );
-                          return Text(
-                            '$spent / $target',
-                            style: customTypography.labelMediumMono.copyWith(
-                              color: AppColors.outline,
-                            ),
+                      ValueListenableBuilder<String>(
+                        valueListenable: getIt<PreferenceService>().currencySymbolNotifier,
+                        builder: (context, symbol, _) {
+                          return ValueListenableBuilder<bool>(
+                            valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
+                            builder: (context, isPrivacy, _) {
+                              final spent = item.spentAmount.formatCurrency(
+                                symbol,
+                                isPrivacyMode: isPrivacy,
+                              );
+                              final target = item.targetAmount.formatCurrency(
+                                symbol,
+                                isPrivacyMode: isPrivacy,
+                              );
+                              return Text(
+                                '$spent / $target',
+                                style: customTypography.labelMediumMono.copyWith(
+                                  color: AppColors.outline,
+                                ),
+                              );
+                            },
                           );
                         },
                       ),

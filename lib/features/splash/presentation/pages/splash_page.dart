@@ -23,8 +23,7 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage>
-    with SingleTickerProviderStateMixin {
+class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
   late final AnimationController _animController;
   late final Animation<double> _fadeAnimation;
   late final Animation<double> _scaleAnimation;
@@ -63,20 +62,16 @@ class _SplashPageState extends State<SplashPage>
     if (!mounted) return;
 
     final prefs = getIt<PreferenceService>();
-    AppLogger.i(
-        'Splash flow: ${prefs.isOnboardingCompleted} ${prefs.isSecurityPinSet}');
+    AppLogger.i('Splash flow: ${prefs.isOnboardingCompleted} ${prefs.isSecurityPinSet}');
 
     if (!prefs.isOnboardingCompleted) {
-      AppLogger.i(
-          'Splash flow: Onboarding incomplete -> Navigating to OnboardingCarouselRoute');
+      AppLogger.i('Splash flow: Onboarding incomplete -> Navigating to OnboardingCarouselRoute');
       context.router.replace(const OnboardingCarouselRoute());
     } else if (prefs.isSecurityPinSet) {
-      AppLogger.i(
-          'Splash flow: Security PIN set -> Navigating to SecurityVerificationRoute');
+      AppLogger.i('Splash flow: Security PIN set -> Navigating to SecurityVerificationRoute');
       context.router.replace(const SecurityVerificationRoute());
     } else {
-      AppLogger.i(
-          'Splash flow: Onboarding completed -> Navigating to DashboardRoute');
+      AppLogger.i('Splash flow: Onboarding completed -> Navigating to DashboardRoute');
       context.router.replace(const DashboardRoute());
     }
   }
@@ -147,10 +142,8 @@ class _SplashPageState extends State<SplashPage>
                               height: 130.w,
                               borderRadius: BorderRadius.circular(28.r),
                               padding: EdgeInsets.all(20.w),
-                              backgroundColor: AppColors.surfaceLow
-                                  .withAlpha((0.6 * 255).round()),
-                              borderStrokeColor: colorScheme.primary
-                                  .withAlpha((0.3 * 255).round()),
+                              backgroundColor: AppColors.surfaceLow.withAlpha((0.6 * 255).round()),
+                              borderStrokeColor: colorScheme.primary.withAlpha((0.3 * 255).round()),
                               child: Assets.images.expendlyLogo.image(
                                 fit: BoxFit.contain,
                               ),
@@ -158,9 +151,7 @@ class _SplashPageState extends State<SplashPage>
                             verticalMarginLarge,
                             Text(
                               l10n.appName,
-                              style:
-                                  (textTheme.headlineLarge ?? const TextStyle())
-                                      .copyWith(
+                              style: (textTheme.headlineLarge ?? const TextStyle()).copyWith(
                                 color: colorScheme.primary,
                                 letterSpacing: -1.2,
                               ),
@@ -189,31 +180,9 @@ class _SplashPageState extends State<SplashPage>
                             borderRadius: BorderRadius.circular(2.r),
                             child: LinearProgressIndicator(
                               backgroundColor: AppColors.surfaceContainer,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  colorScheme.primary),
+                              valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
                               minHeight: 2.5.h,
                             ),
-                          ),
-                          verticalMarginSmall,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.lock_outline,
-                                size: 14.sp,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              horizontalMarginXSmall,
-                              Text(
-                                l10n.protectedByAes256,
-                                style:
-                                    (textTheme.labelSmall ?? const TextStyle())
-                                        .copyWith(
-                                  color: colorScheme.onSurfaceVariant
-                                      .withAlpha((0.7 * 255).round()),
-                                ),
-                              ),
-                            ],
                           ),
                         ],
                       ),
@@ -226,10 +195,8 @@ class _SplashPageState extends State<SplashPage>
                       children: [
                         Text(
                           l10n.appVersion,
-                          style: (textTheme.labelSmall ?? const TextStyle())
-                              .copyWith(
-                            color: colorScheme.onSurfaceVariant
-                                .withAlpha((0.5 * 255).round()),
+                          style: (textTheme.labelSmall ?? const TextStyle()).copyWith(
+                            color: colorScheme.onSurfaceVariant.withAlpha((0.5 * 255).round()),
                           ),
                         ),
                         horizontalMarginXSmall,
@@ -244,10 +211,8 @@ class _SplashPageState extends State<SplashPage>
                         horizontalMarginXSmall,
                         Text(
                           l10n.offlineEncryption,
-                          style: (textTheme.labelSmall ?? const TextStyle())
-                              .copyWith(
-                            color: colorScheme.onSurfaceVariant
-                                .withAlpha((0.5 * 255).round()),
+                          style: (textTheme.labelSmall ?? const TextStyle()).copyWith(
+                            color: colorScheme.onSurfaceVariant.withAlpha((0.5 * 255).round()),
                           ),
                         ),
                       ],

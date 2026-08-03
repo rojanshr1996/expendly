@@ -104,7 +104,11 @@ class DashboardRecentActivity extends StatelessWidget {
             return Column(
               children: transactions.map((tx) {
                 final iconData = _parseIcon(tx.iconName);
-                final color = _parseColor(tx.colorHex);
+                final color = tx.type == TransactionType.income
+                    ? AppColors.semanticGreen
+                    : tx.type == TransactionType.transfer
+                        ? colorScheme.secondary
+                        : AppColors.semanticRed;
 
                 return Container(
                   margin: EdgeInsets.only(bottom: 12.h),
@@ -112,16 +116,14 @@ class DashboardRecentActivity extends StatelessWidget {
                     onTap: () {
                       final item = TransactionItem(
                         id: tx.id,
-                        type: tx.isIncome
-                            ? TransactionType.income
-                            : TransactionType.expense,
+                        type: tx.type,
                         amount: tx.amount,
                         currencyCode: currencySymbol,
-                        categoryId: 0,
+                        categoryId: tx.categoryId,
                         categoryName: tx.categoryName,
                         categoryIcon: tx.iconName,
                         categoryColorHex: tx.colorHex,
-                        timestamp: DateTime.now(),
+                        timestamp: tx.date,
                         note: tx.title != tx.categoryName ? tx.title : null,
                       );
                       context.router.push(
@@ -158,18 +160,17 @@ class DashboardRecentActivity extends StatelessWidget {
                               children: [
                                 Text(
                                   tx.title,
-                                  style: (textTheme.bodyLarge ?? const TextStyle())
-                                      .copyWith(
+                                  style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(
                                     fontWeight: FontWeights.bold,
                                     color: colorScheme.onSurface,
+                                    fontSize: 14.sp,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   tx.categoryName,
-                                  style: (textTheme.bodyMedium ?? const TextStyle())
-                                      .copyWith(
+                                  style: (textTheme.bodyMedium ?? const TextStyle()).copyWith(
                                     color: colorScheme.onSurfaceVariant,
+                                    fontSize: 12.sp,
                                   ),
                                 ),
                               ],
@@ -185,13 +186,18 @@ class DashboardRecentActivity extends StatelessWidget {
                                 currencySymbol: currencySymbol,
                                 isPrivacyMode: isPrivacyMode,
                                 showSign: true,
-                                isIncome: tx.isIncome,
+                                type: tx.type,
+                                isIncome: tx.type == TransactionType.income
+                                    ? true
+                                    : (tx.type == TransactionType.expense ? false : null),
                                 style: (customTypography.labelMediumMono).copyWith(
                                   fontSize: 14.sp,
                                   fontWeight: FontWeights.bold,
-                                  color: tx.isIncome
+                                  color: tx.type == TransactionType.income
                                       ? AppColors.semanticGreen
-                                      : AppColors.semanticRed,
+                                      : tx.type == TransactionType.transfer
+                                          ? colorScheme.secondary
+                                          : AppColors.semanticRed,
                                 ),
                               ),
                               verticalMarginXXSmall,

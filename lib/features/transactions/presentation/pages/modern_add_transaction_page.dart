@@ -86,29 +86,69 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
           if (tx.paymentMethod != null) {
             _paymentMethodNotifier.value = tx.paymentMethod!;
           }
-          if (tx.note != null) {
-            _noteController.text = tx.note!;
-          }
 
           final allCats = [...expense, ...income];
           CategoryItem? foundCat;
           try {
             foundCat = allCats.firstWhere((c) => c.id == tx.categoryId);
           } catch (_) {
-            foundCat = CategoryItem(
-              id: tx.categoryId,
-              name: tx.categoryName,
-              icon: tx.categoryIcon,
-              colorHex: tx.categoryColorHex,
-              type: tx.type,
-            );
+            if (allCats.isNotEmpty) {
+              foundCat = allCats.first;
+            } else {
+              foundCat = CategoryItem(
+                id: tx.categoryId > 0 ? tx.categoryId : 1,
+                name: tx.categoryName,
+                icon: tx.categoryIcon,
+                colorHex: tx.categoryColorHex,
+                type: tx.type,
+              );
+            }
+          }
+          if (foundCat.id <= 0 && allCats.isNotEmpty) {
+            foundCat = allCats.first;
           }
           _selectedCategoryNotifier.value = foundCat;
+
+          if (tx.type == TransactionType.transfer && tx.note != null) {
+            _populateTransferFieldsFromNote(tx.note!, allCats);
+          } else if (tx.note != null) {
+            _noteController.text = tx.note!;
+          }
         } else if (_expenseCategories.isNotEmpty) {
           _selectedCategoryNotifier.value = _expenseCategories.first;
         }
       }
     } catch (_) {}
+  }
+
+  void _populateTransferFieldsFromNote(String note, List<CategoryItem> allCats) {
+    final feeRegExp = RegExp(r'\(Fee:\s*[^0-9]*([0-9]+(?:\.[0-9]+)?)\)');
+    final feeMatch = feeRegExp.firstMatch(note);
+    if (feeMatch != null && feeMatch.groupCount >= 1) {
+      final feeVal = double.tryParse(feeMatch.group(1)!);
+      if (feeVal != null && feeVal > 0) {
+        _feeController.text = feeVal.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+      }
+    }
+
+    final destRegExp = RegExp(r'Transfer:\s*.*?\s*→\s*([^(|]+)');
+    final destMatch = destRegExp.firstMatch(note);
+    if (destMatch != null && destMatch.groupCount >= 1) {
+      final destName = destMatch.group(1)!.trim();
+      try {
+        _destinationCategoryNotifier.value = allCats.firstWhere(
+          (c) => c.name.toLowerCase() == destName.toLowerCase(),
+        );
+      } catch (_) {}
+    }
+
+    if (note.contains('|')) {
+      _noteController.text = note.split('|').last.trim();
+    } else if (note.startsWith('Transfer:')) {
+      _noteController.text = '';
+    } else {
+      _noteController.text = note;
+    }
   }
 
   @override
@@ -196,9 +236,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                 onPressed: () => context.router.maybePop(),
               ),
               title: Text(
-                widget.initialTransaction != null
-                    ? 'Edit Transaction'
-                    : context.l10n.logTransaction,
+                widget.initialTransaction != null ? 'Edit Transaction' : context.l10n.logTransaction,
                 style: (textTheme.titleLarge ?? const TextStyle()).copyWith(
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -808,7 +846,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                       child: Builder(
                         builder: (blocContext) {
                           return ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               final amount = double.tryParse(_amountStringNotifier.value) ?? 0.0;
                               if (amount <= 0) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -830,6 +868,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 );
                                 return;
                               }
+
+                              final cubit = blocContext.read<TransactionCubit>();
 
                               String? noteText;
                               final baseNote = _noteController.text.trim();
@@ -853,25 +893,113 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   : null;
 
                               if (widget.initialTransaction != null) {
-                                blocContext.read<TransactionCubit>().updateTransaction(
-                                      id: widget.initialTransaction!.id,
-                                      type: _typeNotifier.value,
-                                      amount: amount,
-                                      categoryId: selectedCat.id,
-                                      timestamp: _dateNotifier.value,
-                                      note: noteText,
-                                      paymentMethod: paymentMethod,
-                                    );
+                                final initialTx = widget.initialTransaction!;
+                                await cubit.updateTransaction(
+                                  id: initialTx.id,
+                                  type: _typeNotifier.value,
+                                  amount: amount,
+                                  categoryId: selectedCat.id,
+                                  timestamp: _dateNotifier.value,
+                                  note: noteText,
+                                  paymentMethod: paymentMethod,
+                                );
+
+                                if (_typeNotifier.value == TransactionType.transfer) {
+                                  final feeTx = cubit.allTransactions
+                                      .where(
+                                        (t) =>
+                                            t.type == TransactionType.expense &&
+                                            (t.note?.contains('[Ref: #${initialTx.id}]') == true ||
+                                                (t.note?.startsWith('Transfer Fee') == true &&
+                                                    (t.timestamp.difference(_dateNotifier.value).inSeconds).abs() <
+                                                        60)),
+                                      )
+                                      .firstOrNull;
+
+                                  final destCat = _destinationCategoryNotifier.value;
+                                  final feeNote =
+                                      'Transfer Fee (${selectedCat.name} → ${destCat?.name ?? "Destination"}) [Ref: #${initialTx.id}]';
+
+                                  if (fee != null && fee > 0) {
+                                    if (feeTx != null) {
+                                      await cubit.updateTransaction(
+                                        id: feeTx.id,
+                                        type: TransactionType.expense,
+                                        amount: fee,
+                                        categoryId: selectedCat.id,
+                                        timestamp: _dateNotifier.value,
+                                        note: feeNote,
+                                        paymentMethod: paymentMethod,
+                                      );
+                                    } else {
+                                      await cubit.addTransaction(
+                                        type: TransactionType.expense,
+                                        amount: fee,
+                                        categoryId: selectedCat.id,
+                                        timestamp: _dateNotifier.value,
+                                        note: feeNote,
+                                        paymentMethod: paymentMethod,
+                                      );
+                                    }
+                                  } else if (feeTx != null) {
+                                    await cubit.deleteTransaction(feeTx.id);
+                                  }
+                                } else if (initialTx.type == TransactionType.expense &&
+                                    initialTx.note?.contains('Transfer Fee') == true) {
+                                  final refMatch = RegExp(r'\[Ref:\s*#(\d+)\]').firstMatch(initialTx.note!);
+                                  if (refMatch != null && refMatch.groupCount >= 1) {
+                                    final parentId = int.tryParse(refMatch.group(1)!);
+                                    if (parentId != null) {
+                                      final parentTx = cubit.allTransactions.where((t) => t.id == parentId).firstOrNull;
+                                      if (parentTx != null && parentTx.note != null) {
+                                        final symbol = getIt<PreferenceService>().currencySymbol;
+                                        final updatedNote = parentTx.note!.replaceAll(
+                                          RegExp(r'\(Fee:\s*[^)]+\)'),
+                                          '(Fee: $symbol${amount.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '')})',
+                                        );
+                                        await cubit.updateTransaction(
+                                          id: parentTx.id,
+                                          type: parentTx.type,
+                                          amount: parentTx.amount,
+                                          categoryId: parentTx.categoryId,
+                                          timestamp: parentTx.timestamp,
+                                          note: updatedNote,
+                                          paymentMethod: parentTx.paymentMethod,
+                                        );
+                                      }
+                                    }
+                                  }
+                                }
                               } else {
-                                blocContext.read<TransactionCubit>().addTransaction(
-                                      type: _typeNotifier.value,
-                                      amount: amount,
-                                      categoryId: selectedCat.id,
-                                      timestamp: _dateNotifier.value,
-                                      note: noteText,
-                                      paymentMethod: paymentMethod,
-                                    );
+                                final newId = await cubit.addTransactionAndReturnId(
+                                  type: _typeNotifier.value,
+                                  amount: amount,
+                                  categoryId: selectedCat.id,
+                                  timestamp: _dateNotifier.value,
+                                  note: noteText,
+                                  paymentMethod: paymentMethod,
+                                );
+
+                                if (_typeNotifier.value == TransactionType.transfer && fee != null && fee > 0) {
+                                  final destCat = _destinationCategoryNotifier.value;
+                                  final feeRef = newId != null ? ' [Ref: #$newId]' : '';
+                                  await cubit.addTransaction(
+                                    type: TransactionType.expense,
+                                    amount: fee,
+                                    categoryId: selectedCat.id,
+                                    timestamp: _dateNotifier.value,
+                                    note:
+                                        'Transfer Fee (${selectedCat.name} → ${destCat?.name ?? "Destination"})$feeRef',
+                                    paymentMethod: paymentMethod,
+                                  );
+                                }
                               }
+
+                              cubit.emitActionSuccess(
+                                widget.initialTransaction != null
+                                    ? 'Transaction updated successfully'
+                                    : 'Transaction saved successfully',
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: colorScheme.primary,
@@ -883,9 +1011,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                               elevation: 0,
                             ),
                             child: Text(
-                              widget.initialTransaction != null
-                                  ? 'Update Transaction'
-                                  : context.l10n.saveTransaction,
+                              widget.initialTransaction != null ? 'Update Transaction' : context.l10n.saveTransaction,
                               style: customTypography.bodyLargeBold.copyWith(
                                 color: Colors.black,
                                 fontSize: 18.sp,

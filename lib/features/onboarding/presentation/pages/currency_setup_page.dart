@@ -64,7 +64,7 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
     await prefs.setCurrency(code: selected.code, symbol: selected.symbol);
 
     if (mounted) {
-      context.router.push(const AccountSetupRoute());
+      context.router.push(const OnboardingSecuritySetupRoute());
     }
   }
 

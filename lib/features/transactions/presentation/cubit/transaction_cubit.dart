@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 
 import '../../../../core/database/enums/database_enums.dart';
 import '../../../../core/events/transaction_events.dart';
+import '../../domain/entities/transaction_item.dart';
 import '../../domain/repositories/transaction_repository.dart';
 import 'transaction_state.dart';
 
@@ -15,6 +16,9 @@ class TransactionCubit extends Cubit<TransactionState> {
     TransactionEvents.transactionUpdated.addListener(_onTransactionUpdated);
   }
 
+  List<TransactionItem> get allTransactions =>
+      state is TransactionLoaded ? (state as TransactionLoaded).transactions : const [];
+
   void _onTransactionUpdated() {
     if (!isClosed && !_isPerformingLocalAction) {
       loadTransactions();
@@ -23,21 +27,39 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   @override
   Future<void> close() {
-    TransactionEvents.transactionUpdated
-        .removeListener(_onTransactionUpdated);
+    TransactionEvents.transactionUpdated.removeListener(_onTransactionUpdated);
     return super.close();
   }
 
-  Future<void> loadTransactions() async {
+  Future<void> loadTransactions({bool isSilent = false}) async {
     if (isClosed) return;
-    emit(TransactionLoading());
+    final currentState = state;
+    final currentLoaded = currentState is TransactionLoaded ? currentState : null;
+
+    if (!isSilent && currentLoaded == null) {
+      emit(TransactionLoading());
+    }
+
     try {
       final transactions = await _repository.getAllTransactions();
       if (isClosed) return;
-      emit(TransactionLoaded(transactions: transactions));
+      emit(TransactionLoaded(
+        transactions: transactions,
+        selectedCategoryId: currentLoaded?.selectedCategoryId,
+        selectedType: currentLoaded?.selectedType,
+        searchQuery: currentLoaded?.searchQuery ?? '',
+      ));
     } catch (e) {
       if (isClosed) return;
-      emit(TransactionError(e.toString()));
+      if (currentLoaded == null) {
+        emit(TransactionError(e.toString()));
+      }
+    }
+  }
+
+  void emitActionSuccess(String message) {
+    if (!isClosed) {
+      emit(TransactionActionSuccess(message));
     }
   }
 
@@ -69,6 +91,40 @@ class TransactionCubit extends Cubit<TransactionState> {
     } catch (e) {
       if (isClosed) return;
       emit(TransactionError('Failed to save transaction: ${e.toString()}'));
+    } finally {
+      _isPerformingLocalAction = false;
+    }
+  }
+
+  Future<int?> addTransactionAndReturnId({
+    required TransactionType type,
+    required double amount,
+    required int categoryId,
+    required DateTime timestamp,
+    String? note,
+    PaymentMethod? paymentMethod,
+    String currencyCode = 'USD',
+  }) async {
+    _isPerformingLocalAction = true;
+    try {
+      final newId = await _repository.addTransaction(
+        type: type,
+        amount: amount,
+        categoryId: categoryId,
+        timestamp: timestamp,
+        note: note,
+        paymentMethod: paymentMethod,
+        currencyCode: currencyCode,
+      );
+
+      await loadTransactions();
+      TransactionEvents.notifyUpdated();
+      return newId;
+    } catch (e) {
+      if (!isClosed) {
+        emit(TransactionError('Failed to save transaction: ${e.toString()}'));
+      }
+      return null;
     } finally {
       _isPerformingLocalAction = false;
     }
@@ -112,7 +168,20 @@ class TransactionCubit extends Cubit<TransactionState> {
   Future<void> deleteTransaction(int id) async {
     _isPerformingLocalAction = true;
     try {
+      final targetTx = allTransactions.where((t) => t.id == id).firstOrNull;
       await _repository.deleteTransaction(id);
+
+      if (targetTx?.type == TransactionType.transfer) {
+        final linkedFee = allTransactions
+            .where(
+              (t) => t.type == TransactionType.expense && t.note?.contains('[Ref: #$id]') == true,
+            )
+            .firstOrNull;
+        if (linkedFee != null) {
+          await _repository.deleteTransaction(linkedFee.id);
+        }
+      }
+
       if (isClosed) return;
       emit(const TransactionActionSuccess('Transaction deleted'));
       await loadTransactions();
@@ -133,6 +202,7 @@ class TransactionCubit extends Cubit<TransactionState> {
         transactions: current.transactions,
         searchQuery: query,
         selectedCategoryId: current.selectedCategoryId,
+        selectedType: current.selectedType,
       ));
     }
   }
@@ -145,6 +215,20 @@ class TransactionCubit extends Cubit<TransactionState> {
         transactions: current.transactions,
         searchQuery: current.searchQuery,
         selectedCategoryId: categoryId,
+        selectedType: current.selectedType,
+      ));
+    }
+  }
+
+  void filterType(TransactionType? type) {
+    if (isClosed) return;
+    if (state is TransactionLoaded) {
+      final current = state as TransactionLoaded;
+      emit(TransactionLoaded(
+        transactions: current.transactions,
+        searchQuery: current.searchQuery,
+        selectedCategoryId: current.selectedCategoryId,
+        selectedType: type,
       ));
     }
   }

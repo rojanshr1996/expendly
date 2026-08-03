@@ -9,7 +9,6 @@ class AppRouter extends $AppRouter {
         AutoRoute(page: SplashRoute.page, initial: true),
         AutoRoute(page: OnboardingCarouselRoute.page),
         AutoRoute(page: CurrencySetupRoute.page),
-        AutoRoute(page: AccountSetupRoute.page),
         AutoRoute(page: OnboardingSecuritySetupRoute.page),
         AutoRoute(page: FinalSetupRoute.page),
         AutoRoute(page: SecurityVerificationRoute.page),

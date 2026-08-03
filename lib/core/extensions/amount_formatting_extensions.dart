@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import '../database/enums/database_enums.dart';
+
 /// Extension methods for formatting currency and large amounts.
 /// When an amount is >= 100,000, it formats using compact notation (K, M, B).
 /// Otherwise, it returns standard comma-separated representation.
@@ -45,14 +47,21 @@ extension AmountFormattingExtension on num {
     bool compact = true,
     bool showSign = false,
     bool? isIncome,
+    TransactionType? type,
   }) {
     if (isPrivacyMode) return '$symbol •••••';
 
     final valueString = compact ? toCompactAmount() : toFullFormattedAmount();
 
     String sign = '';
-    if (showSign && isIncome != null) {
-      sign = isIncome ? '+' : '-';
+    if (showSign) {
+      if (type == TransactionType.transfer) {
+        sign = '';
+      } else if (type == TransactionType.income || (type == null && isIncome == true)) {
+        sign = '+';
+      } else if (type == TransactionType.expense || (type == null && isIncome == false)) {
+        sign = '-';
+      }
     } else if (this < 0) {
       sign = '-';
     }
@@ -60,3 +69,4 @@ extension AmountFormattingExtension on num {
     return '$sign$symbol$valueString';
   }
 }
+

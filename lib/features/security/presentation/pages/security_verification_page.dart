@@ -54,17 +54,6 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
       parent: _successController,
       curve: Curves.easeOutCubic,
     );
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkAndAutoTriggerBiometrics();
-    });
-  }
-
-  void _checkAndAutoTriggerBiometrics() async {
-    final prefs = getIt<PreferenceService>();
-    if (prefs.isBiometricsEnabled) {
-      _onBiometricsPressed(autoTrigger: true);
-    }
   }
 
   @override
@@ -120,7 +109,7 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
     }
   }
 
-  void _onBiometricsPressed({bool autoTrigger = false}) async {
+  Future<void> _onBiometricsPressed() async {
     if (_isSuccessNotifier.value) return;
     HapticFeedback.lightImpact();
     if (!mounted) return;
@@ -132,7 +121,7 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
     final isAvailable = await bioService.isBiometricAvailable();
 
     if (!isAvailable) {
-      if (!autoTrigger && mounted) {
+      if (mounted) {
         StatusComponents.showToast(
           context,
           message: notAvailableMsg,
@@ -150,7 +139,7 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
       if (mounted) {
         await _handleSuccess();
       }
-    } else if (!autoTrigger && mounted) {
+    } else if (mounted) {
       StatusComponents.showToast(
         context,
         message: failedMsg,

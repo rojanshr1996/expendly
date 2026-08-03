@@ -1,4 +1,7 @@
 import 'package:expendly/core/config/app_config.dart';
+import 'package:expendly/core/di/injection.dart';
+import 'package:expendly/core/services/preference_service.dart';
+import 'package:expendly/core/services/secure_storage_service.dart';
 import 'package:expendly/core/theme/app_theme.dart';
 import 'package:expendly/core/widgets/app_button.dart';
 import 'package:expendly/features/dashboard/domain/entities/financial_summary.dart';
@@ -6,11 +9,25 @@ import 'package:expendly/features/dashboard/presentation/widgets/dashboard_bento
 import 'package:expendly/features/dashboard/presentation/widgets/dashboard_header.dart';
 import 'package:expendly/features/dashboard/presentation/widgets/dashboard_recent_activity.dart';
 import 'package:expendly/features/dashboard/presentation/widgets/empty_dashboard_view.dart';
+import 'package:expendly/features/profile/domain/entities/user_profile.dart';
+import 'package:expendly/features/profile/domain/repositories/profile_repository.dart';
+import 'package:expendly/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:expendly/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+/// Stand-in for the real repository so [ProfileCubit] can be registered without
+/// touching drift. Returning `null` leaves the cubit in [ProfileInitial], which
+/// makes [DashboardHeader] fall back to the localized app name.
+class _FakeProfileRepository implements ProfileRepository {
+  @override
+  Future<UserProfile?> getProfile() async => null;
+
+  @override
+  Future<UserProfile> saveProfile(UserProfile profile) async => profile;
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +39,34 @@ void main() {
         appName: 'Expendly Dev',
       ),
     );
+
+    // DashboardHeader resolves ProfileCubit from the service locator, and
+    // CompactAmountText resolves PreferenceService for the active currency
+    // symbol, so both must be registered for these widgets to build.
+    if (!getIt.isRegistered<SecureStorageService>()) {
+      getIt.registerLazySingleton<SecureStorageService>(
+        () => SecureStorageService(),
+      );
+    }
+    if (!getIt.isRegistered<PreferenceService>()) {
+      getIt.registerLazySingleton<PreferenceService>(
+        () => PreferenceService(getIt<SecureStorageService>()),
+      );
+    }
+    if (!getIt.isRegistered<ProfileRepository>()) {
+      getIt.registerLazySingleton<ProfileRepository>(
+        () => _FakeProfileRepository(),
+      );
+    }
+    if (!getIt.isRegistered<ProfileCubit>()) {
+      getIt.registerLazySingleton<ProfileCubit>(
+        () => ProfileCubit(getIt<ProfileRepository>()),
+      );
+    }
+  });
+
+  tearDownAll(() async {
+    await getIt.reset();
   });
 
   Widget createTestableWidget(Widget child) {
