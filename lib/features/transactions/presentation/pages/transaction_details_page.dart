@@ -245,7 +245,9 @@ class _HeroHeaderCard extends StatelessWidget {
               );
             },
             child: Text(
-              transaction.categoryName,
+              transaction.type == TransactionType.transfer
+                  ? context.l10n.transfer
+                  : transaction.categoryName,
               style: customTypography.bodyLargeBold.copyWith(
                 color: colorScheme.onSurface,
               ),
@@ -392,11 +394,12 @@ class _MetadataDetailsCard extends StatelessWidget {
         value: formattedDateTime,
         isMonospace: true,
       ),
-      _DetailRow(
-        icon: Icons.category_outlined,
-        label: l10n.categoryLabel,
-        value: transaction.categoryName,
-      ),
+      if (transaction.type != TransactionType.transfer)
+        _DetailRow(
+          icon: Icons.category_outlined,
+          label: l10n.categoryLabel,
+          value: transaction.categoryName,
+        ),
       if (transaction.paymentMethod != null)
         _DetailRow(
           icon: Icons.account_balance_wallet_outlined,

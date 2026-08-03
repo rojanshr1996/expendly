@@ -211,7 +211,7 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                       crossAxisCount: 3,
                       crossAxisSpacing: 10.w,
                       mainAxisSpacing: 10.h,
-                      childAspectRatio: 0.78,
+                      childAspectRatio: 1.05,
                     ),
                     itemCount: filtered.length +
                         (widget.allowOverallLimitOption ? 1 : 0),
@@ -223,7 +223,8 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                         return GestureDetector(
                           onTap: () => Navigator.pop(context, null),
                           child: GlassContainer(
-                            padding: EdgeInsets.all(8.w),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6.w, vertical: 8.h),
                             borderStrokeColor: isOverallSelected
                                 ? colorScheme.primary
                                 : colorScheme.outlineVariant,
@@ -236,7 +237,7 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Container(
-                                  padding: EdgeInsets.all(8.w),
+                                  padding: EdgeInsets.all(6.w),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: colorScheme.primary
@@ -280,7 +281,8 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                       return GestureDetector(
                         onTap: () => Navigator.pop(context, cat),
                         child: GlassContainer(
-                          padding: EdgeInsets.all(8.w),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 6.w, vertical: 8.h),
                           borderStrokeColor: isSelected
                               ? colorScheme.primary
                               : colorScheme.outlineVariant,
@@ -293,7 +295,7 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Container(
-                                padding: EdgeInsets.all(8.w),
+                                padding: EdgeInsets.all(6.w),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: color.withAlpha((0.2 * 255).round()),

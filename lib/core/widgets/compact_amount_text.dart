@@ -20,6 +20,7 @@ class CompactAmountText extends StatelessWidget {
   final bool? isIncome;
   final TransactionType? type;
   final bool compact;
+  final bool animate;
 
   const CompactAmountText({
     super.key,
@@ -31,6 +32,7 @@ class CompactAmountText extends StatelessWidget {
     this.isIncome,
     this.type,
     this.compact = true,
+    this.animate = true,
   });
 
   void _showFullAmountTooltip(BuildContext context, String effectiveSymbol) {
@@ -152,6 +154,46 @@ class CompactAmountText extends StatelessWidget {
             (currencySymbol != null && currencySymbol!.isNotEmpty)
                 ? currencySymbol!
                 : activeSymbol;
+
+        if (animate && !isPrivacyMode) {
+          return TweenAnimationBuilder<double>(
+            key: ValueKey('compact_${amount}_${compact}_${showSign}_$type'),
+            tween: Tween<double>(begin: 0.0, end: amount.toDouble()),
+            duration: const Duration(milliseconds: 750),
+            curve: Curves.easeOutCubic,
+            builder: (context, animVal, _) {
+              final displayText = animVal.formatCurrency(
+                effectiveSymbol,
+                isPrivacyMode: false,
+                compact: compact,
+                showSign: showSign,
+                isIncome: isIncome,
+                type: type,
+              );
+
+              return GestureDetector(
+                onTap: compact
+                    ? () => _showFullAmountTooltip(context, effectiveSymbol)
+                    : null,
+                behavior: HitTestBehavior.opaque,
+                child: Tooltip(
+                  message: (!compact || isPrivacyMode)
+                      ? ''
+                      : 'Tap to see full amount',
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.center,
+                    child: Text(
+                      displayText,
+                      style: style,
+                      maxLines: 1,
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        }
 
         final displayText = amount.formatCurrency(
           effectiveSymbol,

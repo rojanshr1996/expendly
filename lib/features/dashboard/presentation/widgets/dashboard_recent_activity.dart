@@ -103,7 +103,9 @@ class DashboardRecentActivity extends StatelessWidget {
           builder: (context, isPrivacyMode, _) {
             return Column(
               children: transactions.map((tx) {
-                final iconData = _parseIcon(tx.iconName);
+                final iconData = tx.type == TransactionType.transfer
+                    ? Icons.swap_horiz_rounded
+                    : _parseIcon(tx.iconName);
                 final color = tx.type == TransactionType.income
                     ? AppColors.semanticGreen
                     : tx.type == TransactionType.transfer
@@ -168,15 +170,16 @@ class DashboardRecentActivity extends StatelessWidget {
                                     fontSize: 14.sp,
                                   ),
                                 ),
-                                Text(
-                                  tx.categoryName,
-                                  style: (textTheme.bodyMedium ??
-                                          const TextStyle())
-                                      .copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                    fontSize: 12.sp,
+                                if (tx.type != TransactionType.transfer)
+                                  Text(
+                                    tx.categoryName,
+                                    style: (textTheme.bodyMedium ??
+                                            const TextStyle())
+                                        .copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                      fontSize: 12.sp,
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                           ),

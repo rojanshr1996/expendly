@@ -36,12 +36,12 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
       ValueNotifier<String>('0');
   final ValueNotifier<CategoryItem?> _selectedCategoryNotifier =
       ValueNotifier<CategoryItem?>(null);
-  final ValueNotifier<CategoryItem?> _destinationCategoryNotifier =
-      ValueNotifier<CategoryItem?>(null);
+  final ValueNotifier<PaymentMethod> _destinationPaymentMethodNotifier =
+      ValueNotifier<PaymentMethod>(PaymentMethod.account);
   final ValueNotifier<DateTime> _dateNotifier =
       ValueNotifier<DateTime>(DateTime.now());
   final ValueNotifier<PaymentMethod> _paymentMethodNotifier =
-      ValueNotifier<PaymentMethod>(PaymentMethod.card);
+      ValueNotifier<PaymentMethod>(PaymentMethod.cash);
   final TextEditingController _noteController = TextEditingController();
   final TextEditingController _feeController = TextEditingController();
 
@@ -118,7 +118,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
           _selectedCategoryNotifier.value = foundCat;
 
           if (tx.type == TransactionType.transfer && tx.note != null) {
-            _populateTransferFieldsFromNote(tx.note!, allCats);
+            _populateTransferFieldsFromNote(tx.note!);
           } else if (tx.note != null) {
             _noteController.text = tx.note!;
           }
@@ -129,8 +129,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
     } catch (_) {}
   }
 
-  void _populateTransferFieldsFromNote(
-      String note, List<CategoryItem> allCats) {
+  void _populateTransferFieldsFromNote(String note) {
     final feeRegExp = RegExp(r'\(Fee:\s*[^0-9]*([0-9]+(?:\.[0-9]+)?)\)');
     final feeMatch = feeRegExp.firstMatch(note);
     if (feeMatch != null && feeMatch.groupCount >= 1) {
@@ -141,15 +140,15 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
       }
     }
 
-    final destRegExp = RegExp(r'Transfer:\s*.*?\s*→\s*([^(|]+)');
-    final destMatch = destRegExp.firstMatch(note);
-    if (destMatch != null && destMatch.groupCount >= 1) {
-      final destName = destMatch.group(1)!.trim();
-      try {
-        _destinationCategoryNotifier.value = allCats.firstWhere(
-          (c) => c.name.toLowerCase() == destName.toLowerCase(),
-        );
-      } catch (_) {}
+    final transferRegExp = RegExp(r'Transfer:\s*([^(|→]+)\s*→\s*([^(|]+)');
+    final transferMatch = transferRegExp.firstMatch(note);
+    if (transferMatch != null && transferMatch.groupCount >= 2) {
+      final fromStr = transferMatch.group(1)!.trim();
+      final toStr = transferMatch.group(2)!.trim();
+      _paymentMethodNotifier.value =
+          _matchPaymentMethod(fromStr, fallback: PaymentMethod.cash);
+      _destinationPaymentMethodNotifier.value =
+          _matchPaymentMethod(toStr, fallback: PaymentMethod.account);
     }
 
     if (note.contains('|')) {
@@ -161,12 +160,35 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
     }
   }
 
+  PaymentMethod _matchPaymentMethod(String str,
+      {required PaymentMethod fallback}) {
+    final lower = str.toLowerCase();
+    if (lower.contains('card') || lower.contains('credit'))
+      return PaymentMethod.card;
+    if (lower.contains('cash') || lower.contains('wallet'))
+      return PaymentMethod.cash;
+    if (lower.contains('account') || lower.contains('bank'))
+      return PaymentMethod.account;
+    return fallback;
+  }
+
+  String _formatPaymentMethodName(BuildContext context, PaymentMethod method) {
+    switch (method) {
+      case PaymentMethod.card:
+        return context.l10n.paymentCard;
+      case PaymentMethod.cash:
+        return context.l10n.paymentCash;
+      case PaymentMethod.account:
+        return context.l10n.paymentAccount;
+    }
+  }
+
   @override
   void dispose() {
     _typeNotifier.dispose();
     _amountStringNotifier.dispose();
     _selectedCategoryNotifier.dispose();
-    _destinationCategoryNotifier.dispose();
+    _destinationPaymentMethodNotifier.dispose();
     _dateNotifier.dispose();
     _paymentMethodNotifier.dispose();
     _noteController.dispose();
@@ -267,141 +289,93 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                   ValueListenableBuilder<TransactionType>(
                     valueListenable: _typeNotifier,
                     builder: (context, type, _) {
+                      final tabs = [
+                        {
+                          'type': TransactionType.expense,
+                          'label': context.l10n.expense,
+                          'activeColor': colorScheme.error,
+                          'onActiveColor': colorScheme.onError,
+                        },
+                        {
+                          'type': TransactionType.income,
+                          'label': context.l10n.income,
+                          'activeColor': colorScheme.primary,
+                          'onActiveColor': colorScheme.onPrimary,
+                        },
+                        {
+                          'type': TransactionType.transfer,
+                          'label': context.l10n.transfer,
+                          'activeColor': colorScheme.secondary,
+                          'onActiveColor': colorScheme.onSecondary,
+                        },
+                      ];
+
                       return Container(
                         margin: horizontalPaddingLarge,
-                        padding: allXXSmall,
+                        padding: EdgeInsets.all(4.w),
                         decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(16.r),
+                          color: colorScheme.surfaceContainerLow,
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(color: colorScheme.outlineVariant),
                         ),
                         child: Row(
-                          children: [
-                            // Expense Tab
-                            Expanded(
+                          children: tabs.map((t) {
+                            final tabType = t['type'] as TransactionType;
+                            final isSelected = type == tabType;
+                            final activeColor = t['activeColor'] as Color;
+                            final onActiveColor = t['onActiveColor'] as Color;
+
+                            return Expanded(
                               child: GestureDetector(
                                 onTap: () {
-                                  _typeNotifier.value = TransactionType.expense;
-                                  if (_expenseCategories.isNotEmpty) {
-                                    _selectedCategoryNotifier.value =
-                                        _expenseCategories.first;
+                                  _typeNotifier.value = tabType;
+                                  if (tabType == TransactionType.expense) {
+                                    if (_expenseCategories.isNotEmpty) {
+                                      _selectedCategoryNotifier.value =
+                                          _expenseCategories.first;
+                                    }
+                                  } else if (tabType ==
+                                      TransactionType.income) {
+                                    if (_incomeCategories.isNotEmpty) {
+                                      _selectedCategoryNotifier.value =
+                                          _incomeCategories.first;
+                                    }
+                                  } else if (tabType ==
+                                      TransactionType.transfer) {
+                                    _paymentMethodNotifier.value =
+                                        PaymentMethod.cash;
+                                    _destinationPaymentMethodNotifier.value =
+                                        PaymentMethod.account;
                                   }
                                 },
                                 child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  margin: horizontalPaddingTiny,
-                                  padding: verticalPaddingSmall,
+                                  duration: const Duration(milliseconds: 250),
+                                  curve: Curves.easeInOut,
+                                  padding: EdgeInsets.symmetric(vertical: 8.h),
                                   decoration: BoxDecoration(
-                                    color: type == TransactionType.expense
-                                        ? colorScheme.error
-                                            .withAlpha((0.2 * 255).round())
+                                    color: isSelected
+                                        ? activeColor
                                         : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    border: type == TransactionType.expense
-                                        ? Border.all(
-                                            color: colorScheme.error,
-                                            width: 1.5)
-                                        : null,
+                                    borderRadius: BorderRadius.circular(8.r),
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      context.l10n.expense,
-                                      style: customTypography.bodyLargeBold
-                                          .copyWith(
-                                        color: type == TransactionType.expense
-                                            ? colorScheme.error
-                                            : colorScheme.outline,
-                                      ),
+                                  child: Text(
+                                    t['label'] as String,
+                                    textAlign: TextAlign.center,
+                                    style: customTypography.labelMediumMono
+                                        .copyWith(
+                                      color: isSelected
+                                          ? onActiveColor
+                                          : colorScheme.onSurfaceVariant,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                      fontSize: 12.sp,
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            // Income Tab
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  _typeNotifier.value = TransactionType.income;
-                                  if (_incomeCategories.isNotEmpty) {
-                                    _selectedCategoryNotifier.value =
-                                        _incomeCategories.first;
-                                  }
-                                },
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  margin: horizontalPaddingTiny,
-                                  padding: verticalPaddingSmall,
-                                  decoration: BoxDecoration(
-                                    color: type == TransactionType.income
-                                        ? colorScheme.primary
-                                            .withAlpha((0.2 * 255).round())
-                                        : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    border: type == TransactionType.income
-                                        ? Border.all(
-                                            color: colorScheme.primary,
-                                            width: 1.5)
-                                        : null,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      context.l10n.income,
-                                      style: customTypography.bodyLargeBold
-                                          .copyWith(
-                                        color: type == TransactionType.income
-                                            ? colorScheme.primary
-                                            : colorScheme.outline,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Transfer Tab
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  _typeNotifier.value =
-                                      TransactionType.transfer;
-                                  if (_expenseCategories.isNotEmpty) {
-                                    _selectedCategoryNotifier.value =
-                                        _expenseCategories.first;
-                                  }
-                                  if (_incomeCategories.isNotEmpty) {
-                                    _destinationCategoryNotifier.value =
-                                        _incomeCategories.first;
-                                  }
-                                },
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  margin: horizontalPaddingTiny,
-                                  padding: verticalPaddingSmall,
-                                  decoration: BoxDecoration(
-                                    color: type == TransactionType.transfer
-                                        ? colorScheme.secondary
-                                            .withAlpha((0.2 * 255).round())
-                                        : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    border: type == TransactionType.transfer
-                                        ? Border.all(
-                                            color: colorScheme.secondary,
-                                            width: 1.5)
-                                        : null,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      context.l10n.transfer,
-                                      style: customTypography.bodyLargeBold
-                                          .copyWith(
-                                        color: type == TransactionType.transfer
-                                            ? colorScheme.secondary
-                                            : colorScheme.outline,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                            );
+                          }).toList(),
                         ),
                       );
                     },
@@ -432,6 +406,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                     customTypography.labelMediumMono.copyWith(
                                   color: colorScheme.outline,
                                   letterSpacing: 1.5,
+                                  fontSize: 11.sp,
                                 ),
                               ),
                               verticalMarginXSmall,
@@ -442,7 +417,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   style: customTypography.headlineLargeMonoBold
                                       .copyWith(
                                     color: color,
-                                    fontSize: 42.sp,
+                                    fontSize: 34.sp,
                                   ),
                                 ),
                               ),
@@ -465,157 +440,114 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // From Account / Category
+                              // From Payment Method (Source)
                               Text(
                                 context.l10n.fromAccount,
                                 style:
                                     customTypography.labelMediumMono.copyWith(
                                   color: colorScheme.outline,
                                   letterSpacing: 1.2,
+                                  fontSize: 11.sp,
                                 ),
                               ),
                               verticalMarginXSmall,
-                              ValueListenableBuilder<CategoryItem?>(
-                                valueListenable: _selectedCategoryNotifier,
-                                builder: (context, fromCat, _) {
-                                  final name = fromCat?.name ?? 'Source';
-                                  final catColor = _parseColor(
-                                      fromCat?.colorHex ?? '#57F1DB',
-                                      colorScheme.primary);
-                                  final iconData =
-                                      _getIconData(fromCat?.icon ?? 'category');
-
-                                  return InkWell(
-                                    onTap: () async {
-                                      final picked =
-                                          await CategoryPickerSheet.show(
-                                        context: context,
-                                        categories:
-                                            _expenseCategories.isNotEmpty
-                                                ? _expenseCategories
-                                                : _incomeCategories,
-                                        selectedCategory: fromCat,
-                                        initialType: TransactionType.expense,
-                                      );
-                                      if (picked != null) {
-                                        _selectedCategoryNotifier.value =
-                                            picked;
-                                      }
-                                    },
-                                    borderRadius: BorderRadius.circular(16.r),
-                                    child: Container(
-                                      height: 52.h,
-                                      padding: horizontalPaddingMedium,
-                                      decoration: BoxDecoration(
-                                        color: colorScheme.surfaceContainerHigh,
-                                        borderRadius:
-                                            BorderRadius.circular(16.r),
-                                        border: Border.all(
-                                            color: colorScheme.outlineVariant),
+                              ValueListenableBuilder<PaymentMethod>(
+                                valueListenable: _paymentMethodNotifier,
+                                builder: (context, fromMethod, _) {
+                                  return Row(
+                                    children: [
+                                      _buildPaymentMethodOption(
+                                        context,
+                                        method: PaymentMethod.cash,
+                                        label: context.l10n.paymentCash,
+                                        icon: Icons.payments_rounded,
+                                        isSelected:
+                                            fromMethod == PaymentMethod.cash,
+                                        onSelect: (m) =>
+                                            _paymentMethodNotifier.value = m,
                                       ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Icon(iconData,
-                                                  color: catColor, size: 20.sp),
-                                              horizontalMarginSmall,
-                                              Text(
-                                                name,
-                                                style: customTypography
-                                                    .bodyLargeBold
-                                                    .copyWith(
-                                                        color: colorScheme
-                                                            .onSurface),
-                                              ),
-                                            ],
-                                          ),
-                                          Icon(Icons.unfold_more_rounded,
-                                              color: colorScheme.outline,
-                                              size: 20.sp),
-                                        ],
+                                      horizontalMarginXSmall,
+                                      _buildPaymentMethodOption(
+                                        context,
+                                        method: PaymentMethod.account,
+                                        label: context.l10n.paymentAccount,
+                                        icon: Icons.account_balance_rounded,
+                                        isSelected:
+                                            fromMethod == PaymentMethod.account,
+                                        onSelect: (m) =>
+                                            _paymentMethodNotifier.value = m,
                                       ),
-                                    ),
+                                      horizontalMarginXSmall,
+                                      _buildPaymentMethodOption(
+                                        context,
+                                        method: PaymentMethod.card,
+                                        label: context.l10n.paymentCard,
+                                        icon: Icons.credit_card_rounded,
+                                        isSelected:
+                                            fromMethod == PaymentMethod.card,
+                                        onSelect: (m) =>
+                                            _paymentMethodNotifier.value = m,
+                                      ),
+                                    ],
                                   );
                                 },
                               ),
 
                               verticalMarginMedium,
 
-                              // To Account / Category
+                              // To Payment Method (Destination)
                               Text(
                                 context.l10n.toAccount,
                                 style:
                                     customTypography.labelMediumMono.copyWith(
                                   color: colorScheme.outline,
                                   letterSpacing: 1.2,
+                                  fontSize: 11.sp,
                                 ),
                               ),
                               verticalMarginXSmall,
-                              ValueListenableBuilder<CategoryItem?>(
-                                valueListenable: _destinationCategoryNotifier,
-                                builder: (context, toCat, _) {
-                                  final name = toCat?.name ?? 'Destination';
-                                  final catColor = _parseColor(
-                                      toCat?.colorHex ?? '#34D399',
-                                      colorScheme.secondary);
-                                  final iconData =
-                                      _getIconData(toCat?.icon ?? 'category');
-
-                                  return InkWell(
-                                    onTap: () async {
-                                      final picked =
-                                          await CategoryPickerSheet.show(
-                                        context: context,
-                                        categories: _incomeCategories.isNotEmpty
-                                            ? _incomeCategories
-                                            : _expenseCategories,
-                                        selectedCategory: toCat,
-                                        initialType: TransactionType.income,
-                                      );
-                                      if (picked != null) {
-                                        _destinationCategoryNotifier.value =
-                                            picked;
-                                      }
-                                    },
-                                    borderRadius: BorderRadius.circular(16.r),
-                                    child: Container(
-                                      height: 52.h,
-                                      padding: horizontalPaddingMedium,
-                                      decoration: BoxDecoration(
-                                        color: colorScheme.surfaceContainerHigh,
-                                        borderRadius:
-                                            BorderRadius.circular(16.r),
-                                        border: Border.all(
-                                            color: colorScheme.outlineVariant),
+                              ValueListenableBuilder<PaymentMethod>(
+                                valueListenable:
+                                    _destinationPaymentMethodNotifier,
+                                builder: (context, toMethod, _) {
+                                  return Row(
+                                    children: [
+                                      _buildPaymentMethodOption(
+                                        context,
+                                        method: PaymentMethod.cash,
+                                        label: context.l10n.paymentCash,
+                                        icon: Icons.payments_rounded,
+                                        isSelected:
+                                            toMethod == PaymentMethod.cash,
+                                        onSelect: (m) =>
+                                            _destinationPaymentMethodNotifier
+                                                .value = m,
                                       ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Icon(iconData,
-                                                  color: catColor, size: 20.sp),
-                                              horizontalMarginSmall,
-                                              Text(
-                                                name,
-                                                style: customTypography
-                                                    .bodyLargeBold
-                                                    .copyWith(
-                                                        color: colorScheme
-                                                            .onSurface),
-                                              ),
-                                            ],
-                                          ),
-                                          Icon(Icons.unfold_more_rounded,
-                                              color: colorScheme.outline,
-                                              size: 20.sp),
-                                        ],
+                                      horizontalMarginXSmall,
+                                      _buildPaymentMethodOption(
+                                        context,
+                                        method: PaymentMethod.account,
+                                        label: context.l10n.paymentAccount,
+                                        icon: Icons.account_balance_rounded,
+                                        isSelected:
+                                            toMethod == PaymentMethod.account,
+                                        onSelect: (m) =>
+                                            _destinationPaymentMethodNotifier
+                                                .value = m,
                                       ),
-                                    ),
+                                      horizontalMarginXSmall,
+                                      _buildPaymentMethodOption(
+                                        context,
+                                        method: PaymentMethod.card,
+                                        label: context.l10n.paymentCard,
+                                        icon: Icons.credit_card_rounded,
+                                        isSelected:
+                                            toMethod == PaymentMethod.card,
+                                        onSelect: (m) =>
+                                            _destinationPaymentMethodNotifier
+                                                .value = m,
+                                      ),
+                                    ],
                                   );
                                 },
                               ),
@@ -629,6 +561,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                     customTypography.labelMediumMono.copyWith(
                                   color: colorScheme.outline,
                                   letterSpacing: 1.2,
+                                  fontSize: 11.sp,
                                 ),
                               ),
                               verticalMarginXSmall,
@@ -636,8 +569,18 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 controller: _feeController,
                                 hintText: 'e.g. 5.00',
                                 isAmount: true,
+                                style:
+                                    customTypography.labelMediumMono.copyWith(
+                                  color: colorScheme.onSurface,
+                                  fontSize: 13.sp,
+                                ),
+                                hintStyle:
+                                    customTypography.labelMediumMono.copyWith(
+                                  color: colorScheme.outline,
+                                  fontSize: 12.sp,
+                                ),
                                 fillColor: colorScheme.surfaceContainerHigh,
-                                borderRadius: BorderRadius.circular(16.r),
+                                borderRadius: BorderRadius.circular(14.r),
                               ),
                             ],
                           ),
@@ -659,6 +602,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                               style: customTypography.labelMediumMono.copyWith(
                                 color: colorScheme.outline,
                                 letterSpacing: 1.2,
+                                fontSize: 11.sp,
                               ),
                             ),
                             verticalMarginXSmall,
@@ -686,13 +630,13 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                       _selectedCategoryNotifier.value = picked;
                                     }
                                   },
-                                  borderRadius: BorderRadius.circular(16.r),
+                                  borderRadius: BorderRadius.circular(14.r),
                                   child: Container(
-                                    height: 56.h,
+                                    height: 48.h,
                                     padding: horizontalPaddingMedium,
                                     decoration: BoxDecoration(
                                       color: colorScheme.surfaceContainerHigh,
-                                      borderRadius: BorderRadius.circular(16.r),
+                                      borderRadius: BorderRadius.circular(14.r),
                                       border: Border.all(
                                         color: colorScheme.outlineVariant,
                                         width: 1.0,
@@ -710,21 +654,22 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                                 color: catColor.withAlpha(
                                                     (0.2 * 255).round()),
                                                 borderRadius:
-                                                    BorderRadius.circular(10.r),
+                                                    BorderRadius.circular(8.r),
                                               ),
                                               child: Icon(
                                                 iconData,
                                                 color: catColor,
-                                                size: 20.sp,
+                                                size: 18.sp,
                                               ),
                                             ),
                                             horizontalMarginSmall,
                                             Text(
                                               catName,
-                                              style: customTypography
-                                                  .bodyLargeBold
+                                              style: customTypography.bodyMedium
                                                   .copyWith(
+                                                fontWeight: FontWeight.bold,
                                                 color: colorScheme.onSurface,
+                                                fontSize: 13.5.sp,
                                               ),
                                             ),
                                           ],
@@ -732,7 +677,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                         Icon(
                                           Icons.unfold_more_rounded,
                                           color: colorScheme.outline,
-                                          size: 22.sp,
+                                          size: 18.sp,
                                         ),
                                       ],
                                     ),
@@ -746,12 +691,11 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                     },
                   ),
 
-                  // Payment Method Selection (Expense & Transfer)
+                  // Payment Method Selection (Expense only - Transfer uses From/To Payment Types above)
                   ValueListenableBuilder<TransactionType>(
                     valueListenable: _typeNotifier,
                     builder: (context, currentType, _) {
-                      if (currentType != TransactionType.expense &&
-                          currentType != TransactionType.transfer) {
+                      if (currentType != TransactionType.expense) {
                         return const SizedBox.shrink();
                       }
                       return Padding(
@@ -765,6 +709,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                               style: customTypography.labelMediumMono.copyWith(
                                 color: colorScheme.outline,
                                 letterSpacing: 1.2,
+                                fontSize: 11.sp,
                               ),
                             ),
                             verticalMarginXSmall,
@@ -775,22 +720,13 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   children: [
                                     _buildPaymentMethodOption(
                                       context,
-                                      method: PaymentMethod.card,
-                                      label: context.l10n.paymentCard,
-                                      icon: Icons.credit_card_rounded,
-                                      isSelected:
-                                          selectedMethod == PaymentMethod.card,
-                                    ),
-                                    horizontalMarginSmall,
-                                    _buildPaymentMethodOption(
-                                      context,
                                       method: PaymentMethod.cash,
                                       label: context.l10n.paymentCash,
                                       icon: Icons.payments_rounded,
                                       isSelected:
                                           selectedMethod == PaymentMethod.cash,
                                     ),
-                                    horizontalMarginSmall,
+                                    horizontalMarginXSmall,
                                     _buildPaymentMethodOption(
                                       context,
                                       method: PaymentMethod.account,
@@ -798,6 +734,15 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                       icon: Icons.account_balance_rounded,
                                       isSelected: selectedMethod ==
                                           PaymentMethod.account,
+                                    ),
+                                    horizontalMarginXSmall,
+                                    _buildPaymentMethodOption(
+                                      context,
+                                      method: PaymentMethod.card,
+                                      label: context.l10n.paymentCard,
+                                      icon: Icons.credit_card_rounded,
+                                      isSelected:
+                                          selectedMethod == PaymentMethod.card,
                                     ),
                                   ],
                                 );
@@ -811,7 +756,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
 
                   verticalMargin20,
 
-                  // Note Input & Date Picker (Consistent height & 16px radius)
+                  // Note Input & Date Picker (Consistent height & 14px radius)
                   Padding(
                     padding: horizontalPaddingLarge,
                     child: IntrinsicHeight(
@@ -834,13 +779,13 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                     _dateNotifier.value = picked;
                                   }
                                 },
-                                borderRadius: BorderRadius.circular(16.r),
+                                borderRadius: BorderRadius.circular(14.r),
                                 child: Container(
                                   padding: EdgeInsets.symmetric(
-                                      horizontal: 14.w, vertical: 12.h),
+                                      horizontal: 12.w, vertical: 10.h),
                                   decoration: BoxDecoration(
                                     color: colorScheme.surfaceContainerHigh,
-                                    borderRadius: BorderRadius.circular(16.r),
+                                    borderRadius: BorderRadius.circular(14.r),
                                     border: Border.all(
                                       color: colorScheme.outlineVariant,
                                       width: 1.0,
@@ -851,7 +796,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                     children: [
                                       Icon(
                                         Icons.calendar_today_rounded,
-                                        size: 18.sp,
+                                        size: 16.sp,
                                         color: colorScheme.primary,
                                       ),
                                       horizontalMarginXSmall,
@@ -861,6 +806,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                             .copyWith(
                                           color: colorScheme.onSurface,
                                           fontWeight: FontWeight.bold,
+                                          fontSize: 12.5.sp,
                                         ),
                                       ),
                                     ],
@@ -876,16 +822,24 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                           Expanded(
                             child: AppTextField(
                               controller: _noteController,
-                              hintText: 'Add note (optional)...',
+                              hintText: context.l10n.addNoteHint,
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurface,
+                                fontSize: 13.sp,
+                              ),
+                              hintStyle: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.outline,
+                                fontSize: 12.5.sp,
+                              ),
                               prefixIcon: Icon(
                                 Icons.sticky_note_2_outlined,
                                 color: colorScheme.outline,
-                                size: 18.sp,
+                                size: 16.sp,
                               ),
                               contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 14.w, vertical: 14.h),
+                                  horizontal: 12.w, vertical: 10.h),
                               fillColor: colorScheme.surfaceContainerHigh,
-                              borderRadius: BorderRadius.circular(16.r),
+                              borderRadius: BorderRadius.circular(14.r),
                             ),
                           ),
                         ],
@@ -949,9 +903,19 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 return;
                               }
 
-                              final selectedCat =
+                              CategoryItem? selectedCat =
                                   _selectedCategoryNotifier.value;
                               if (selectedCat == null) {
+                                if (_expenseCategories.isNotEmpty) {
+                                  selectedCat = _expenseCategories.first;
+                                } else if (_incomeCategories.isNotEmpty) {
+                                  selectedCat = _incomeCategories.first;
+                                }
+                              }
+
+                              if (selectedCat == null &&
+                                  _typeNotifier.value !=
+                                      TransactionType.transfer) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content:
@@ -962,6 +926,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 return;
                               }
 
+                              final catId = selectedCat?.id ?? 1;
                               final cubit =
                                   blocContext.read<TransactionCubit>();
 
@@ -970,15 +935,18 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                               final fee =
                                   double.tryParse(_feeController.text.trim());
 
+                              final fromName = _formatPaymentMethodName(
+                                  context, _paymentMethodNotifier.value);
+                              final toName = _formatPaymentMethodName(context,
+                                  _destinationPaymentMethodNotifier.value);
+
                               if (_typeNotifier.value ==
                                   TransactionType.transfer) {
-                                final destCat =
-                                    _destinationCategoryNotifier.value;
                                 final feePart = (fee != null && fee > 0)
                                     ? ' (Fee: ${getIt<PreferenceService>().currencySymbol}$fee)'
                                     : '';
                                 final transferDesc =
-                                    'Transfer: ${selectedCat.name} → ${destCat?.name ?? "Destination"}$feePart';
+                                    'Transfer: $fromName → $toName$feePart';
                                 noteText = baseNote.isNotEmpty
                                     ? '$transferDesc | $baseNote'
                                     : transferDesc;
@@ -987,13 +955,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                     baseNote.isNotEmpty ? baseNote : null;
                               }
 
-                              final PaymentMethod? paymentMethod =
-                                  (_typeNotifier.value ==
-                                              TransactionType.expense ||
-                                          _typeNotifier.value ==
-                                              TransactionType.transfer)
-                                      ? _paymentMethodNotifier.value
-                                      : null;
+                              final PaymentMethod paymentMethod =
+                                  _paymentMethodNotifier.value;
 
                               if (widget.initialTransaction != null) {
                                 final initialTx = widget.initialTransaction!;
@@ -1001,7 +964,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   id: initialTx.id,
                                   type: _typeNotifier.value,
                                   amount: amount,
-                                  categoryId: selectedCat.id,
+                                  categoryId: catId,
                                   timestamp: _dateNotifier.value,
                                   note: noteText,
                                   paymentMethod: paymentMethod,
@@ -1029,10 +992,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                       )
                                       .firstOrNull;
 
-                                  final destCat =
-                                      _destinationCategoryNotifier.value;
                                   final feeNote =
-                                      'Transfer Fee (${selectedCat.name} → ${destCat?.name ?? "Destination"}) [Ref: #${initialTx.id}]';
+                                      'Transfer Fee ($fromName → $toName) [Ref: #${initialTx.id}]';
 
                                   if (fee != null && fee > 0) {
                                     if (feeTx != null) {
@@ -1040,7 +1001,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                         id: feeTx.id,
                                         type: TransactionType.expense,
                                         amount: fee,
-                                        categoryId: selectedCat.id,
+                                        categoryId: catId,
                                         timestamp: _dateNotifier.value,
                                         note: feeNote,
                                         paymentMethod: paymentMethod,
@@ -1049,7 +1010,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                       await cubit.addTransaction(
                                         type: TransactionType.expense,
                                         amount: fee,
-                                        categoryId: selectedCat.id,
+                                        categoryId: catId,
                                         timestamp: _dateNotifier.value,
                                         note: feeNote,
                                         paymentMethod: paymentMethod,
@@ -1100,7 +1061,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                     await cubit.addTransactionAndReturnId(
                                   type: _typeNotifier.value,
                                   amount: amount,
-                                  categoryId: selectedCat.id,
+                                  categoryId: catId,
                                   timestamp: _dateNotifier.value,
                                   note: noteText,
                                   paymentMethod: paymentMethod,
@@ -1110,17 +1071,15 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                         TransactionType.transfer &&
                                     fee != null &&
                                     fee > 0) {
-                                  final destCat =
-                                      _destinationCategoryNotifier.value;
                                   final feeRef =
                                       newId != null ? ' [Ref: #$newId]' : '';
                                   await cubit.addTransaction(
                                     type: TransactionType.expense,
                                     amount: fee,
-                                    categoryId: selectedCat.id,
+                                    categoryId: catId,
                                     timestamp: _dateNotifier.value,
                                     note:
-                                        'Transfer Fee (${selectedCat.name} → ${destCat?.name ?? "Destination"})$feeRef',
+                                        'Transfer Fee ($fromName → $toName)$feeRef',
                                     paymentMethod: paymentMethod,
                                   );
                                 }
@@ -1135,9 +1094,9 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: colorScheme.primary,
                               foregroundColor: Colors.black,
-                              minimumSize: Size(double.infinity, 52.h),
+                              minimumSize: Size(double.infinity, 46.h),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.r),
+                                borderRadius: BorderRadius.circular(14.r),
                               ),
                               elevation: 0,
                             ),
@@ -1147,7 +1106,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   : context.l10n.saveTransaction,
                               style: customTypography.bodyLargeBold.copyWith(
                                 color: Colors.black,
-                                fontSize: 18.sp,
+                                fontSize: 16.sp,
                               ),
                             ),
                           );
@@ -1174,17 +1133,17 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
           borderRadius: BorderRadius.circular(32.r),
           child: Container(
             width: 72.w,
-            height: 48.h,
+            height: 42.h,
             alignment: Alignment.center,
             child: key == '<'
                 ? Icon(Icons.backspace_outlined,
-                    color: colorScheme.onSurface, size: 22.sp)
+                    color: colorScheme.onSurface, size: 20.sp)
                 : Text(
                     key,
                     style: context.customTypography.headlineMediumMonoBold
                         .copyWith(
                       color: colorScheme.onSurface,
-                      fontSize: 22.sp,
+                      fontSize: 20.sp,
                     ),
                   ),
           ),
@@ -1240,6 +1199,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
     required String label,
     required IconData icon,
     required bool isSelected,
+    ValueChanged<PaymentMethod>? onSelect,
   }) {
     final colorScheme = context.colorScheme;
     final customTypography = context.customTypography;
@@ -1248,18 +1208,22 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
     return Expanded(
       child: InkWell(
         onTap: () {
-          _paymentMethodNotifier.value = method;
+          if (onSelect != null) {
+            onSelect(method);
+          } else {
+            _paymentMethodNotifier.value = method;
+          }
         },
         borderRadius: BorderRadius.circular(16.r),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          height: 48.h,
-          padding: EdgeInsets.symmetric(horizontal: 8.w),
+          height: 36.h,
+          padding: EdgeInsets.symmetric(horizontal: 6.w),
           decoration: BoxDecoration(
             color: isSelected
                 ? activeColor.withAlpha((0.15 * 255).round())
                 : colorScheme.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(12.r),
             border: Border.all(
               color: isSelected ? activeColor : colorScheme.outlineVariant,
               width: isSelected ? 1.5 : 1.0,
@@ -1270,15 +1234,16 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
             children: [
               Icon(
                 icon,
-                size: 18.sp,
+                size: 14.sp,
                 color: isSelected ? activeColor : colorScheme.outline,
               ),
-              SizedBox(width: 6.w),
+              SizedBox(width: 4.w),
               Flexible(
                 child: Text(
                   label,
                   overflow: TextOverflow.ellipsis,
                   style: customTypography.bodyMedium.copyWith(
+                    fontSize: 11.sp,
                     color: isSelected
                         ? colorScheme.onSurface
                         : colorScheme.outline,

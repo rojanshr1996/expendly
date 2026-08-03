@@ -23,31 +23,47 @@ class AnalyticsLocalDataSourceImpl implements AnalyticsLocalDataSource {
     String period = 'Monthly',
     DateTimeRange? customRange,
   }) async {
-    final now = DateTime.now();
-    DateTime startDate;
-    DateTime endDate = now;
-
-    if (period == 'Weekly') {
-      startDate = now.subtract(Duration(days: now.weekday - 1));
-      startDate = DateTime(startDate.year, startDate.month, startDate.day);
-    } else if (period == 'Yearly') {
-      startDate = DateTime(now.year, 1, 1);
-      endDate = DateTime(now.year, 12, 31, 23, 59, 59);
-    } else if (period == 'Custom' && customRange != null) {
-      startDate = customRange.start;
-      endDate = customRange.end;
-    } else {
-      // Monthly default
-      startDate = DateTime(now.year, now.month, 1);
-      final lastDay = DateTime(now.year, now.month + 1, 0).day;
-      endDate = DateTime(now.year, now.month, lastDay, 23, 59, 59);
-    }
-
     final allTx = await _db.select(_db.transactions).get();
     final allCat = await _db.select(_db.categories).get();
     final allBudgets = await _db.select(_db.budgets).get();
 
     final catMap = {for (var c in allCat) c.id: c};
+
+    final now = DateTime.now();
+
+    // Smart date reference anchor:
+    // If allTx contains records, anchor relative to data timestamps if current month has no records
+    final refDate = allTx.isNotEmpty
+        ? (allTx.any((t) =>
+                t.timestamp.year == now.year && t.timestamp.month == now.month)
+            ? now
+            : allTx
+                .map((t) => t.timestamp)
+                .reduce((a, b) => a.isAfter(b) ? a : b))
+        : now;
+
+    DateTime startDate;
+    DateTime endDate;
+
+    if (period == 'Weekly') {
+      final monday = refDate.subtract(Duration(days: refDate.weekday - 1));
+      startDate = DateTime(monday.year, monday.month, monday.day, 0, 0, 0);
+      endDate = DateTime(monday.year, monday.month, monday.day, 23, 59, 59)
+          .add(const Duration(days: 6));
+    } else if (period == 'Yearly') {
+      startDate = DateTime(refDate.year, 1, 1, 0, 0, 0);
+      endDate = DateTime(refDate.year, 12, 31, 23, 59, 59);
+    } else if (period == 'Custom' && customRange != null) {
+      startDate = DateTime(customRange.start.year, customRange.start.month,
+          customRange.start.day, 0, 0, 0);
+      endDate = DateTime(customRange.end.year, customRange.end.month,
+          customRange.end.day, 23, 59, 59);
+    } else {
+      // Monthly default
+      startDate = DateTime(refDate.year, refDate.month, 1, 0, 0, 0);
+      final lastDay = DateTime(refDate.year, refDate.month + 1, 0).day;
+      endDate = DateTime(refDate.year, refDate.month, lastDay, 23, 59, 59);
+    }
 
     // Filter transactions within selected period
     final filteredTx = allTx.where((tx) {
@@ -128,8 +144,18 @@ class AnalyticsLocalDataSourceImpl implements AnalyticsLocalDataSource {
       final topItem = breakdownList.first;
       topCatName = topItem.categoryName;
       topCatPct = topItem.percentage;
+
+      final netStatusText = netSavings >= 0
+          ? 'You maintain a positive cash flow of \$${netSavings.abs().toStringAsFixed(2)} (${savingsRatePct.toStringAsFixed(1)}% savings rate). Controlling spending in ${topItem.categoryName} will help optimize your savings trajectory.'
+          : 'Expenses exceed income by \$${netSavings.abs().toStringAsFixed(2)}. Reducing spending in ${topItem.categoryName} is strongly recommended to return to a balanced cash flow.';
+
       topCatDesc =
-          '${topItem.categoryName} expenses remain your highest outflow, consuming ${topItem.percentage.toStringAsFixed(0)}% of your total budget.';
+          '${topItem.categoryName} is your highest spending category for this $period period, accounting for ${topItem.percentage.toStringAsFixed(1)}% (\$${topItem.amount.toStringAsFixed(2)}) of your total spending (\$${totalExpense.toStringAsFixed(2)}).\n\n'
+          '• Daily Burn: Averaging \$${avgDailySpend.toStringAsFixed(2)}/day over $daysCount day(s).\n'
+          '• Trend & Strategy: $netStatusText';
+    } else {
+      topCatDesc =
+          'No spending recorded for this $period period. Your budget remains balanced with zero outflow.';
     }
 
     // Generate Period Flow Bar Graph Items based on period

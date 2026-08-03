@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -67,8 +68,9 @@ class RefinedReportsPage extends StatelessWidget {
               actions: [
                 BlocBuilder<AnalyticsCubit, AnalyticsState>(
                   builder: (context, state) {
-                    if (state is! AnalyticsLoaded)
+                    if (state is! AnalyticsLoaded) {
                       return const SizedBox.shrink();
+                    }
                     return IconButton(
                       tooltip: 'Download Financial Report',
                       icon: Icon(
@@ -138,7 +140,7 @@ class RefinedReportsPage extends StatelessWidget {
               report.categoryBreakdowns.isEmpty;
 
           return RefreshIndicator(
-            key: ValueKey('content_${report.periodName}'),
+            key: const ValueKey('reports_content'),
             color: colorScheme.primary,
             onRefresh: () => context.read<AnalyticsCubit>().loadAnalytics(),
             child: SingleChildScrollView(
@@ -243,9 +245,29 @@ class RefinedReportsPage extends StatelessWidget {
                       ),
                     )
                   else ...[
-                    // Net Flow Hero Card with Dynamic Flow Bar Chart (Delay 0ms)
+                    // Net Cash Flow Overview Card (Delay 0ms) - Matching top card in reference image
                     _StaggeredEntrance(
                       delayMs: 0,
+                      child: _NetCashFlowCard(
+                        report: report,
+                        currencySymbol: currencySymbol,
+                        isPrivacyModeNotifier: isPrivacyModeNotifier,
+                      ),
+                    ),
+                    verticalMarginMedium,
+
+                    // Distribution Donut Chart Card (Delay 50ms) - Matching second card in reference image
+                    _StaggeredEntrance(
+                      delayMs: 50,
+                      child: _DistributionDonutChartCard(
+                        report: report,
+                      ),
+                    ),
+                    verticalMarginMedium,
+
+                    // Net Flow Hero Card with Dynamic Flow Bar Chart (Delay 100ms)
+                    _StaggeredEntrance(
+                      delayMs: 100,
                       child: _NetFlowHeroCard(
                         report: report,
                         currencySymbol: currencySymbol,
@@ -254,9 +276,9 @@ class RefinedReportsPage extends StatelessWidget {
                     ),
                     verticalMarginMedium,
 
-                    // Insights Bento Grid (Delay 100ms)
+                    // Insights Bento Grid (Delay 150ms)
                     _StaggeredEntrance(
-                      delayMs: 100,
+                      delayMs: 150,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -278,40 +300,60 @@ class RefinedReportsPage extends StatelessWidget {
                     ),
                     verticalMarginMedium,
 
-                    // Top Category Highlight Trend Card (Delay 150ms)
+                    // Top Category Highlight Trend Card (Delay 200ms)
                     if (report.topCategoryName != null) ...[
                       _StaggeredEntrance(
-                        delayMs: 150,
+                        delayMs: 200,
                         child: _TopCategoryTrendCard(report: report),
                       ),
                       verticalMarginMedium,
                     ],
 
-                    // Category Breakdown Section Header (Delay 200ms)
+                    // Category Breakdown Section Header (Delay 240ms)
                     _StaggeredEntrance(
-                      delayMs: 200,
-                      child: Text(
-                        l10n.expenseBreakdownByCategory,
-                        style: customTypography.labelMediumMono.copyWith(
-                          color: colorScheme.outline,
-                          letterSpacing: 1.2,
-                        ),
+                      delayMs: 240,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            l10n.expenseBreakdownByCategory,
+                            style: customTypography.labelMediumMono.copyWith(
+                              color: colorScheme.outline,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          Text(
+                            'View All',
+                            style: customTypography.labelMediumMono.copyWith(
+                              color: colorScheme.primary,
+                              fontWeight: FontWeights.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     verticalMarginSmall,
 
-                    // Category Breakdown Rows (Delay 240ms + idx * 40ms)
+                    // Category Breakdown Rows (Delay 280ms + idx * 40ms)
                     ...report.categoryBreakdowns.asMap().entries.map((entry) {
                       final idx = entry.key;
                       final cat = entry.value;
                       return _StaggeredEntrance(
-                        delayMs: 240 + (idx * 40),
+                        delayMs: 280 + (idx * 40),
                         child: _CategoryBreakdownRow(
                           item: cat,
                           isPrivacyModeNotifier: isPrivacyModeNotifier,
                         ),
                       );
                     }),
+                    // verticalMarginMedium,
+                    // _StaggeredEntrance(
+                    //   delayMs: 360,
+                    //   child: _SmartSavingOpportunityCard(
+                    //     report: report,
+                    //     currencySymbol: currencySymbol,
+                    //   ),
+                    // ),
                   ],
                 ],
               ),
@@ -957,6 +999,431 @@ class _StaggeredEntrance extends StatelessWidget {
         );
       },
       child: child,
+    );
+  }
+}
+
+class _NetCashFlowCard extends StatelessWidget {
+  final AnalyticsReport report;
+  final String currencySymbol;
+  final ValueNotifier<bool>? isPrivacyModeNotifier;
+
+  const _NetCashFlowCard({
+    required this.report,
+    required this.currencySymbol,
+    this.isPrivacyModeNotifier,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final textTheme = context.textTheme;
+    final customTypography = context.customTypography;
+
+    final isPositive = report.netSavings >= 0;
+    final flowColor =
+        isPositive ? AppColors.semanticGreen : AppColors.semanticRed;
+    final maxVal = report.totalIncome > 0
+        ? report.totalIncome
+        : (report.totalExpense > 0 ? report.totalExpense : 1.0);
+    final incomeRatio = report.totalIncome > 0 ? 1.0 : 0.0;
+    final expenseRatio =
+        maxVal > 0 ? (report.totalExpense / maxVal).clamp(0.0, 1.0) : 0.0;
+
+    final savingsRateText =
+        '${isPositive ? '+' : ''}${report.savingsRatePercentage.toStringAsFixed(1)}% vs Last Month';
+
+    return GlassContainer(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Net Cash Flow',
+                      style: textTheme.titleMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeights.bold,
+                      ),
+                    ),
+                    Text(
+                      'Total Income vs Total Expenses',
+                      style: customTypography.labelMediumMono.copyWith(
+                        color: colorScheme.outline,
+                        fontSize: 11.sp,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: (isPositive
+                          ? AppColors.semanticGreen
+                          : AppColors.semanticRed)
+                      .withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isPositive
+                          ? Icons.trending_up_rounded
+                          : Icons.trending_down_rounded,
+                      size: 13.sp,
+                      color: isPositive
+                          ? AppColors.semanticGreen
+                          : AppColors.semanticRed,
+                    ),
+                    horizontalMarginXXSmall,
+                    Text(
+                      savingsRateText,
+                      style: customTypography.labelMediumMono.copyWith(
+                        color: isPositive
+                            ? AppColors.semanticGreen
+                            : AppColors.semanticRed,
+                        fontWeight: FontWeights.bold,
+                        fontSize: 11.sp,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          verticalMarginSmall,
+          TweenAnimationBuilder<double>(
+            key: ValueKey('net_flow_amt_${report.periodName}'),
+            tween: Tween<double>(begin: 0.0, end: report.netSavings.abs()),
+            duration: const Duration(milliseconds: 750),
+            curve: Curves.easeOutCubic,
+            builder: (context, animNetAmt, _) {
+              return ValueListenableBuilder<bool>(
+                valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
+                builder: (context, isPrivacy, _) {
+                  return CompactAmountText(
+                    amount: animNetAmt,
+                    currencySymbol: currencySymbol,
+                    isPrivacyMode: isPrivacy,
+                    showSign: false,
+                    animate: false,
+                    style: customTypography.headlineLargeMonoBold.copyWith(
+                      color: colorScheme.onSurface,
+                      fontSize: 24.sp,
+                      fontWeight: FontWeights.extraBold,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+          Text(
+            isPositive ? 'Net Positive' : 'Net Deficit',
+            style: customTypography.labelMediumMono.copyWith(
+              color: flowColor,
+              fontWeight: FontWeights.bold,
+              fontSize: 11.sp,
+            ),
+          ),
+          verticalMarginMedium,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Income',
+                style: customTypography.labelMediumMono.copyWith(
+                  color: colorScheme.outline,
+                ),
+              ),
+              TweenAnimationBuilder<double>(
+                key: ValueKey('income_amt_${report.periodName}'),
+                tween: Tween<double>(begin: 0.0, end: report.totalIncome),
+                duration: const Duration(milliseconds: 750),
+                curve: Curves.easeOutCubic,
+                builder: (context, animIncomeAmt, _) {
+                  return ValueListenableBuilder<bool>(
+                    valueListenable:
+                        isPrivacyModeNotifier ?? ValueNotifier(false),
+                    builder: (context, isPrivacy, _) {
+                      return CompactAmountText(
+                        amount: animIncomeAmt,
+                        currencySymbol: currencySymbol,
+                        isPrivacyMode: isPrivacy,
+                        animate: false,
+                        style: customTypography.labelMediumMono.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeights.bold,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+          verticalMarginXXSmall,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4.r),
+            child: TweenAnimationBuilder<double>(
+              key: ValueKey('income_bar_${report.periodName}'),
+              tween: Tween<double>(begin: 0.0, end: incomeRatio),
+              duration: const Duration(milliseconds: 750),
+              curve: Curves.easeOutCubic,
+              builder: (context, animRatio, _) {
+                return LinearProgressIndicator(
+                  value: animRatio,
+                  minHeight: 6.h,
+                  backgroundColor: colorScheme.surfaceContainerHigh,
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(Color(0xFF006644)),
+                );
+              },
+            ),
+          ),
+          verticalMarginSmall,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Expenses',
+                style: customTypography.labelMediumMono.copyWith(
+                  color: colorScheme.outline,
+                ),
+              ),
+              TweenAnimationBuilder<double>(
+                key: ValueKey('expense_amt_${report.periodName}'),
+                tween: Tween<double>(begin: 0.0, end: report.totalExpense),
+                duration: const Duration(milliseconds: 750),
+                curve: Curves.easeOutCubic,
+                builder: (context, animExpenseAmt, _) {
+                  return ValueListenableBuilder<bool>(
+                    valueListenable:
+                        isPrivacyModeNotifier ?? ValueNotifier(false),
+                    builder: (context, isPrivacy, _) {
+                      return CompactAmountText(
+                        amount: animExpenseAmt,
+                        currencySymbol: currencySymbol,
+                        isPrivacyMode: isPrivacy,
+                        animate: false,
+                        style: customTypography.labelMediumMono.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeights.bold,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+          verticalMarginXXSmall,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4.r),
+            child: TweenAnimationBuilder<double>(
+              key: ValueKey('expense_bar_${report.periodName}'),
+              tween: Tween<double>(begin: 0.0, end: expenseRatio),
+              duration: const Duration(milliseconds: 750),
+              curve: Curves.easeOutCubic,
+              builder: (context, animRatio, _) {
+                return LinearProgressIndicator(
+                  value: animRatio,
+                  minHeight: 6.h,
+                  backgroundColor: colorScheme.surfaceContainerHigh,
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                      AppColors.semanticRed),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DistributionDonutChartCard extends StatelessWidget {
+  final AnalyticsReport report;
+
+  const _DistributionDonutChartCard({required this.report});
+
+  static const List<Color> _donutPalette = [
+    Color(0xFF005580), // Deep Teal / Blue
+    Color(0xFF70C3FF), // Light Sky Blue
+    Color(0xFF57F1DB), // Mint Green
+    Color(0xFFFFB74D), // Soft Amber
+    Color(0xFFBA68C8), // Soft Purple
+    Color(0xFF4DD0E1), // Cyan
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final textTheme = context.textTheme;
+    final customTypography = context.customTypography;
+
+    final items = report.categoryBreakdowns;
+    final hasItems = items.isNotEmpty;
+
+    return GlassContainer(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Distribution',
+            style: textTheme.titleMedium?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeights.bold,
+            ),
+          ),
+          verticalMarginMedium,
+          SizedBox(
+            height: 140.h,
+            child: TweenAnimationBuilder<double>(
+              key: ValueKey('donut_anim_${report.periodName}_${items.length}'),
+              tween: Tween<double>(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 750),
+              curve: Curves.easeOutCubic,
+              builder: (context, animVal, _) {
+                final sections = <PieChartSectionData>[];
+                if (hasItems) {
+                  for (int i = 0; i < items.length; i++) {
+                    final item = items[i];
+                    final color = _donutPalette[i % _donutPalette.length];
+                    sections.add(
+                      PieChartSectionData(
+                        color: color,
+                        value: (item.percentage > 0 ? item.percentage : 1) *
+                            animVal,
+                        title: '',
+                        radius: 20.w * animVal.clamp(0.2, 1.0),
+                        showTitle: false,
+                      ),
+                    );
+                  }
+                } else {
+                  sections.add(
+                    PieChartSectionData(
+                      color: colorScheme.surfaceContainerHigh,
+                      value: 100 * animVal,
+                      title: '',
+                      radius: 20.w,
+                      showTitle: false,
+                    ),
+                  );
+                }
+
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    PieChart(
+                      PieChartData(
+                        sectionsSpace: 2,
+                        centerSpaceRadius: 42.r,
+                        sections: sections,
+                        startDegreeOffset: 270,
+                      ),
+                      duration: const Duration(milliseconds: 750),
+                      curve: Curves.easeOutCubic,
+                    ),
+                    Opacity(
+                      opacity: animVal,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '${(100 * animVal).toStringAsFixed(0)}%',
+                            style: textTheme.titleMedium?.copyWith(
+                              color: colorScheme.onSurface,
+                              fontWeight: FontWeights.extraBold,
+                            ),
+                          ),
+                          Text(
+                            'Allocated',
+                            style: customTypography.labelMediumMono.copyWith(
+                              color: colorScheme.outline,
+                              fontSize: 10.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          verticalMarginMedium,
+          if (hasItems)
+            TweenAnimationBuilder<double>(
+              key:
+                  ValueKey('donut_legend_${report.periodName}_${items.length}'),
+              tween: Tween<double>(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 750),
+              curve: Curves.easeOutCubic,
+              builder: (context, animVal, _) {
+                return Column(
+                  children: items.asMap().entries.map((entry) {
+                    final idx = entry.key;
+                    final item = entry.value;
+                    final color = _donutPalette[idx % _donutPalette.length];
+
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 4.h),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 10.w,
+                            height: 10.w,
+                            decoration: BoxDecoration(
+                              color: color,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          horizontalMarginSmall,
+                          Expanded(
+                            child: Text(
+                              item.categoryName,
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurface,
+                                fontWeight: FontWeights.medium,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            '${(item.percentage * animVal).toStringAsFixed(0)}%',
+                            style: customTypography.labelMediumMono.copyWith(
+                              color: colorScheme.onSurface,
+                              fontWeight: FontWeights.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            )
+          else
+            Center(
+              child: Text(
+                'No distribution data available',
+                style: customTypography.bodyMedium.copyWith(
+                  color: colorScheme.outline,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

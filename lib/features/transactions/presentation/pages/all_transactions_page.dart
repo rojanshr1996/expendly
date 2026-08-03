@@ -1263,7 +1263,9 @@ class _TransactionListTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Icon(
-                _getIconData(transaction.categoryIcon),
+                transaction.type == TransactionType.transfer
+                    ? Icons.swap_horiz_rounded
+                    : _getIconData(transaction.categoryIcon),
                 color: catColor,
                 size: 22.r,
               ),
@@ -1276,7 +1278,9 @@ class _TransactionListTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    transaction.categoryName,
+                    transaction.type == TransactionType.transfer
+                        ? context.l10n.transfer
+                        : transaction.categoryName,
                     style: customTypography.bodyLargeBold.copyWith(
                       color: AppColors.onSurface,
                       fontSize: 14.sp,
@@ -1328,16 +1332,6 @@ class _TransactionListTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Color _parseColor(String hex) {
-    try {
-      final clean = hex.replaceAll('#', '');
-      if (clean.length == 6) {
-        return Color(int.parse('FF$clean', radix: 16));
-      }
-    } catch (_) {}
-    return AppColors.primary;
   }
 
   IconData _getIconData(String iconName) {

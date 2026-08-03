@@ -25,7 +25,6 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _emailController;
-  late TextEditingController _bioController;
   String? _selectedImagePath;
   bool _isSaving = false;
 
@@ -36,7 +35,6 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
     super.initState();
     _nameController = TextEditingController();
     _emailController = TextEditingController();
-    _bioController = TextEditingController();
 
     final state = getIt<ProfileCubit>().state;
     if (state is ProfileLoaded && state.profile != null) {
@@ -49,7 +47,6 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
   void _populateProfile(UserProfile profile) {
     _nameController.text = profile.name;
     _emailController.text = profile.email ?? '';
-    _bioController.text = profile.bio ?? '';
     _selectedImagePath = profile.imagePath;
   }
 
@@ -57,7 +54,6 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
-    _bioController.dispose();
     super.dispose();
   }
 
@@ -65,19 +61,15 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
     if (profile == null) {
       return _nameController.text.trim().isNotEmpty ||
           _emailController.text.trim().isNotEmpty ||
-          _bioController.text.trim().isNotEmpty ||
           _selectedImagePath != null;
     }
     final currentName = _nameController.text.trim();
     final currentEmail = _emailController.text.trim();
-    final currentBio = _bioController.text.trim();
     final savedName = profile.name.trim();
     final savedEmail = (profile.email ?? '').trim();
-    final savedBio = (profile.bio ?? '').trim();
 
     return currentName != savedName ||
         currentEmail != savedEmail ||
-        currentBio != savedBio ||
         _selectedImagePath != profile.imagePath;
   }
 
@@ -114,14 +106,11 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
     final email = _emailController.text.trim().isEmpty
         ? null
         : _emailController.text.trim();
-    final bio =
-        _bioController.text.trim().isEmpty ? null : _bioController.text.trim();
 
     try {
       await getIt<ProfileCubit>().saveProfile(
         name: name,
         email: email,
-        bio: bio,
         imagePath: _selectedImagePath,
       );
 
@@ -162,7 +151,6 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
       setState(() {
         _nameController.clear();
         _emailController.clear();
-        _bioController.clear();
         _selectedImagePath = null;
       });
     }
@@ -286,24 +274,6 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
                         keyboardType: TextInputType.emailAddress,
                         prefixIcon: Icon(
                           Icons.mail_outline_rounded,
-                          color: colorScheme.onSurfaceVariant,
-                          size: 20.sp,
-                        ),
-                        fillColor: Colors.transparent,
-                        borderRadius: BorderRadius.circular(16.r),
-                      ),
-                      SizedBox(height: 20.h),
-
-                      // Professional Bio Field
-                      AppTextField(
-                        controller: _bioController,
-                        labelText: l10n.professionalBioLabel,
-                        labelStyle: labelStyle,
-                        hintText: l10n.bioHint,
-                        onChanged: (_) => setState(() {}),
-                        maxLines: 4,
-                        prefixIcon: Icon(
-                          Icons.info_outline_rounded,
                           color: colorScheme.onSurfaceVariant,
                           size: 20.sp,
                         ),

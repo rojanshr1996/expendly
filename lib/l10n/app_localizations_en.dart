@@ -93,10 +93,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get financeRedefined => 'FINANCE REDEFINED';
 
   @override
-  String get protectedByAes256 => 'Protected by AES-256';
+  String get protectedByAes256 => 'Protected & Offline';
 
   @override
-  String get offlineEncryption => 'OFFLINE ENCRYPTION';
+  String get offlineEncryption => 'OFFLINE DATA';
 
   @override
   String get appVersion => 'VER 1.0.0';
@@ -149,7 +149,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get welcomeDesc1 =>
-      'Your financial data stays exclusively on your device, secured with hardware-backed AES-256 encryption.';
+      'Your financial data stays exclusively on your device.';
 
   @override
   String get welcomeTitle2 => 'Unified Accounts Control';
@@ -466,10 +466,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transferFee => 'Transfer Fee (Optional)';
 
   @override
-  String get fromAccount => 'From Category / Account';
+  String get fromAccount => 'From Payment Type';
 
   @override
-  String get toAccount => 'To Category / Account';
+  String get toAccount => 'To Payment Type';
 
   @override
   String get premium => 'PREMIUM';
@@ -550,21 +550,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Made with precision for your financial peace.';
 
   @override
-  String get exportEncryptedData => 'Export Encrypted Data (AES-256)';
+  String get exportEncryptedData => 'Export Backup Data';
 
   @override
-  String get importEncryptedData => 'Import Encrypted Data (AES-256)';
+  String get importEncryptedData => 'Import Backup Data';
 
   @override
-  String get exportEncryptedDataDesc =>
-      'Create an AES-256 encrypted backup file';
+  String get exportEncryptedDataDesc => 'Create a backup file';
 
   @override
   String get importEncryptedDataDesc =>
       'Restore backup using encryption key or PIN';
 
   @override
-  String get exportSuccess => 'Data exported & encrypted successfully!';
+  String get exportSuccess => 'Data exported successfully!';
 
   @override
   String get importSuccess => 'Data restored successfully!';
@@ -586,10 +585,9 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other:
-          'Backup generated with $count transactions, encrypted via AES-256.',
-      one: 'Backup generated with 1 transaction, encrypted via AES-256.',
-      zero: 'Backup generated with no transactions, encrypted via AES-256.',
+      other: 'Backup generated with $count transactions.',
+      one: 'Backup generated with 1 transaction.',
+      zero: 'Backup generated with no transactions.',
     );
     return '$_temp0';
   }
@@ -674,10 +672,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportPromptDesc =>
-      'Enter an optional encryption PIN/passphrase to protect your backup with AES-256.';
+      'Enter an optional PIN/passphrase to protect your backup.';
 
   @override
-  String get exportEncryptButton => 'Export & Encrypt (AES-256)';
+  String get exportEncryptButton => 'Export Data';
 
   @override
   String get copyEncryptedText => 'Copy Encrypted Text';
@@ -898,7 +896,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faq1A =>
-      'No. Expendly is 100% offline-first. All data, transactions, and settings reside exclusively on your device, encrypted with hardware-backed AES-256.';
+      'No. Expendly is 100% offline-first. All data, transactions, and settings reside exclusively on your device.';
 
   @override
   String get faq2Q => 'How do I backup or transfer my data?';
@@ -926,21 +924,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get termsBody1 =>
-      'Expendly does not collect, transmit, or monetize your personal financial records. All databases, encrypted keys, and preferences are stored locally on your device.';
+      'Expendly does not collect, transmit, or monetize your personal financial records. All databases and preferences are stored locally on your device.';
 
   @override
-  String get termsTitle2 => '2. Encryption & Security';
+  String get termsTitle2 => '2. Security & Privacy';
 
   @override
   String get termsBody2 =>
-      'Security PINs and master encryption keys are secured via Android EncryptedSharedPreferences and iOS Keychain Services (hardware-backed key storage).';
+      'Security PINs and preferences are stored securely on your device using Android & iOS secure storage.';
 
   @override
   String get termsTitle3 => '3. User Backup Responsibility';
 
   @override
   String get termsBody3 =>
-      'Because Expendly has zero server backends, you are responsible for maintaining encrypted backups of your ledger when switching devices.';
+      'Because Expendly has zero server backends, you are responsible for maintaining backups of your ledger when switching devices.';
 
   @override
   String get termsTitle4 => '4. Disclaimer & Liability';
@@ -1001,14 +999,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get autoBackupSetupDesc =>
-      'Automatically snapshot encrypted ledger. Requires Security PIN.';
+      'Automatically snapshot ledger. Requires Security PIN.';
 
   @override
   String get autoBackupTileTitle => 'Auto Backup';
 
   @override
-  String get autoBackupTileDesc =>
-      'Automatically snapshot encrypted ledger on changes';
+  String get autoBackupTileDesc => 'Automatically snapshot ledger on changes';
 
   @override
   String get pinRequiredForAutoBackup =>
@@ -1016,7 +1013,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pinCompulsoryForBackup =>
-      'Security PIN is required for auto backup encryption.';
+      'Security PIN is required for auto backup.';
 
   @override
   String get systemBackupHeader => 'SYSTEM BACKUP';

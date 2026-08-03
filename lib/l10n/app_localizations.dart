@@ -265,13 +265,13 @@ abstract class AppLocalizations {
   /// Security label on splash screen
   ///
   /// In en, this message translates to:
-  /// **'Protected by AES-256'**
+  /// **'Protected & Offline'**
   String get protectedByAes256;
 
   /// Footer label on splash screen
   ///
   /// In en, this message translates to:
-  /// **'OFFLINE ENCRYPTION'**
+  /// **'OFFLINE DATA'**
   String get offlineEncryption;
 
   /// App version label on splash screen
@@ -373,7 +373,7 @@ abstract class AppLocalizations {
   /// Carousel slide 1 description
   ///
   /// In en, this message translates to:
-  /// **'Your financial data stays exclusively on your device, secured with hardware-backed AES-256 encryption.'**
+  /// **'Your financial data stays exclusively on your device.'**
   String get welcomeDesc1;
 
   /// Carousel slide 2 title
@@ -970,16 +970,16 @@ abstract class AppLocalizations {
   /// **'Transfer Fee (Optional)'**
   String get transferFee;
 
-  /// Label for source account in transfer
+  /// Label for source payment type in transfer
   ///
   /// In en, this message translates to:
-  /// **'From Category / Account'**
+  /// **'From Payment Type'**
   String get fromAccount;
 
-  /// Label for destination account in transfer
+  /// Label for destination payment type in transfer
   ///
   /// In en, this message translates to:
-  /// **'To Category / Account'**
+  /// **'To Payment Type'**
   String get toAccount;
 
   /// Premium badge text
@@ -1132,22 +1132,22 @@ abstract class AppLocalizations {
   /// **'Made with precision for your financial peace.'**
   String get settingsFooterTagline;
 
-  /// Label for exporting AES-256 encrypted backup
+  /// Label for exporting backup
   ///
   /// In en, this message translates to:
-  /// **'Export Encrypted Data (AES-256)'**
+  /// **'Export Backup Data'**
   String get exportEncryptedData;
 
-  /// Label for importing AES-256 encrypted backup
+  /// Label for importing backup
   ///
   /// In en, this message translates to:
-  /// **'Import Encrypted Data (AES-256)'**
+  /// **'Import Backup Data'**
   String get importEncryptedData;
 
   /// Subtitle for export data setting
   ///
   /// In en, this message translates to:
-  /// **'Create an AES-256 encrypted backup file'**
+  /// **'Create a backup file'**
   String get exportEncryptedDataDesc;
 
   /// Subtitle for import data setting
@@ -1159,7 +1159,7 @@ abstract class AppLocalizations {
   /// Success message after export
   ///
   /// In en, this message translates to:
-  /// **'Data exported & encrypted successfully!'**
+  /// **'Data exported successfully!'**
   String get exportSuccess;
 
   /// Success message after import
@@ -1177,7 +1177,7 @@ abstract class AppLocalizations {
   /// Summary line in the export success dialog describing the generated backup
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0{Backup generated with no transactions, encrypted via AES-256.} =1{Backup generated with 1 transaction, encrypted via AES-256.} other{Backup generated with {count} transactions, encrypted via AES-256.}}'**
+  /// **'{count, plural, =0{Backup generated with no transactions.} =1{Backup generated with 1 transaction.} other{Backup generated with {count} transactions.}}'**
   String exportBackupSummary(int count);
 
   /// Label above the file path of a generated backup
@@ -1327,13 +1327,13 @@ abstract class AppLocalizations {
   /// Description for export modal
   ///
   /// In en, this message translates to:
-  /// **'Enter an optional encryption PIN/passphrase to protect your backup with AES-256.'**
+  /// **'Enter an optional PIN/passphrase to protect your backup.'**
   String get exportPromptDesc;
 
   /// Button to trigger encrypted export
   ///
   /// In en, this message translates to:
-  /// **'Export & Encrypt (AES-256)'**
+  /// **'Export Data'**
   String get exportEncryptButton;
 
   /// Button to copy encrypted export payload
@@ -1723,7 +1723,7 @@ abstract class AppLocalizations {
   /// FAQ 1 Answer
   ///
   /// In en, this message translates to:
-  /// **'No. Expendly is 100% offline-first. All data, transactions, and settings reside exclusively on your device, encrypted with hardware-backed AES-256.'**
+  /// **'No. Expendly is 100% offline-first. All data, transactions, and settings reside exclusively on your device.'**
   String get faq1A;
 
   /// FAQ 2 Question
@@ -1771,19 +1771,19 @@ abstract class AppLocalizations {
   /// Terms Section 1 Body
   ///
   /// In en, this message translates to:
-  /// **'Expendly does not collect, transmit, or monetize your personal financial records. All databases, encrypted keys, and preferences are stored locally on your device.'**
+  /// **'Expendly does not collect, transmit, or monetize your personal financial records. All databases and preferences are stored locally on your device.'**
   String get termsBody1;
 
   /// Terms Section 2 Title
   ///
   /// In en, this message translates to:
-  /// **'2. Encryption & Security'**
+  /// **'2. Security & Privacy'**
   String get termsTitle2;
 
   /// Terms Section 2 Body
   ///
   /// In en, this message translates to:
-  /// **'Security PINs and master encryption keys are secured via Android EncryptedSharedPreferences and iOS Keychain Services (hardware-backed key storage).'**
+  /// **'Security PINs and preferences are stored securely on your device using Android & iOS secure storage.'**
   String get termsBody2;
 
   /// Terms Section 3 Title
@@ -1795,7 +1795,7 @@ abstract class AppLocalizations {
   /// Terms Section 3 Body
   ///
   /// In en, this message translates to:
-  /// **'Because Expendly has zero server backends, you are responsible for maintaining encrypted backups of your ledger when switching devices.'**
+  /// **'Because Expendly has zero server backends, you are responsible for maintaining backups of your ledger when switching devices.'**
   String get termsBody3;
 
   /// Terms Section 4 Title
@@ -1903,7 +1903,7 @@ abstract class AppLocalizations {
   /// Subtitle for auto backup switch on account setup page
   ///
   /// In en, this message translates to:
-  /// **'Automatically snapshot encrypted ledger. Requires Security PIN.'**
+  /// **'Automatically snapshot ledger. Requires Security PIN.'**
   String get autoBackupSetupDesc;
 
   /// Title for auto backup tile in settings
@@ -1915,7 +1915,7 @@ abstract class AppLocalizations {
   /// Subtitle for auto backup tile in settings
   ///
   /// In en, this message translates to:
-  /// **'Automatically snapshot encrypted ledger on changes'**
+  /// **'Automatically snapshot ledger on changes'**
   String get autoBackupTileDesc;
 
   /// Toast message when enabling auto backup without a PIN configured
@@ -1927,7 +1927,7 @@ abstract class AppLocalizations {
   /// Subtitle note on security setup screen when auto backup is active
   ///
   /// In en, this message translates to:
-  /// **'Security PIN is required for auto backup encryption.'**
+  /// **'Security PIN is required for auto backup.'**
   String get pinCompulsoryForBackup;
 
   /// Header label for system backup notifications

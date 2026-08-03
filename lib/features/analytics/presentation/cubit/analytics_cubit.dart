@@ -17,11 +17,18 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
     String? period,
     DateTimeRange? customRange,
   }) async {
-    if (period != null) currentPeriod = period;
+    if (period != null) {
+      currentPeriod = period;
+      if (period != 'Custom') {
+        currentCustomRange = null;
+      }
+    }
     if (customRange != null) currentCustomRange = customRange;
 
     if (isClosed) return;
-    emit(AnalyticsLoading());
+    if (state is! AnalyticsLoaded) {
+      emit(AnalyticsLoading());
+    }
     try {
       final report = await _repository.getAnalyticsReport(
         period: currentPeriod,
@@ -31,7 +38,9 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
       emit(AnalyticsLoaded(report));
     } catch (e) {
       if (isClosed) return;
-      emit(AnalyticsError(e.toString()));
+      if (state is! AnalyticsLoaded) {
+        emit(AnalyticsError(e.toString()));
+      }
     }
   }
 }

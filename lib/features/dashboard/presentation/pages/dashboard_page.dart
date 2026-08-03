@@ -87,142 +87,154 @@ class _DashboardPageState extends State<DashboardPage> {
       }(),
       child: Builder(
         builder: (context) {
-          return Scaffold(
-            backgroundColor: context.colorScheme.surface,
-            body: ValueListenableBuilder<int>(
-              valueListenable: _currentTabNotifier,
-              builder: (context, currentTab, _) {
-                return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: ScaleTransition(
-                        scale: Tween<double>(begin: 0.98, end: 1.0)
-                            .animate(animation),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: KeyedSubtree(
-                    key: ValueKey('tab_$currentTab'),
-                    child: IndexedStack(
-                      index: currentTab,
-                      children: [
-                        // Tab 0: Overview
-                        _buildOverviewTab(context),
-
-                        // Tab 1: Activity / All Transactions
-                        AllTransactionsPage(
-                            isPrivacyModeNotifier: _isPrivacyModeNotifier),
-
-                        // Tab 2: Budgets Overview
-                        BudgetsOverviewPage(
-                            isPrivacyModeNotifier: _isPrivacyModeNotifier),
-
-                        // Tab 3: Reports & Analytics
-                        RefinedReportsPage(
-                            isPrivacyModeNotifier: _isPrivacyModeNotifier),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            // Floating Action Button with tab-aware routing
-            floatingActionButton: ValueListenableBuilder<int>(
-              valueListenable: _currentTabNotifier,
-              builder: (context, currentTab, _) {
-                if (currentTab == 2) {
-                  // Budget Tab: FAB opens Add Budget screen
-                  return Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: context.colorScheme.primary
-                              .withAlpha((0.4 * 255).round()),
-                          blurRadius: 16,
-                          spreadRadius: 2,
+          return ValueListenableBuilder<int>(
+            valueListenable: _currentTabNotifier,
+            builder: (context, currentTab, _) {
+              return PopScope(
+                canPop: currentTab == 0,
+                onPopInvokedWithResult: (didPop, result) {
+                  if (didPop) return;
+                  if (_currentTabNotifier.value != 0) {
+                    _currentTabNotifier.value = 0;
+                  }
+                },
+                child: Scaffold(
+                  backgroundColor: context.colorScheme.surface,
+                  body: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    transitionBuilder: (child, animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: ScaleTransition(
+                          scale: Tween<double>(begin: 0.98, end: 1.0)
+                              .animate(animation),
+                          child: child,
                         ),
-                      ],
-                    ),
-                    child: FloatingActionButton(
-                      onPressed: () async {
-                        await context.router.push(CreateNewBudgetRoute());
-                      },
-                      backgroundColor: context.colorScheme.primary,
-                      foregroundColor: Colors.black,
-                      elevation: 0,
-                      child: const Icon(Icons.add_rounded, size: 30),
-                    ),
-                  );
-                }
+                      );
+                    },
+                    child: KeyedSubtree(
+                      key: ValueKey('tab_$currentTab'),
+                      child: IndexedStack(
+                        index: currentTab,
+                        children: [
+                          // Tab 0: Overview
+                          _buildOverviewTab(context),
 
-                return QuickActionFab(
-                  key: _fabKey,
-                  onAddExpense: () => _openAddTransaction(context),
-                  onAddIncome: () => _openAddTransaction(context),
-                  onTransfer: () => _openAddTransaction(context),
-                );
-              },
-            ),
+                          // Tab 1: Activity / All Transactions
+                          AllTransactionsPage(
+                              isPrivacyModeNotifier: _isPrivacyModeNotifier),
 
-            // Bottom Navigation Bar
-            bottomNavigationBar: ValueListenableBuilder<int>(
-              valueListenable: _currentTabNotifier,
-              builder: (context, currentTab, _) {
-                final colorScheme = context.colorScheme;
-                final customTypography = context.customTypography;
+                          // Tab 2: Budgets Overview
+                          BudgetsOverviewPage(
+                              isPrivacyModeNotifier: _isPrivacyModeNotifier),
 
-                return Container(
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerLow,
-                    border: Border(
-                      top: BorderSide(
-                          color: colorScheme.outlineVariant, width: 1.0),
+                          // Tab 3: Reports & Analytics
+                          RefinedReportsPage(
+                              isPrivacyModeNotifier: _isPrivacyModeNotifier),
+                        ],
+                      ),
                     ),
                   ),
-                  child: BottomNavigationBar(
-                    currentIndex: currentTab,
-                    onTap: (index) => _currentTabNotifier.value = index,
-                    backgroundColor: colorScheme.surfaceContainerLow,
-                    selectedItemColor: colorScheme.primary,
-                    unselectedItemColor: colorScheme.outline,
-                    selectedLabelStyle: customTypography.labelMediumMono,
-                    unselectedLabelStyle: customTypography.labelMediumMono,
-                    type: BottomNavigationBarType.fixed,
-                    elevation: 0,
-                    items: [
-                      BottomNavigationBarItem(
-                        icon: const Icon(Icons.dashboard_outlined),
-                        activeIcon: const Icon(Icons.dashboard_rounded),
-                        label: context.l10n.overview,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: const Icon(Icons.receipt_long_outlined),
-                        activeIcon: const Icon(Icons.receipt_long_rounded),
-                        label: context.l10n.activity,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: const Icon(Icons.account_balance_wallet_outlined),
-                        activeIcon:
-                            const Icon(Icons.account_balance_wallet_rounded),
-                        label: context.l10n.budgets,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: const Icon(Icons.bar_chart_outlined),
-                        activeIcon: const Icon(Icons.bar_chart_rounded),
-                        label: context.l10n.reports,
-                      ),
-                    ],
+
+                  // Floating Action Button with tab-aware routing
+                  floatingActionButton: ValueListenableBuilder<int>(
+                    valueListenable: _currentTabNotifier,
+                    builder: (context, currentTab, _) {
+                      if (currentTab == 2) {
+                        // Budget Tab: FAB opens Add Budget screen
+                        return Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: context.colorScheme.primary
+                                    .withAlpha((0.4 * 255).round()),
+                                blurRadius: 16,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: FloatingActionButton(
+                            onPressed: () async {
+                              await context.router.push(CreateNewBudgetRoute());
+                            },
+                            backgroundColor: context.colorScheme.primary,
+                            foregroundColor: Colors.black,
+                            elevation: 0,
+                            child: const Icon(Icons.add_rounded, size: 30),
+                          ),
+                        );
+                      }
+
+                      return QuickActionFab(
+                        key: _fabKey,
+                        onAddExpense: () => _openAddTransaction(context),
+                        onAddIncome: () => _openAddTransaction(context),
+                        onTransfer: () => _openAddTransaction(context),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
+
+                  // Bottom Navigation Bar
+                  bottomNavigationBar: ValueListenableBuilder<int>(
+                    valueListenable: _currentTabNotifier,
+                    builder: (context, currentTab, _) {
+                      final colorScheme = context.colorScheme;
+                      final customTypography = context.customTypography;
+
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerLow,
+                          border: Border(
+                            top: BorderSide(
+                                color: colorScheme.outlineVariant, width: 1.0),
+                          ),
+                        ),
+                        child: BottomNavigationBar(
+                          currentIndex: currentTab,
+                          onTap: (index) => _currentTabNotifier.value = index,
+                          backgroundColor: colorScheme.surfaceContainerLow,
+                          selectedItemColor: colorScheme.primary,
+                          unselectedItemColor: colorScheme.outline,
+                          selectedLabelStyle: customTypography.labelMediumMono,
+                          unselectedLabelStyle:
+                              customTypography.labelMediumMono,
+                          type: BottomNavigationBarType.fixed,
+                          elevation: 0,
+                          items: [
+                            BottomNavigationBarItem(
+                              icon: const Icon(Icons.dashboard_outlined),
+                              activeIcon: const Icon(Icons.dashboard_rounded),
+                              label: context.l10n.overview,
+                            ),
+                            BottomNavigationBarItem(
+                              icon: const Icon(Icons.receipt_long_outlined),
+                              activeIcon:
+                                  const Icon(Icons.receipt_long_rounded),
+                              label: context.l10n.activity,
+                            ),
+                            BottomNavigationBarItem(
+                              icon: const Icon(
+                                  Icons.account_balance_wallet_outlined),
+                              activeIcon: const Icon(
+                                  Icons.account_balance_wallet_rounded),
+                              label: context.l10n.budgets,
+                            ),
+                            BottomNavigationBarItem(
+                              icon: const Icon(Icons.bar_chart_outlined),
+                              activeIcon: const Icon(Icons.bar_chart_rounded),
+                              label: context.l10n.reports,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
           );
         },
       ),

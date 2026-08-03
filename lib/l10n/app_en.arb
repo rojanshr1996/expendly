@@ -590,13 +590,13 @@
   "@transferFee": {
     "description": "Label for transfer fee"
   },
-  "fromAccount": "From Category / Account",
+  "fromAccount": "From Payment Type",
   "@fromAccount": {
-    "description": "Label for source account in transfer"
+    "description": "Label for source payment type in transfer"
   },
-  "toAccount": "To Category / Account",
+  "toAccount": "To Payment Type",
   "@toAccount": {
-    "description": "Label for destination account in transfer"
+    "description": "Label for destination payment type in transfer"
   },
   "premium": "PREMIUM",
   "@premium": {
