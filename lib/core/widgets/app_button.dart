@@ -40,7 +40,8 @@ class AppButton extends StatelessWidget {
     this.textStyle,
     this.padding,
     this.elevation,
-  }) : assert(text != null || child != null, 'Either text or child must be provided.');
+  }) : assert(text != null || child != null,
+            'Either text or child must be provided.');
 
   final String? text;
   final Widget? child;
@@ -84,7 +85,8 @@ class AppButton extends StatelessWidget {
     } else if (child != null) {
       content = child!;
     } else {
-      final labelStyle = (textStyle ?? textTheme.titleMedium ?? const TextStyle()).copyWith(
+      final labelStyle =
+          (textStyle ?? textTheme.titleMedium ?? const TextStyle()).copyWith(
         color: effectiveFgColor,
         fontWeight: FontWeights.semiBold,
       );
@@ -122,7 +124,9 @@ class AppButton extends StatelessWidget {
         height: effectiveHeight,
         child: GlassContainer(
           borderRadius: effectiveRadius,
-          backgroundColor: isEnabled ? effectiveBgColor : AppColors.surfaceLow.withAlpha((0.3 * 255).round()),
+          backgroundColor: isEnabled
+              ? effectiveBgColor
+              : AppColors.surfaceLow.withAlpha((0.3 * 255).round()),
           borderStrokeColor: effectiveBorderColor ?? AppColors.glassStroke,
           onTap: isEnabled ? onPressed : null,
           child: Center(child: content),
@@ -145,7 +149,8 @@ class AppButton extends StatelessWidget {
               width: 1.5,
             ),
             shape: RoundedRectangleBorder(borderRadius: effectiveRadius),
-            padding: padding ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            padding: padding ??
+                EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
           ),
           child: content,
         ),
@@ -161,7 +166,8 @@ class AppButton extends StatelessWidget {
           style: TextButton.styleFrom(
             foregroundColor: effectiveFgColor,
             shape: RoundedRectangleBorder(borderRadius: effectiveRadius),
-            padding: padding ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            padding: padding ??
+                EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
           ),
           child: content,
         ),
@@ -176,12 +182,16 @@ class AppButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: effectiveBgColor,
           foregroundColor: effectiveFgColor,
-          elevation: elevation ?? (variant == AppButtonVariant.primary ? 2.0 : 0.0),
+          elevation:
+              elevation ?? (variant == AppButtonVariant.primary ? 2.0 : 0.0),
           shape: RoundedRectangleBorder(
             borderRadius: effectiveRadius,
-            side: effectiveBorderColor != null ? BorderSide(color: effectiveBorderColor, width: 1.5) : BorderSide.none,
+            side: effectiveBorderColor != null
+                ? BorderSide(color: effectiveBorderColor, width: 1.5)
+                : BorderSide.none,
           ),
-          padding: padding ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          padding:
+              padding ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         ),
         child: content,
       ),

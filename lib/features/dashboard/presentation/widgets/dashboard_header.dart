@@ -65,7 +65,8 @@ class DashboardHeader extends StatelessWidget {
                           profile != null && profile.name.isNotEmpty
                               ? profile.name
                               : context.l10n.appName,
-                          style: (textTheme.titleMedium ?? const TextStyle()).copyWith(
+                          style: (textTheme.titleMedium ?? const TextStyle())
+                              .copyWith(
                             fontWeight: FontWeights.bold,
                             color: colorScheme.onSurface,
                             fontSize: 16.sp,

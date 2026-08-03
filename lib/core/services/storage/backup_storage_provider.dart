@@ -36,9 +36,11 @@ abstract class BackupStorageProvider {
 /// 2. If MediaStore fails due to pre-reinstall UID lock, try MediaStore for `expendly_backup_latest.csv`.
 /// 3. If MediaStore fails completely, fall back to app-private external storage (`Android/data/<pkg>/files/Expendly`).
 /// 4. Final fallback to app internal documents directory.
-@LazySingleton(as: BackupStorageProvider, env: [Environment.prod, Environment.dev])
+@LazySingleton(
+    as: BackupStorageProvider, env: [Environment.prod, Environment.dev])
 class AndroidMediaStoreBackupStorageProvider implements BackupStorageProvider {
-  static const MethodChannel _channel = MethodChannel('com.expendly.app/mediastore');
+  static const MethodChannel _channel =
+      MethodChannel('com.expendly.app/mediastore');
 
   @override
   Future<String> writeBackup({
@@ -52,21 +54,26 @@ class AndroidMediaStoreBackupStorageProvider implements BackupStorageProvider {
     // Step 1: Attempt MediaStore write for target filename (e.g. expendly_backup_1_0_0.csv)
     try {
       final path = await _writeViaMediaStore(filename, content);
-      AppLogger.i('AndroidMediaStoreProvider: Successfully wrote via MediaStore -> $path');
+      AppLogger.i(
+          'AndroidMediaStoreProvider: Successfully wrote via MediaStore -> $path');
       return path;
     } catch (e) {
-      AppLogger.w('AndroidMediaStoreProvider: MediaStore write for $filename failed: $e. Trying alternate filename...');
+      AppLogger.w(
+          'AndroidMediaStoreProvider: MediaStore write for $filename failed: $e. Trying alternate filename...');
     }
 
     // Step 2: Attempt MediaStore write for alternate filename (expendly_backup_latest.csv)
     // This creates a fresh file in Downloads/Expendly owned by current app UID, bypassing pre-reinstall locks.
     if (filename != 'expendly_backup_latest.csv') {
       try {
-        final path = await _writeViaMediaStore('expendly_backup_latest.csv', content);
-        AppLogger.i('AndroidMediaStoreProvider: Successfully wrote alternate via MediaStore -> $path');
+        final path =
+            await _writeViaMediaStore('expendly_backup_latest.csv', content);
+        AppLogger.i(
+            'AndroidMediaStoreProvider: Successfully wrote alternate via MediaStore -> $path');
         return path;
       } catch (e) {
-        AppLogger.w('AndroidMediaStoreProvider: Alternate MediaStore write failed: $e');
+        AppLogger.w(
+            'AndroidMediaStoreProvider: Alternate MediaStore write failed: $e');
       }
     }
 
@@ -78,11 +85,13 @@ class AndroidMediaStoreBackupStorageProvider implements BackupStorageProvider {
         if (!await dir.exists()) await dir.create(recursive: true);
         final file = File(p.join(dir.path, filename));
         await file.writeAsString(content, mode: FileMode.write, flush: true);
-        AppLogger.i('AndroidMediaStoreProvider: External storage fallback succeeded -> ${file.path}');
+        AppLogger.i(
+            'AndroidMediaStoreProvider: External storage fallback succeeded -> ${file.path}');
         return file.path;
       }
     } catch (e) {
-      AppLogger.w('AndroidMediaStoreProvider: External storage fallback failed: $e');
+      AppLogger.w(
+          'AndroidMediaStoreProvider: External storage fallback failed: $e');
     }
 
     // Step 4: Final fallback to internal documents directory
@@ -92,11 +101,15 @@ class AndroidMediaStoreBackupStorageProvider implements BackupStorageProvider {
       if (!await dir.exists()) await dir.create(recursive: true);
       final file = File(p.join(dir.path, filename));
       await file.writeAsString(content, mode: FileMode.write, flush: true);
-      AppLogger.i('AndroidMediaStoreProvider: Documents fallback succeeded -> ${file.path}');
+      AppLogger.i(
+          'AndroidMediaStoreProvider: Documents fallback succeeded -> ${file.path}');
       return file.path;
     } catch (e) {
-      AppLogger.e('AndroidMediaStoreProvider: All storage provider fallbacks failed', e);
-      throw FileSystemException('Failed to write backup file across all storage providers: $e');
+      AppLogger.e(
+          'AndroidMediaStoreProvider: All storage provider fallbacks failed',
+          e);
+      throw FileSystemException(
+          'Failed to write backup file across all storage providers: $e');
     }
   }
 

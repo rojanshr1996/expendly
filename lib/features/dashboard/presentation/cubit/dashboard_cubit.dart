@@ -22,8 +22,7 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   @override
   Future<void> close() {
-    TransactionEvents.transactionUpdated
-        .removeListener(_onTransactionUpdated);
+    TransactionEvents.transactionUpdated.removeListener(_onTransactionUpdated);
     return super.close();
   }
 
@@ -40,4 +39,3 @@ class DashboardCubit extends Cubit<DashboardState> {
     }
   }
 }
-

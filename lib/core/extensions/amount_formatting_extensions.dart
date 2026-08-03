@@ -17,15 +17,18 @@ extension AmountFormattingExtension on num {
     final absVal = abs();
     if (absVal >= 1000000000) {
       final val = absVal / 1000000000;
-      final formatted = val % 1 == 0 ? val.toStringAsFixed(0) : val.toStringAsFixed(1);
+      final formatted =
+          val % 1 == 0 ? val.toStringAsFixed(0) : val.toStringAsFixed(1);
       return '${formatted}B';
     } else if (absVal >= 1000000) {
       final val = absVal / 1000000;
-      final formatted = val % 1 == 0 ? val.toStringAsFixed(0) : val.toStringAsFixed(1);
+      final formatted =
+          val % 1 == 0 ? val.toStringAsFixed(0) : val.toStringAsFixed(1);
       return '${formatted}M';
     } else if (absVal >= 10000) {
       final val = absVal / 1000;
-      final formatted = val % 1 == 0 ? val.toStringAsFixed(0) : val.toStringAsFixed(1);
+      final formatted =
+          val % 1 == 0 ? val.toStringAsFixed(0) : val.toStringAsFixed(1);
       return '${formatted}K';
     } else {
       return toFullFormattedAmount();
@@ -57,9 +60,11 @@ extension AmountFormattingExtension on num {
     if (showSign) {
       if (type == TransactionType.transfer) {
         sign = '';
-      } else if (type == TransactionType.income || (type == null && isIncome == true)) {
+      } else if (type == TransactionType.income ||
+          (type == null && isIncome == true)) {
         sign = '+';
-      } else if (type == TransactionType.expense || (type == null && isIncome == false)) {
+      } else if (type == TransactionType.expense ||
+          (type == null && isIncome == false)) {
         sign = '-';
       }
     } else if (this < 0) {
@@ -69,4 +74,3 @@ extension AmountFormattingExtension on num {
     return '$sign$symbol$valueString';
   }
 }
-

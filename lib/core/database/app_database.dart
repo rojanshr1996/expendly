@@ -51,9 +51,12 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(budgets, budgets.year);
           await m.addColumn(budgets, budgets.month);
           await m.addColumn(budgets, budgets.currencyCode);
-          await m.addColumn(recurringTransactions, recurringTransactions.isAutoCreate);
-          await m.addColumn(recurringTransactions, recurringTransactions.isActive);
-          await m.addColumn(recurringTransactions, recurringTransactions.lastProcessedDate);
+          await m.addColumn(
+              recurringTransactions, recurringTransactions.isAutoCreate);
+          await m.addColumn(
+              recurringTransactions, recurringTransactions.isActive);
+          await m.addColumn(
+              recurringTransactions, recurringTransactions.lastProcessedDate);
           await m.addColumn(categories, categories.isDefault);
           await m.addColumn(categories, categories.sortOrder);
         }

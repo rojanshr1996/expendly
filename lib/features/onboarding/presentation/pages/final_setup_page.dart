@@ -328,11 +328,15 @@ class _FinalSetupPageState extends State<FinalSetupPage>
                                 if (val) {
                                   if (!context.mounted) return;
                                   final reason = context.l10n.biometricReason;
-                                  final notAvailableMsg = context.l10n.biometricNotAvailable;
-                                  final failedMsg = context.l10n.biometricAuthFailed;
+                                  final notAvailableMsg =
+                                      context.l10n.biometricNotAvailable;
+                                  final failedMsg =
+                                      context.l10n.biometricAuthFailed;
 
-                                  final bioService = getIt<BiometricAuthService>();
-                                  final isAvailable = await bioService.isBiometricAvailable();
+                                  final bioService =
+                                      getIt<BiometricAuthService>();
+                                  final isAvailable =
+                                      await bioService.isBiometricAvailable();
                                   if (!isAvailable) {
                                     if (context.mounted) {
                                       StatusComponents.showToast(
@@ -344,7 +348,8 @@ class _FinalSetupPageState extends State<FinalSetupPage>
                                     return;
                                   }
 
-                                  final authenticated = await bioService.authenticate(
+                                  final authenticated =
+                                      await bioService.authenticate(
                                     localizedReason: reason,
                                   );
 
@@ -444,7 +449,6 @@ class _FinalSetupPageState extends State<FinalSetupPage>
                                   borderRadius: BorderRadius.circular(4.r),
                                 ).animateShimmer()
                               : Text(l10n.getStarted),
-
                         );
                       },
                     ),

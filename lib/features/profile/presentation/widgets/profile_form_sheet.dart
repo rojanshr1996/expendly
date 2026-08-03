@@ -17,7 +17,8 @@ class ProfileFormSheet extends StatefulWidget {
     this.initialProfile,
   });
 
-  static Future<void> show(BuildContext context, {UserProfile? initialProfile}) {
+  static Future<void> show(BuildContext context,
+      {UserProfile? initialProfile}) {
     final colorScheme = context.colorScheme;
     return showModalBottomSheet<void>(
       context: context,
@@ -46,10 +47,14 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.initialProfile?.name ?? '');
-    _emailController = TextEditingController(text: widget.initialProfile?.email ?? '');
-    _phoneController = TextEditingController(text: widget.initialProfile?.phone ?? '');
-    _bioController = TextEditingController(text: widget.initialProfile?.bio ?? '');
+    _nameController =
+        TextEditingController(text: widget.initialProfile?.name ?? '');
+    _emailController =
+        TextEditingController(text: widget.initialProfile?.email ?? '');
+    _phoneController =
+        TextEditingController(text: widget.initialProfile?.phone ?? '');
+    _bioController =
+        TextEditingController(text: widget.initialProfile?.bio ?? '');
     _selectedImagePath = widget.initialProfile?.imagePath;
   }
 
@@ -90,9 +95,15 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
   void _onSave() async {
     if (_formKey.currentState?.validate() ?? false) {
       final name = _nameController.text.trim();
-      final email = _emailController.text.trim().isEmpty ? null : _emailController.text.trim();
-      final phone = _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim();
-      final bio = _bioController.text.trim().isEmpty ? null : _bioController.text.trim();
+      final email = _emailController.text.trim().isEmpty
+          ? null
+          : _emailController.text.trim();
+      final phone = _phoneController.text.trim().isEmpty
+          ? null
+          : _phoneController.text.trim();
+      final bio = _bioController.text.trim().isEmpty
+          ? null
+          : _bioController.text.trim();
 
       await context.read<ProfileCubit>().saveProfile(
             name: name,
@@ -143,14 +154,17 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
                   Row(
                     children: [
                       Icon(
-                        isEditing ? Icons.edit_note_rounded : Icons.person_add_alt_1_rounded,
+                        isEditing
+                            ? Icons.edit_note_rounded
+                            : Icons.person_add_alt_1_rounded,
                         color: colorScheme.primary,
                         size: 24.sp,
                       ),
                       SizedBox(width: 10.w),
                       Text(
                         isEditing ? l10n.editProfile : l10n.setUpProfile,
-                        style: (textTheme.titleMedium ?? const TextStyle()).copyWith(
+                        style: (textTheme.titleMedium ?? const TextStyle())
+                            .copyWith(
                           color: colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                           fontSize: 18.sp,
@@ -159,7 +173,8 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
                     ],
                   ),
                   IconButton(
-                    icon: Icon(Icons.close_rounded, color: colorScheme.onSurfaceVariant),
+                    icon: Icon(Icons.close_rounded,
+                        color: colorScheme.onSurfaceVariant),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
@@ -193,7 +208,8 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
                 decoration: InputDecoration(
                   labelText: '${l10n.fullNameLabel} *',
                   hintText: l10n.yourNameHint,
-                  prefixIcon: Icon(Icons.person_outline_rounded, color: colorScheme.primary),
+                  prefixIcon: Icon(Icons.person_outline_rounded,
+                      color: colorScheme.primary),
                   filled: true,
                   fillColor: colorScheme.surfaceContainerHigh,
                   border: OutlineInputBorder(
@@ -218,7 +234,8 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
                 decoration: InputDecoration(
                   labelText: l10n.emailAddressLabel,
                   hintText: l10n.emailHint,
-                  prefixIcon: Icon(Icons.email_outlined, color: colorScheme.secondary),
+                  prefixIcon:
+                      Icon(Icons.email_outlined, color: colorScheme.secondary),
                   filled: true,
                   fillColor: colorScheme.surfaceContainerHigh,
                   border: OutlineInputBorder(
@@ -237,7 +254,8 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
                 decoration: InputDecoration(
                   labelText: 'Phone Number (Optional)',
                   hintText: 'e.g. +1 234 567 8900',
-                  prefixIcon: Icon(Icons.phone_outlined, color: colorScheme.tertiary),
+                  prefixIcon:
+                      Icon(Icons.phone_outlined, color: colorScheme.tertiary),
                   filled: true,
                   fillColor: colorScheme.surfaceContainerHigh,
                   border: OutlineInputBorder(
@@ -256,7 +274,8 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
                 decoration: InputDecoration(
                   labelText: l10n.professionalBioLabel,
                   hintText: l10n.bioHint,
-                  prefixIcon: Icon(Icons.info_outline_rounded, color: colorScheme.outline),
+                  prefixIcon: Icon(Icons.info_outline_rounded,
+                      color: colorScheme.outline),
                   filled: true,
                   fillColor: colorScheme.surfaceContainerHigh,
                   border: OutlineInputBorder(

@@ -25,16 +25,23 @@ class ModernAddTransactionPage extends StatefulWidget {
   const ModernAddTransactionPage({super.key, this.initialTransaction});
 
   @override
-  State<ModernAddTransactionPage> createState() => _ModernAddTransactionPageState();
+  State<ModernAddTransactionPage> createState() =>
+      _ModernAddTransactionPageState();
 }
 
 class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
-  final ValueNotifier<TransactionType> _typeNotifier = ValueNotifier<TransactionType>(TransactionType.expense);
-  final ValueNotifier<String> _amountStringNotifier = ValueNotifier<String>('0');
-  final ValueNotifier<CategoryItem?> _selectedCategoryNotifier = ValueNotifier<CategoryItem?>(null);
-  final ValueNotifier<CategoryItem?> _destinationCategoryNotifier = ValueNotifier<CategoryItem?>(null);
-  final ValueNotifier<DateTime> _dateNotifier = ValueNotifier<DateTime>(DateTime.now());
-  final ValueNotifier<PaymentMethod> _paymentMethodNotifier = ValueNotifier<PaymentMethod>(PaymentMethod.card);
+  final ValueNotifier<TransactionType> _typeNotifier =
+      ValueNotifier<TransactionType>(TransactionType.expense);
+  final ValueNotifier<String> _amountStringNotifier =
+      ValueNotifier<String>('0');
+  final ValueNotifier<CategoryItem?> _selectedCategoryNotifier =
+      ValueNotifier<CategoryItem?>(null);
+  final ValueNotifier<CategoryItem?> _destinationCategoryNotifier =
+      ValueNotifier<CategoryItem?>(null);
+  final ValueNotifier<DateTime> _dateNotifier =
+      ValueNotifier<DateTime>(DateTime.now());
+  final ValueNotifier<PaymentMethod> _paymentMethodNotifier =
+      ValueNotifier<PaymentMethod>(PaymentMethod.card);
   final TextEditingController _noteController = TextEditingController();
   final TextEditingController _feeController = TextEditingController();
 
@@ -81,7 +88,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
         if (widget.initialTransaction != null) {
           final tx = widget.initialTransaction!;
           _typeNotifier.value = tx.type;
-          _amountStringNotifier.value = tx.amount.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+          _amountStringNotifier.value =
+              tx.amount.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
           _dateNotifier.value = tx.timestamp;
           if (tx.paymentMethod != null) {
             _paymentMethodNotifier.value = tx.paymentMethod!;
@@ -121,13 +129,15 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
     } catch (_) {}
   }
 
-  void _populateTransferFieldsFromNote(String note, List<CategoryItem> allCats) {
+  void _populateTransferFieldsFromNote(
+      String note, List<CategoryItem> allCats) {
     final feeRegExp = RegExp(r'\(Fee:\s*[^0-9]*([0-9]+(?:\.[0-9]+)?)\)');
     final feeMatch = feeRegExp.firstMatch(note);
     if (feeMatch != null && feeMatch.groupCount >= 1) {
       final feeVal = double.tryParse(feeMatch.group(1)!);
       if (feeVal != null && feeVal > 0) {
-        _feeController.text = feeVal.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+        _feeController.text =
+            feeVal.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
       }
     }
 
@@ -236,7 +246,9 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                 onPressed: () => context.router.maybePop(),
               ),
               title: Text(
-                widget.initialTransaction != null ? 'Edit Transaction' : context.l10n.logTransaction,
+                widget.initialTransaction != null
+                    ? 'Edit Transaction'
+                    : context.l10n.logTransaction,
                 style: (textTheme.titleLarge ?? const TextStyle()).copyWith(
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -270,7 +282,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 onTap: () {
                                   _typeNotifier.value = TransactionType.expense;
                                   if (_expenseCategories.isNotEmpty) {
-                                    _selectedCategoryNotifier.value = _expenseCategories.first;
+                                    _selectedCategoryNotifier.value =
+                                        _expenseCategories.first;
                                   }
                                 },
                                 child: AnimatedContainer(
@@ -279,19 +292,24 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   padding: verticalPaddingSmall,
                                   decoration: BoxDecoration(
                                     color: type == TransactionType.expense
-                                        ? colorScheme.error.withAlpha((0.2 * 255).round())
+                                        ? colorScheme.error
+                                            .withAlpha((0.2 * 255).round())
                                         : Colors.transparent,
                                     borderRadius: BorderRadius.circular(12.r),
                                     border: type == TransactionType.expense
-                                        ? Border.all(color: colorScheme.error, width: 1.5)
+                                        ? Border.all(
+                                            color: colorScheme.error,
+                                            width: 1.5)
                                         : null,
                                   ),
                                   child: Center(
                                     child: Text(
                                       context.l10n.expense,
-                                      style: customTypography.bodyLargeBold.copyWith(
-                                        color:
-                                            type == TransactionType.expense ? colorScheme.error : colorScheme.outline,
+                                      style: customTypography.bodyLargeBold
+                                          .copyWith(
+                                        color: type == TransactionType.expense
+                                            ? colorScheme.error
+                                            : colorScheme.outline,
                                       ),
                                     ),
                                   ),
@@ -304,7 +322,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 onTap: () {
                                   _typeNotifier.value = TransactionType.income;
                                   if (_incomeCategories.isNotEmpty) {
-                                    _selectedCategoryNotifier.value = _incomeCategories.first;
+                                    _selectedCategoryNotifier.value =
+                                        _incomeCategories.first;
                                   }
                                 },
                                 child: AnimatedContainer(
@@ -313,19 +332,24 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   padding: verticalPaddingSmall,
                                   decoration: BoxDecoration(
                                     color: type == TransactionType.income
-                                        ? colorScheme.primary.withAlpha((0.2 * 255).round())
+                                        ? colorScheme.primary
+                                            .withAlpha((0.2 * 255).round())
                                         : Colors.transparent,
                                     borderRadius: BorderRadius.circular(12.r),
                                     border: type == TransactionType.income
-                                        ? Border.all(color: colorScheme.primary, width: 1.5)
+                                        ? Border.all(
+                                            color: colorScheme.primary,
+                                            width: 1.5)
                                         : null,
                                   ),
                                   child: Center(
                                     child: Text(
                                       context.l10n.income,
-                                      style: customTypography.bodyLargeBold.copyWith(
-                                        color:
-                                            type == TransactionType.income ? colorScheme.primary : colorScheme.outline,
+                                      style: customTypography.bodyLargeBold
+                                          .copyWith(
+                                        color: type == TransactionType.income
+                                            ? colorScheme.primary
+                                            : colorScheme.outline,
                                       ),
                                     ),
                                   ),
@@ -336,12 +360,15 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                             Expanded(
                               child: GestureDetector(
                                 onTap: () {
-                                  _typeNotifier.value = TransactionType.transfer;
+                                  _typeNotifier.value =
+                                      TransactionType.transfer;
                                   if (_expenseCategories.isNotEmpty) {
-                                    _selectedCategoryNotifier.value = _expenseCategories.first;
+                                    _selectedCategoryNotifier.value =
+                                        _expenseCategories.first;
                                   }
                                   if (_incomeCategories.isNotEmpty) {
-                                    _destinationCategoryNotifier.value = _incomeCategories.first;
+                                    _destinationCategoryNotifier.value =
+                                        _incomeCategories.first;
                                   }
                                 },
                                 child: AnimatedContainer(
@@ -350,17 +377,21 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   padding: verticalPaddingSmall,
                                   decoration: BoxDecoration(
                                     color: type == TransactionType.transfer
-                                        ? colorScheme.secondary.withAlpha((0.2 * 255).round())
+                                        ? colorScheme.secondary
+                                            .withAlpha((0.2 * 255).round())
                                         : Colors.transparent,
                                     borderRadius: BorderRadius.circular(12.r),
                                     border: type == TransactionType.transfer
-                                        ? Border.all(color: colorScheme.secondary, width: 1.5)
+                                        ? Border.all(
+                                            color: colorScheme.secondary,
+                                            width: 1.5)
                                         : null,
                                   ),
                                   child: Center(
                                     child: Text(
                                       context.l10n.transfer,
-                                      style: customTypography.bodyLargeBold.copyWith(
+                                      style: customTypography.bodyLargeBold
+                                          .copyWith(
                                         color: type == TransactionType.transfer
                                             ? colorScheme.secondary
                                             : colorScheme.outline,
@@ -385,7 +416,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                       return ValueListenableBuilder<TransactionType>(
                         valueListenable: _typeNotifier,
                         builder: (context, type, _) {
-                          final currencySymbol = getIt<PreferenceService>().currencySymbol;
+                          final currencySymbol =
+                              getIt<PreferenceService>().currencySymbol;
                           final color = type == TransactionType.income
                               ? colorScheme.primary
                               : type == TransactionType.transfer
@@ -396,7 +428,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                             children: [
                               Text(
                                 context.l10n.amountLabel,
-                                style: customTypography.labelMediumMono.copyWith(
+                                style:
+                                    customTypography.labelMediumMono.copyWith(
                                   color: colorScheme.outline,
                                   letterSpacing: 1.5,
                                 ),
@@ -406,7 +439,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 fit: BoxFit.scaleDown,
                                 child: Text(
                                   '$currencySymbol $amountStr',
-                                  style: customTypography.headlineLargeMonoBold.copyWith(
+                                  style: customTypography.headlineLargeMonoBold
+                                      .copyWith(
                                     color: color,
                                     fontSize: 42.sp,
                                   ),
@@ -434,7 +468,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                               // From Account / Category
                               Text(
                                 context.l10n.fromAccount,
-                                style: customTypography.labelMediumMono.copyWith(
+                                style:
+                                    customTypography.labelMediumMono.copyWith(
                                   color: colorScheme.outline,
                                   letterSpacing: 1.2,
                                 ),
@@ -444,20 +479,27 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 valueListenable: _selectedCategoryNotifier,
                                 builder: (context, fromCat, _) {
                                   final name = fromCat?.name ?? 'Source';
-                                  final catColor = _parseColor(fromCat?.colorHex ?? '#57F1DB', colorScheme.primary);
-                                  final iconData = _getIconData(fromCat?.icon ?? 'category');
+                                  final catColor = _parseColor(
+                                      fromCat?.colorHex ?? '#57F1DB',
+                                      colorScheme.primary);
+                                  final iconData =
+                                      _getIconData(fromCat?.icon ?? 'category');
 
                                   return InkWell(
                                     onTap: () async {
-                                      final picked = await CategoryPickerSheet.show(
+                                      final picked =
+                                          await CategoryPickerSheet.show(
                                         context: context,
                                         categories:
-                                            _expenseCategories.isNotEmpty ? _expenseCategories : _incomeCategories,
+                                            _expenseCategories.isNotEmpty
+                                                ? _expenseCategories
+                                                : _incomeCategories,
                                         selectedCategory: fromCat,
                                         initialType: TransactionType.expense,
                                       );
                                       if (picked != null) {
-                                        _selectedCategoryNotifier.value = picked;
+                                        _selectedCategoryNotifier.value =
+                                            picked;
                                       }
                                     },
                                     borderRadius: BorderRadius.circular(16.r),
@@ -466,24 +508,33 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                       padding: horizontalPaddingMedium,
                                       decoration: BoxDecoration(
                                         color: colorScheme.surfaceContainerHigh,
-                                        borderRadius: BorderRadius.circular(16.r),
-                                        border: Border.all(color: colorScheme.outlineVariant),
+                                        borderRadius:
+                                            BorderRadius.circular(16.r),
+                                        border: Border.all(
+                                            color: colorScheme.outlineVariant),
                                       ),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
                                             children: [
-                                              Icon(iconData, color: catColor, size: 20.sp),
+                                              Icon(iconData,
+                                                  color: catColor, size: 20.sp),
                                               horizontalMarginSmall,
                                               Text(
                                                 name,
-                                                style: customTypography.bodyLargeBold
-                                                    .copyWith(color: colorScheme.onSurface),
+                                                style: customTypography
+                                                    .bodyLargeBold
+                                                    .copyWith(
+                                                        color: colorScheme
+                                                            .onSurface),
                                               ),
                                             ],
                                           ),
-                                          Icon(Icons.unfold_more_rounded, color: colorScheme.outline, size: 20.sp),
+                                          Icon(Icons.unfold_more_rounded,
+                                              color: colorScheme.outline,
+                                              size: 20.sp),
                                         ],
                                       ),
                                     ),
@@ -496,7 +547,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                               // To Account / Category
                               Text(
                                 context.l10n.toAccount,
-                                style: customTypography.labelMediumMono.copyWith(
+                                style:
+                                    customTypography.labelMediumMono.copyWith(
                                   color: colorScheme.outline,
                                   letterSpacing: 1.2,
                                 ),
@@ -506,20 +558,26 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 valueListenable: _destinationCategoryNotifier,
                                 builder: (context, toCat, _) {
                                   final name = toCat?.name ?? 'Destination';
-                                  final catColor = _parseColor(toCat?.colorHex ?? '#34D399', colorScheme.secondary);
-                                  final iconData = _getIconData(toCat?.icon ?? 'category');
+                                  final catColor = _parseColor(
+                                      toCat?.colorHex ?? '#34D399',
+                                      colorScheme.secondary);
+                                  final iconData =
+                                      _getIconData(toCat?.icon ?? 'category');
 
                                   return InkWell(
                                     onTap: () async {
-                                      final picked = await CategoryPickerSheet.show(
+                                      final picked =
+                                          await CategoryPickerSheet.show(
                                         context: context,
-                                        categories:
-                                            _incomeCategories.isNotEmpty ? _incomeCategories : _expenseCategories,
+                                        categories: _incomeCategories.isNotEmpty
+                                            ? _incomeCategories
+                                            : _expenseCategories,
                                         selectedCategory: toCat,
                                         initialType: TransactionType.income,
                                       );
                                       if (picked != null) {
-                                        _destinationCategoryNotifier.value = picked;
+                                        _destinationCategoryNotifier.value =
+                                            picked;
                                       }
                                     },
                                     borderRadius: BorderRadius.circular(16.r),
@@ -528,24 +586,33 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                       padding: horizontalPaddingMedium,
                                       decoration: BoxDecoration(
                                         color: colorScheme.surfaceContainerHigh,
-                                        borderRadius: BorderRadius.circular(16.r),
-                                        border: Border.all(color: colorScheme.outlineVariant),
+                                        borderRadius:
+                                            BorderRadius.circular(16.r),
+                                        border: Border.all(
+                                            color: colorScheme.outlineVariant),
                                       ),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
                                             children: [
-                                              Icon(iconData, color: catColor, size: 20.sp),
+                                              Icon(iconData,
+                                                  color: catColor, size: 20.sp),
                                               horizontalMarginSmall,
                                               Text(
                                                 name,
-                                                style: customTypography.bodyLargeBold
-                                                    .copyWith(color: colorScheme.onSurface),
+                                                style: customTypography
+                                                    .bodyLargeBold
+                                                    .copyWith(
+                                                        color: colorScheme
+                                                            .onSurface),
                                               ),
                                             ],
                                           ),
-                                          Icon(Icons.unfold_more_rounded, color: colorScheme.outline, size: 20.sp),
+                                          Icon(Icons.unfold_more_rounded,
+                                              color: colorScheme.outline,
+                                              size: 20.sp),
                                         ],
                                       ),
                                     ),
@@ -558,7 +625,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                               // Transfer Fee Field
                               Text(
                                 context.l10n.transferFee,
-                                style: customTypography.labelMediumMono.copyWith(
+                                style:
+                                    customTypography.labelMediumMono.copyWith(
                                   color: colorScheme.outline,
                                   letterSpacing: 1.2,
                                 ),
@@ -577,8 +645,9 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                       }
 
                       // Expense or Income Category Selector
-                      final categories =
-                          currentType == TransactionType.expense ? _expenseCategories : _incomeCategories;
+                      final categories = currentType == TransactionType.expense
+                          ? _expenseCategories
+                          : _incomeCategories;
 
                       return Padding(
                         padding: horizontalPaddingLarge,
@@ -596,13 +665,18 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                             ValueListenableBuilder<CategoryItem?>(
                               valueListenable: _selectedCategoryNotifier,
                               builder: (context, selectedCat, _) {
-                                final catName = selectedCat?.name ?? context.l10n.categoryLabel;
-                                final catColor = _parseColor(selectedCat?.colorHex ?? '#57F1DB', colorScheme.primary);
-                                final iconData = _getIconData(selectedCat?.icon ?? 'category');
+                                final catName = selectedCat?.name ??
+                                    context.l10n.categoryLabel;
+                                final catColor = _parseColor(
+                                    selectedCat?.colorHex ?? '#57F1DB',
+                                    colorScheme.primary);
+                                final iconData = _getIconData(
+                                    selectedCat?.icon ?? 'category');
 
                                 return InkWell(
                                   onTap: () async {
-                                    final picked = await CategoryPickerSheet.show(
+                                    final picked =
+                                        await CategoryPickerSheet.show(
                                       context: context,
                                       categories: categories,
                                       selectedCategory: selectedCat,
@@ -625,15 +699,18 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                       ),
                                     ),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Row(
                                           children: [
                                             Container(
                                               padding: allXSmall,
                                               decoration: BoxDecoration(
-                                                color: catColor.withAlpha((0.2 * 255).round()),
-                                                borderRadius: BorderRadius.circular(10.r),
+                                                color: catColor.withAlpha(
+                                                    (0.2 * 255).round()),
+                                                borderRadius:
+                                                    BorderRadius.circular(10.r),
                                               ),
                                               child: Icon(
                                                 iconData,
@@ -644,7 +721,9 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                             horizontalMarginSmall,
                                             Text(
                                               catName,
-                                              style: customTypography.bodyLargeBold.copyWith(
+                                              style: customTypography
+                                                  .bodyLargeBold
+                                                  .copyWith(
                                                 color: colorScheme.onSurface,
                                               ),
                                             ),
@@ -671,7 +750,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                   ValueListenableBuilder<TransactionType>(
                     valueListenable: _typeNotifier,
                     builder: (context, currentType, _) {
-                      if (currentType != TransactionType.expense && currentType != TransactionType.transfer) {
+                      if (currentType != TransactionType.expense &&
+                          currentType != TransactionType.transfer) {
                         return const SizedBox.shrink();
                       }
                       return Padding(
@@ -698,7 +778,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                       method: PaymentMethod.card,
                                       label: context.l10n.paymentCard,
                                       icon: Icons.credit_card_rounded,
-                                      isSelected: selectedMethod == PaymentMethod.card,
+                                      isSelected:
+                                          selectedMethod == PaymentMethod.card,
                                     ),
                                     horizontalMarginSmall,
                                     _buildPaymentMethodOption(
@@ -706,7 +787,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                       method: PaymentMethod.cash,
                                       label: context.l10n.paymentCash,
                                       icon: Icons.payments_rounded,
-                                      isSelected: selectedMethod == PaymentMethod.cash,
+                                      isSelected:
+                                          selectedMethod == PaymentMethod.cash,
                                     ),
                                     horizontalMarginSmall,
                                     _buildPaymentMethodOption(
@@ -714,7 +796,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                       method: PaymentMethod.account,
                                       label: context.l10n.paymentAccount,
                                       icon: Icons.account_balance_rounded,
-                                      isSelected: selectedMethod == PaymentMethod.account,
+                                      isSelected: selectedMethod ==
+                                          PaymentMethod.account,
                                     ),
                                   ],
                                 );
@@ -753,7 +836,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 },
                                 borderRadius: BorderRadius.circular(16.r),
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 14.w, vertical: 12.h),
                                   decoration: BoxDecoration(
                                     color: colorScheme.surfaceContainerHigh,
                                     borderRadius: BorderRadius.circular(16.r),
@@ -773,7 +857,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                       horizontalMarginXSmall,
                                       Text(
                                         '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                                        style: customTypography.bodyMedium.copyWith(
+                                        style: customTypography.bodyMedium
+                                            .copyWith(
                                           color: colorScheme.onSurface,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -797,7 +882,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                 color: colorScheme.outline,
                                 size: 18.sp,
                               ),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 14.w, vertical: 14.h),
                               fillColor: colorScheme.surfaceContainerHigh,
                               borderRadius: BorderRadius.circular(16.r),
                             ),
@@ -813,7 +899,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
             ),
             bottomNavigationBar: Builder(
               builder: (context) {
-                final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+                final isKeyboardOpen =
+                    MediaQuery.of(context).viewInsets.bottom > 0;
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -841,56 +928,72 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                         left: 24.w,
                         right: 24.w,
                         top: 12.h,
-                        bottom: 12.h + MediaQuery.of(context).viewPadding.bottom,
+                        bottom:
+                            12.h + MediaQuery.of(context).viewPadding.bottom,
                       ),
                       child: Builder(
                         builder: (blocContext) {
                           return ElevatedButton(
                             onPressed: () async {
-                              final amount = double.tryParse(_amountStringNotifier.value) ?? 0.0;
+                              final amount = double.tryParse(
+                                      _amountStringNotifier.value) ??
+                                  0.0;
                               if (amount <= 0) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(context.l10n.enterAmountError),
+                                    content:
+                                        Text(context.l10n.enterAmountError),
                                     backgroundColor: colorScheme.error,
                                   ),
                                 );
                                 return;
                               }
 
-                              final selectedCat = _selectedCategoryNotifier.value;
+                              final selectedCat =
+                                  _selectedCategoryNotifier.value;
                               if (selectedCat == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(context.l10n.selectCategoryError),
+                                    content:
+                                        Text(context.l10n.selectCategoryError),
                                     backgroundColor: colorScheme.error,
                                   ),
                                 );
                                 return;
                               }
 
-                              final cubit = blocContext.read<TransactionCubit>();
+                              final cubit =
+                                  blocContext.read<TransactionCubit>();
 
                               String? noteText;
                               final baseNote = _noteController.text.trim();
-                              final fee = double.tryParse(_feeController.text.trim());
+                              final fee =
+                                  double.tryParse(_feeController.text.trim());
 
-                              if (_typeNotifier.value == TransactionType.transfer) {
-                                final destCat = _destinationCategoryNotifier.value;
+                              if (_typeNotifier.value ==
+                                  TransactionType.transfer) {
+                                final destCat =
+                                    _destinationCategoryNotifier.value;
                                 final feePart = (fee != null && fee > 0)
                                     ? ' (Fee: ${getIt<PreferenceService>().currencySymbol}$fee)'
                                     : '';
                                 final transferDesc =
                                     'Transfer: ${selectedCat.name} → ${destCat?.name ?? "Destination"}$feePart';
-                                noteText = baseNote.isNotEmpty ? '$transferDesc | $baseNote' : transferDesc;
+                                noteText = baseNote.isNotEmpty
+                                    ? '$transferDesc | $baseNote'
+                                    : transferDesc;
                               } else {
-                                noteText = baseNote.isNotEmpty ? baseNote : null;
+                                noteText =
+                                    baseNote.isNotEmpty ? baseNote : null;
                               }
 
-                              final PaymentMethod? paymentMethod = (_typeNotifier.value == TransactionType.expense ||
-                                      _typeNotifier.value == TransactionType.transfer)
-                                  ? _paymentMethodNotifier.value
-                                  : null;
+                              final PaymentMethod? paymentMethod =
+                                  (_typeNotifier.value ==
+                                              TransactionType.expense ||
+                                          _typeNotifier.value ==
+                                              TransactionType.transfer)
+                                      ? _paymentMethodNotifier.value
+                                      : null;
 
                               if (widget.initialTransaction != null) {
                                 final initialTx = widget.initialTransaction!;
@@ -904,19 +1007,30 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   paymentMethod: paymentMethod,
                                 );
 
-                                if (_typeNotifier.value == TransactionType.transfer) {
+                                if (_typeNotifier.value ==
+                                    TransactionType.transfer) {
                                   final feeTx = cubit.allTransactions
                                       .where(
                                         (t) =>
                                             t.type == TransactionType.expense &&
-                                            (t.note?.contains('[Ref: #${initialTx.id}]') == true ||
-                                                (t.note?.startsWith('Transfer Fee') == true &&
-                                                    (t.timestamp.difference(_dateNotifier.value).inSeconds).abs() <
+                                            (t.note?.contains(
+                                                        '[Ref: #${initialTx.id}]') ==
+                                                    true ||
+                                                (t.note?.startsWith(
+                                                            'Transfer Fee') ==
+                                                        true &&
+                                                    (t.timestamp
+                                                                .difference(
+                                                                    _dateNotifier
+                                                                        .value)
+                                                                .inSeconds)
+                                                            .abs() <
                                                         60)),
                                       )
                                       .firstOrNull;
 
-                                  final destCat = _destinationCategoryNotifier.value;
+                                  final destCat =
+                                      _destinationCategoryNotifier.value;
                                   final feeNote =
                                       'Transfer Fee (${selectedCat.name} → ${destCat?.name ?? "Destination"}) [Ref: #${initialTx.id}]';
 
@@ -944,16 +1058,27 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   } else if (feeTx != null) {
                                     await cubit.deleteTransaction(feeTx.id);
                                   }
-                                } else if (initialTx.type == TransactionType.expense &&
-                                    initialTx.note?.contains('Transfer Fee') == true) {
-                                  final refMatch = RegExp(r'\[Ref:\s*#(\d+)\]').firstMatch(initialTx.note!);
-                                  if (refMatch != null && refMatch.groupCount >= 1) {
-                                    final parentId = int.tryParse(refMatch.group(1)!);
+                                } else if (initialTx.type ==
+                                        TransactionType.expense &&
+                                    initialTx.note?.contains('Transfer Fee') ==
+                                        true) {
+                                  final refMatch = RegExp(r'\[Ref:\s*#(\d+)\]')
+                                      .firstMatch(initialTx.note!);
+                                  if (refMatch != null &&
+                                      refMatch.groupCount >= 1) {
+                                    final parentId =
+                                        int.tryParse(refMatch.group(1)!);
                                     if (parentId != null) {
-                                      final parentTx = cubit.allTransactions.where((t) => t.id == parentId).firstOrNull;
-                                      if (parentTx != null && parentTx.note != null) {
-                                        final symbol = getIt<PreferenceService>().currencySymbol;
-                                        final updatedNote = parentTx.note!.replaceAll(
+                                      final parentTx = cubit.allTransactions
+                                          .where((t) => t.id == parentId)
+                                          .firstOrNull;
+                                      if (parentTx != null &&
+                                          parentTx.note != null) {
+                                        final symbol =
+                                            getIt<PreferenceService>()
+                                                .currencySymbol;
+                                        final updatedNote =
+                                            parentTx.note!.replaceAll(
                                           RegExp(r'\(Fee:\s*[^)]+\)'),
                                           '(Fee: $symbol${amount.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '')})',
                                         );
@@ -971,7 +1096,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   }
                                 }
                               } else {
-                                final newId = await cubit.addTransactionAndReturnId(
+                                final newId =
+                                    await cubit.addTransactionAndReturnId(
                                   type: _typeNotifier.value,
                                   amount: amount,
                                   categoryId: selectedCat.id,
@@ -980,9 +1106,14 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   paymentMethod: paymentMethod,
                                 );
 
-                                if (_typeNotifier.value == TransactionType.transfer && fee != null && fee > 0) {
-                                  final destCat = _destinationCategoryNotifier.value;
-                                  final feeRef = newId != null ? ' [Ref: #$newId]' : '';
+                                if (_typeNotifier.value ==
+                                        TransactionType.transfer &&
+                                    fee != null &&
+                                    fee > 0) {
+                                  final destCat =
+                                      _destinationCategoryNotifier.value;
+                                  final feeRef =
+                                      newId != null ? ' [Ref: #$newId]' : '';
                                   await cubit.addTransaction(
                                     type: TransactionType.expense,
                                     amount: fee,
@@ -1011,7 +1142,9 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                               elevation: 0,
                             ),
                             child: Text(
-                              widget.initialTransaction != null ? 'Update Transaction' : context.l10n.saveTransaction,
+                              widget.initialTransaction != null
+                                  ? 'Update Transaction'
+                                  : context.l10n.saveTransaction,
                               style: customTypography.bodyLargeBold.copyWith(
                                 color: Colors.black,
                                 fontSize: 18.sp,
@@ -1044,10 +1177,12 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
             height: 48.h,
             alignment: Alignment.center,
             child: key == '<'
-                ? Icon(Icons.backspace_outlined, color: colorScheme.onSurface, size: 22.sp)
+                ? Icon(Icons.backspace_outlined,
+                    color: colorScheme.onSurface, size: 22.sp)
                 : Text(
                     key,
-                    style: context.customTypography.headlineMediumMonoBold.copyWith(
+                    style: context.customTypography.headlineMediumMonoBold
+                        .copyWith(
                       color: colorScheme.onSurface,
                       fontSize: 22.sp,
                     ),
@@ -1121,7 +1256,9 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
           height: 48.h,
           padding: EdgeInsets.symmetric(horizontal: 8.w),
           decoration: BoxDecoration(
-            color: isSelected ? activeColor.withAlpha((0.15 * 255).round()) : colorScheme.surfaceContainerHigh,
+            color: isSelected
+                ? activeColor.withAlpha((0.15 * 255).round())
+                : colorScheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: isSelected ? activeColor : colorScheme.outlineVariant,
@@ -1142,8 +1279,11 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                   label,
                   overflow: TextOverflow.ellipsis,
                   style: customTypography.bodyMedium.copyWith(
-                    color: isSelected ? colorScheme.onSurface : colorScheme.outline,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected
+                        ? colorScheme.onSurface
+                        : colorScheme.outline,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
               ),

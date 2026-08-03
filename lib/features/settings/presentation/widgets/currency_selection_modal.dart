@@ -30,8 +30,7 @@ class CurrencySelectionModal extends StatefulWidget {
   }
 
   @override
-  State<CurrencySelectionModal> createState() =>
-      _CurrencySelectionModalState();
+  State<CurrencySelectionModal> createState() => _CurrencySelectionModalState();
 }
 
 class _CurrencySelectionModalState extends State<CurrencySelectionModal> {

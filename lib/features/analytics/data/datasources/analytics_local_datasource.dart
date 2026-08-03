@@ -51,7 +51,8 @@ class AnalyticsLocalDataSourceImpl implements AnalyticsLocalDataSource {
 
     // Filter transactions within selected period
     final filteredTx = allTx.where((tx) {
-      return tx.timestamp.isAfter(startDate.subtract(const Duration(seconds: 1))) &&
+      return tx.timestamp
+              .isAfter(startDate.subtract(const Duration(seconds: 1))) &&
           tx.timestamp.isBefore(endDate.add(const Duration(seconds: 1)));
     }).toList();
 
@@ -175,7 +176,20 @@ class AnalyticsLocalDataSourceImpl implements AnalyticsLocalDataSource {
         }
       }
     } else if (period == 'Yearly') {
-      labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      labels = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ];
       for (final tx in filteredTx) {
         if (tx.type == TransactionType.expense) {
           final key = tx.timestamp.month; // 1 to 12
@@ -185,10 +199,19 @@ class AnalyticsLocalDataSourceImpl implements AnalyticsLocalDataSource {
     } else if (period == 'Custom') {
       final daysDiff = endDate.difference(startDate).inDays;
       if (daysDiff <= 7) {
-        labels = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
+        labels = [
+          'Day 1',
+          'Day 2',
+          'Day 3',
+          'Day 4',
+          'Day 5',
+          'Day 6',
+          'Day 7'
+        ];
         for (final tx in filteredTx) {
           if (tx.type == TransactionType.expense) {
-            final key = (tx.timestamp.difference(startDate).inDays + 1).clamp(1, 7);
+            final key =
+                (tx.timestamp.difference(startDate).inDays + 1).clamp(1, 7);
             flowTotals[key] = (flowTotals[key] ?? 0.0) + (tx.amount / 100.0);
           }
         }

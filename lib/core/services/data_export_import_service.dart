@@ -51,7 +51,8 @@ class DataExportImportService {
     this._db,
     this._preferenceService, [
     BackupStorageProvider? storageProvider,
-  ]) : _storageProvider = storageProvider ?? BackupStorageProviderFactory.create();
+  ]) : _storageProvider =
+            storageProvider ?? BackupStorageProviderFactory.create();
 
   // ── Analytics CSV ─────────────────────────────────────────────────────────
 
@@ -67,7 +68,8 @@ class DataExportImportService {
 
       buffer.writeln('===============================================');
       buffer.writeln('EXPENDLY FINANCIAL ANALYTICS & TREND REPORT');
-      buffer.writeln('Generated Date,${DateTime.now().toIso8601String().substring(0, 19)}');
+      buffer.writeln(
+          'Generated Date,${DateTime.now().toIso8601String().substring(0, 19)}');
       buffer.writeln('Period,${report.periodName}');
       buffer.writeln('Currency,$currency');
       buffer.writeln('===============================================');
@@ -76,18 +78,22 @@ class DataExportImportService {
       buffer.writeln('--- FINANCIAL SUMMARY ---');
       buffer.writeln('Metric,Amount');
       buffer.writeln('Total Income,${report.totalIncome.toStringAsFixed(2)}');
-      buffer.writeln('Total Expenses,${report.totalExpense.toStringAsFixed(2)}');
-      buffer.writeln('Net Savings,${report.netSavings.toStringAsFixed(2)}');
-      buffer.writeln('Savings Rate,${report.savingsRatePercentage.toStringAsFixed(1)}%');
-      buffer.writeln('Average Daily Spend,${report.avgDailySpend.toStringAsFixed(2)}');
       buffer
-          .writeln('Budget Health,${report.budgetHealthPercentage.toStringAsFixed(0)}% (${report.budgetHealthStatus})');
+          .writeln('Total Expenses,${report.totalExpense.toStringAsFixed(2)}');
+      buffer.writeln('Net Savings,${report.netSavings.toStringAsFixed(2)}');
+      buffer.writeln(
+          'Savings Rate,${report.savingsRatePercentage.toStringAsFixed(1)}%');
+      buffer.writeln(
+          'Average Daily Spend,${report.avgDailySpend.toStringAsFixed(2)}');
+      buffer.writeln(
+          'Budget Health,${report.budgetHealthPercentage.toStringAsFixed(0)}% (${report.budgetHealthStatus})');
       buffer.writeln('');
 
       if (report.topCategoryName != null) {
         buffer.writeln('--- HIGHLIGHT INSIGHTS ---');
         buffer.writeln('Top Expense Category,"${report.topCategoryName}"');
-        buffer.writeln('Top Category Share,${report.topCategoryPercentage?.toStringAsFixed(1)}%');
+        buffer.writeln(
+            'Top Category Share,${report.topCategoryPercentage?.toStringAsFixed(1)}%');
         buffer.writeln('');
       }
 
@@ -95,7 +101,8 @@ class DataExportImportService {
       buffer.writeln('Category,Amount,Percentage Share');
       for (final cat in report.categoryBreakdowns) {
         final catEscaped = cat.categoryName.replaceAll('"', '""');
-        buffer.writeln('"$catEscaped",${cat.amount.toStringAsFixed(2)},${cat.percentage.toStringAsFixed(1)}%');
+        buffer.writeln(
+            '"$catEscaped",${cat.amount.toStringAsFixed(2)},${cat.percentage.toStringAsFixed(1)}%');
       }
       buffer.writeln('');
 
@@ -108,11 +115,13 @@ class DataExportImportService {
       for (final t in transactionsList) {
         final catName = categoryMap[t.categoryId] ?? 'Uncategorized';
         final amountFormatted = (t.amount / 100.0).toStringAsFixed(2);
-        final dateStr = t.timestamp.toIso8601String().replaceAll('T', ' ').substring(0, 19);
+        final dateStr =
+            t.timestamp.toIso8601String().replaceAll('T', ' ').substring(0, 19);
         final typeStr = t.type.name.toUpperCase();
         final pmStr = t.paymentMethod?.name.toUpperCase() ?? '';
         final noteEscaped = (t.note ?? '').replaceAll('"', '""');
-        buffer.writeln('${t.id},"$dateStr","$typeStr","$catName",$amountFormatted,"$pmStr","$noteEscaped"');
+        buffer.writeln(
+            '${t.id},"$dateStr","$typeStr","$catName",$amountFormatted,"$pmStr","$noteEscaped"');
       }
 
       final exportDir = await _getExportDirectory();
@@ -122,7 +131,8 @@ class DataExportImportService {
       final file = File(filePath);
       await file.writeAsString(buffer.toString());
 
-      AppLogger.i('DataExportImportService: Financial Report exported to $filePath');
+      AppLogger.i(
+          'DataExportImportService: Financial Report exported to $filePath');
 
       if (openAfterExport) {
         await OpenFile.open(filePath, type: 'text/csv');
@@ -130,7 +140,8 @@ class DataExportImportService {
 
       return filePath;
     } catch (e, stack) {
-      AppLogger.e('DataExportImportService: Analytics CSV Export failed', e, stack);
+      AppLogger.e(
+          'DataExportImportService: Analytics CSV Export failed', e, stack);
       rethrow;
     }
   }
@@ -147,12 +158,14 @@ class DataExportImportService {
       final categoryMap = {for (var c in categoriesList) c.id: c.name};
 
       final buffer = StringBuffer();
-      buffer.writeln('ID,Date,Type,Category,Amount,Currency,Payment Method,Note');
+      buffer
+          .writeln('ID,Date,Type,Category,Amount,Currency,Payment Method,Note');
 
       for (final t in transactionsList) {
         final catName = categoryMap[t.categoryId] ?? 'Uncategorized';
         final amountFormatted = (t.amount / 100.0).toStringAsFixed(2);
-        final dateStr = t.timestamp.toIso8601String().replaceAll('T', ' ').substring(0, 19);
+        final dateStr =
+            t.timestamp.toIso8601String().replaceAll('T', ' ').substring(0, 19);
         final typeStr = t.type.name.toUpperCase();
         final pmStr = t.paymentMethod?.name.toUpperCase() ?? '';
         final noteEscaped = (t.note ?? '').replaceAll('"', '""');
@@ -161,7 +174,8 @@ class DataExportImportService {
       }
 
       final exportDir = await _getExportDirectory();
-      final fileName = 'expendly_transactions_${DateTime.now().millisecondsSinceEpoch}.csv';
+      final fileName =
+          'expendly_transactions_${DateTime.now().millisecondsSinceEpoch}.csv';
       final filePath = p.join(exportDir.path, fileName);
       final file = File(filePath);
       await file.writeAsString(buffer.toString());
@@ -170,7 +184,8 @@ class DataExportImportService {
 
       if (openAfterExport) {
         final openResult = await OpenFile.open(filePath, type: 'text/csv');
-        AppLogger.i('DataExportImportService: OpenFile result: ${openResult.type} ${openResult.message}');
+        AppLogger.i(
+            'DataExportImportService: OpenFile result: ${openResult.type} ${openResult.message}');
       }
 
       return filePath;
@@ -247,7 +262,8 @@ class DataExportImportService {
   Future<String> getBackupFileName() async {
     try {
       final info = await PackageInfo.fromPlatform();
-      final versionFormatted = info.version.replaceAll('.', '_').replaceAll('+', '_');
+      final versionFormatted =
+          info.version.replaceAll('.', '_').replaceAll('+', '_');
       return 'expendly_backup_$versionFormatted.csv';
     } catch (_) {
       return kBackupFileName;
@@ -268,11 +284,13 @@ class DataExportImportService {
       if (Platform.isAndroid) {
         try {
           final external = await getExternalStorageDirectory();
-          if (external != null) candidateDirs.add(Directory(p.join(external.path, 'Expendly')));
+          if (external != null)
+            candidateDirs.add(Directory(p.join(external.path, 'Expendly')));
         } catch (_) {}
         try {
           final downloads = await getDownloadsDirectory();
-          if (downloads != null) candidateDirs.add(Directory(p.join(downloads.path, 'Expendly')));
+          if (downloads != null)
+            candidateDirs.add(Directory(p.join(downloads.path, 'Expendly')));
         } catch (_) {}
         candidateDirs.add(Directory('/storage/emulated/0/Download/Expendly'));
       }
@@ -296,7 +314,8 @@ class DataExportImportService {
           for (final entity in entities) {
             if (entity is File) {
               final name = p.basename(entity.path);
-              if (name.startsWith('expendly_backup') || name.startsWith('expense_backup')) {
+              if (name.startsWith('expendly_backup') ||
+                  name.startsWith('expense_backup')) {
                 try {
                   final modTime = await entity.lastModified();
                   if (latestModTime == null || modTime.isAfter(latestModTime)) {
@@ -324,7 +343,8 @@ class DataExportImportService {
   /// Validates section headers before touching the database. Runs all
   /// inserts inside a single Drift transaction; any failure rolls back
   /// automatically and returns a [CsvImportResult.failure].
-  Future<CsvImportResult> importBackupCsv(String filePath, {String? rawContent}) async {
+  Future<CsvImportResult> importBackupCsv(String filePath,
+      {String? rawContent}) async {
     try {
       final String content;
       if (rawContent != null && rawContent.isNotEmpty) {
@@ -341,7 +361,8 @@ class DataExportImportService {
           if (e.toString().contains('Permission denied') ||
               e.toString().contains('errno = 13') ||
               e is FileSystemException) {
-            AppLogger.w('DataExportImportService: Permission denied reading $filePath: $e');
+            AppLogger.w(
+                'DataExportImportService: Permission denied reading $filePath: $e');
             return CsvImportResult.failure(
               'Permission denied: Android requires selecting the file via the file browser after reinstalling the app.',
             );
@@ -355,7 +376,8 @@ class DataExportImportService {
       // ── Schema validation ──────────────────────────────────────────────
       final validationError = _validateSections(sections);
       if (validationError != null) {
-        AppLogger.w('DataExportImportService: Schema validation failed: $validationError');
+        AppLogger.w(
+            'DataExportImportService: Schema validation failed: $validationError');
         return CsvImportResult.failure(validationError);
       }
 
@@ -378,8 +400,10 @@ class DataExportImportService {
         final metaData = metaRows[1];
         final codeIdx = metaHeader.indexOf('currencyCode');
         final symIdx = metaHeader.indexOf('currencySymbol');
-        if (codeIdx >= 0 && codeIdx < metaData.length) currencyCode = metaData[codeIdx];
-        if (symIdx >= 0 && symIdx < metaData.length) currencySymbol = metaData[symIdx];
+        if (codeIdx >= 0 && codeIdx < metaData.length)
+          currencyCode = metaData[codeIdx];
+        if (symIdx >= 0 && symIdx < metaData.length)
+          currencySymbol = metaData[symIdx];
       }
 
       int txImported = 0;
@@ -420,12 +444,17 @@ class DataExportImportService {
                     UserProfilesCompanion.insert(
                       id: intId != null ? Value(intId) : const Value.absent(),
                       name: v['name'] ?? 'User',
-                      email: Value(v['email']?.isEmpty == true ? null : v['email']),
-                      phone: Value(v['phone']?.isEmpty == true ? null : v['phone']),
+                      email: Value(
+                          v['email']?.isEmpty == true ? null : v['email']),
+                      phone: Value(
+                          v['phone']?.isEmpty == true ? null : v['phone']),
                       bio: Value(v['bio']?.isEmpty == true ? null : v['bio']),
-                      imagePath: const Value(null), // excluded — device-specific
-                      createdAt: Value(_parseDate(v['createdAt']) ?? DateTime.now()),
-                      updatedAt: Value(_parseDate(v['updatedAt']) ?? DateTime.now()),
+                      imagePath:
+                          const Value(null), // excluded — device-specific
+                      createdAt:
+                          Value(_parseDate(v['createdAt']) ?? DateTime.now()),
+                      updatedAt:
+                          Value(_parseDate(v['updatedAt']) ?? DateTime.now()),
                     ),
                   );
               profileImported++;
@@ -539,10 +568,13 @@ class DataExportImportService {
                       targetAmount: _parseInt(v['targetAmount']) ?? 0,
                       period: period,
                       year: Value(_parseInt(v['year']) ?? DateTime.now().year),
-                      month: Value(_parseInt(v['month']) ?? DateTime.now().month),
+                      month:
+                          Value(_parseInt(v['month']) ?? DateTime.now().month),
                       currencyCode: Value(v['currencyCode'] ?? 'USD'),
-                      notifyAtThreshold: Value(v['notifyAtThreshold'] == 'true'),
-                      thresholdPercentage: Value(_parseInt(v['thresholdPercentage']) ?? 80),
+                      notifyAtThreshold:
+                          Value(v['notifyAtThreshold'] == 'true'),
+                      thresholdPercentage:
+                          Value(_parseInt(v['thresholdPercentage']) ?? 80),
                     ),
                   );
               budgetImported++;
@@ -578,12 +610,15 @@ class DataExportImportService {
                       amount: _parseInt(v['amount']) ?? 0,
                       categoryId: _parseInt(v['categoryId'])!,
                       subcategoryId: Value(_parseInt(v['subcategoryId'])),
-                      note: Value(v['note']?.isEmpty == true ? null : v['note']),
+                      note:
+                          Value(v['note']?.isEmpty == true ? null : v['note']),
                       frequency: freq,
-                      nextDueDate: _parseDate(v['nextDueDate']) ?? DateTime.now(),
+                      nextDueDate:
+                          _parseDate(v['nextDueDate']) ?? DateTime.now(),
                       isAutoCreate: Value(v['isAutoCreate'] == 'true'),
                       isActive: Value(v['isActive'] == 'true'),
-                      lastProcessedDate: Value(_parseDate(v['lastProcessedDate'])),
+                      lastProcessedDate:
+                          Value(_parseDate(v['lastProcessedDate'])),
                     ),
                   );
               recurImported++;
@@ -623,10 +658,12 @@ class DataExportImportService {
                       categoryId: _parseInt(v['categoryId'])!,
                       subcategoryId: Value(_parseInt(v['subcategoryId'])),
                       timestamp: _parseDate(v['timestamp']) ?? DateTime.now(),
-                      note: Value(v['note']?.isEmpty == true ? null : v['note']),
+                      note:
+                          Value(v['note']?.isEmpty == true ? null : v['note']),
                       paymentMethod: Value(pm),
                       currencyCode: Value(v['currencyCode'] ?? 'USD'),
-                      recurringTransactionId: Value(_parseInt(v['recurringTransactionId'])),
+                      recurringTransactionId:
+                          Value(_parseInt(v['recurringTransactionId'])),
                     ),
                   );
               txImported++;
@@ -663,8 +700,12 @@ class DataExportImportService {
       });
 
       // Update currency preference if available
-      if (currencyCode != null && currencyCode.isNotEmpty && currencySymbol != null && currencySymbol.isNotEmpty) {
-        await _preferenceService.setCurrency(code: currencyCode, symbol: currencySymbol);
+      if (currencyCode != null &&
+          currencyCode.isNotEmpty &&
+          currencySymbol != null &&
+          currencySymbol.isNotEmpty) {
+        await _preferenceService.setCurrency(
+            code: currencyCode, symbol: currencySymbol);
       }
 
       // Notify app-wide listeners
@@ -752,7 +793,8 @@ class DataExportImportService {
 
     // BUDGETS
     buf.writeln('[$_sBudgets]');
-    buf.writeln('id,categoryId,targetAmount,period,year,month,currencyCode,notifyAtThreshold,thresholdPercentage');
+    buf.writeln(
+        'id,categoryId,targetAmount,period,year,month,currencyCode,notifyAtThreshold,thresholdPercentage');
     for (final b in budgets) {
       buf.writeln(
           '${b.id},${b.categoryId ?? ""},${b.targetAmount},${b.period.name},${b.year},${b.month},${_csvVal(b.currencyCode)},${b.notifyAtThreshold},${b.thresholdPercentage}');
@@ -831,8 +873,10 @@ class DataExportImportService {
   /// present. Returns `null` if valid, or an error message string.
   String? _validateSections(Map<String, List<List<String>>> sections) {
     if (!sections.containsKey(_sMeta)) return 'Missing [META] section';
-    if (!sections.containsKey(_sTransactions)) return 'Missing [TRANSACTIONS] section';
-    if (!sections.containsKey(_sCategories)) return 'Missing [CATEGORIES] section';
+    if (!sections.containsKey(_sTransactions))
+      return 'Missing [TRANSACTIONS] section';
+    if (!sections.containsKey(_sCategories))
+      return 'Missing [CATEGORIES] section';
 
     // Validate required columns per section
     final checks = <String, List<String>>{
@@ -865,13 +909,15 @@ class DataExportImportService {
       // Primary on Android: app-owned external storage (always writable, survives reinstall ownership).
       try {
         final external = await getExternalStorageDirectory();
-        if (external != null) candidatePaths.add(p.join(external.path, 'Expendly'));
+        if (external != null)
+          candidatePaths.add(p.join(external.path, 'Expendly'));
       } catch (_) {}
       // Secondary: public Downloads — only usable if any existing backup there is owned by this app.
       candidatePaths.add('/storage/emulated/0/Download/Expendly');
       try {
         final downloads = await getDownloadsDirectory();
-        if (downloads != null) candidatePaths.add(p.join(downloads.path, 'Expendly'));
+        if (downloads != null)
+          candidatePaths.add(p.join(downloads.path, 'Expendly'));
       } catch (_) {}
     } else if (Platform.isIOS) {
       // iOS: Documents directory (accessible via Files app).
@@ -883,7 +929,8 @@ class DataExportImportService {
       // Desktop / other: Downloads folder.
       try {
         final downloads = await getDownloadsDirectory();
-        if (downloads != null) candidatePaths.add(p.join(downloads.path, 'Expendly'));
+        if (downloads != null)
+          candidatePaths.add(p.join(downloads.path, 'Expendly'));
       } catch (_) {}
     }
 
@@ -926,7 +973,8 @@ class DataExportImportService {
           } catch (_) {}
 
           if (!canOverwrite) {
-            AppLogger.w('DataExportImportService: Skipping $path — existing backup is OS-locked (pre-reinstall file).');
+            AppLogger.w(
+                'DataExportImportService: Skipping $path — existing backup is OS-locked (pre-reinstall file).');
             continue;
           }
         }
@@ -935,10 +983,12 @@ class DataExportImportService {
         return dir;
       } catch (e) {
         lastError = e;
-        AppLogger.w('DataExportImportService: Export dir $path not writable: $e');
+        AppLogger.w(
+            'DataExportImportService: Export dir $path not writable: $e');
       }
     }
-    throw FileSystemException('No writable export directory available: $lastError');
+    throw FileSystemException(
+        'No writable export directory available: $lastError');
   }
 
   /// Writes [payload] to [path] via the storage provider.
@@ -947,15 +997,18 @@ class DataExportImportService {
       final filename = p.basename(path);
       await _storageProvider.writeBackup(filename: filename, content: payload);
       final targetFile = File(path);
-      if (!await targetFile.exists() || await targetFile.readAsString() != payload) {
+      if (!await targetFile.exists() ||
+          await targetFile.readAsString() != payload) {
         if (!await targetFile.parent.exists()) {
           await targetFile.parent.create(recursive: true);
         }
-        await targetFile.writeAsString(payload, mode: FileMode.write, flush: true);
+        await targetFile.writeAsString(payload,
+            mode: FileMode.write, flush: true);
       }
       return true;
     } catch (e) {
-      AppLogger.w('DataExportImportService: writeExportFile failed for $path: $e');
+      AppLogger.w(
+          'DataExportImportService: writeExportFile failed for $path: $e');
       return false;
     }
   }

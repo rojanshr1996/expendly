@@ -51,12 +51,10 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
           ..orderBy([
             (t) =>
                 OrderingTerm(expression: t.timestamp, mode: OrderingMode.desc),
-            (t) =>
-                OrderingTerm(expression: t.id, mode: OrderingMode.desc),
+            (t) => OrderingTerm(expression: t.id, mode: OrderingMode.desc),
           ])
           ..limit(5))
         .get();
-
 
     final recentItems = <DashboardTransactionItem>[];
     for (final tx in recentTxRows) {
@@ -122,23 +120,27 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
     });
 
     // Compute daily cash flow for the last 180 days (6 months)
-    final startDate = DateTime(now.year, now.month, now.day).subtract(const Duration(days: 180));
+    final startDate = DateTime(now.year, now.month, now.day)
+        .subtract(const Duration(days: 180));
     final dailyMap = <String, Map<String, double>>{};
 
     for (final tx in allTransactions) {
       final date = tx.timestamp;
       if (date.isAfter(startDate)) {
-        final key = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        final key =
+            '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
         final amount = tx.amount / 100.0;
         dailyMap.putIfAbsent(key, () => {'income': 0.0, 'expense': 0.0});
         if (tx.type == TransactionType.income) {
           dailyMap[key]!['income'] = (dailyMap[key]!['income'] ?? 0.0) + amount;
         } else if (tx.type == TransactionType.expense) {
-          dailyMap[key]!['expense'] = (dailyMap[key]!['expense'] ?? 0.0) + amount;
+          dailyMap[key]!['expense'] =
+              (dailyMap[key]!['expense'] ?? 0.0) + amount;
         } else if (tx.type == TransactionType.transfer) {
           final fee = _parseTransferFeeFromNote(tx.note);
           if (fee > 0) {
-            dailyMap[key]!['expense'] = (dailyMap[key]!['expense'] ?? 0.0) + fee;
+            dailyMap[key]!['expense'] =
+                (dailyMap[key]!['expense'] ?? 0.0) + fee;
           }
         }
       }
@@ -146,8 +148,10 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
 
     final cashFlowPoints = <DailyCashFlowPoint>[];
     for (int i = 180; i >= 0; i--) {
-      final d = DateTime(now.year, now.month, now.day).subtract(Duration(days: i));
-      final key = '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+      final d =
+          DateTime(now.year, now.month, now.day).subtract(Duration(days: i));
+      final key =
+          '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
       final inc = dailyMap[key]?['income'] ?? 0.0;
       final exp = dailyMap[key]?['expense'] ?? 0.0;
       cashFlowPoints.add(DailyCashFlowPoint(

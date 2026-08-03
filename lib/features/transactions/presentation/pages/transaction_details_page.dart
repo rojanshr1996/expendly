@@ -313,7 +313,9 @@ class _HeroHeaderCard extends StatelessWidget {
                   type: transaction.type,
                   isIncome: transaction.type == TransactionType.income
                       ? true
-                      : (transaction.type == TransactionType.expense ? false : null),
+                      : (transaction.type == TransactionType.expense
+                          ? false
+                          : null),
                   compact: false,
                   style: customTypography.headlineLargeMonoBold.copyWith(
                     color: amountColor,

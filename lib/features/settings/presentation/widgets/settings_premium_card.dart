@@ -48,12 +48,15 @@ class SettingsPremiumCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                       decoration: BoxDecoration(
-                        color: colorScheme.primary.withAlpha((0.15 * 255).round()),
+                        color:
+                            colorScheme.primary.withAlpha((0.15 * 255).round()),
                         borderRadius: BorderRadius.circular(12.r),
                         border: Border.all(
-                          color: colorScheme.primary.withAlpha((0.3 * 255).round()),
+                          color: colorScheme.primary
+                              .withAlpha((0.3 * 255).round()),
                           width: 1.0,
                         ),
                       ),
@@ -70,7 +73,8 @@ class SettingsPremiumCard extends StatelessWidget {
                     SizedBox(height: 8.h),
                     Text(
                       context.l10n.goProTitle,
-                      style: (textTheme.titleLarge ?? const TextStyle()).copyWith(
+                      style:
+                          (textTheme.titleLarge ?? const TextStyle()).copyWith(
                         color: colorScheme.onSurface,
                         fontWeight: FontWeight.bold,
                         fontSize: 18.sp,

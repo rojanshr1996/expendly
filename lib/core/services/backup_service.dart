@@ -56,13 +56,15 @@ class BackupService {
   ///   2. At least one transaction must exist in the database.
   Future<bool> _shouldRunAutoBackup() async {
     if (!_preferenceService.isOnboardingCompleted) {
-      AppLogger.d('BackupService: Onboarding/signup not completed — skipping auto backup.');
+      AppLogger.d(
+          'BackupService: Onboarding/signup not completed — skipping auto backup.');
       return false;
     }
 
     final hasTransactions = await _db.hasAnyTransactions();
     if (!hasTransactions) {
-      AppLogger.d('BackupService: No transactions in database — skipping auto backup.');
+      AppLogger.d(
+          'BackupService: No transactions in database — skipping auto backup.');
       return false;
     }
 
@@ -101,14 +103,17 @@ class BackupService {
       final currentTxCount = await _db.getTransactionCount();
       final lastTxCount = _preferenceService.lastSnapshotCount;
 
-      final isTimeDue = last == null || DateTime.now().difference(last) >= backupInterval;
+      final isTimeDue =
+          last == null || DateTime.now().difference(last) >= backupInterval;
       final isDataChanged = currentTxCount != lastTxCount;
 
       if (isTimeDue || isDataChanged) {
-        AppLogger.i('BackupService: Auto backup triggered (time due: $isTimeDue, data changed: $isDataChanged)');
+        AppLogger.i(
+            'BackupService: Auto backup triggered (time due: $isTimeDue, data changed: $isDataChanged)');
         await performBackup();
       } else {
-        AppLogger.d('BackupService: Backup not yet due. Last: $lastStr (Count: $currentTxCount)');
+        AppLogger.d(
+            'BackupService: Backup not yet due. Last: $lastStr (Count: $currentTxCount)');
       }
     } catch (e) {
       AppLogger.e('BackupService: _scheduleBackupIfDue error', e);
@@ -126,7 +131,8 @@ class BackupService {
       final result = await _exportService.exportBackupCsv();
 
       if (result.isSuccess) {
-        await _preferenceService.setLastSnapshotAt(DateTime.now().toIso8601String());
+        await _preferenceService
+            .setLastSnapshotAt(DateTime.now().toIso8601String());
         await _preferenceService.setLastSnapshotCount(result.transactionCount);
         await _preferenceService.setLastSnapshotError(null);
         _showSuccessNotification(result);
@@ -164,12 +170,14 @@ class BackupService {
     if (!Platform.isAndroid && !Platform.isIOS) return;
     try {
       final path = result.filePath;
-      final folderDisplay =
-          (path != null && path.contains('Download')) ? 'Downloads → Expendly' : (path ?? 'Downloads → Expendly');
+      final folderDisplay = (path != null && path.contains('Download'))
+          ? 'Downloads → Expendly'
+          : (path ?? 'Downloads → Expendly');
       _notificationService.showLocalNotification(
         id: _notificationId,
         title: 'Backup Complete',
-        body: 'Saved to $folderDisplay (${result.transactionCount} transactions)',
+        body:
+            'Saved to $folderDisplay (${result.transactionCount} transactions)',
         payload: '',
       );
     } catch (_) {}

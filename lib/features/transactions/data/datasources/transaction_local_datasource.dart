@@ -49,8 +49,7 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
       ..orderBy([
         OrderingTerm(
             expression: _db.transactions.timestamp, mode: OrderingMode.desc),
-        OrderingTerm(
-            expression: _db.transactions.id, mode: OrderingMode.desc),
+        OrderingTerm(expression: _db.transactions.id, mode: OrderingMode.desc),
       ]);
 
     final rows = await query.get();
@@ -76,7 +75,8 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
   }
 
   @override
-  Future<List<TransactionItem>> getTransactionsByType(TransactionType type) async {
+  Future<List<TransactionItem>> getTransactionsByType(
+      TransactionType type) async {
     final query = _db.select(_db.transactions).join([
       innerJoin(
         _db.categories,
@@ -87,10 +87,8 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
       ..orderBy([
         OrderingTerm(
             expression: _db.transactions.timestamp, mode: OrderingMode.desc),
-        OrderingTerm(
-            expression: _db.transactions.id, mode: OrderingMode.desc),
+        OrderingTerm(expression: _db.transactions.id, mode: OrderingMode.desc),
       ]);
-
 
     final rows = await query.get();
 

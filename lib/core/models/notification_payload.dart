@@ -39,9 +39,12 @@ class NotificationActionPayload extends Equatable {
     }
 
     final action = getString(['action', 'action_name', 'event']);
-    final actionType = getString(['action_type', 'actionType', 'type', 'category']);
-    final target = getString(['target', 'route', 'url', 'id', 'transaction_id', 'transactionId']);
-    final payloadImageUrl = getString(['image', 'imageUrl', 'image_url', 'picture', 'icon']);
+    final actionType =
+        getString(['action_type', 'actionType', 'type', 'category']);
+    final target = getString(
+        ['target', 'route', 'url', 'id', 'transaction_id', 'transactionId']);
+    final payloadImageUrl =
+        getString(['image', 'imageUrl', 'image_url', 'picture', 'icon']);
     final payloadTitle = title ?? getString(['title', 'subject']);
     final payloadBody = body ?? getString(['body', 'message']);
 

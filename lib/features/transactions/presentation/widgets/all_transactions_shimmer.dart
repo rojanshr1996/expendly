@@ -48,9 +48,11 @@ class AllTransactionsShimmer extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Category Name', style: TextStyle(fontSize: 14.sp)),
+                          Text('Category Name',
+                              style: TextStyle(fontSize: 14.sp)),
                           SizedBox(height: 4.h),
-                          Text('Note details placeholder', style: TextStyle(fontSize: 12.sp)),
+                          Text('Note details placeholder',
+                              style: TextStyle(fontSize: 12.sp)),
                         ],
                       ),
                     ),

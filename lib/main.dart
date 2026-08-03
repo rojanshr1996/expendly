@@ -27,7 +27,8 @@ Future<void> bootstrapApp(AppConfig config) async {
   WidgetsFlutterBinding.ensureInitialized();
   AppConfig.initialize(config);
 
-  AppLogger.i('🚀 Bootstrapping Expendly App [Flavor: ${config.flavor.name.toUpperCase()}]');
+  AppLogger.i(
+      '🚀 Bootstrapping Expendly App [Flavor: ${config.flavor.name.toUpperCase()}]');
 
   // Disable runtime font fetching — fonts are bundled in assets/google_fonts/
   GoogleFonts.config.allowRuntimeFetching = false;
@@ -101,7 +102,9 @@ class _ExpendlyAppState extends State<ExpendlyApp> with WidgetsBindingObserver {
 
   void _listenNotificationActions() {
     if (getIt.isRegistered<NotificationService>()) {
-      _notificationSub = getIt<NotificationService>().onNotificationAction.listen(_handleNotificationAction);
+      _notificationSub = getIt<NotificationService>()
+          .onNotificationAction
+          .listen(_handleNotificationAction);
     }
   }
 
@@ -118,7 +121,8 @@ class _ExpendlyAppState extends State<ExpendlyApp> with WidgetsBindingObserver {
         } else {
           try {
             String formattedUrl = url.trim();
-            if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+            if (!formattedUrl.startsWith('http://') &&
+                !formattedUrl.startsWith('https://')) {
               formattedUrl = 'https://$formattedUrl';
             }
             final uri = Uri.parse(formattedUrl);
@@ -126,7 +130,8 @@ class _ExpendlyAppState extends State<ExpendlyApp> with WidgetsBindingObserver {
               await launchUrl(uri, mode: LaunchMode.externalApplication);
             }
           } catch (e) {
-            AppLogger.e('Failed to launch URL from notification payload: $url', e);
+            AppLogger.e(
+                'Failed to launch URL from notification payload: $url', e);
           }
         }
         return;
@@ -143,17 +148,25 @@ class _ExpendlyAppState extends State<ExpendlyApp> with WidgetsBindingObserver {
           final action = payload.action?.toLowerCase();
           final target = payload.target?.toLowerCase();
 
-          if (action == 'add_transaction' || target == 'add_transaction' || target == 'modern_add_transaction') {
+          if (action == 'add_transaction' ||
+              target == 'add_transaction' ||
+              target == 'modern_add_transaction') {
             _appRouter.push(ModernAddTransactionRoute());
-          } else if (action == 'create_budget' || target == 'create_budget' || target == 'create_new_budget') {
+          } else if (action == 'create_budget' ||
+              target == 'create_budget' ||
+              target == 'create_new_budget') {
             _appRouter.push(CreateNewBudgetRoute());
           } else if (action == 'settings' || target == 'settings') {
             _appRouter.push(const SettingsRoute());
-          } else if (action == 'profile' || target == 'profile' || target == 'personal_profile') {
+          } else if (action == 'profile' ||
+              target == 'profile' ||
+              target == 'personal_profile') {
             _appRouter.push(const PersonalProfileRoute());
           } else if (action == 'about' || target == 'about') {
             _appRouter.push(const AboutRoute());
-          } else if (action == 'help' || target == 'help' || target == 'help_support') {
+          } else if (action == 'help' ||
+              target == 'help' ||
+              target == 'help_support') {
             _appRouter.push(const HelpSupportRoute());
           } else if (action == 'dashboard' || target == 'dashboard') {
             _appRouter.push(const DashboardRoute());
@@ -203,7 +216,8 @@ class _ExpendlyAppState extends State<ExpendlyApp> with WidgetsBindingObserver {
               content = Banner(
                 message: config.flavor.name.toUpperCase(),
                 location: BannerLocation.topEnd,
-                color: config.isDev ? colorScheme.tertiary : colorScheme.secondary,
+                color:
+                    config.isDev ? colorScheme.tertiary : colorScheme.secondary,
                 child: content,
               );
             }

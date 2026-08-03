@@ -24,8 +24,7 @@ class BudgetCubit extends Cubit<BudgetState> {
 
   @override
   Future<void> close() {
-    TransactionEvents.transactionUpdated
-        .removeListener(_onTransactionUpdated);
+    TransactionEvents.transactionUpdated.removeListener(_onTransactionUpdated);
     return super.close();
   }
 

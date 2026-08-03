@@ -16,7 +16,8 @@ class BudgetsOverviewShimmer extends StatelessWidget {
 
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 16.h, bottom: 120.h),
+      padding:
+          EdgeInsets.only(left: 20.w, right: 20.w, top: 16.h, bottom: 120.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -84,9 +85,11 @@ class BudgetsOverviewShimmer extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Category Name', style: TextStyle(fontSize: 14.sp)),
+                              Text('Category Name',
+                                  style: TextStyle(fontSize: 14.sp)),
                               SizedBox(height: 4.h),
-                              Text('\$0.00 left of \$0.00', style: TextStyle(fontSize: 12.sp)),
+                              Text('\$0.00 left of \$0.00',
+                                  style: TextStyle(fontSize: 12.sp)),
                             ],
                           ),
                         ),

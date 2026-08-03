@@ -48,35 +48,30 @@ class TermsConditionsPage extends StatelessWidget {
             child: Column(
               children: [
                 verticalMarginMedium,
-
                 _TermsSectionCard(
                   title: l10n.termsTitle1,
                   body: l10n.termsBody1,
                   icon: Icons.folder_special_outlined,
                 ),
                 verticalMarginMedium,
-
                 _TermsSectionCard(
                   title: l10n.termsTitle2,
                   body: l10n.termsBody2,
                   icon: Icons.security_rounded,
                 ),
                 verticalMarginMedium,
-
                 _TermsSectionCard(
                   title: l10n.termsTitle3,
                   body: l10n.termsBody3,
                   icon: Icons.cloud_off_rounded,
                 ),
                 verticalMarginMedium,
-
                 _TermsSectionCard(
                   title: l10n.termsTitle4,
                   body: l10n.termsBody4,
                   icon: Icons.gavel_rounded,
                 ),
                 verticalMarginLarge,
-
                 Text(
                   'Last Updated: July 2026',
                   style: customTypography.labelMediumMono.copyWith(

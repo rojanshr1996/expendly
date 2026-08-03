@@ -75,11 +75,11 @@ Future<void> configureDependencies([String? environment]) async {
     getIt.registerLazySingleton<PreferenceService>(() => prefService);
   }
   if (!getIt.isRegistered<DataExportImportService>()) {
-    getIt.registerLazySingleton<DataExportImportService>(() =>
-        DataExportImportService(
-          getIt<AppDatabase>(),
-          getIt<PreferenceService>(),
-        ));
+    getIt.registerLazySingleton<DataExportImportService>(
+        () => DataExportImportService(
+              getIt<AppDatabase>(),
+              getIt<PreferenceService>(),
+            ));
   } else {
     await getIt<PreferenceService>().init();
   }

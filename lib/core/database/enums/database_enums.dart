@@ -22,4 +22,3 @@ enum PaymentMethod {
   cash,
   account,
 }
-

@@ -160,7 +160,9 @@ class DashboardRecentActivity extends StatelessWidget {
                               children: [
                                 Text(
                                   tx.title,
-                                  style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(
+                                  style:
+                                      (textTheme.bodyLarge ?? const TextStyle())
+                                          .copyWith(
                                     fontWeight: FontWeights.bold,
                                     color: colorScheme.onSurface,
                                     fontSize: 14.sp,
@@ -168,7 +170,9 @@ class DashboardRecentActivity extends StatelessWidget {
                                 ),
                                 Text(
                                   tx.categoryName,
-                                  style: (textTheme.bodyMedium ?? const TextStyle()).copyWith(
+                                  style: (textTheme.bodyMedium ??
+                                          const TextStyle())
+                                      .copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                     fontSize: 12.sp,
                                   ),
@@ -189,8 +193,11 @@ class DashboardRecentActivity extends StatelessWidget {
                                 type: tx.type,
                                 isIncome: tx.type == TransactionType.income
                                     ? true
-                                    : (tx.type == TransactionType.expense ? false : null),
-                                style: (customTypography.labelMediumMono).copyWith(
+                                    : (tx.type == TransactionType.expense
+                                        ? false
+                                        : null),
+                                style:
+                                    (customTypography.labelMediumMono).copyWith(
                                   fontSize: 14.sp,
                                   fontWeight: FontWeights.bold,
                                   color: tx.type == TransactionType.income
@@ -203,7 +210,8 @@ class DashboardRecentActivity extends StatelessWidget {
                               verticalMarginXXSmall,
                               Text(
                                 l10n.today,
-                                style: customTypography.labelMediumMono.copyWith(
+                                style:
+                                    customTypography.labelMediumMono.copyWith(
                                   fontSize: 10.sp,
                                   color: colorScheme.onSurfaceVariant,
                                 ),

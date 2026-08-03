@@ -102,7 +102,9 @@ class CompactAmountText extends StatelessWidget {
                         children: [
                           Text(
                             'Full Exact Amount',
-                            style: (context.textTheme.labelSmall ?? const TextStyle()).copyWith(
+                            style: (context.textTheme.labelSmall ??
+                                    const TextStyle())
+                                .copyWith(
                               color: colorScheme.onSurfaceVariant,
                               fontWeight: FontWeights.bold,
                             ),
@@ -110,7 +112,8 @@ class CompactAmountText extends StatelessWidget {
                           SizedBox(height: 2.h),
                           Text(
                             fullFormatted,
-                            style: (context.customTypography.labelMediumMono).copyWith(
+                            style: (context.customTypography.labelMediumMono)
+                                .copyWith(
                               color: colorScheme.onSurface,
                               fontSize: 16.sp,
                               fontWeight: FontWeights.bold,
@@ -160,10 +163,13 @@ class CompactAmountText extends StatelessWidget {
         );
 
         return GestureDetector(
-          onTap: compact ? () => _showFullAmountTooltip(context, effectiveSymbol) : null,
+          onTap: compact
+              ? () => _showFullAmountTooltip(context, effectiveSymbol)
+              : null,
           behavior: HitTestBehavior.opaque,
           child: Tooltip(
-            message: (!compact || isPrivacyMode) ? '' : 'Tap to see full amount',
+            message:
+                (!compact || isPrivacyMode) ? '' : 'Tap to see full amount',
             child: FittedBox(
               fit: BoxFit.scaleDown,
               alignment: Alignment.center,

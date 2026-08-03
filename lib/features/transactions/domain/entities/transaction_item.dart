@@ -46,4 +46,3 @@ class TransactionItem extends Equatable {
         paymentMethod,
       ];
 }
-

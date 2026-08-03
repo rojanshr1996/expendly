@@ -26,4 +26,3 @@ class Transactions extends Table {
   TextColumn get note => text().nullable()();
   IntColumn get paymentMethod => intEnum<PaymentMethod>().nullable()();
 }
-

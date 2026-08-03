@@ -35,11 +35,14 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
 
   @override
   Future<UserProfile> saveProfile(UserProfile profile) async {
-    final now = DateTime.now();    final existingList = await _db.select(_db.userProfiles).get();
+    final now = DateTime.now();
+    final existingList = await _db.select(_db.userProfiles).get();
 
     if (existingList.isNotEmpty) {
       final existing = existingList.first;
-      await (_db.update(_db.userProfiles)..where((tbl) => tbl.id.equals(existing.id))).write(
+      await (_db.update(_db.userProfiles)
+            ..where((tbl) => tbl.id.equals(existing.id)))
+          .write(
         UserProfilesCompanion(
           name: Value(profile.name),
           email: Value(profile.email),

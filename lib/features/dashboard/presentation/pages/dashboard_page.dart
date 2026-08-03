@@ -40,7 +40,8 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final ValueNotifier<bool> _isPrivacyModeNotifier = ValueNotifier<bool>(false);
   final ValueNotifier<int> _currentTabNotifier = ValueNotifier<int>(0);
-  final GlobalKey<QuickActionFabState> _fabKey = GlobalKey<QuickActionFabState>();
+  final GlobalKey<QuickActionFabState> _fabKey =
+      GlobalKey<QuickActionFabState>();
 
   @override
   void initState() {
@@ -80,7 +81,8 @@ class _DashboardPageState extends State<DashboardPage> {
           }
           return cubit;
         } catch (_) {
-          return DashboardCubit(_FallbackGetFinancialSummary())..loadDashboardData();
+          return DashboardCubit(_FallbackGetFinancialSummary())
+            ..loadDashboardData();
         }
       }(),
       child: Builder(
@@ -98,7 +100,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     return FadeTransition(
                       opacity: animation,
                       child: ScaleTransition(
-                        scale: Tween<double>(begin: 0.98, end: 1.0).animate(animation),
+                        scale: Tween<double>(begin: 0.98, end: 1.0)
+                            .animate(animation),
                         child: child,
                       ),
                     );
@@ -112,13 +115,16 @@ class _DashboardPageState extends State<DashboardPage> {
                         _buildOverviewTab(context),
 
                         // Tab 1: Activity / All Transactions
-                        AllTransactionsPage(isPrivacyModeNotifier: _isPrivacyModeNotifier),
+                        AllTransactionsPage(
+                            isPrivacyModeNotifier: _isPrivacyModeNotifier),
 
                         // Tab 2: Budgets Overview
-                        BudgetsOverviewPage(isPrivacyModeNotifier: _isPrivacyModeNotifier),
+                        BudgetsOverviewPage(
+                            isPrivacyModeNotifier: _isPrivacyModeNotifier),
 
                         // Tab 3: Reports & Analytics
-                        RefinedReportsPage(isPrivacyModeNotifier: _isPrivacyModeNotifier),
+                        RefinedReportsPage(
+                            isPrivacyModeNotifier: _isPrivacyModeNotifier),
                       ],
                     ),
                   ),
@@ -176,7 +182,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerLow,
                     border: Border(
-                      top: BorderSide(color: colorScheme.outlineVariant, width: 1.0),
+                      top: BorderSide(
+                          color: colorScheme.outlineVariant, width: 1.0),
                     ),
                   ),
                   child: BottomNavigationBar(
@@ -202,7 +209,8 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                       BottomNavigationBarItem(
                         icon: const Icon(Icons.account_balance_wallet_outlined),
-                        activeIcon: const Icon(Icons.account_balance_wallet_rounded),
+                        activeIcon:
+                            const Icon(Icons.account_balance_wallet_rounded),
                         label: context.l10n.budgets,
                       ),
                       BottomNavigationBarItem(
@@ -256,7 +264,8 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildLoadedOrErrorContent(BuildContext context, DashboardState state) {
+  Widget _buildLoadedOrErrorContent(
+      BuildContext context, DashboardState state) {
     if (state is DashboardError) {
       return Center(
         key: const ValueKey('error'),
@@ -271,8 +280,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
     if (state is DashboardLoaded) {
       final summary = state.summary;
-      final bool isEmptyState =
-          summary.recentTransactions.isEmpty && summary.totalIncome == 0 && summary.totalExpense == 0;
+      final bool isEmptyState = summary.recentTransactions.isEmpty &&
+          summary.totalIncome == 0 &&
+          summary.totalExpense == 0;
 
       if (isEmptyState) {
         return EmptyDashboardView(

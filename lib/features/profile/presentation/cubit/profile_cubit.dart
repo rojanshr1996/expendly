@@ -30,7 +30,8 @@ class ProfileCubit extends Cubit<ProfileState> {
   }) async {
     emit(const ProfileLoading());
     try {
-      final currentProfile = state is ProfileLoaded ? (state as ProfileLoaded).profile : null;
+      final currentProfile =
+          state is ProfileLoaded ? (state as ProfileLoaded).profile : null;
       final profileToSave = UserProfile(
         id: currentProfile?.id,
         name: name,

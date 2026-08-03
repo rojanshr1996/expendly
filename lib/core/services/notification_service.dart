@@ -16,7 +16,8 @@ import '../models/notification_payload.dart';
 import '../utils/app_logger.dart';
 
 /// Helper to download image from URL and save locally for notification attachments
-Future<String?> _downloadAndSaveNotificationImage(String url, String fileName) async {
+Future<String?> _downloadAndSaveNotificationImage(
+    String url, String fileName) async {
   try {
     final Directory tempDir = await getTemporaryDirectory();
     final String filePath = '${tempDir.path}/$fileName';
@@ -41,15 +42,18 @@ Future<String?> _downloadAndSaveNotificationImage(String url, String fileName) a
 String? _extractImageUrl(RemoteMessage message) {
   final notification = message.notification;
   if (notification != null) {
-    if (notification.android?.imageUrl != null && notification.android!.imageUrl!.isNotEmpty) {
+    if (notification.android?.imageUrl != null &&
+        notification.android!.imageUrl!.isNotEmpty) {
       return notification.android!.imageUrl;
     }
-    if (notification.apple?.imageUrl != null && notification.apple!.imageUrl!.isNotEmpty) {
+    if (notification.apple?.imageUrl != null &&
+        notification.apple!.imageUrl!.isNotEmpty) {
       return notification.apple!.imageUrl;
     }
   }
   final data = message.data;
-  final dataImage = data['image'] ?? data['imageUrl'] ?? data['image_url'] ?? data['picture'];
+  final dataImage =
+      data['image'] ?? data['imageUrl'] ?? data['image_url'] ?? data['picture'];
   if (dataImage != null && dataImage.toString().trim().isNotEmpty) {
     return dataImage.toString().trim();
   }
@@ -68,7 +72,8 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   final notification = message.notification;
   if (notification != null) {
     final bgNotifications = FlutterLocalNotificationsPlugin();
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings();
     const initSettings = InitializationSettings(
       android: androidSettings,
@@ -114,7 +119,9 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         presentAlert: true,
         presentBadge: true,
         presentSound: true,
-        attachments: localImagePath != null ? [DarwinNotificationAttachment(localImagePath)] : null,
+        attachments: localImagePath != null
+            ? [DarwinNotificationAttachment(localImagePath)]
+            : null,
       ),
     );
 
@@ -131,7 +138,8 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 @lazySingleton
 class NotificationService {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
 
   static const String channelId = 'expendly_channel';
   static const String channelName = 'Expendly Notifications';
@@ -141,16 +149,19 @@ class NotificationService {
   String? _fcmToken;
   String? get fcmToken => _fcmToken;
 
-  final StreamController<String> _onTokenRefresh = StreamController<String>.broadcast();
+  final StreamController<String> _onTokenRefresh =
+      StreamController<String>.broadcast();
   Stream<String> get onTokenRefresh => _onTokenRefresh.stream;
 
   final StreamController<Map<String, dynamic>> _onNotificationClick =
       StreamController<Map<String, dynamic>>.broadcast();
-  Stream<Map<String, dynamic>> get onNotificationClick => _onNotificationClick.stream;
+  Stream<Map<String, dynamic>> get onNotificationClick =>
+      _onNotificationClick.stream;
 
   final StreamController<NotificationActionPayload> _onNotificationAction =
       StreamController<NotificationActionPayload>.broadcast();
-  Stream<NotificationActionPayload> get onNotificationAction => _onNotificationAction.stream;
+  Stream<NotificationActionPayload> get onNotificationAction =>
+      _onNotificationAction.stream;
 
   /// Initializes FCM and local notifications service.
   Future<void> initialize() async {
@@ -196,10 +207,12 @@ class NotificationService {
       provisional: false,
     );
 
-    AppLogger.i('Notification permission status: ${settings.authorizationStatus}');
+    AppLogger.i(
+        'Notification permission status: ${settings.authorizationStatus}');
 
-    final androidPlugin = _localNotifications.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin =
+        _localNotifications.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
     if (androidPlugin != null) {
       await androidPlugin.requestNotificationsPermission();
     }
@@ -207,7 +220,8 @@ class NotificationService {
 
   /// Initialize flutter_local_notifications with platform settings & android channel
   Future<void> _initLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -228,8 +242,9 @@ class NotificationService {
       importance: Importance.high,
     );
 
-    final androidPlugin = _localNotifications.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin =
+        _localNotifications.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
     if (androidPlugin != null) {
       await androidPlugin.createNotificationChannel(androidChannel);
     }
@@ -246,7 +261,8 @@ class NotificationService {
             _onNotificationAction.add(actionPayload);
           } catch (_) {
             _onNotificationClick.add({'payload': response.payload});
-            final actionPayload = NotificationActionPayload.fromMap({'payload': response.payload});
+            final actionPayload = NotificationActionPayload.fromMap(
+                {'payload': response.payload});
             await _handleActionPayload(actionPayload);
             _onNotificationAction.add(actionPayload);
           }
@@ -267,7 +283,8 @@ class NotificationService {
       }
       final uri = Uri.parse(formattedUrl);
       if (await canLaunchUrl(uri)) {
-        AppLogger.i('Launching external URL from NotificationService: $formattedUrl');
+        AppLogger.i(
+            'Launching external URL from NotificationService: $formattedUrl');
         return await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
         AppLogger.w('Cannot launch external URL: $formattedUrl');
@@ -279,13 +296,17 @@ class NotificationService {
   }
 
   /// Automatically launches link using url launcher when actionType is externalUrl or payload is a URL action.
-  Future<void> _handleActionPayload(NotificationActionPayload actionPayload) async {
+  Future<void> _handleActionPayload(
+      NotificationActionPayload actionPayload) async {
     if (actionPayload.isUrlAction ||
         actionPayload.actionType?.toLowerCase() == 'externalurl' ||
         actionPayload.actionType?.toLowerCase() == 'external_url') {
-      final url = actionPayload.urlToOpen ?? actionPayload.action ?? actionPayload.target;
+      final url = actionPayload.urlToOpen ??
+          actionPayload.action ??
+          actionPayload.target;
       if (url != null && url.trim().isNotEmpty) {
-        AppLogger.i('Opening link via url_launcher for actionType ${actionPayload.actionType}: $url');
+        AppLogger.i(
+            'Opening link via url_launcher for actionType ${actionPayload.actionType}: $url');
         await launchExternalUrl(url);
       }
     }
@@ -396,7 +417,9 @@ class NotificationService {
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
-      attachments: localImagePath != null ? [DarwinNotificationAttachment(localImagePath)] : null,
+      attachments: localImagePath != null
+          ? [DarwinNotificationAttachment(localImagePath)]
+          : null,
     );
 
     final notificationDetails = NotificationDetails(

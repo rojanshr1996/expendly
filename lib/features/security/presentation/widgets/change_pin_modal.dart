@@ -215,9 +215,8 @@ class _ChangePinModalState extends State<ChangePinModal>
                       height: 14.w,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isFilled
-                            ? colorScheme.primary
-                            : Colors.transparent,
+                        color:
+                            isFilled ? colorScheme.primary : Colors.transparent,
                         border: Border.all(
                           color: isFilled
                               ? colorScheme.primary

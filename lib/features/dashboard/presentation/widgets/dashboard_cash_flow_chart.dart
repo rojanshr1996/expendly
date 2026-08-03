@@ -65,7 +65,8 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
     switch (_selectedFilter) {
       case ChartTimeFilter.weekly:
         // Last 7 days
-        final cutoff = DateTime(now.year, now.month, now.day).subtract(const Duration(days: 6));
+        final cutoff = DateTime(now.year, now.month, now.day)
+            .subtract(const Duration(days: 6));
         return allPoints.where((p) => !p.date.isBefore(cutoff)).toList();
 
       case ChartTimeFilter.monthly:
@@ -76,12 +77,14 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
 
       case ChartTimeFilter.threeMonths:
         // Last 90 days
-        final cutoff = DateTime(now.year, now.month, now.day).subtract(const Duration(days: 90));
+        final cutoff = DateTime(now.year, now.month, now.day)
+            .subtract(const Duration(days: 90));
         return allPoints.where((p) => !p.date.isBefore(cutoff)).toList();
 
       case ChartTimeFilter.sixMonths:
         // Last 180 days
-        final cutoff = DateTime(now.year, now.month, now.day).subtract(const Duration(days: 180));
+        final cutoff = DateTime(now.year, now.month, now.day)
+            .subtract(const Duration(days: 180));
         return allPoints.where((p) => !p.date.isBefore(cutoff)).toList();
     }
   }
@@ -136,7 +139,8 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
                         _currentPage == 0
                             ? '${context.l10n.cashFlow} Trend'
                             : 'Income vs Expense',
-                        style: (textTheme.titleMedium ?? const TextStyle()).copyWith(
+                        style: (textTheme.titleMedium ?? const TextStyle())
+                            .copyWith(
                           fontWeight: FontWeights.bold,
                           color: colorScheme.onSurface,
                         ),
@@ -229,7 +233,9 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? const Color(0xFF00E5FF) : colorScheme.onSurfaceVariant,
+            color: isSelected
+                ? const Color(0xFF00E5FF)
+                : colorScheme.onSurfaceVariant,
             fontSize: 11.sp,
             fontWeight: isSelected ? FontWeights.bold : FontWeights.medium,
             fontFamily: 'JetBrainsMono',
@@ -256,7 +262,8 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
         decoration: BoxDecoration(
           color: isActive
               ? const Color(0xFF00E5FF)
-              : context.colorScheme.outlineVariant.withAlpha((0.5 * 255).round()),
+              : context.colorScheme.outlineVariant
+                  .withAlpha((0.5 * 255).round()),
           borderRadius: BorderRadius.circular(4.r),
         ),
       ),
@@ -366,185 +373,204 @@ class _SmoothLineChartPage extends StatelessWidget {
           // Line Chart Canvas
           Expanded(
             child: TweenAnimationBuilder<double>(
-              key: ValueKey('line_${filter.name}_${points.length}_${points.isNotEmpty ? points.first.date.millisecondsSinceEpoch : 0}'),
+              key: ValueKey(
+                  'line_${filter.name}_${points.length}_${points.isNotEmpty ? points.first.date.millisecondsSinceEpoch : 0}'),
               tween: Tween<double>(begin: 0.0, end: 1.0),
               duration: const Duration(milliseconds: 900),
               curve: Curves.easeOutCubic,
               builder: (context, animValue, _) {
-                final animatedSpots = spots
-                    .map((s) => FlSpot(s.x, s.y * animValue))
-                    .toList();
+                final animatedSpots =
+                    spots.map((s) => FlSpot(s.x, s.y * animValue)).toList();
 
                 return LineChart(
-              LineChartData(
-                minX: 1,
-                maxX: spots.length.toDouble(),
-                minY: 0,
-                maxY: topY,
-                clipData: const FlClipData.none(),
+                  LineChartData(
+                    minX: 1,
+                    maxX: spots.length.toDouble(),
+                    minY: 0,
+                    maxY: topY,
+                    clipData: const FlClipData.none(),
 
-                // Grid Lines
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: true,
-                  drawHorizontalLine: true,
-                  horizontalInterval: (topY / 3).clamp(1.0, double.infinity),
-                  verticalInterval: (spots.length / 4).clamp(1.0, double.infinity),
-                  getDrawingHorizontalLine: (value) => FlLine(
-                    color: const Color(0xFF2E3B4E).withAlpha((0.5 * 255).round()),
-                    strokeWidth: 1,
-                  ),
-                  getDrawingVerticalLine: (value) => FlLine(
-                    color: const Color(0xFF2E3B4E).withAlpha((0.5 * 255).round()),
-                    strokeWidth: 1,
-                  ),
-                ),
-
-                borderData: FlBorderData(show: false),
-
-                // Axes Labels
-                titlesData: FlTitlesData(
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 42.w,
-                      interval: (topY / 3).clamp(1.0, double.infinity),
-                      getTitlesWidget: (value, meta) {
-                        if (value <= 0) return const SizedBox.shrink();
-                        return Text(
-                          '$currencySymbol${_formatCompact(value)}',
-                          style: customTypography.labelMediumMono.copyWith(
-                            fontSize: 10.sp,
-                            color: const Color(0xFF8A9BAE),
-                            fontWeight: FontWeights.bold,
-                          ),
-                        );
-                      },
+                    // Grid Lines
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: true,
+                      drawHorizontalLine: true,
+                      horizontalInterval:
+                          (topY / 3).clamp(1.0, double.infinity),
+                      verticalInterval:
+                          (spots.length / 4).clamp(1.0, double.infinity),
+                      getDrawingHorizontalLine: (value) => FlLine(
+                        color: const Color(0xFF2E3B4E)
+                            .withAlpha((0.5 * 255).round()),
+                        strokeWidth: 1,
+                      ),
+                      getDrawingVerticalLine: (value) => FlLine(
+                        color: const Color(0xFF2E3B4E)
+                            .withAlpha((0.5 * 255).round()),
+                        strokeWidth: 1,
+                      ),
                     ),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 22.h,
-                      interval: (spots.length / 3).clamp(1.0, double.infinity),
-                      getTitlesWidget: (value, meta) {
-                        final idx = value.toInt();
-                        if (idx < 1 || idx > spots.length) return const SizedBox.shrink();
 
-                        String label = '';
-                        if (points.isNotEmpty && idx - 1 < points.length) {
-                          final d = points[idx - 1].date;
-                          if (filter == ChartTimeFilter.weekly) {
-                            label = DateFormat('E').format(d).toUpperCase();
-                          } else if (filter == ChartTimeFilter.monthly) {
-                            label = 'D${d.day}';
-                          } else {
-                            label = DateFormat('MMM').format(d).toUpperCase();
-                          }
-                        } else {
-                          final defaultLabels = ['MAR', 'JUN', 'SEP', 'DEC'];
-                          final labelIndex = ((idx - 1) / (spots.length / 3)).clamp(0, 3).toInt();
-                          label = defaultLabels[labelIndex];
-                        }
+                    borderData: FlBorderData(show: false),
 
-                        return Padding(
-                          padding: EdgeInsets.only(top: 6.h),
-                          child: Text(
-                            label,
-                            style: customTypography.labelMediumMono.copyWith(
-                              fontSize: 10.sp,
-                              color: const Color(0xFF8A9BAE),
-                              fontWeight: FontWeights.bold,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                ),
-
-                // Floating White Tooltip & Touch Indicator
-                lineTouchData: LineTouchData(
-                  enabled: true,
-                  getTouchedSpotIndicator: (barData, spotIndexes) {
-                    return spotIndexes.map((spotIndex) {
-                      return TouchedSpotIndicatorData(
-                        const FlLine(
-                          color: cyanPrimary,
-                          strokeWidth: 2,
-                        ),
-                        FlDotData(
-                          show: true,
-                          getDotPainter: (spot, percent, barData, index) {
-                            return FlDotCirclePainter(
-                              radius: 6.r,
-                              color: cyanPrimary,
-                              strokeWidth: 3.r,
-                              strokeColor: Colors.white,
+                    // Axes Labels
+                    titlesData: FlTitlesData(
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 42.w,
+                          interval: (topY / 3).clamp(1.0, double.infinity),
+                          getTitlesWidget: (value, meta) {
+                            if (value <= 0) return const SizedBox.shrink();
+                            return Text(
+                              '$currencySymbol${_formatCompact(value)}',
+                              style: customTypography.labelMediumMono.copyWith(
+                                fontSize: 10.sp,
+                                color: const Color(0xFF8A9BAE),
+                                fontWeight: FontWeights.bold,
+                              ),
                             );
                           },
                         ),
-                      );
-                    }).toList();
-                  },
-                  touchTooltipData: LineTouchTooltipData(
-                    getTooltipColor: (_) => Colors.white,
-                    tooltipBorder: BorderSide.none,
-                    tooltipPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                    tooltipMargin: 12,
-                    getTooltipItems: (touchedSpots) {
-                      return touchedSpots.map((spot) {
-                        return LineTooltipItem(
-                          '$currencySymbol${spot.y.toStringAsFixed(1)}',
-                          TextStyle(
-                            color: cyanPrimary,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeights.bold,
-                            fontFamily: 'JetBrainsMono',
-                          ),
-                        );
-                      }).toList();
-                    },
-                  ),
-                ),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 22.h,
+                          interval:
+                              (spots.length / 3).clamp(1.0, double.infinity),
+                          getTitlesWidget: (value, meta) {
+                            final idx = value.toInt();
+                            if (idx < 1 || idx > spots.length)
+                              return const SizedBox.shrink();
 
-                // Main Smooth Curve
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: animatedSpots,
-                    isCurved: true,
-                    curveSmoothness: 0.45,
-                    gradient: const LinearGradient(
-                      colors: [cyanPrimary, cyanSecondary],
+                            String label = '';
+                            if (points.isNotEmpty && idx - 1 < points.length) {
+                              final d = points[idx - 1].date;
+                              if (filter == ChartTimeFilter.weekly) {
+                                label = DateFormat('E').format(d).toUpperCase();
+                              } else if (filter == ChartTimeFilter.monthly) {
+                                label = 'D${d.day}';
+                              } else {
+                                label =
+                                    DateFormat('MMM').format(d).toUpperCase();
+                              }
+                            } else {
+                              final defaultLabels = [
+                                'MAR',
+                                'JUN',
+                                'SEP',
+                                'DEC'
+                              ];
+                              final labelIndex =
+                                  ((idx - 1) / (spots.length / 3))
+                                      .clamp(0, 3)
+                                      .toInt();
+                              label = defaultLabels[labelIndex];
+                            }
+
+                            return Padding(
+                              padding: EdgeInsets.only(top: 6.h),
+                              child: Text(
+                                label,
+                                style:
+                                    customTypography.labelMediumMono.copyWith(
+                                  fontSize: 10.sp,
+                                  color: const Color(0xFF8A9BAE),
+                                  fontWeight: FontWeights.bold,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
                     ),
-                    barWidth: 3.5,
-                    isStrokeCapRound: true,
-                    dotData: const FlDotData(show: false),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      gradient: LinearGradient(
-                        colors: [
-                          cyanPrimary.withAlpha((0.45 * 255).round()),
-                          cyanSecondary.withAlpha((0.02 * 255).round()),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
+
+                    // Floating White Tooltip & Touch Indicator
+                    lineTouchData: LineTouchData(
+                      enabled: true,
+                      getTouchedSpotIndicator: (barData, spotIndexes) {
+                        return spotIndexes.map((spotIndex) {
+                          return TouchedSpotIndicatorData(
+                            const FlLine(
+                              color: cyanPrimary,
+                              strokeWidth: 2,
+                            ),
+                            FlDotData(
+                              show: true,
+                              getDotPainter: (spot, percent, barData, index) {
+                                return FlDotCirclePainter(
+                                  radius: 6.r,
+                                  color: cyanPrimary,
+                                  strokeWidth: 3.r,
+                                  strokeColor: Colors.white,
+                                );
+                              },
+                            ),
+                          );
+                        }).toList();
+                      },
+                      touchTooltipData: LineTouchTooltipData(
+                        getTooltipColor: (_) => Colors.white,
+                        tooltipBorder: BorderSide.none,
+                        tooltipPadding: EdgeInsets.symmetric(
+                            horizontal: 12.w, vertical: 6.h),
+                        tooltipMargin: 12,
+                        getTooltipItems: (touchedSpots) {
+                          return touchedSpots.map((spot) {
+                            return LineTooltipItem(
+                              '$currencySymbol${spot.y.toStringAsFixed(1)}',
+                              TextStyle(
+                                color: cyanPrimary,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeights.bold,
+                                fontFamily: 'JetBrainsMono',
+                              ),
+                            );
+                          }).toList();
+                        },
                       ),
                     ),
+
+                    // Main Smooth Curve
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: animatedSpots,
+                        isCurved: true,
+                        curveSmoothness: 0.45,
+                        gradient: const LinearGradient(
+                          colors: [cyanPrimary, cyanSecondary],
+                        ),
+                        barWidth: 3.5,
+                        isStrokeCapRound: true,
+                        dotData: const FlDotData(show: false),
+                        belowBarData: BarAreaData(
+                          show: true,
+                          gradient: LinearGradient(
+                            colors: [
+                              cyanPrimary.withAlpha((0.45 * 255).round()),
+                              cyanSecondary.withAlpha((0.02 * 255).round()),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              duration: const Duration(milliseconds: 150),
-              curve: Curves.easeOutCubic,
-            );
-          },
-        ),
+                  duration: const Duration(milliseconds: 150),
+                  curve: Curves.easeOutCubic,
+                );
+              },
+            ),
+          ),
+        ],
       ),
-    ],
-  ),
-);
+    );
   }
 
   String _formatCompact(double value) {
@@ -592,7 +618,8 @@ class _DualBarChartPage extends StatelessWidget {
       for (int i = 0; i < count; i++) {
         final p = points[startIndex + i];
         final label = DateFormat('E').format(p.date).substring(0, 2);
-        groups.add(_BarDataGroup(label: label, income: p.income, expense: p.expense));
+        groups.add(
+            _BarDataGroup(label: label, income: p.income, expense: p.expense));
       }
     } else if (filter == ChartTimeFilter.monthly) {
       // 4 Weekly Groups for Monthly Filter (W1, W2, W3, W4)
@@ -620,10 +647,12 @@ class _DualBarChartPage extends StatelessWidget {
         final key = DateFormat('MMM').format(p.date).toUpperCase();
         monthMap.putIfAbsent(key, () => {'income': 0.0, 'expense': 0.0});
         monthMap[key]!['income'] = (monthMap[key]!['income'] ?? 0.0) + p.income;
-        monthMap[key]!['expense'] = (monthMap[key]!['expense'] ?? 0.0) + p.expense;
+        monthMap[key]!['expense'] =
+            (monthMap[key]!['expense'] ?? 0.0) + p.expense;
       }
       monthMap.forEach((key, val) {
-        groups.add(_BarDataGroup(label: key, income: val['income']!, expense: val['expense']!));
+        groups.add(_BarDataGroup(
+            label: key, income: val['income']!, expense: val['expense']!));
       });
     } else if (filter == ChartTimeFilter.sixMonths) {
       // 6 Monthly Groups for 6M Filter
@@ -632,10 +661,12 @@ class _DualBarChartPage extends StatelessWidget {
         final key = DateFormat('MMM').format(p.date).toUpperCase();
         monthMap.putIfAbsent(key, () => {'income': 0.0, 'expense': 0.0});
         monthMap[key]!['income'] = (monthMap[key]!['income'] ?? 0.0) + p.income;
-        monthMap[key]!['expense'] = (monthMap[key]!['expense'] ?? 0.0) + p.expense;
+        monthMap[key]!['expense'] =
+            (monthMap[key]!['expense'] ?? 0.0) + p.expense;
       }
       monthMap.forEach((key, val) {
-        groups.add(_BarDataGroup(label: key, income: val['income']!, expense: val['expense']!));
+        groups.add(_BarDataGroup(
+            label: key, income: val['income']!, expense: val['expense']!));
       });
     }
 
@@ -718,118 +749,124 @@ class _DualBarChartPage extends StatelessWidget {
           // Bar Chart Canvas
           Expanded(
             child: TweenAnimationBuilder<double>(
-              key: ValueKey('bar_${filter.name}_${barDataGroups.length}_${points.isNotEmpty ? points.first.date.millisecondsSinceEpoch : 0}'),
+              key: ValueKey(
+                  'bar_${filter.name}_${barDataGroups.length}_${points.isNotEmpty ? points.first.date.millisecondsSinceEpoch : 0}'),
               tween: Tween<double>(begin: 0.0, end: 1.0),
               duration: const Duration(milliseconds: 900),
               curve: Curves.easeOutCubic,
               builder: (context, animValue, _) {
                 return BarChart(
-              BarChartData(
-                maxY: topY,
-                alignment: BarChartAlignment.spaceAround,
-                gridData: const FlGridData(show: false),
-                borderData: FlBorderData(show: false),
-                titlesData: FlTitlesData(
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 42.w,
-                      interval: (topY / 2).clamp(1.0, double.infinity),
-                      getTitlesWidget: (value, meta) {
-                        if (value <= 0) return const SizedBox.shrink();
-                        return Text(
-                          '$currencySymbol${_formatCompact(value)}',
-                          style: customTypography.labelMediumMono.copyWith(
-                            fontSize: 10.sp,
-                            color: const Color(0xFF7C8BA1),
-                            fontWeight: FontWeights.bold,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 22.h,
-                      getTitlesWidget: (value, meta) {
-                        final idx = value.toInt();
-                        if (idx < 0 || idx >= barDataGroups.length) {
-                          return const SizedBox.shrink();
-                        }
-                        return Padding(
-                          padding: EdgeInsets.only(top: 4.h),
-                          child: Text(
-                            barDataGroups[idx].label,
-                            style: customTypography.labelMediumMono.copyWith(
-                              fontSize: 10.sp,
-                              color: const Color(0xFF8A9BAE),
-                              fontWeight: FontWeights.bold,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  topTitles:
-                      const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles:
-                      const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                ),
-                barTouchData: BarTouchData(
-                  touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => Colors.white,
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                      final isIncome = rodIndex == 0;
-                      return BarTooltipItem(
-                        '${isIncome ? "Income" : "Expense"}: $currencySymbol${rod.toY.toStringAsFixed(1)}',
-                        TextStyle(
-                          color: isIncome ? cyanColor : pinkColor,
-                          fontSize: 11.sp,
-                          fontWeight: FontWeights.bold,
-                          fontFamily: 'JetBrainsMono',
+                  BarChartData(
+                    maxY: topY,
+                    alignment: BarChartAlignment.spaceAround,
+                    gridData: const FlGridData(show: false),
+                    borderData: FlBorderData(show: false),
+                    titlesData: FlTitlesData(
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 42.w,
+                          interval: (topY / 2).clamp(1.0, double.infinity),
+                          getTitlesWidget: (value, meta) {
+                            if (value <= 0) return const SizedBox.shrink();
+                            return Text(
+                              '$currencySymbol${_formatCompact(value)}',
+                              style: customTypography.labelMediumMono.copyWith(
+                                fontSize: 10.sp,
+                                color: const Color(0xFF7C8BA1),
+                                fontWeight: FontWeights.bold,
+                              ),
+                            );
+                          },
                         ),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 22.h,
+                          getTitlesWidget: (value, meta) {
+                            final idx = value.toInt();
+                            if (idx < 0 || idx >= barDataGroups.length) {
+                              return const SizedBox.shrink();
+                            }
+                            return Padding(
+                              padding: EdgeInsets.only(top: 4.h),
+                              child: Text(
+                                barDataGroups[idx].label,
+                                style:
+                                    customTypography.labelMediumMono.copyWith(
+                                  fontSize: 10.sp,
+                                  color: const Color(0xFF8A9BAE),
+                                  fontWeight: FontWeights.bold,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                    ),
+                    barTouchData: BarTouchData(
+                      touchTooltipData: BarTouchTooltipData(
+                        getTooltipColor: (_) => Colors.white,
+                        getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                          final isIncome = rodIndex == 0;
+                          return BarTooltipItem(
+                            '${isIncome ? "Income" : "Expense"}: $currencySymbol${rod.toY.toStringAsFixed(1)}',
+                            TextStyle(
+                              color: isIncome ? cyanColor : pinkColor,
+                              fontSize: 11.sp,
+                              fontWeight: FontWeights.bold,
+                              fontFamily: 'JetBrainsMono',
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    barGroups: List.generate(barDataGroups.length, (i) {
+                      final g = barDataGroups[i];
+
+                      final incVal = g.income <= 0
+                          ? 0.3 * animValue
+                          : g.income * animValue;
+                      final expVal = g.expense <= 0
+                          ? 0.3 * animValue
+                          : g.expense * animValue;
+
+                      return BarChartGroupData(
+                        x: i,
+                        barsSpace: 4.w,
+                        barRods: [
+                          // Cyan Bar (Income)
+                          BarChartRodData(
+                            toY: incVal.clamp(0.1, double.infinity),
+                            color: cyanColor,
+                            width: 7.w,
+                            borderRadius: BorderRadius.circular(6.r),
+                          ),
+                          // Pink Bar (Expense)
+                          BarChartRodData(
+                            toY: expVal.clamp(0.1, double.infinity),
+                            color: pinkColor,
+                            width: 7.w,
+                            borderRadius: BorderRadius.circular(6.r),
+                          ),
+                        ],
                       );
-                    },
+                    }),
                   ),
-                ),
-                barGroups: List.generate(barDataGroups.length, (i) {
-                  final g = barDataGroups[i];
-
-                  final incVal = g.income <= 0 ? 0.3 * animValue : g.income * animValue;
-                  final expVal = g.expense <= 0 ? 0.3 * animValue : g.expense * animValue;
-
-                  return BarChartGroupData(
-                    x: i,
-                    barsSpace: 4.w,
-                    barRods: [
-                      // Cyan Bar (Income)
-                      BarChartRodData(
-                        toY: incVal.clamp(0.1, double.infinity),
-                        color: cyanColor,
-                        width: 7.w,
-                        borderRadius: BorderRadius.circular(6.r),
-                      ),
-                      // Pink Bar (Expense)
-                      BarChartRodData(
-                        toY: expVal.clamp(0.1, double.infinity),
-                        color: pinkColor,
-                        width: 7.w,
-                        borderRadius: BorderRadius.circular(6.r),
-                      ),
-                    ],
-                  );
-                }),
-              ),
-              duration: const Duration(milliseconds: 150),
-              curve: Curves.easeOutCubic,
-            );
-          },
-        ),
+                  duration: const Duration(milliseconds: 150),
+                  curve: Curves.easeOutCubic,
+                );
+              },
+            ),
+          ),
+        ],
       ),
-    ],
-  ),
-);
+    );
   }
 
   Widget _buildLegendDot(Color color) {

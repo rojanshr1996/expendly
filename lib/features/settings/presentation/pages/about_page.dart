@@ -104,9 +104,9 @@ class AboutPage extends StatelessWidget {
                       _HighlightItem(
                         icon: Icons.lock_outline_rounded,
                         iconColor: colorScheme.primary,
-                        title: 'Hardware-Backed Encryption',
+                        title: 'Local Storage',
                         description:
-                            'Secured with AES-256 local encryption via Android EncryptedSharedPreferences & iOS Keychain Services.',
+                            'Stored locally on your device via Android & iOS secure storage.',
                       ),
                       const Divider(height: 24, color: AppColors.glassStroke),
                       _HighlightItem(

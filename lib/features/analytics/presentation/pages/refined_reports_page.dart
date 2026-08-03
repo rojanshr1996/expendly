@@ -67,7 +67,8 @@ class RefinedReportsPage extends StatelessWidget {
               actions: [
                 BlocBuilder<AnalyticsCubit, AnalyticsState>(
                   builder: (context, state) {
-                    if (state is! AnalyticsLoaded) return const SizedBox.shrink();
+                    if (state is! AnalyticsLoaded)
+                      return const SizedBox.shrink();
                     return IconButton(
                       tooltip: 'Download Financial Report',
                       icon: Icon(
@@ -140,188 +141,191 @@ class RefinedReportsPage extends StatelessWidget {
             key: ValueKey('content_${report.periodName}'),
             color: colorScheme.primary,
             onRefresh: () => context.read<AnalyticsCubit>().loadAnalytics(),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(
-            parent: BouncingScrollPhysics(),
-          ),
-          padding: EdgeInsets.only(
-            left: 20.w,
-            right: 20.w,
-            top: 16.h,
-            bottom: 120.h,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Period Selector Pills (ALWAYS available)
-              _PeriodSelectorRow(
-                selectedPeriod: report.periodName,
-                onPeriodSelected: (period) async {
-                  if (period == 'Custom') {
-                    final picked = await showDateRangePicker(
-                      context: context,
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime.now(),
-                    );
-                    if (picked != null && context.mounted) {
-                      context.read<AnalyticsCubit>().loadAnalytics(
-                            period: 'Custom',
-                            customRange: picked,
-                          );
-                    }
-                  } else {
-                    context.read<AnalyticsCubit>().loadAnalytics(
-                          period: period,
-                        );
-                  }
-                },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
               ),
-              verticalMarginMedium,
-
-              if (isEmpty)
-                _StaggeredEntrance(
-                  delayMs: 0,
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(24.w),
-                    margin: EdgeInsets.only(top: 20.h),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(20.r),
-                      border: Border.all(color: colorScheme.outlineVariant),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.bar_chart_outlined,
-                          size: 56.sp,
-                          color: colorScheme.outline,
-                        ),
-                        verticalMarginMedium,
-                        Text(
-                          l10n.noFinancialReportsYet,
-                          style: textTheme.titleLarge?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: FontWeights.bold,
-                          ),
-                        ),
-                        verticalMarginSmall,
-                        Text(
-                          'No transactions recorded for the selected period (${report.periodName}). Select a different period or date range above.',
-                          textAlign: TextAlign.center,
-                          style: customTypography.bodyMedium.copyWith(
-                            color: colorScheme.outline,
-                          ),
-                        ),
-                        verticalMarginMedium,
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            context.read<AnalyticsCubit>().loadAnalytics(period: 'Monthly');
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.primary,
-                            foregroundColor: colorScheme.onPrimary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                            ),
-                          ),
-                          icon: Icon(Icons.refresh_rounded, size: 18.sp),
-                          label: Text(
-                            'Show Monthly View',
-                            style: textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeights.bold,
-                              color: colorScheme.onPrimary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              else ...[
-                // Net Flow Hero Card with Dynamic Flow Bar Chart (Delay 0ms)
-                _StaggeredEntrance(
-                  delayMs: 0,
-                  child: _NetFlowHeroCard(
-                    report: report,
-                    currencySymbol: currencySymbol,
-                    isPrivacyModeNotifier: isPrivacyModeNotifier,
-                  ),
-                ),
-                verticalMarginMedium,
-
-                // Insights Bento Grid (Delay 100ms)
-                _StaggeredEntrance(
-                  delayMs: 100,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: _AvgDailySpendCard(
-                          report: report,
-                          currencySymbol: currencySymbol,
-                          isPrivacyModeNotifier: isPrivacyModeNotifier,
-                        ),
-                      ),
-                      horizontalMarginSmall,
-                      Expanded(
-                        child: _BudgetHealthCard(
-                          report: report,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                verticalMarginMedium,
-
-                // Top Category Highlight Trend Card (Delay 150ms)
-                if (report.topCategoryName != null) ...[
-                  _StaggeredEntrance(
-                    delayMs: 150,
-                    child: _TopCategoryTrendCard(report: report),
+              padding: EdgeInsets.only(
+                left: 20.w,
+                right: 20.w,
+                top: 16.h,
+                bottom: 120.h,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Period Selector Pills (ALWAYS available)
+                  _PeriodSelectorRow(
+                    selectedPeriod: report.periodName,
+                    onPeriodSelected: (period) async {
+                      if (period == 'Custom') {
+                        final picked = await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime.now(),
+                        );
+                        if (picked != null && context.mounted) {
+                          context.read<AnalyticsCubit>().loadAnalytics(
+                                period: 'Custom',
+                                customRange: picked,
+                              );
+                        }
+                      } else {
+                        context.read<AnalyticsCubit>().loadAnalytics(
+                              period: period,
+                            );
+                      }
+                    },
                   ),
                   verticalMarginMedium,
+
+                  if (isEmpty)
+                    _StaggeredEntrance(
+                      delayMs: 0,
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(24.w),
+                        margin: EdgeInsets.only(top: 20.h),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerLow,
+                          borderRadius: BorderRadius.circular(20.r),
+                          border: Border.all(color: colorScheme.outlineVariant),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.bar_chart_outlined,
+                              size: 56.sp,
+                              color: colorScheme.outline,
+                            ),
+                            verticalMarginMedium,
+                            Text(
+                              l10n.noFinancialReportsYet,
+                              style: textTheme.titleLarge?.copyWith(
+                                color: colorScheme.onSurface,
+                                fontWeight: FontWeights.bold,
+                              ),
+                            ),
+                            verticalMarginSmall,
+                            Text(
+                              'No transactions recorded for the selected period (${report.periodName}). Select a different period or date range above.',
+                              textAlign: TextAlign.center,
+                              style: customTypography.bodyMedium.copyWith(
+                                color: colorScheme.outline,
+                              ),
+                            ),
+                            verticalMarginMedium,
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                context
+                                    .read<AnalyticsCubit>()
+                                    .loadAnalytics(period: 'Monthly');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorScheme.primary,
+                                foregroundColor: colorScheme.onPrimary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                              ),
+                              icon: Icon(Icons.refresh_rounded, size: 18.sp),
+                              label: Text(
+                                'Show Monthly View',
+                                style: textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeights.bold,
+                                  color: colorScheme.onPrimary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  else ...[
+                    // Net Flow Hero Card with Dynamic Flow Bar Chart (Delay 0ms)
+                    _StaggeredEntrance(
+                      delayMs: 0,
+                      child: _NetFlowHeroCard(
+                        report: report,
+                        currencySymbol: currencySymbol,
+                        isPrivacyModeNotifier: isPrivacyModeNotifier,
+                      ),
+                    ),
+                    verticalMarginMedium,
+
+                    // Insights Bento Grid (Delay 100ms)
+                    _StaggeredEntrance(
+                      delayMs: 100,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: _AvgDailySpendCard(
+                              report: report,
+                              currencySymbol: currencySymbol,
+                              isPrivacyModeNotifier: isPrivacyModeNotifier,
+                            ),
+                          ),
+                          horizontalMarginSmall,
+                          Expanded(
+                            child: _BudgetHealthCard(
+                              report: report,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    verticalMarginMedium,
+
+                    // Top Category Highlight Trend Card (Delay 150ms)
+                    if (report.topCategoryName != null) ...[
+                      _StaggeredEntrance(
+                        delayMs: 150,
+                        child: _TopCategoryTrendCard(report: report),
+                      ),
+                      verticalMarginMedium,
+                    ],
+
+                    // Category Breakdown Section Header (Delay 200ms)
+                    _StaggeredEntrance(
+                      delayMs: 200,
+                      child: Text(
+                        l10n.expenseBreakdownByCategory,
+                        style: customTypography.labelMediumMono.copyWith(
+                          color: colorScheme.outline,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    verticalMarginSmall,
+
+                    // Category Breakdown Rows (Delay 240ms + idx * 40ms)
+                    ...report.categoryBreakdowns.asMap().entries.map((entry) {
+                      final idx = entry.key;
+                      final cat = entry.value;
+                      return _StaggeredEntrance(
+                        delayMs: 240 + (idx * 40),
+                        child: _CategoryBreakdownRow(
+                          item: cat,
+                          isPrivacyModeNotifier: isPrivacyModeNotifier,
+                        ),
+                      );
+                    }),
+                  ],
                 ],
+              ),
+            ),
+          );
+        }
 
-                // Category Breakdown Section Header (Delay 200ms)
-                _StaggeredEntrance(
-                  delayMs: 200,
-                  child: Text(
-                    l10n.expenseBreakdownByCategory,
-                    style: customTypography.labelMediumMono.copyWith(
-                      color: colorScheme.outline,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ),
-                verticalMarginSmall,
-
-                // Category Breakdown Rows (Delay 240ms + idx * 40ms)
-                ...report.categoryBreakdowns.asMap().entries.map((entry) {
-                  final idx = entry.key;
-                  final cat = entry.value;
-                  return _StaggeredEntrance(
-                    delayMs: 240 + (idx * 40),
-                    child: _CategoryBreakdownRow(
-                      item: cat,
-                      isPrivacyModeNotifier: isPrivacyModeNotifier,
-                    ),
-                  );
-                }),
-              ],
-            ],
-          ),
-        ),
-      );
-    }
-
-    return const SizedBox.shrink(key: ValueKey('none'));
+        return const SizedBox.shrink(key: ValueKey('none'));
       },
     );
   }
 
-  Future<void> _exportReport(BuildContext context, AnalyticsReport report) async {
+  Future<void> _exportReport(
+      BuildContext context, AnalyticsReport report) async {
     try {
       final filePath = await getIt<DataExportImportService>()
           .exportAnalyticsReportToCsv(report: report, openAfterExport: true);
@@ -449,7 +453,8 @@ class _NetFlowHeroCard extends StatelessWidget {
                           isPrivacyMode: isPrivacy,
                           showSign: true,
                           isIncome: isPositive,
-                          style: customTypography.headlineLargeMonoBold.copyWith(
+                          style:
+                              customTypography.headlineLargeMonoBold.copyWith(
                             color: flowColor,
                           ),
                         );
@@ -505,7 +510,8 @@ class _NetFlowHeroCard extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
               child: TweenAnimationBuilder<double>(
-                key: ValueKey('hero_bar_${report.periodName}_${report.dailyFlows.length}'),
+                key: ValueKey(
+                    'hero_bar_${report.periodName}_${report.dailyFlows.length}'),
                 tween: Tween<double>(begin: 0.0, end: 1.0),
                 duration: const Duration(milliseconds: 900),
                 curve: Curves.easeOutCubic,
@@ -514,7 +520,8 @@ class _NetFlowHeroCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: report.dailyFlows.map((flow) {
-                      final barWidth = report.dailyFlows.length > 7 ? 22.w : 32.w;
+                      final barWidth =
+                          report.dailyFlows.length > 7 ? 22.w : 32.w;
                       final formattedAmt = flow.amount >= 1000
                           ? '$currencySymbol${(flow.amount / 1000).toStringAsFixed(1)}k'
                           : flow.amount > 0
@@ -539,37 +546,39 @@ class _NetFlowHeroCard extends StatelessWidget {
                               duration: const Duration(milliseconds: 200),
                               curve: Curves.easeOutCubic,
                               width: barWidth,
-                              height: (85.h * flow.heightRatio * animVal).clamp(4.h, 85.h),
+                              height: (85.h * flow.heightRatio * animVal)
+                                  .clamp(4.h, 85.h),
                               decoration: BoxDecoration(
                                 color: flow.isPeak
                                     ? colorScheme.primary
-                                    : colorScheme.primary.withValues(alpha: 0.25),
+                                    : colorScheme.primary
+                                        .withValues(alpha: 0.25),
                                 borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(6.r),
                                 ),
                               ),
                             ),
-                        verticalMarginXXSmall,
-                        Text(
-                          flow.label,
-                          style: customTypography.labelMediumMono.copyWith(
-                            color: flow.isPeak
-                                ? colorScheme.primary
-                                : colorScheme.outline,
-                            fontWeight: flow.isPeak
-                                ? FontWeights.bold
-                                : FontWeights.regular,
-                          ),
+                            verticalMarginXXSmall,
+                            Text(
+                              flow.label,
+                              style: customTypography.labelMediumMono.copyWith(
+                                color: flow.isPeak
+                                    ? colorScheme.primary
+                                    : colorScheme.outline,
+                                fontWeight: flow.isPeak
+                                    ? FontWeights.bold
+                                    : FontWeights.regular,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      );
+                    }).toList(),
                   );
-                }).toList(),
-              );
-            },
+                },
+              ),
+            ),
           ),
-        ),
-      ),
         ],
       ),
     );
@@ -694,8 +703,11 @@ class _BudgetHealthCard extends StatelessWidget {
               width: 56.w,
               height: 56.w,
               child: TweenAnimationBuilder<double>(
-                key: ValueKey('health_ring_${report.periodName}_${report.budgetHealthPercentage}'),
-                tween: Tween<double>(begin: 0.0, end: (report.budgetHealthPercentage / 100).clamp(0.0, 1.0)),
+                key: ValueKey(
+                    'health_ring_${report.periodName}_${report.budgetHealthPercentage}'),
+                tween: Tween<double>(
+                    begin: 0.0,
+                    end: (report.budgetHealthPercentage / 100).clamp(0.0, 1.0)),
                 duration: const Duration(milliseconds: 900),
                 curve: Curves.easeOutCubic,
                 builder: (context, animRatio, _) {
@@ -706,7 +718,8 @@ class _BudgetHealthCard extends StatelessWidget {
                         value: animRatio,
                         strokeWidth: 5.w,
                         backgroundColor: colorScheme.surfaceContainerHigh,
-                        valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(colorScheme.primary),
                       ),
                       Text(
                         '${(animRatio * 100).toStringAsFixed(0)}%',
@@ -850,8 +863,10 @@ class _CategoryBreakdownRow extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(4.r),
             child: TweenAnimationBuilder<double>(
-              key: ValueKey('cat_progress_${item.categoryName}_${item.percentage}'),
-              tween: Tween<double>(begin: 0.0, end: (item.percentage / 100).clamp(0.0, 1.0)),
+              key: ValueKey(
+                  'cat_progress_${item.categoryName}_${item.percentage}'),
+              tween: Tween<double>(
+                  begin: 0.0, end: (item.percentage / 100).clamp(0.0, 1.0)),
               duration: const Duration(milliseconds: 900),
               curve: Curves.easeOutCubic,
               builder: (context, animValue, _) {

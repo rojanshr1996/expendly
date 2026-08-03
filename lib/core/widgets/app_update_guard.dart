@@ -27,13 +27,16 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
 
   late final ValueNotifier<bool> _isMaintenanceNotifier;
   late final ValueNotifier<AppUpdateStatus> _updateStatusNotifier;
-  final ValueNotifier<bool> _optionalUpdateDismissedNotifier = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _optionalUpdateDismissedNotifier =
+      ValueNotifier<bool>(false);
 
   @override
   void initState() {
     super.initState();
-    _isMaintenanceNotifier = ValueNotifier<bool>(_remoteConfig.isMaintenanceMode);
-    _updateStatusNotifier = ValueNotifier<AppUpdateStatus>(AppUpdateStatus.none);
+    _isMaintenanceNotifier =
+        ValueNotifier<bool>(_remoteConfig.isMaintenanceMode);
+    _updateStatusNotifier =
+        ValueNotifier<AppUpdateStatus>(AppUpdateStatus.none);
     _checkInitialState();
 
     _remoteConfig.onMaintenanceChanged.listen((isMaint) {
@@ -62,7 +65,9 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
   }
 
   Future<void> _openStoreUrl() async {
-    final urlString = Platform.isIOS ? _remoteConfig.updateUrlIos : _remoteConfig.updateUrlAndroid;
+    final urlString = Platform.isIOS
+        ? _remoteConfig.updateUrlIos
+        : _remoteConfig.updateUrlAndroid;
 
     final uri = Uri.parse(urlString);
     if (await canLaunchUrl(uri)) {
@@ -263,7 +268,8 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () => _optionalUpdateDismissedNotifier.value = true,
+                      onPressed: () =>
+                          _optionalUpdateDismissedNotifier.value = true,
                       child: const Text('Later'),
                     ),
                   ),

@@ -111,8 +111,11 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
 
     setState(() => _isSaving = true);
     final name = _nameController.text.trim();
-    final email = _emailController.text.trim().isEmpty ? null : _emailController.text.trim();
-    final bio = _bioController.text.trim().isEmpty ? null : _bioController.text.trim();
+    final email = _emailController.text.trim().isEmpty
+        ? null
+        : _emailController.text.trim();
+    final bio =
+        _bioController.text.trim().isEmpty ? null : _bioController.text.trim();
 
     try {
       await getIt<ProfileCubit>().saveProfile(
@@ -334,7 +337,9 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
                                 )
                               : Text(
                                   l10n.saveChanges,
-                                  style: (textTheme.titleMedium ?? const TextStyle()).copyWith(
+                                  style: (textTheme.titleMedium ??
+                                          const TextStyle())
+                                      .copyWith(
                                     color: colorScheme.onPrimary,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16.sp,
@@ -350,7 +355,8 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
                           child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
                               foregroundColor: colorScheme.onSurfaceVariant,
-                              side: BorderSide(color: colorScheme.outlineVariant),
+                              side:
+                                  BorderSide(color: colorScheme.outlineVariant),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16.r),
                               ),

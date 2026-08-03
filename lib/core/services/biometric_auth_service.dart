@@ -51,7 +51,8 @@ class BiometricAuthService {
     try {
       final isAvailable = await isBiometricAvailable();
       if (!isAvailable) {
-        AppLogger.w('Biometrics authentication attempted but biometrics unavailable.');
+        AppLogger.w(
+            'Biometrics authentication attempted but biometrics unavailable.');
         return false;
       }
 
@@ -72,10 +73,12 @@ class BiometricAuthService {
       } else if (e.code == auth_error.notEnrolled) {
         AppLogger.w('No biometrics enrolled on device: ${e.message}');
       } else if (e.code == auth_error.lockedOut ||
-                 e.code == auth_error.permanentlyLockedOut) {
+          e.code == auth_error.permanentlyLockedOut) {
         AppLogger.w('Biometrics locked out: ${e.message}');
       } else {
-        AppLogger.e('PlatformException during biometric auth: ${e.code} - ${e.message}', e);
+        AppLogger.e(
+            'PlatformException during biometric auth: ${e.code} - ${e.message}',
+            e);
       }
       return false;
     } catch (e) {

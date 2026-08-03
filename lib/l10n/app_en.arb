@@ -112,11 +112,11 @@
   "@financeRedefined": {
     "description": "Subtitle on splash screen"
   },
-  "protectedByAes256": "Protected by AES-256",
+  "protectedByAes256": "Protected & Offline",
   "@protectedByAes256": {
     "description": "Security label on splash screen"
   },
-  "offlineEncryption": "OFFLINE ENCRYPTION",
+  "offlineEncryption": "OFFLINE DATA",
   "@offlineEncryption": {
     "description": "Footer label on splash screen"
   },
@@ -184,7 +184,7 @@
   "@welcomeTitle1": {
     "description": "Carousel slide 1 title"
   },
-  "welcomeDesc1": "Your financial data stays exclusively on your device, secured with hardware-backed AES-256 encryption.",
+  "welcomeDesc1": "Your financial data stays exclusively on your device.",
   "@welcomeDesc1": {
     "description": "Carousel slide 1 description"
   },
@@ -698,15 +698,15 @@
   "@settingsFooterTagline": {
     "description": "Footer tagline on settings screen"
   },
-  "exportEncryptedData": "Export Encrypted Data (AES-256)",
+  "exportEncryptedData": "Export Backup Data",
   "@exportEncryptedData": {
-    "description": "Label for exporting AES-256 encrypted backup"
+    "description": "Label for exporting backup"
   },
-  "importEncryptedData": "Import Encrypted Data (AES-256)",
+  "importEncryptedData": "Import Backup Data",
   "@importEncryptedData": {
-    "description": "Label for importing AES-256 encrypted backup"
+    "description": "Label for importing backup"
   },
-  "exportEncryptedDataDesc": "Create an AES-256 encrypted backup file",
+  "exportEncryptedDataDesc": "Create a backup file",
   "@exportEncryptedDataDesc": {
     "description": "Subtitle for export data setting"
   },
@@ -714,7 +714,7 @@
   "@importEncryptedDataDesc": {
     "description": "Subtitle for import data setting"
   },
-  "exportSuccess": "Data exported & encrypted successfully!",
+  "exportSuccess": "Data exported successfully!",
   "@exportSuccess": {
     "description": "Success message after export"
   },
@@ -731,7 +731,7 @@
       }
     }
   },
-  "exportBackupSummary": "{count, plural, =0{Backup generated with no transactions, encrypted via AES-256.} =1{Backup generated with 1 transaction, encrypted via AES-256.} other{Backup generated with {count} transactions, encrypted via AES-256.}}",
+  "exportBackupSummary": "{count, plural, =0{Backup generated with no transactions.} =1{Backup generated with 1 transaction.} other{Backup generated with {count} transactions.}}",
   "@exportBackupSummary": {
     "description": "Summary line in the export success dialog describing the generated backup",
     "placeholders": {
@@ -851,11 +851,11 @@
   "@accountTransfer": {
     "description": "Title for account transfer option"
   },
-  "exportPromptDesc": "Enter an optional encryption PIN/passphrase to protect your backup with AES-256.",
+  "exportPromptDesc": "Enter an optional PIN/passphrase to protect your backup.",
   "@exportPromptDesc": {
     "description": "Description for export modal"
   },
-  "exportEncryptButton": "Export & Encrypt (AES-256)",
+  "exportEncryptButton": "Export Data",
   "@exportEncryptButton": {
     "description": "Button to trigger encrypted export"
   },
@@ -1159,7 +1159,7 @@
   "@faq1Q": {
     "description": "FAQ 1 Question"
   },
-  "faq1A": "No. Expendly is 100% offline-first. All data, transactions, and settings reside exclusively on your device, encrypted with hardware-backed AES-256.",
+  "faq1A": "No. Expendly is 100% offline-first. All data, transactions, and settings reside exclusively on your device.",
   "@faq1A": {
     "description": "FAQ 1 Answer"
   },
@@ -1191,15 +1191,15 @@
   "@termsTitle1": {
     "description": "Terms Section 1 Title"
   },
-  "termsBody1": "Expendly does not collect, transmit, or monetize your personal financial records. All databases, encrypted keys, and preferences are stored locally on your device.",
+  "termsBody1": "Expendly does not collect, transmit, or monetize your personal financial records. All databases and preferences are stored locally on your device.",
   "@termsBody1": {
     "description": "Terms Section 1 Body"
   },
-  "termsTitle2": "2. Encryption & Security",
+  "termsTitle2": "2. Security & Privacy",
   "@termsTitle2": {
     "description": "Terms Section 2 Title"
   },
-  "termsBody2": "Security PINs and master encryption keys are secured via Android EncryptedSharedPreferences and iOS Keychain Services (hardware-backed key storage).",
+  "termsBody2": "Security PINs and preferences are stored securely on your device using Android & iOS secure storage.",
   "@termsBody2": {
     "description": "Terms Section 2 Body"
   },
@@ -1207,7 +1207,7 @@
   "@termsTitle3": {
     "description": "Terms Section 3 Title"
   },
-  "termsBody3": "Because Expendly has zero server backends, you are responsible for maintaining encrypted backups of your ledger when switching devices.",
+  "termsBody3": "Because Expendly has zero server backends, you are responsible for maintaining backups of your ledger when switching devices.",
   "@termsBody3": {
     "description": "Terms Section 3 Body"
   },
@@ -1283,7 +1283,7 @@
   "@allowAutoBackup": {
     "description": "Label for auto backup switch on account setup page"
   },
-  "autoBackupSetupDesc": "Automatically snapshot encrypted ledger. Requires Security PIN.",
+  "autoBackupSetupDesc": "Automatically snapshot ledger. Requires Security PIN.",
   "@autoBackupSetupDesc": {
     "description": "Subtitle for auto backup switch on account setup page"
   },
@@ -1291,7 +1291,7 @@
   "@autoBackupTileTitle": {
     "description": "Title for auto backup tile in settings"
   },
-  "autoBackupTileDesc": "Automatically snapshot encrypted ledger on changes",
+  "autoBackupTileDesc": "Automatically snapshot ledger on changes",
   "@autoBackupTileDesc": {
     "description": "Subtitle for auto backup tile in settings"
   },
@@ -1299,7 +1299,7 @@
   "@pinRequiredForAutoBackup": {
     "description": "Toast message when enabling auto backup without a PIN configured"
   },
-  "pinCompulsoryForBackup": "Security PIN is required for auto backup encryption.",
+  "pinCompulsoryForBackup": "Security PIN is required for auto backup.",
   "@pinCompulsoryForBackup": {
     "description": "Subtitle note on security setup screen when auto backup is active"
   },

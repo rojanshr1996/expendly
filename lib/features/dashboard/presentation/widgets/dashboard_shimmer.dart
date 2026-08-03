@@ -46,9 +46,11 @@ class DashboardShimmer extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('TOTAL BALANCE', style: TextStyle(fontSize: 10.sp)),
+                        Text('TOTAL BALANCE',
+                            style: TextStyle(fontSize: 10.sp)),
                         SizedBox(height: 4.h),
-                        Text('$symbol 125,450.00', style: TextStyle(fontSize: 16.sp)),
+                        Text('$symbol 125,450.00',
+                            style: TextStyle(fontSize: 16.sp)),
                       ],
                     ),
                   ],
@@ -66,7 +68,8 @@ class DashboardShimmer extends StatelessWidget {
                         children: [
                           Text('EXPENSES', style: TextStyle(fontSize: 10.sp)),
                           SizedBox(height: 8.h),
-                          Text('$symbol 3,250.00', style: TextStyle(fontSize: 18.sp)),
+                          Text('$symbol 3,250.00',
+                              style: TextStyle(fontSize: 18.sp)),
                         ],
                       ),
                     ),
@@ -80,7 +83,8 @@ class DashboardShimmer extends StatelessWidget {
                         children: [
                           Text('INCOME', style: TextStyle(fontSize: 10.sp)),
                           SizedBox(height: 8.h),
-                          Text('$symbol 8,400.00', style: TextStyle(fontSize: 18.sp)),
+                          Text('$symbol 8,400.00',
+                              style: TextStyle(fontSize: 18.sp)),
                         ],
                       ),
                     ),
@@ -98,7 +102,8 @@ class DashboardShimmer extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(width: 120.w, height: 14.h, color: Colors.grey),
+                        Container(
+                            width: 120.w, height: 14.h, color: Colors.grey),
                         SizedBox(height: 12.h),
                         Container(
                           width: double.infinity,
@@ -143,7 +148,8 @@ class DashboardShimmer extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Text('$symbol 150.00', style: TextStyle(fontSize: 14.sp)),
+                          Text('$symbol 150.00',
+                              style: TextStyle(fontSize: 14.sp)),
                         ],
                       ),
                     ),

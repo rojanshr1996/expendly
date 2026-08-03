@@ -16,8 +16,9 @@ class TransactionCubit extends Cubit<TransactionState> {
     TransactionEvents.transactionUpdated.addListener(_onTransactionUpdated);
   }
 
-  List<TransactionItem> get allTransactions =>
-      state is TransactionLoaded ? (state as TransactionLoaded).transactions : const [];
+  List<TransactionItem> get allTransactions => state is TransactionLoaded
+      ? (state as TransactionLoaded).transactions
+      : const [];
 
   void _onTransactionUpdated() {
     if (!isClosed && !_isPerformingLocalAction) {
@@ -34,7 +35,8 @@ class TransactionCubit extends Cubit<TransactionState> {
   Future<void> loadTransactions({bool isSilent = false}) async {
     if (isClosed) return;
     final currentState = state;
-    final currentLoaded = currentState is TransactionLoaded ? currentState : null;
+    final currentLoaded =
+        currentState is TransactionLoaded ? currentState : null;
 
     if (!isSilent && currentLoaded == null) {
       emit(TransactionLoading());
@@ -174,7 +176,9 @@ class TransactionCubit extends Cubit<TransactionState> {
       if (targetTx?.type == TransactionType.transfer) {
         final linkedFee = allTransactions
             .where(
-              (t) => t.type == TransactionType.expense && t.note?.contains('[Ref: #$id]') == true,
+              (t) =>
+                  t.type == TransactionType.expense &&
+                  t.note?.contains('[Ref: #$id]') == true,
             )
             .firstOrNull;
         if (linkedFee != null) {

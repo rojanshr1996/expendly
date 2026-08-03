@@ -13,7 +13,8 @@ extension ShimmerExtension on Widget {
       enabled: enabled,
       effect: ShimmerEffect(
         baseColor: baseColor ?? Colors.grey.withAlpha((0.15 * 255).round()),
-        highlightColor: highlightColor ?? Colors.grey.withAlpha((0.35 * 255).round()),
+        highlightColor:
+            highlightColor ?? Colors.grey.withAlpha((0.35 * 255).round()),
         duration: const Duration(milliseconds: 1200),
       ),
       child: this,

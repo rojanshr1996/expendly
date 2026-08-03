@@ -32,16 +32,16 @@ class SettingsTile extends StatelessWidget {
     final textTheme = context.textTheme;
     final customTypography = context.customTypography;
 
-    final effectiveIconColor = isDestructive
-        ? colorScheme.error
-        : (iconColor ?? colorScheme.primary);
+    final effectiveIconColor =
+        isDestructive ? colorScheme.error : (iconColor ?? colorScheme.primary);
 
     final effectiveIconBgColor = iconBackgroundColor ??
         (isDestructive
             ? colorScheme.error.withAlpha((0.15 * 255).round())
             : effectiveIconColor.withAlpha((0.12 * 255).round()));
 
-    final titleColor = isDestructive ? colorScheme.error : colorScheme.onSurface;
+    final titleColor =
+        isDestructive ? colorScheme.error : colorScheme.onSurface;
 
     return Material(
       color: Colors.transparent,
@@ -76,7 +76,8 @@ class SettingsTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(
+                      style:
+                          (textTheme.bodyLarge ?? const TextStyle()).copyWith(
                         color: titleColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 15.sp,

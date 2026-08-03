@@ -28,8 +28,10 @@ class PreferenceService {
   PreferenceService(this._secureStorage);
 
   // Reactive ValueNotifiers for app-wide instant UI updates
-  final ValueNotifier<String> currencyCodeNotifier = ValueNotifier<String>('USD');
-  final ValueNotifier<String> currencySymbolNotifier = ValueNotifier<String>('\$');
+  final ValueNotifier<String> currencyCodeNotifier =
+      ValueNotifier<String>('USD');
+  final ValueNotifier<String> currencySymbolNotifier =
+      ValueNotifier<String>('\$');
 
   // In-memory cache for fast sync access
   bool _onboardingCompleted = false;

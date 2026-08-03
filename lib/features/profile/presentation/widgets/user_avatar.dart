@@ -52,7 +52,8 @@ class UserAvatar extends StatelessWidget {
                 width: radius * 2,
                 height: radius * 2,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => _buildFallback(colorScheme),
+                errorBuilder: (context, error, stackTrace) =>
+                    _buildFallback(colorScheme),
               )
             : _buildFallback(colorScheme),
       ),

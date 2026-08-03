@@ -202,7 +202,8 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: isSuccess
-                                        ? AppColors.semanticGreen.withValues(alpha: 0.2)
+                                        ? AppColors.semanticGreen
+                                            .withValues(alpha: 0.2)
                                         : AppColors.surfaceLow,
                                     border: Border.all(
                                       color: isSuccess
@@ -239,131 +240,135 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
                               },
                             ),
                             verticalMarginSmall,
-                          Text(
-                            l10n.unlockToContinue,
-                            style: customTypography.headlineLargeMobile,
-                            textAlign: TextAlign.center,
-                          ),
-                          verticalMarginXXSmall,
-                          Text(
-                            l10n.secureAccessTitle,
-                            style: customTypography.labelMediumMono.copyWith(
-                              color: colorScheme.onSurfaceVariant,
+                            Text(
+                              l10n.unlockToContinue,
+                              style: customTypography.headlineLargeMobile,
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          verticalMarginMedium,
+                            verticalMarginXXSmall,
+                            Text(
+                              l10n.secureAccessTitle,
+                              style: customTypography.labelMediumMono.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            verticalMarginMedium,
 
-                          // PIN Dot Indicators
-                          ValueListenableBuilder<String>(
-                            valueListenable: _enteredPinNotifier,
-                            builder: (context, enteredPin, _) {
-                              return AnimatedBuilder(
-                                animation: _shakeAnimation,
-                                builder: (context, child) {
-                                  return Transform.translate(
-                                    offset: Offset(_shakeAnimation.value, 0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: List.generate(4, (index) {
-                                        final isFilled =
-                                            index < enteredPin.length;
-                                        return Container(
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 10.w),
-                                          width: 16.w,
-                                          height: 16.w,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: isFilled
-                                                ? colorScheme.primary
-                                                : Colors.transparent,
-                                            border: Border.all(
+                            // PIN Dot Indicators
+                            ValueListenableBuilder<String>(
+                              valueListenable: _enteredPinNotifier,
+                              builder: (context, enteredPin, _) {
+                                return AnimatedBuilder(
+                                  animation: _shakeAnimation,
+                                  builder: (context, child) {
+                                    return Transform.translate(
+                                      offset: Offset(_shakeAnimation.value, 0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: List.generate(4, (index) {
+                                          final isFilled =
+                                              index < enteredPin.length;
+                                          return Container(
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 10.w),
+                                            width: 16.w,
+                                            height: 16.w,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
                                               color: isFilled
                                                   ? colorScheme.primary
-                                                  : colorScheme.outlineVariant,
-                                              width: 2.0,
+                                                  : Colors.transparent,
+                                              border: Border.all(
+                                                color: isFilled
+                                                    ? colorScheme.primary
+                                                    : colorScheme
+                                                        .outlineVariant,
+                                                width: 2.0,
+                                              ),
+                                              boxShadow: isFilled
+                                                  ? [
+                                                      BoxShadow(
+                                                        color: colorScheme
+                                                            .primary
+                                                            .withAlpha(
+                                                                (0.5 * 255)
+                                                                    .round()),
+                                                        blurRadius: 10.r,
+                                                      ),
+                                                    ]
+                                                  : [],
                                             ),
-                                            boxShadow: isFilled
-                                                ? [
-                                                    BoxShadow(
-                                                      color: colorScheme.primary
-                                                          .withAlpha((0.5 * 255)
-                                                              .round()),
-                                                      blurRadius: 10.r,
-                                                    ),
-                                                  ]
-                                                : [],
-                                          ),
-                                        );
-                                      }),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                        ],
+                                          );
+                                        }),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
 
-                // Numeric Keypad & Footer Actions
-                Column(
-                  children: [
-                    CustomKeypad(
-                      showDecimal: false,
-                      onKeyPress: _onKeyPress,
-                      onDeletePress: _onDeletePress,
-                    ),
-                    verticalMarginXSmall,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (isBiometricsEnabled) ...[
+                  // Numeric Keypad & Footer Actions
+                  Column(
+                    children: [
+                      CustomKeypad(
+                        showDecimal: false,
+                        onKeyPress: _onKeyPress,
+                        onDeletePress: _onDeletePress,
+                      ),
+                      verticalMarginXSmall,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (isBiometricsEnabled) ...[
+                            TextButton.icon(
+                              onPressed: _onBiometricsPressed,
+                              icon: Icon(
+                                Icons.fingerprint_rounded,
+                                color: colorScheme.primary,
+                                size: 20.sp,
+                              ),
+                              label: Text(
+                                l10n.useBiometrics,
+                                style:
+                                    (textTheme.bodyMedium ?? const TextStyle())
+                                        .copyWith(
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                          ],
                           TextButton.icon(
-                            onPressed: _onBiometricsPressed,
+                            onPressed: () => ResetPinModal.show(context),
                             icon: Icon(
-                              Icons.fingerprint_rounded,
-                              color: colorScheme.primary,
-                              size: 20.sp,
+                              Icons.help_outline_rounded,
+                              color: colorScheme.onSurfaceVariant,
+                              size: 18.sp,
                             ),
                             label: Text(
-                              l10n.useBiometrics,
+                              l10n.forgotPin,
                               style: (textTheme.bodyMedium ?? const TextStyle())
                                   .copyWith(
-                                color: colorScheme.primary,
+                                color: colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ),
-                          SizedBox(width: 8.w),
                         ],
-                        TextButton.icon(
-                          onPressed: () => ResetPinModal.show(context),
-                          icon: Icon(
-                            Icons.help_outline_rounded,
-                            color: colorScheme.onSurfaceVariant,
-                            size: 18.sp,
-                          ),
-                          label: Text(
-                            l10n.forgotPin,
-                            style: (textTheme.bodyMedium ?? const TextStyle())
-                                .copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ).defaultCanvasPadding(),
+                      ),
+                    ],
+                  ),
+                ],
+              ).defaultCanvasPadding(),
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

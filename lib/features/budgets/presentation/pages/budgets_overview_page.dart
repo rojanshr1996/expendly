@@ -96,7 +96,8 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
                       ),
                     );
                   },
-                  child: _buildStateContent(context, state, colorScheme, customTypography),
+                  child: _buildStateContent(
+                      context, state, colorScheme, customTypography),
                 );
               },
             ),
@@ -155,7 +156,8 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -185,7 +187,8 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
         onRefresh: () => context.read<BudgetCubit>().loadBudgets(),
         child: ListView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 120),
+          padding:
+              const EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 120),
           children: [
             // Total Budget Health Summary Card (Stagger Delay 0ms)
             _StaggeredEntrance(
@@ -289,177 +292,190 @@ class _TotalBudgetHealthCard extends StatelessWidget {
     return ValueListenableBuilder<String>(
       valueListenable: getIt<PreferenceService>().currencySymbolNotifier,
       builder: (context, currencySymbol, _) {
-        final double totalSpent =
-            selectedItem != null ? selectedItem!.spentAmount : budgets.fold(0.0, (sum, b) => sum + b.spentAmount);
+        final double totalSpent = selectedItem != null
+            ? selectedItem!.spentAmount
+            : budgets.fold(0.0, (sum, b) => sum + b.spentAmount);
 
-    final double totalTarget =
-        selectedItem != null ? selectedItem!.targetAmount : budgets.fold(0.0, (sum, b) => sum + b.targetAmount);
+        final double totalTarget = selectedItem != null
+            ? selectedItem!.targetAmount
+            : budgets.fold(0.0, (sum, b) => sum + b.targetAmount);
 
-    final double ratio = totalTarget > 0 ? (totalSpent / totalTarget).clamp(0.0, 1.0) : 0.0;
-    final int percentage = (ratio * 100).round();
+        final double ratio =
+            totalTarget > 0 ? (totalSpent / totalTarget).clamp(0.0, 1.0) : 0.0;
+        final int percentage = (ratio * 100).round();
 
-    final bool isOver = totalTarget > 0 && totalSpent > totalTarget;
+        final bool isOver = totalTarget > 0 && totalSpent > totalTarget;
 
-    return GestureDetector(
-      onTap: selectedItem != null ? onResetSelection : null,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.primary.withValues(alpha: 0.12),
-              AppColors.secondary.withValues(alpha: 0.10),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: selectedItem != null ? AppColors.primary.withValues(alpha: 0.5) : AppColors.glassStroke,
-            width: selectedItem != null ? 1.5 : 1.0,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    selectedItem != null
-                        ? '${selectedItem!.categoryName.toUpperCase()} BUDGET HEALTH'
-                        : 'TOTAL BUDGET HEALTH',
-                    style: customTypography.labelMediumMono.copyWith(
-                      color: AppColors.outline,
-                      letterSpacing: 1.2,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (selectedItem != null)
-                  InkWell(
-                    onTap: onResetSelection,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'Show Total',
-                        style: customTypography.labelMediumMono.copyWith(
-                          color: AppColors.primary,
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
+        return GestureDetector(
+          onTap: selectedItem != null ? onResetSelection : null,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.primary.withValues(alpha: 0.12),
+                  AppColors.secondary.withValues(alpha: 0.10),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: selectedItem != null
+                    ? AppColors.primary.withValues(alpha: 0.5)
+                    : AppColors.glassStroke,
+                width: selectedItem != null ? 1.5 : 1.0,
+              ),
             ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ValueListenableBuilder<bool>(
-                        valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
-                        builder: (context, isPrivacy, _) {
-                          final displaySpent = totalSpent.formatCurrency(
-                            currencySymbol,
-                            isPrivacyMode: isPrivacy,
-                          );
-                          return FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              displaySpent,
-                              style: customTypography.headlineLargeMonoBold.copyWith(
-                                color: AppColors.onSurface,
-                                fontSize: 28.sp,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        isOver ? 'Exceeded Limit' : 'Within Budget Limit',
-                        style: customTypography.bodyMedium.copyWith(
-                          color: isOver ? AppColors.semanticRed : AppColors.semanticGreen,
-                          fontSize: 13.sp,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        selectedItem != null
+                            ? '${selectedItem!.categoryName.toUpperCase()} BUDGET HEALTH'
+                            : 'TOTAL BUDGET HEALTH',
+                        style: customTypography.labelMediumMono.copyWith(
+                          color: AppColors.outline,
+                          letterSpacing: 1.2,
                           fontWeight: FontWeight.bold,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
+                    ),
+                    if (selectedItem != null)
+                      InkWell(
+                        onTap: onResetSelection,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Show Total',
+                            style: customTypography.labelMediumMono.copyWith(
+                              color: AppColors.primary,
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Column(
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    ValueListenableBuilder<bool>(
-                      valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
-                      builder: (context, isPrivacy, _) {
-                        final displayTarget = totalTarget.formatCurrency(
-                          currencySymbol,
-                          isPrivacyMode: isPrivacy,
-                        );
-                        return Text(
-                          'Limit: $displayTarget',
-                          style: customTypography.labelMediumMono.copyWith(
-                            color: AppColors.outline,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ValueListenableBuilder<bool>(
+                            valueListenable:
+                                isPrivacyModeNotifier ?? ValueNotifier(false),
+                            builder: (context, isPrivacy, _) {
+                              final displaySpent = totalSpent.formatCurrency(
+                                currencySymbol,
+                                isPrivacyMode: isPrivacy,
+                              );
+                              return FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  displaySpent,
+                                  style: customTypography.headlineLargeMonoBold
+                                      .copyWith(
+                                    color: AppColors.onSurface,
+                                    fontSize: 28.sp,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '$percentage% Utilized',
-                      style: customTypography.labelMediumMono.copyWith(
-                        color: isOver ? AppColors.semanticRed : AppColors.primary,
-                        fontWeight: FontWeight.bold,
+                          const SizedBox(height: 2),
+                          Text(
+                            isOver ? 'Exceeded Limit' : 'Within Budget Limit',
+                            style: customTypography.bodyMedium.copyWith(
+                              color: isOver
+                                  ? AppColors.semanticRed
+                                  : AppColors.semanticGreen,
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        ValueListenableBuilder<bool>(
+                          valueListenable:
+                              isPrivacyModeNotifier ?? ValueNotifier(false),
+                          builder: (context, isPrivacy, _) {
+                            final displayTarget = totalTarget.formatCurrency(
+                              currencySymbol,
+                              isPrivacyMode: isPrivacy,
+                            );
+                            return Text(
+                              'Limit: $displayTarget',
+                              style: customTypography.labelMediumMono.copyWith(
+                                color: AppColors.outline,
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '$percentage% Utilized',
+                          style: customTypography.labelMediumMono.copyWith(
+                            color: isOver
+                                ? AppColors.semanticRed
+                                : AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
+
+                // Animated Linear Progress Indicator from 0.0 to target ratio
+                TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0.0, end: ratio),
+                  duration: const Duration(milliseconds: 900),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, animatedRatio, _) {
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: animatedRatio,
+                        minHeight: 10,
+                        backgroundColor: colorScheme.surfaceContainerHigh,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          isOver ? AppColors.semanticRed : AppColors.primary,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
-            const SizedBox(height: 16),
-
-            // Animated Linear Progress Indicator from 0.0 to target ratio
-            TweenAnimationBuilder<double>(
-              tween: Tween<double>(begin: 0.0, end: ratio),
-              duration: const Duration(milliseconds: 900),
-              curve: Curves.easeOutCubic,
-              builder: (context, animatedRatio, _) {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: LinearProgressIndicator(
-                    value: animatedRatio,
-                    minHeight: 10,
-                    backgroundColor: colorScheme.surfaceContainerHigh,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      isOver ? AppColors.semanticRed : AppColors.primary,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
-  },
-);
-}
+  }
 }
 
 class _BudgetCard extends StatelessWidget {
@@ -497,7 +513,9 @@ class _BudgetCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 14),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : AppColors.surfaceContainerLow,
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : AppColors.surfaceContainerLow,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
@@ -538,10 +556,12 @@ class _BudgetCard extends StatelessWidget {
                         ),
                       ),
                       ValueListenableBuilder<String>(
-                        valueListenable: getIt<PreferenceService>().currencySymbolNotifier,
+                        valueListenable:
+                            getIt<PreferenceService>().currencySymbolNotifier,
                         builder: (context, symbol, _) {
                           return ValueListenableBuilder<bool>(
-                            valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
+                            valueListenable:
+                                isPrivacyModeNotifier ?? ValueNotifier(false),
                             builder: (context, isPrivacy, _) {
                               final spent = item.spentAmount.formatCurrency(
                                 symbol,
@@ -553,7 +573,8 @@ class _BudgetCard extends StatelessWidget {
                               );
                               return Text(
                                 '$spent / $target',
-                                style: customTypography.labelMediumMono.copyWith(
+                                style:
+                                    customTypography.labelMediumMono.copyWith(
                                   color: AppColors.outline,
                                 ),
                               );
@@ -565,7 +586,8 @@ class _BudgetCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline_rounded, color: AppColors.outline, size: 20),
+                  icon: const Icon(Icons.delete_outline_rounded,
+                      color: AppColors.outline, size: 20),
                   onPressed: onDelete,
                 ),
               ],

@@ -51,7 +51,8 @@ class ProfileAvatarPicker extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: colorScheme.primary.withAlpha((0.35 * 255).round()),
+                      color:
+                          colorScheme.primary.withAlpha((0.35 * 255).round()),
                       blurRadius: 10,
                       spreadRadius: 2,
                     ),

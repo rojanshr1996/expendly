@@ -27,7 +27,8 @@ class AllTransactionsPage extends StatefulWidget {
   State<AllTransactionsPage> createState() => _AllTransactionsPageState();
 }
 
-class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTickerProviderStateMixin {
+class _AllTransactionsPageState extends State<AllTransactionsPage>
+    with SingleTickerProviderStateMixin {
   late final ValueNotifier<String> _viewModeNotifier;
   late final ValueNotifier<DateTime> _selectedMonthNotifier;
   late final ValueNotifier<DateTime> _selectedDateNotifier;
@@ -45,9 +46,11 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
     final now = DateTime.now();
 
     final savedMode = prefs.activityViewMode;
-    final initialMode = (savedMode.isEmpty || savedMode == 'list') ? 'daily' : savedMode;
+    final initialMode =
+        (savedMode.isEmpty || savedMode == 'list') ? 'daily' : savedMode;
     _viewModeNotifier = ValueNotifier<String>(initialMode);
-    _selectedMonthNotifier = ValueNotifier<DateTime>(DateTime(now.year, now.month));
+    _selectedMonthNotifier =
+        ValueNotifier<DateTime>(DateTime(now.year, now.month));
     _selectedDateNotifier = ValueNotifier<DateTime>(now);
 
     _pageAnimationController = AnimationController(
@@ -85,11 +88,13 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
     final currentMonth = _selectedMonthNotifier.value;
 
     if (mode == 'monthly') {
-      _selectedMonthNotifier.value = DateTime(currentMonth.year - 1, currentMonth.month);
+      _selectedMonthNotifier.value =
+          DateTime(currentMonth.year - 1, currentMonth.month);
     } else {
       final prevMonth = DateTime(currentMonth.year, currentMonth.month - 1);
       _selectedMonthNotifier.value = prevMonth;
-      _selectedDateNotifier.value = DateTime(prevMonth.year, prevMonth.month, 1);
+      _selectedDateNotifier.value =
+          DateTime(prevMonth.year, prevMonth.month, 1);
       _scrollToSelectedDate(animated: true);
     }
   }
@@ -99,11 +104,13 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
     final currentMonth = _selectedMonthNotifier.value;
 
     if (mode == 'monthly') {
-      _selectedMonthNotifier.value = DateTime(currentMonth.year + 1, currentMonth.month);
+      _selectedMonthNotifier.value =
+          DateTime(currentMonth.year + 1, currentMonth.month);
     } else {
       final nextMonth = DateTime(currentMonth.year, currentMonth.month + 1);
       _selectedMonthNotifier.value = nextMonth;
-      _selectedDateNotifier.value = DateTime(nextMonth.year, nextMonth.month, 1);
+      _selectedDateNotifier.value =
+          DateTime(nextMonth.year, nextMonth.month, 1);
       _scrollToSelectedDate(animated: true);
     }
   }
@@ -113,7 +120,8 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
     final itemWidth = 60.0.w;
     final index = _selectedDateNotifier.value.day - 1;
     final screenWidth = MediaQuery.of(context).size.width;
-    final targetOffset = (16.0.w + index * itemWidth + (itemWidth / 2)) - (screenWidth / 2);
+    final targetOffset =
+        (16.0.w + index * itemWidth + (itemWidth / 2)) - (screenWidth / 2);
     final maxScroll = _calendarScrollController.position.maxScrollExtent;
     final clampedOffset = targetOffset.clamp(0.0, maxScroll);
 
@@ -210,7 +218,8 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                   return ValueListenableBuilder<DateTime>(
                     valueListenable: _selectedMonthNotifier,
                     builder: (context, selectedMonth, _) {
-                      final locale = Localizations.localeOf(context).languageCode;
+                      final locale =
+                          Localizations.localeOf(context).languageCode;
                       final periodText = viewMode == 'monthly'
                           ? DateFormat.y(locale).format(selectedMonth)
                           : DateFormat.yMMMM(locale).format(selectedMonth);
@@ -239,7 +248,9 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                               ),
                               child: Text(
                                 periodText,
-                                style: (textTheme.titleMedium ?? const TextStyle()).copyWith(
+                                style:
+                                    (textTheme.titleMedium ?? const TextStyle())
+                                        .copyWith(
                                   color: colorScheme.onSurface,
                                   fontWeight: FontWeights.bold,
                                   fontSize: 16.sp,
@@ -312,7 +323,9 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                     position: _headerSlideAnimation,
                     child: BlocBuilder<TransactionCubit, TransactionState>(
                       builder: (context, state) {
-                        final selectedType = state is TransactionLoaded ? state.selectedType : null;
+                        final selectedType = state is TransactionLoaded
+                            ? state.selectedType
+                            : null;
 
                         return SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
@@ -329,18 +342,23 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                                 isSelected: selectedType == null,
                                 activeColor: colorScheme.primary,
                                 onTap: () {
-                                  context.read<TransactionCubit>().filterType(null);
+                                  context
+                                      .read<TransactionCubit>()
+                                      .filterType(null);
                                 },
                               ),
                               SizedBox(width: 8.w),
                               _TypeFilterChip(
                                 label: context.l10n.expenses,
                                 icon: Icons.arrow_downward_rounded,
-                                isSelected: selectedType == TransactionType.expense,
+                                isSelected:
+                                    selectedType == TransactionType.expense,
                                 activeColor: AppColors.semanticRed,
                                 onTap: () {
                                   context.read<TransactionCubit>().filterType(
-                                        selectedType == TransactionType.expense ? null : TransactionType.expense,
+                                        selectedType == TransactionType.expense
+                                            ? null
+                                            : TransactionType.expense,
                                       );
                                 },
                               ),
@@ -348,11 +366,14 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                               _TypeFilterChip(
                                 label: context.l10n.income,
                                 icon: Icons.arrow_upward_rounded,
-                                isSelected: selectedType == TransactionType.income,
+                                isSelected:
+                                    selectedType == TransactionType.income,
                                 activeColor: AppColors.semanticGreen,
                                 onTap: () {
                                   context.read<TransactionCubit>().filterType(
-                                        selectedType == TransactionType.income ? null : TransactionType.income,
+                                        selectedType == TransactionType.income
+                                            ? null
+                                            : TransactionType.income,
                                       );
                                 },
                               ),
@@ -360,11 +381,14 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                               _TypeFilterChip(
                                 label: context.l10n.transfer,
                                 icon: Icons.swap_horiz_rounded,
-                                isSelected: selectedType == TransactionType.transfer,
+                                isSelected:
+                                    selectedType == TransactionType.transfer,
                                 activeColor: colorScheme.primary,
                                 onTap: () {
                                   context.read<TransactionCubit>().filterType(
-                                        selectedType == TransactionType.transfer ? null : TransactionType.transfer,
+                                        selectedType == TransactionType.transfer
+                                            ? null
+                                            : TransactionType.transfer,
                                       );
                                 },
                               ),
@@ -430,7 +454,8 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                             return FadeTransition(
                               opacity: animation,
                               child: ScaleTransition(
-                                scale: Tween<double>(begin: 0.96, end: 1.0).animate(animation),
+                                scale: Tween<double>(begin: 0.96, end: 1.0)
+                                    .animate(animation),
                                 child: child,
                               ),
                             );
@@ -443,63 +468,85 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                                 return ValueListenableBuilder<DateTime>(
                                   valueListenable: _selectedDateNotifier,
                                   builder: (context, selectedDate, _) {
-                                    return BlocBuilder<TransactionCubit, TransactionState>(
+                                    return BlocBuilder<TransactionCubit,
+                                        TransactionState>(
                                       builder: (context, state) {
                                         if (state is TransactionLoading) {
                                           return const AllTransactionsShimmer();
                                         }
 
                                         if (state is TransactionLoaded) {
-                                          final items = state.filteredTransactions;
+                                          final items =
+                                              state.filteredTransactions;
                                           if (items.isEmpty) {
                                             return _EmptyStateView(
-                                              title: context.l10n.noTransactionsFound,
-                                              subtitle: context.l10n.noTransactionsDesc,
+                                              title: context
+                                                  .l10n.noTransactionsFound,
+                                              subtitle: context
+                                                  .l10n.noTransactionsDesc,
                                             );
                                           }
 
                                           // --- DAILY BALANCE SHEET MODE ---
                                           if (viewMode == 'daily') {
-                                            final monthItems = items.where((tx) {
-                                              return tx.timestamp.year == selectedMonth.year &&
-                                                  tx.timestamp.month == selectedMonth.month;
+                                            final monthItems =
+                                                items.where((tx) {
+                                              return tx.timestamp.year ==
+                                                      selectedMonth.year &&
+                                                  tx.timestamp.month ==
+                                                      selectedMonth.month;
                                             }).toList();
 
-                                            final totalIncome =
-                                                monthItems.where((tx) => tx.type == TransactionType.income).fold(
-                                                      0.0,
-                                                      (sum, tx) => sum + tx.amount,
-                                                    );
-                                            final totalExpense = monthItems.fold(
+                                            final totalIncome = monthItems
+                                                .where((tx) =>
+                                                    tx.type ==
+                                                    TransactionType.income)
+                                                .fold(
+                                                  0.0,
+                                                  (sum, tx) => sum + tx.amount,
+                                                );
+                                            final totalExpense =
+                                                monthItems.fold(
                                               0.0,
                                               (sum, tx) =>
                                                   sum +
-                                                  (tx.type == TransactionType.expense
+                                                  (tx.type ==
+                                                          TransactionType
+                                                              .expense
                                                       ? tx.amount
-                                                      : _parseTransferFeeFromNote(tx.note)),
+                                                      : _parseTransferFeeFromNote(
+                                                          tx.note)),
                                             );
 
-                                            final Map<DateTime, List<TransactionItem>> dailyGrouped = {};
+                                            final Map<DateTime,
+                                                    List<TransactionItem>>
+                                                dailyGrouped = {};
                                             for (final item in monthItems) {
                                               final dayKey = DateTime(
                                                 item.timestamp.year,
                                                 item.timestamp.month,
                                                 item.timestamp.day,
                                               );
-                                              dailyGrouped.putIfAbsent(dayKey, () => []).add(item);
+                                              dailyGrouped
+                                                  .putIfAbsent(dayKey, () => [])
+                                                  .add(item);
                                             }
 
-                                            final sortedDays = dailyGrouped.keys.toList()
-                                              ..sort(
-                                                (a, b) => b.compareTo(a),
-                                              );
+                                            final sortedDays =
+                                                dailyGrouped.keys.toList()
+                                                  ..sort(
+                                                    (a, b) => b.compareTo(a),
+                                                  );
 
                                             return RefreshIndicator(
                                               color: AppColors.primary,
-                                              onRefresh: () =>
-                                                  context.read<TransactionCubit>().loadTransactions(isSilent: true),
+                                              onRefresh: () => context
+                                                  .read<TransactionCubit>()
+                                                  .loadTransactions(
+                                                      isSilent: true),
                                               child: ListView(
-                                                physics: const BouncingScrollPhysics(),
+                                                physics:
+                                                    const BouncingScrollPhysics(),
                                                 padding: EdgeInsets.only(
                                                   bottom: 120.h,
                                                 ),
@@ -510,55 +557,90 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                                                   ),
                                                   if (sortedDays.isEmpty)
                                                     Padding(
-                                                      padding: EdgeInsets.symmetric(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
                                                         vertical: 40.h,
                                                       ),
                                                       child: Center(
                                                         child: Text(
-                                                          context.l10n.noTransactionsFound,
-                                                          style: customTypography.bodyMedium.copyWith(
-                                                            color: colorScheme.outline,
+                                                          context.l10n
+                                                              .noTransactionsFound,
+                                                          style:
+                                                              customTypography
+                                                                  .bodyMedium
+                                                                  .copyWith(
+                                                            color: colorScheme
+                                                                .outline,
                                                           ),
                                                         ),
                                                       ),
                                                     )
                                                   else
-                                                    ...sortedDays.map((dayDate) {
-                                                      final dayTxList = dailyGrouped[dayDate]!;
-                                                      final dayIncome = dayTxList
-                                                          .where(
-                                                            (tx) => tx.type == TransactionType.income,
-                                                          )
-                                                          .fold(
-                                                            0.0,
-                                                            (sum, tx) => sum + tx.amount,
-                                                          );
-                                                      final dayExpense = dayTxList.fold(
+                                                    ...sortedDays
+                                                        .map((dayDate) {
+                                                      final dayTxList =
+                                                          dailyGrouped[
+                                                              dayDate]!;
+                                                      final dayIncome =
+                                                          dayTxList
+                                                              .where(
+                                                                (tx) =>
+                                                                    tx.type ==
+                                                                    TransactionType
+                                                                        .income,
+                                                              )
+                                                              .fold(
+                                                                0.0,
+                                                                (sum, tx) =>
+                                                                    sum +
+                                                                    tx.amount,
+                                                              );
+                                                      final dayExpense =
+                                                          dayTxList.fold(
                                                         0.0,
                                                         (sum, tx) =>
                                                             sum +
-                                                            (tx.type == TransactionType.expense
+                                                            (tx.type ==
+                                                                    TransactionType
+                                                                        .expense
                                                                 ? tx.amount
-                                                                : _parseTransferFeeFromNote(tx.note)),
+                                                                : _parseTransferFeeFromNote(
+                                                                    tx.note)),
                                                       );
 
                                                       return Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           _DailyGroupHeader(
                                                             date: dayDate,
-                                                            incomeSum: dayIncome,
-                                                            expenseSum: dayExpense,
+                                                            incomeSum:
+                                                                dayIncome,
+                                                            expenseSum:
+                                                                dayExpense,
                                                           ),
-                                                          ...dayTxList.asMap().entries.map(
-                                                                (entry) => _StaggeredListViewItem(
-                                                                  index: entry.key,
-                                                                  child: _TransactionListTile(
-                                                                    transaction: entry.value,
-                                                                    isPrivacyModeNotifier: widget.isPrivacyModeNotifier,
-                                                                    onDelete: () {
+                                                          ...dayTxList
+                                                              .asMap()
+                                                              .entries
+                                                              .map(
+                                                                (entry) =>
+                                                                    _StaggeredListViewItem(
+                                                                  index:
+                                                                      entry.key,
+                                                                  child:
+                                                                      _TransactionListTile(
+                                                                    transaction:
+                                                                        entry
+                                                                            .value,
+                                                                    isPrivacyModeNotifier:
+                                                                        widget
+                                                                            .isPrivacyModeNotifier,
+                                                                    onDelete:
+                                                                        () {
                                                                       context
-                                                                          .read<TransactionCubit>()
+                                                                          .read<
+                                                                              TransactionCubit>()
                                                                           .deleteTransaction(
                                                                             entry.value.id,
                                                                           );
@@ -577,43 +659,59 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                                           // --- MONTHLY BALANCE SHEET MODE ---
                                           if (viewMode == 'monthly') {
                                             final yearItems = items.where((tx) {
-                                              return tx.timestamp.year == selectedMonth.year;
+                                              return tx.timestamp.year ==
+                                                  selectedMonth.year;
                                             }).toList();
 
-                                            final totalIncome =
-                                                yearItems.where((tx) => tx.type == TransactionType.income).fold(
-                                                      0.0,
-                                                      (sum, tx) => sum + tx.amount,
-                                                    );
+                                            final totalIncome = yearItems
+                                                .where((tx) =>
+                                                    tx.type ==
+                                                    TransactionType.income)
+                                                .fold(
+                                                  0.0,
+                                                  (sum, tx) => sum + tx.amount,
+                                                );
                                             final totalExpense = yearItems.fold(
                                               0.0,
                                               (sum, tx) =>
                                                   sum +
-                                                  (tx.type == TransactionType.expense
+                                                  (tx.type ==
+                                                          TransactionType
+                                                              .expense
                                                       ? tx.amount
-                                                      : _parseTransferFeeFromNote(tx.note)),
+                                                      : _parseTransferFeeFromNote(
+                                                          tx.note)),
                                             );
 
-                                            final Map<DateTime, List<TransactionItem>> monthlyGrouped = {};
+                                            final Map<DateTime,
+                                                    List<TransactionItem>>
+                                                monthlyGrouped = {};
                                             for (final item in yearItems) {
                                               final monthKey = DateTime(
                                                 item.timestamp.year,
                                                 item.timestamp.month,
                                               );
-                                              monthlyGrouped.putIfAbsent(monthKey, () => []).add(item);
+                                              monthlyGrouped
+                                                  .putIfAbsent(
+                                                      monthKey, () => [])
+                                                  .add(item);
                                             }
 
-                                            final sortedMonths = monthlyGrouped.keys.toList()
-                                              ..sort(
-                                                (a, b) => b.compareTo(a),
-                                              );
+                                            final sortedMonths =
+                                                monthlyGrouped.keys.toList()
+                                                  ..sort(
+                                                    (a, b) => b.compareTo(a),
+                                                  );
 
                                             return RefreshIndicator(
                                               color: AppColors.primary,
-                                              onRefresh: () =>
-                                                  context.read<TransactionCubit>().loadTransactions(isSilent: true),
+                                              onRefresh: () => context
+                                                  .read<TransactionCubit>()
+                                                  .loadTransactions(
+                                                      isSilent: true),
                                               child: ListView(
-                                                physics: const BouncingScrollPhysics(),
+                                                physics:
+                                                    const BouncingScrollPhysics(),
                                                 padding: EdgeInsets.only(
                                                   bottom: 120.h,
                                                 ),
@@ -624,55 +722,92 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                                                   ),
                                                   if (sortedMonths.isEmpty)
                                                     Padding(
-                                                      padding: EdgeInsets.symmetric(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
                                                         vertical: 40.h,
                                                       ),
                                                       child: Center(
                                                         child: Text(
-                                                          context.l10n.noTransactionsFound,
-                                                          style: customTypography.bodyMedium.copyWith(
-                                                            color: colorScheme.outline,
+                                                          context.l10n
+                                                              .noTransactionsFound,
+                                                          style:
+                                                              customTypography
+                                                                  .bodyMedium
+                                                                  .copyWith(
+                                                            color: colorScheme
+                                                                .outline,
                                                           ),
                                                         ),
                                                       ),
                                                     )
                                                   else
-                                                    ...sortedMonths.map((monthDate) {
-                                                      final monthTxList = monthlyGrouped[monthDate]!;
-                                                      final monthIncome = monthTxList
-                                                          .where(
-                                                            (tx) => tx.type == TransactionType.income,
-                                                          )
-                                                          .fold(
-                                                            0.0,
-                                                            (sum, tx) => sum + tx.amount,
-                                                          );
-                                                      final monthExpense = monthTxList
-                                                          .where(
-                                                            (tx) => tx.type == TransactionType.expense,
-                                                          )
-                                                          .fold(
-                                                            0.0,
-                                                            (sum, tx) => sum + tx.amount,
-                                                          );
+                                                    ...sortedMonths
+                                                        .map((monthDate) {
+                                                      final monthTxList =
+                                                          monthlyGrouped[
+                                                              monthDate]!;
+                                                      final monthIncome =
+                                                          monthTxList
+                                                              .where(
+                                                                (tx) =>
+                                                                    tx.type ==
+                                                                    TransactionType
+                                                                        .income,
+                                                              )
+                                                              .fold(
+                                                                0.0,
+                                                                (sum, tx) =>
+                                                                    sum +
+                                                                    tx.amount,
+                                                              );
+                                                      final monthExpense =
+                                                          monthTxList
+                                                              .where(
+                                                                (tx) =>
+                                                                    tx.type ==
+                                                                    TransactionType
+                                                                        .expense,
+                                                              )
+                                                              .fold(
+                                                                0.0,
+                                                                (sum, tx) =>
+                                                                    sum +
+                                                                    tx.amount,
+                                                              );
 
                                                       return Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           _MonthlyGroupHeader(
                                                             date: monthDate,
-                                                            incomeSum: monthIncome,
-                                                            expenseSum: monthExpense,
+                                                            incomeSum:
+                                                                monthIncome,
+                                                            expenseSum:
+                                                                monthExpense,
                                                           ),
-                                                          ...monthTxList.asMap().entries.map(
-                                                                (entry) => _StaggeredListViewItem(
-                                                                  index: entry.key,
-                                                                  child: _TransactionListTile(
-                                                                    transaction: entry.value,
-                                                                    isPrivacyModeNotifier: widget.isPrivacyModeNotifier,
-                                                                    onDelete: () {
+                                                          ...monthTxList
+                                                              .asMap()
+                                                              .entries
+                                                              .map(
+                                                                (entry) =>
+                                                                    _StaggeredListViewItem(
+                                                                  index:
+                                                                      entry.key,
+                                                                  child:
+                                                                      _TransactionListTile(
+                                                                    transaction:
+                                                                        entry
+                                                                            .value,
+                                                                    isPrivacyModeNotifier:
+                                                                        widget
+                                                                            .isPrivacyModeNotifier,
+                                                                    onDelete:
+                                                                        () {
                                                                       context
-                                                                          .read<TransactionCubit>()
+                                                                          .read<
+                                                                              TransactionCubit>()
                                                                           .deleteTransaction(
                                                                             entry.value.id,
                                                                           );
@@ -689,26 +824,36 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                                           }
 
                                           // --- CALENDAR MODE & LIST MODE ---
-                                          List<TransactionItem> displayItems = items;
+                                          List<TransactionItem> displayItems =
+                                              items;
 
                                           if (viewMode == 'calendar') {
                                             displayItems = items.where((tx) {
-                                              return tx.timestamp.year == selectedDate.year &&
-                                                  tx.timestamp.month == selectedDate.month &&
-                                                  tx.timestamp.day == selectedDate.day;
+                                              return tx.timestamp.year ==
+                                                      selectedDate.year &&
+                                                  tx.timestamp.month ==
+                                                      selectedDate.month &&
+                                                  tx.timestamp.day ==
+                                                      selectedDate.day;
                                             }).toList();
 
                                             if (displayItems.isEmpty) {
-                                              final locale = Localizations.localeOf(
+                                              final locale =
+                                                  Localizations.localeOf(
                                                 context,
                                               ).languageCode;
-                                              final formattedDate = DateFormat.yMMMd(locale).format(selectedDate);
+                                              final formattedDate =
+                                                  DateFormat.yMMMd(locale)
+                                                      .format(selectedDate);
                                               return Center(
                                                 child: Text(
-                                                  context.l10n.noTransactionsOnDate(
+                                                  context.l10n
+                                                      .noTransactionsOnDate(
                                                     formattedDate,
                                                   ),
-                                                  style: customTypography.bodyMedium.copyWith(
+                                                  style: customTypography
+                                                      .bodyMedium
+                                                      .copyWith(
                                                     color: colorScheme.outline,
                                                   ),
                                                 ),
@@ -716,7 +861,9 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                                             }
                                           }
 
-                                          final Map<String, List<TransactionItem>> grouped = {};
+                                          final Map<String,
+                                                  List<TransactionItem>>
+                                              grouped = {};
                                           for (final item in displayItems) {
                                             final dateKey = _formatDateHeader(
                                               context,
@@ -732,45 +879,65 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
 
                                           return RefreshIndicator(
                                             color: AppColors.primary,
-                                            onRefresh: () =>
-                                                context.read<TransactionCubit>().loadTransactions(isSilent: true),
+                                            onRefresh: () => context
+                                                .read<TransactionCubit>()
+                                                .loadTransactions(
+                                                    isSilent: true),
                                             child: ListView.builder(
-                                              physics: const BouncingScrollPhysics(),
+                                              physics:
+                                                  const BouncingScrollPhysics(),
                                               padding: EdgeInsets.only(
                                                 bottom: 120.h,
                                               ),
                                               itemCount: grouped.keys.length,
                                               itemBuilder: (context, index) {
-                                                final dateKey = grouped.keys.elementAt(index);
-                                                final dateItems = grouped[dateKey]!;
-                                                final baseStaggerIndex = index * 3;
+                                                final dateKey = grouped.keys
+                                                    .elementAt(index);
+                                                final dateItems =
+                                                    grouped[dateKey]!;
+                                                final baseStaggerIndex =
+                                                    index * 3;
 
                                                 return Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     _StaggeredListViewItem(
                                                       index: baseStaggerIndex,
                                                       child: Padding(
-                                                        padding: EdgeInsets.symmetric(
+                                                        padding: EdgeInsets
+                                                            .symmetric(
                                                           horizontal: 20.w,
                                                           vertical: 8.h,
                                                         ),
                                                         child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
                                                           children: [
                                                             Text(
-                                                              dateKey.toUpperCase(),
-                                                              style: customTypography.labelMediumMono.copyWith(
-                                                                color: AppColors.outline,
-                                                                letterSpacing: 1.2,
+                                                              dateKey
+                                                                  .toUpperCase(),
+                                                              style: customTypography
+                                                                  .labelMediumMono
+                                                                  .copyWith(
+                                                                color: AppColors
+                                                                    .outline,
+                                                                letterSpacing:
+                                                                    1.2,
                                                               ),
                                                             ),
                                                             Text(
-                                                              context.l10n.transactionsCount(
-                                                                dateItems.length,
+                                                              context.l10n
+                                                                  .transactionsCount(
+                                                                dateItems
+                                                                    .length,
                                                               ),
-                                                              style: customTypography.labelMediumMono.copyWith(
-                                                                color: colorScheme.onSurfaceVariant,
+                                                              style: customTypography
+                                                                  .labelMediumMono
+                                                                  .copyWith(
+                                                                color: colorScheme
+                                                                    .onSurfaceVariant,
                                                                 fontSize: 11.sp,
                                                               ),
                                                             ),
@@ -778,15 +945,31 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
                                                         ),
                                                       ),
                                                     ),
-                                                    ...dateItems.asMap().entries.map(
-                                                          (entry) => _StaggeredListViewItem(
-                                                            index: baseStaggerIndex + entry.key + 1,
-                                                            child: _TransactionListTile(
-                                                              transaction: entry.value,
-                                                              isPrivacyModeNotifier: widget.isPrivacyModeNotifier,
+                                                    ...dateItems
+                                                        .asMap()
+                                                        .entries
+                                                        .map(
+                                                          (entry) =>
+                                                              _StaggeredListViewItem(
+                                                            index:
+                                                                baseStaggerIndex +
+                                                                    entry.key +
+                                                                    1,
+                                                            child:
+                                                                _TransactionListTile(
+                                                              transaction:
+                                                                  entry.value,
+                                                              isPrivacyModeNotifier:
+                                                                  widget
+                                                                      .isPrivacyModeNotifier,
                                                               onDelete: () {
-                                                                context.read<TransactionCubit>().deleteTransaction(
-                                                                      entry.value.id,
+                                                                context
+                                                                    .read<
+                                                                        TransactionCubit>()
+                                                                    .deleteTransaction(
+                                                                      entry
+                                                                          .value
+                                                                          .id,
                                                                     );
                                                               },
                                                             ),
@@ -873,9 +1056,12 @@ class _HorizontalDateSelector extends StatelessWidget {
         itemBuilder: (context, index) {
           final date = dates[index];
           final now = DateTime.now();
-          final isToday = date.year == now.year && date.month == now.month && date.day == now.day;
-          final isSelected =
-              date.year == selectedDate.year && date.month == selectedDate.month && date.day == selectedDate.day;
+          final isToday = date.year == now.year &&
+              date.month == now.month &&
+              date.day == now.day;
+          final isSelected = date.year == selectedDate.year &&
+              date.month == selectedDate.month &&
+              date.day == selectedDate.day;
 
           final weekdayStr = DateFormat.E(locale).format(date);
 
@@ -906,7 +1092,8 @@ class _HorizontalDateSelector extends StatelessWidget {
                     color: isSelected
                         ? AppColors.primaryContainer.withValues(alpha: 0.25)
                         : isToday
-                            ? colorScheme.primaryContainer.withValues(alpha: 0.12)
+                            ? colorScheme.primaryContainer
+                                .withValues(alpha: 0.12)
                             : colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(16.r),
                     boxShadow: isSelected
@@ -920,7 +1107,8 @@ class _HorizontalDateSelector extends StatelessWidget {
                         : (isToday
                             ? [
                                 BoxShadow(
-                                  color: colorScheme.primary.withValues(alpha: 0.08),
+                                  color: colorScheme.primary
+                                      .withValues(alpha: 0.08),
                                   blurRadius: 4.r,
                                   spreadRadius: 0,
                                 ),
@@ -942,15 +1130,21 @@ class _HorizontalDateSelector extends StatelessWidget {
                         weekdayStr.toUpperCase(),
                         style: customTypography.labelMediumMono.copyWith(
                           fontSize: 10.sp,
-                          color: isSelected || isToday ? colorScheme.primary : colorScheme.outline,
-                          fontWeight: isSelected || isToday ? FontWeights.bold : FontWeights.regular,
+                          color: isSelected || isToday
+                              ? colorScheme.primary
+                              : colorScheme.outline,
+                          fontWeight: isSelected || isToday
+                              ? FontWeights.bold
+                              : FontWeights.regular,
                         ),
                       ),
                       SizedBox(height: 2.h),
                       Text(
                         '${date.day}',
                         style: customTypography.bodyLargeBold.copyWith(
-                          color: isSelected || isToday ? colorScheme.primary : colorScheme.onSurface,
+                          color: isSelected || isToday
+                              ? colorScheme.primary
+                              : colorScheme.onSurface,
                           fontSize: 18.sp,
                         ),
                       ),
@@ -1120,7 +1314,9 @@ class _TransactionListTile extends StatelessWidget {
                   type: transaction.type,
                   isIncome: transaction.type == TransactionType.income
                       ? true
-                      : (transaction.type == TransactionType.expense ? false : null),
+                      : (transaction.type == TransactionType.expense
+                          ? false
+                          : null),
                   style: customTypography.headlineMediumMonoBold.copyWith(
                     color: color,
                     fontSize: 16.sp,
@@ -1242,10 +1438,14 @@ class _TypeFilterChip extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
             decoration: BoxDecoration(
-              color: isSelected ? activeColor.withValues(alpha: 0.18) : colorScheme.surfaceContainerHigh,
+              color: isSelected
+                  ? activeColor.withValues(alpha: 0.18)
+                  : colorScheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
-                color: isSelected ? activeColor.withValues(alpha: 0.7) : AppColors.glassStroke,
+                color: isSelected
+                    ? activeColor.withValues(alpha: 0.7)
+                    : AppColors.glassStroke,
                 width: isSelected ? 1.5 : 1.0,
               ),
               boxShadow: isSelected
@@ -1270,8 +1470,10 @@ class _TypeFilterChip extends StatelessWidget {
                 Text(
                   label,
                   style: customTypography.labelMediumMono.copyWith(
-                    color: isSelected ? activeColor : colorScheme.onSurfaceVariant,
-                    fontWeight: isSelected ? FontWeights.bold : FontWeights.regular,
+                    color:
+                        isSelected ? activeColor : colorScheme.onSurfaceVariant,
+                    fontWeight:
+                        isSelected ? FontWeights.bold : FontWeights.regular,
                     fontSize: 12.sp,
                   ),
                 ),
@@ -1333,8 +1535,11 @@ class _ViewModeTabBar extends StatelessWidget {
                   m['label']!,
                   textAlign: TextAlign.center,
                   style: customTypography.labelMediumMono.copyWith(
-                    color: isSelected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
-                    fontWeight: isSelected ? FontWeights.bold : FontWeights.regular,
+                    color: isSelected
+                        ? colorScheme.onPrimary
+                        : colorScheme.onSurfaceVariant,
+                    fontWeight:
+                        isSelected ? FontWeights.bold : FontWeights.regular,
                   ),
                 ),
               ),
@@ -1409,7 +1614,9 @@ class _BalanceSheetSummaryHeader extends StatelessWidget {
                 amount: balance.abs(),
                 symbol: symbol,
                 isNegative: balance < 0,
-                color: balance >= 0 ? colorScheme.onSurface : AppColors.semanticRed,
+                color: balance >= 0
+                    ? colorScheme.onSurface
+                    : AppColors.semanticRed,
               ),
             ],
           );

@@ -41,7 +41,8 @@ class SettingsPage extends StatefulWidget {
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderStateMixin {
+class _SettingsPageState extends State<SettingsPage>
+    with SingleTickerProviderStateMixin {
   late final ValueNotifier<bool> _isBiometricEnabledNotifier;
   final ValueNotifier<bool> _isLoggingOutNotifier = ValueNotifier<bool>(false);
 
@@ -149,7 +150,8 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
     } catch (e) {
       AppLogger.e('SettingsPage: manual backup failed', e);
       if (!mounted) return;
-      StatusComponents.showToast(context, message: context.l10n.backupFailed, isError: true);
+      StatusComponents.showToast(context,
+          message: context.l10n.backupFailed, isError: true);
     }
   }
 
@@ -178,10 +180,12 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: colorScheme.surfaceContainerLow,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
         title: Row(
           children: [
-            Icon(Icons.check_circle_rounded, color: colorScheme.primary, size: 24.sp),
+            Icon(Icons.check_circle_rounded,
+                color: colorScheme.primary, size: 24.sp),
             horizontalMarginSmall,
             Expanded(
               child: Text(
@@ -230,9 +234,11 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
         ),
         actions: [
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: colorScheme.primary),
+            style:
+                ElevatedButton.styleFrom(backgroundColor: colorScheme.primary),
             onPressed: () => Navigator.pop(ctx),
-            child: Text(context.l10n.done, style: TextStyle(color: colorScheme.onPrimary)),
+            child: Text(context.l10n.done,
+                style: TextStyle(color: colorScheme.onPrimary)),
           ),
         ],
       ),
@@ -358,7 +364,8 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: colorScheme.error.withValues(alpha: 0.3 * progress),
+                              color: colorScheme.error
+                                  .withValues(alpha: 0.3 * progress),
                               blurRadius: 30.r,
                               spreadRadius: 4.r,
                             ),
@@ -417,7 +424,8 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
                         iconColor: colorScheme.primary,
                         title: context.l10n.personalProfile,
                         subtitle: hasProfile
-                            ? (profile.email != null && profile.email!.isNotEmpty
+                            ? (profile.email != null &&
+                                    profile.email!.isNotEmpty
                                 ? '${profile.name} • ${profile.email}'
                                 : profile.name)
                             : context.l10n.personalProfileDesc,
@@ -450,8 +458,12 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
                   SettingsTile(
                     icon: Icons.pin_outlined,
                     iconColor: colorScheme.secondary,
-                    title: pref.isSecurityPinSet ? context.l10n.changeSecurityPin : context.l10n.setupSecurityPin,
-                    subtitle: pref.isSecurityPinSet ? context.l10n.pinConfigured : context.l10n.setupSecurityPinDesc,
+                    title: pref.isSecurityPinSet
+                        ? context.l10n.changeSecurityPin
+                        : context.l10n.setupSecurityPin,
+                    subtitle: pref.isSecurityPinSet
+                        ? context.l10n.pinConfigured
+                        : context.l10n.setupSecurityPinDesc,
                     onTap: () async {
                       await ChangePinModal.show(context);
                       if (mounted) setState(() {});
@@ -466,7 +478,9 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
                         icon: Icons.fingerprint_rounded,
                         iconColor: colorScheme.secondary,
                         title: context.l10n.biometricAuth,
-                        subtitle: !hasPin ? context.l10n.pinRequiredForBiometrics : null,
+                        subtitle: !hasPin
+                            ? context.l10n.pinRequiredForBiometrics
+                            : null,
                         onTap: () => _toggleBiometrics(!isBiometricEnabled),
                         trailing: Switch.adaptive(
                           value: isBiometricEnabled && hasPin,
@@ -489,7 +503,8 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
                     iconColor: colorScheme.onSurfaceVariant,
                     title: context.l10n.themeLabel,
                     trailing: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                       decoration: BoxDecoration(
                         color: colorScheme.primary.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8.r),
@@ -542,7 +557,8 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
                     subtitle: () {
                       final last = pref.lastSnapshotAt;
                       if (last == null) return context.l10n.neverBackedUp;
-                      return context.l10n.lastBackupTime(_formatLastBackupDate(last));
+                      return context.l10n
+                          .lastBackupTime(_formatLastBackupDate(last));
                     }(),
                     trailing: TextButton(
                       onPressed: _backupNow,
@@ -564,10 +580,12 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
                     subtitle: context.l10n.exportCsvDesc,
                     onTap: () async {
                       try {
-                        final filePath = await getIt<DataExportImportService>().exportDataToCsv(openAfterExport: false);
+                        final filePath = await getIt<DataExportImportService>()
+                            .exportDataToCsv(openAfterExport: false);
                         if (!context.mounted) return;
                         final xFile = XFile(filePath);
-                        await SharePlus.instance.share(ShareParams(files: [xFile], text: 'My Transactions Data'));
+                        await SharePlus.instance.share(ShareParams(
+                            files: [xFile], text: 'My Transactions Data'));
                       } catch (e) {
                         AppLogger.e('SettingsPage: CSV export/share failed', e);
                         if (!context.mounted) return;
@@ -607,7 +625,8 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
                     iconColor: colorScheme.tertiary,
                     title: context.l10n.termsAndConditions,
                     subtitle: context.l10n.termsDesc,
-                    onTap: () => context.router.push(const TermsConditionsRoute()),
+                    onTap: () =>
+                        context.router.push(const TermsConditionsRoute()),
                   ),
                   SettingsTile(
                     icon: Icons.help_outline_rounded,
@@ -642,10 +661,13 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
               height: 48.h,
               child: OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
-                  foregroundColor:
-                      pref.canLogout ? colorScheme.error : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                  foregroundColor: pref.canLogout
+                      ? colorScheme.error
+                      : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                   side: BorderSide(
-                    color: pref.canLogout ? colorScheme.error.withValues(alpha: 0.5) : colorScheme.outlineVariant,
+                    color: pref.canLogout
+                        ? colorScheme.error.withValues(alpha: 0.5)
+                        : colorScheme.outlineVariant,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.r),
@@ -656,7 +678,9 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
                   context.l10n.logout,
                   style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(
                     fontWeight: FontWeights.bold,
-                    color: pref.canLogout ? colorScheme.error : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                    color: pref.canLogout
+                        ? colorScheme.error
+                        : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                   ),
                 ),
                 onPressed: () {
@@ -678,7 +702,8 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildGroupedCard(BuildContext context, {required List<Widget> children}) {
+  Widget _buildGroupedCard(BuildContext context,
+      {required List<Widget> children}) {
     final colorScheme = context.colorScheme;
 
     return Container(
@@ -764,7 +789,8 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
         } catch (e) {
           // Reinstalled app or restricted path — POSIX read denied.
           // Leave _selectedFilePath null so user selects via FilePicker.
-          AppLogger.w('_CsvRestoreSheet: Auto-found file exists but POSIX read is denied: $e');
+          AppLogger.w(
+              '_CsvRestoreSheet: Auto-found file exists but POSIX read is denied: $e');
         }
       }
     } catch (e) {
@@ -842,7 +868,8 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
   Future<void> _restore() async {
     final pref = getIt<PreferenceService>();
 
-    if (_selectedFilePath == null && (_selectedRawContent == null || _selectedRawContent!.isEmpty)) {
+    if (_selectedFilePath == null &&
+        (_selectedRawContent == null || _selectedRawContent!.isEmpty)) {
       _errorNotifier.value = 'Please select a backup file first.';
       return;
     }
@@ -872,11 +899,14 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
     _isBusyNotifier.value = false;
 
     if (!result.isSuccess) {
-      _errorNotifier.value = result.errors.isNotEmpty ? result.errors.first : context.l10n.csvImportFailed;
+      _errorNotifier.value = result.errors.isNotEmpty
+          ? result.errors.first
+          : context.l10n.csvImportFailed;
       return;
     }
 
-    await getIt<PreferenceService>().setLastSnapshotAt(DateTime.now().toIso8601String());
+    await getIt<PreferenceService>()
+        .setLastSnapshotAt(DateTime.now().toIso8601String());
 
     if (!mounted) return;
     Navigator.pop(context);
@@ -888,8 +918,8 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
     final colorScheme = context.colorScheme;
     final textTheme = context.textTheme;
     final pref = getIt<PreferenceService>();
-    final hasSelectedFile =
-        _selectedFilePath != null || (_selectedRawContent != null && _selectedRawContent!.isNotEmpty);
+    final hasSelectedFile = _selectedFilePath != null ||
+        (_selectedRawContent != null && _selectedRawContent!.isNotEmpty);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -906,7 +936,8 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
             // ── Header ───────────────────────────────────────────────────
             Row(
               children: [
-                Icon(Icons.restore_rounded, color: colorScheme.primary, size: 24.sp),
+                Icon(Icons.restore_rounded,
+                    color: colorScheme.primary, size: 24.sp),
                 horizontalMarginSmall,
                 Text(
                   context.l10n.restoreCsvTitle,
@@ -928,11 +959,13 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: colorScheme.primary.withValues(alpha: 0.5)),
+                  border: Border.all(
+                      color: colorScheme.primary.withValues(alpha: 0.5)),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.check_circle_rounded, color: colorScheme.primary, size: 28.sp),
+                    Icon(Icons.check_circle_rounded,
+                        color: colorScheme.primary, size: 28.sp),
                     horizontalMarginSmall,
                     Expanded(
                       child: Column(
@@ -949,7 +982,8 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
                             '${_formatDate(_selectedFileDate)}'
                             '${_formatSize(_selectedFileSize).isNotEmpty ? " · ${_formatSize(_selectedFileSize)}" : ""}'
                             ' · Selected ✓',
-                            style: context.customTypography.labelMediumMono.copyWith(
+                            style: context.customTypography.labelMediumMono
+                                .copyWith(
                               color: colorScheme.primary,
                             ),
                           ),
@@ -981,7 +1015,8 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.info_outline_rounded, color: colorScheme.primary, size: 20.sp),
+                    Icon(Icons.info_outline_rounded,
+                        color: colorScheme.primary, size: 20.sp),
                     horizontalMarginSmall,
                     Expanded(
                       child: Text(
@@ -1011,7 +1046,8 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
                 obscureText: true,
                 keyboardType: TextInputType.number,
                 maxLength: 4,
-                style: context.customTypography.bodyMedium.copyWith(color: colorScheme.onSurface),
+                style: context.customTypography.bodyMedium
+                    .copyWith(color: colorScheme.onSurface),
                 decoration: InputDecoration(
                   labelText: context.l10n.enterPin,
                   counterText: '',
@@ -1040,10 +1076,14 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
                       foregroundColor: colorScheme.onPrimary,
-                      shape: RoundedRectangleBorder(borderRadius: AppRadius.borderMd),
-                      disabledBackgroundColor: colorScheme.primary.withValues(alpha: 0.4),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: AppRadius.borderMd),
+                      disabledBackgroundColor:
+                          colorScheme.primary.withValues(alpha: 0.4),
                     ),
-                    onPressed: isBusy ? null : (hasSelectedFile ? _restore : _pickBackupFile),
+                    onPressed: isBusy
+                        ? null
+                        : (hasSelectedFile ? _restore : _pickBackupFile),
                     icon: isBusy
                         ? SizedBox(
                             width: 18.r,
@@ -1054,11 +1094,15 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
                             ),
                           )
                         : Icon(
-                            hasSelectedFile ? Icons.restore_rounded : Icons.folder_open_rounded,
+                            hasSelectedFile
+                                ? Icons.restore_rounded
+                                : Icons.folder_open_rounded,
                             size: 20.sp,
                           ),
                     label: Text(
-                      hasSelectedFile ? context.l10n.restore : 'Browse & Restore Backup',
+                      hasSelectedFile
+                          ? context.l10n.restore
+                          : 'Browse & Restore Backup',
                       style: textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeights.bold,
                         color: colorScheme.onPrimary,
@@ -1110,17 +1154,20 @@ class _ImportErrorBanner extends StatelessWidget {
             decoration: BoxDecoration(
               color: colorScheme.error.withValues(alpha: 0.12),
               borderRadius: AppRadius.borderDefault,
-              border: Border.all(color: colorScheme.error.withValues(alpha: 0.4)),
+              border:
+                  Border.all(color: colorScheme.error.withValues(alpha: 0.4)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.error_outline_rounded, color: colorScheme.error, size: 18.sp),
+                Icon(Icons.error_outline_rounded,
+                    color: colorScheme.error, size: 18.sp),
                 horizontalMarginXSmall,
                 Expanded(
                   child: Text(
                     message,
-                    style: context.customTypography.bodyMedium.copyWith(color: colorScheme.error),
+                    style: context.customTypography.bodyMedium
+                        .copyWith(color: colorScheme.error),
                   ),
                 ),
               ],
