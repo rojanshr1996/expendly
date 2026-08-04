@@ -125,8 +125,10 @@ class AppButton extends StatelessWidget {
           borderRadius: effectiveRadius,
           backgroundColor: isEnabled
               ? effectiveBgColor
-              : context.colorScheme.surfaceContainerLow.withAlpha((0.3 * 255).round()),
-          borderStrokeColor: effectiveBorderColor ?? context.customColors.glassStroke,
+              : context.colorScheme.surfaceContainerLow
+                  .withAlpha((0.3 * 255).round()),
+          borderStrokeColor:
+              effectiveBorderColor ?? context.customColors.glassStroke,
           onTap: isEnabled ? onPressed : null,
           child: Center(child: content),
         ),
@@ -222,7 +224,8 @@ class AppButton extends StatelessWidget {
         );
       case AppButtonVariant.glass:
         return _ButtonColors(
-          background: colorScheme.surfaceContainerLow.withAlpha((0.6 * 255).round()),
+          background:
+              colorScheme.surfaceContainerLow.withAlpha((0.6 * 255).round()),
           foreground: colorScheme.onSurface,
           border: colorScheme.outlineVariant,
         );

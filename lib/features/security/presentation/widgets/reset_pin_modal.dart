@@ -305,7 +305,8 @@ class _ResetPinModalState extends State<ResetPinModal> {
                             child: Row(
                               children: [
                                 Icon(Icons.error_outline_rounded,
-                                    color: customColors.semanticRed, size: 20.sp),
+                                    color: customColors.semanticRed,
+                                    size: 20.sp),
                                 horizontalMarginSmall,
                                 Expanded(
                                   child: Text(
@@ -338,7 +339,8 @@ class _ResetPinModalState extends State<ResetPinModal> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12.r),
                                       side: BorderSide(
-                                          color: context.customColors.glassStroke),
+                                          color:
+                                              context.customColors.glassStroke),
                                     ),
                                     tileColor: colorScheme.surfaceContainerLow,
                                     leading: Icon(Icons.fingerprint_rounded,
@@ -365,7 +367,8 @@ class _ResetPinModalState extends State<ResetPinModal> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12.r),
                                       side: BorderSide(
-                                          color: context.customColors.glassStroke),
+                                          color:
+                                              context.customColors.glassStroke),
                                     ),
                                     tileColor: colorScheme.surfaceContainerLow,
                                     leading: Icon(Icons.quiz_outlined,

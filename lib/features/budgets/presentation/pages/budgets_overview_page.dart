@@ -464,7 +464,9 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                         minHeight: 10,
                         backgroundColor: colorScheme.surfaceContainerHigh,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          isOver ? customColors.semanticRed : colorScheme.primary,
+                          isOver
+                              ? customColors.semanticRed
+                              : colorScheme.primary,
                         ),
                       ),
                     );

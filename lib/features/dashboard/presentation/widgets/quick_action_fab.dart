@@ -76,8 +76,8 @@ class QuickActionFabState extends State<QuickActionFab> {
                   leading: Container(
                     padding: EdgeInsets.all(10.w),
                     decoration: BoxDecoration(
-                      color:
-                          customColors.semanticRed.withAlpha((0.15 * 255).round()),
+                      color: customColors.semanticRed
+                          .withAlpha((0.15 * 255).round()),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(Icons.arrow_downward_rounded,

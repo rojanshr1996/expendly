@@ -411,7 +411,8 @@ class _MetadataDetailsCard extends StatelessWidget {
     final children = <Widget>[];
     for (int i = 0; i < rows.length; i++) {
       if (i > 0) {
-        children.add(Divider(height: 24, color: context.customColors.glassStroke));
+        children
+            .add(Divider(height: 24, color: context.customColors.glassStroke));
       }
       children.add(
         _StaggeredEntrance(

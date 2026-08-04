@@ -185,14 +185,14 @@ class AppCustomTypography extends ThemeExtension<AppCustomTypography> {
         .copyWith(color: AppColors.lightOnSurface),
     labelMediumMono: AppTypography.labelMediumMono
         .copyWith(color: AppColors.lightOnSurfaceVariant),
-    amountDisplay: AppTypography.amountDisplay
-        .copyWith(color: AppColors.lightPrimary),
-    amountLarge: AppTypography.amountLarge
-        .copyWith(color: AppColors.lightOnSurface),
-    bodyLarge: AppTypography.bodyLarge
-        .copyWith(color: AppColors.lightOnSurface),
-    bodyLargeBold: AppTypography.bodyLargeBold
-        .copyWith(color: AppColors.lightOnSurface),
+    amountDisplay:
+        AppTypography.amountDisplay.copyWith(color: AppColors.lightPrimary),
+    amountLarge:
+        AppTypography.amountLarge.copyWith(color: AppColors.lightOnSurface),
+    bodyLarge:
+        AppTypography.bodyLarge.copyWith(color: AppColors.lightOnSurface),
+    bodyLargeBold:
+        AppTypography.bodyLargeBold.copyWith(color: AppColors.lightOnSurface),
     bodyMedium: AppTypography.bodyMedium
         .copyWith(color: AppColors.lightOnSurfaceVariant),
     headlineMediumMonoBold: AppTypography.headlineMediumMonoBold

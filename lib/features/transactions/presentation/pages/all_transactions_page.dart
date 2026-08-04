@@ -920,8 +920,9 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                                               style: customTypography
                                                                   .labelMediumMono
                                                                   .copyWith(
-                                                                color: colorScheme
-                                                                    .outline,
+                                                                color:
+                                                                    colorScheme
+                                                                        .outline,
                                                                 letterSpacing:
                                                                     1.2,
                                                               ),
@@ -1099,7 +1100,8 @@ class _HorizontalDateSelector extends StatelessWidget {
                         ? (isSelected
                             ? [
                                 BoxShadow(
-                                  color: colorScheme.primary.withValues(alpha: 0.2),
+                                  color: colorScheme.primary
+                                      .withValues(alpha: 0.2),
                                   blurRadius: 8.r,
                                   spreadRadius: 0,
                                 ),
@@ -1435,7 +1437,8 @@ class _TypeFilterChip extends StatelessWidget {
                     : context.customColors.glassStroke,
                 width: isSelected ? 1.5 : 1.0,
               ),
-              boxShadow: (Theme.of(context).brightness == Brightness.dark && isSelected)
+              boxShadow: (Theme.of(context).brightness == Brightness.dark &&
+                      isSelected)
                   ? [
                       BoxShadow(
                         color: activeColor.withValues(alpha: 0.25),

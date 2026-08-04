@@ -36,8 +36,8 @@ class GlassContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final customColors = context.customColors;
     final effectiveRadius = borderRadius ?? AppRadius.borderLg;
-    final effectiveBg = backgroundColor ??
-        customColors.surfaceLow.withValues(alpha: 0.7);
+    final effectiveBg =
+        backgroundColor ?? customColors.surfaceLow.withValues(alpha: 0.7);
     final effectiveStroke = borderStrokeColor ?? customColors.glassStroke;
 
     Widget container = Container(

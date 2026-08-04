@@ -915,7 +915,8 @@ class _CategoryBreakdownRow extends StatelessWidget {
                 return LinearProgressIndicator(
                   value: animValue,
                   minHeight: 7.h,
-                  backgroundColor: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                  backgroundColor:
+                      colorScheme.outlineVariant.withValues(alpha: 0.3),
                   valueColor: AlwaysStoppedAnimation<Color>(catColor),
                 );
               },

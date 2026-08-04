@@ -214,8 +214,8 @@ abstract class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.borderLg,
-          side:
-              const BorderSide(color: AppColors.lightOutlineVariant, width: 1.0),
+          side: const BorderSide(
+              color: AppColors.lightOutlineVariant, width: 1.0),
         ),
         margin: EdgeInsets.zero,
       ),
@@ -241,17 +241,17 @@ abstract class AppTheme {
         ),
         labelStyle: AppTypography.labelMediumMono
             .copyWith(color: AppColors.lightOnSurfaceVariant),
-        hintStyle: AppTypography.bodyMedium
-            .copyWith(color: AppColors.lightOutline),
+        hintStyle:
+            AppTypography.bodyMedium.copyWith(color: AppColors.lightOutline),
         border: OutlineInputBorder(
           borderRadius: AppRadius.borderDefault,
-          borderSide:
-              const BorderSide(color: AppColors.lightOutlineVariant, width: 1.0),
+          borderSide: const BorderSide(
+              color: AppColors.lightOutlineVariant, width: 1.0),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: AppRadius.borderDefault,
-          borderSide:
-              const BorderSide(color: AppColors.lightOutlineVariant, width: 1.0),
+          borderSide: const BorderSide(
+              color: AppColors.lightOutlineVariant, width: 1.0),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.borderDefault,
@@ -260,8 +260,7 @@ abstract class AppTheme {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: AppRadius.borderDefault,
-          borderSide:
-              const BorderSide(color: AppColors.lightError, width: 1.0),
+          borderSide: const BorderSide(color: AppColors.lightError, width: 1.0),
         ),
       ),
 
@@ -293,8 +292,8 @@ abstract class AppTheme {
             horizontal: 24.w,
             vertical: 12.h,
           ),
-          side:
-              const BorderSide(color: AppColors.lightOutlineVariant, width: 1.0),
+          side: const BorderSide(
+              color: AppColors.lightOutlineVariant, width: 1.0),
           shape: RoundedRectangleBorder(
             borderRadius: AppRadius.borderDefault,
           ),
