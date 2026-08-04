@@ -1,16 +1,71 @@
 default_platform(:android)
 
+def increment_build_number_from_firebase(app_id, options)
+  if options[:build_number]
+    new_build_number = options[:build_number].to_i
+    update_pubspec_build_number(new_build_number)
+    return new_build_number
+  end
+
+  new_build_number = nil
+  begin
+    params = { app: app_id }
+    service_credentials = options[:service_credentials_file] || ENV["FIREBASE_SERVICE_ACCOUNT_KEY_PATH"]
+    cli_token = options[:firebase_cli_token] || ENV["FIREBASE_CLI_TOKEN"] || ENV["FIREBASE_TOKEN"]
+    params[:service_credentials_file] = service_credentials if service_credentials && !service_credentials.empty?
+    params[:firebase_cli_token] = cli_token if cli_token && !cli_token.empty?
+
+    latest_release = firebase_app_distribution_get_latest_release(params)
+    if latest_release
+      raw_version = latest_release[:build_version] || latest_release["buildVersion"] || latest_release[:buildVersion]
+      if raw_version && !raw_version.to_s.strip.empty?
+        latest_build_number = raw_version.to_i
+        new_build_number = latest_build_number + 1
+        UI.message("Latest Firebase App Distribution build number for app #{app_id} is #{latest_build_number}. Setting next build number to #{new_build_number}.")
+      end
+    end
+  rescue => e
+    UI.important("Could not fetch latest release from Firebase App Distribution (#{e.message}). Falling back to local pubspec.yaml.")
+  end
+
+  if new_build_number.nil?
+    pubspec_path = File.join(File.dirname(__FILE__), "../../pubspec.yaml")
+    pubspec_content = File.read(pubspec_path)
+    if pubspec_content =~ /^version:\s*([^\s+]+)\+(\d+)/
+      new_build_number = $2.to_i + 1
+    else
+      new_build_number = 1
+    end
+  end
+
+  update_pubspec_build_number(new_build_number)
+  new_build_number
+end
+
+def update_pubspec_build_number(new_build_number)
+  pubspec_path = File.join(File.dirname(__FILE__), "../../pubspec.yaml")
+  pubspec_content = File.read(pubspec_path)
+  if pubspec_content =~ /^version:\s*([^\s+]+)\+(\d+)/
+    version_name = $1
+    updated_content = pubspec_content.sub(/^version:\s*[^\s+]+\+\d+/, "version: #{version_name}+#{new_build_number}")
+    File.write(pubspec_path, updated_content)
+    UI.message("Updated pubspec.yaml to version #{version_name}+#{new_build_number}")
+  end
+end
+
 platform :android do
   desc "Build and Distribute DEV APK to Firebase App Distribution"
   lane :distribute_dev do |options|
+    app_id = "1:748636232967:android:87bd73587100d5a126b9a2"
     release_notes = options[:release_notes] || "Expendly DEV build - #{Time.now.strftime('%Y-%m-%d %H:%M')}"
     groups = options[:groups] || ENV["FIREBASE_GROUPS"] || "expendly_tester"
     testers = options[:testers] || ENV["FIREBASE_TESTERS"]
+    build_number = increment_build_number_from_firebase(app_id, options)
 
-    sh("cd ../.. && flutter build apk --flavor dev --target lib/main_dev.dart --release")
+    sh("cd ../.. && flutter build apk --flavor dev --target lib/main_dev.dart --target-platform android-arm64 --build-number=#{build_number} --release")
 
     params = {
-      app: "1:748636232967:android:87bd73587100d5a126b9a2",
+      app: app_id,
       apk_path: "../build/app/outputs/flutter-apk/app-dev-release.apk",
       release_notes: release_notes
     }
@@ -27,14 +82,16 @@ platform :android do
 
   desc "Build and Distribute QA APK to Firebase App Distribution"
   lane :distribute_qa do |options|
+    app_id = "1:748636232967:android:d5c5362c2afc683726b9a2"
     release_notes = options[:release_notes] || "Expendly QA build - #{Time.now.strftime('%Y-%m-%d %H:%M')}"
     groups = options[:groups] || ENV["FIREBASE_GROUPS"] || "expendly_tester"
     testers = options[:testers] || ENV["FIREBASE_TESTERS"]
+    build_number = increment_build_number_from_firebase(app_id, options)
 
-    sh("cd ../.. && flutter build apk --flavor qa --target lib/main_qa.dart --release")
+    sh("cd ../.. && flutter build apk --flavor qa --target lib/main_qa.dart --target-platform android-arm64 --build-number=#{build_number} --release")
 
     params = {
-      app: "1:748636232967:android:d5c5362c2afc683726b9a2",
+      app: app_id,
       apk_path: "../build/app/outputs/flutter-apk/app-qa-release.apk",
       release_notes: release_notes
     }
@@ -51,14 +108,16 @@ platform :android do
 
   desc "Build and Distribute PROD APK to Firebase App Distribution"
   lane :distribute_prod do |options|
+    app_id = "1:748636232967:android:b869f641ba48869026b9a2"
     release_notes = options[:release_notes] || "Expendly PROD build - #{Time.now.strftime('%Y-%m-%d %H:%M')}"
     groups = options[:groups] || ENV["FIREBASE_GROUPS"] || "expendly_tester"
     testers = options[:testers] || ENV["FIREBASE_TESTERS"]
+    build_number = increment_build_number_from_firebase(app_id, options)
 
-    sh("cd ../.. && flutter build apk --flavor prod --target lib/main_prod.dart --release")
+    sh("cd ../.. && flutter build apk --flavor prod --target lib/main_prod.dart --target-platform android-arm64 --build-number=#{build_number} --release")
 
     params = {
-      app: "1:748636232967:android:b869f641ba48869026b9a2",
+      app: app_id,
       apk_path: "../build/app/outputs/flutter-apk/app-prod-release.apk",
       release_notes: release_notes
     }
