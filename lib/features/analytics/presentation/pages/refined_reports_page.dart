@@ -5,6 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as p;
 
+import '../../../../core/ads/ad_helper.dart';
+import '../../../../core/ads/interstitial_ad_helper.dart';
+import '../../../../core/ads/widgets/banner_ad_widget.dart';
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/database/app_database.dart';
 import '../../../../core/di/injection.dart';
@@ -22,10 +25,33 @@ import '../cubit/analytics_cubit.dart';
 import '../cubit/analytics_state.dart';
 import '../widgets/reports_shimmer.dart';
 
-class RefinedReportsPage extends StatelessWidget {
+class RefinedReportsPage extends StatefulWidget {
   final ValueNotifier<bool>? isPrivacyModeNotifier;
 
   const RefinedReportsPage({super.key, this.isPrivacyModeNotifier});
+
+  @override
+  State<RefinedReportsPage> createState() => _RefinedReportsPageState();
+}
+
+class _RefinedReportsPageState extends State<RefinedReportsPage> {
+  late final AnalyticsCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      _cubit = getIt<AnalyticsCubit>();
+    } catch (_) {
+      final db = getIt<AppDatabase>();
+      final ds = AnalyticsLocalDataSourceImpl(db);
+      final repo = AnalyticsRepositoryImpl(ds);
+      _cubit = AnalyticsCubit(repo);
+    }
+    if (_cubit.state is! AnalyticsLoaded) {
+      _cubit.loadAnalytics();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,29 +60,22 @@ class RefinedReportsPage extends StatelessWidget {
     final customTypography = context.customTypography;
     final l10n = context.l10n;
 
-    return BlocProvider.value(
-      value: () {
-        try {
-          final cubit = getIt<AnalyticsCubit>();
-          if (!cubit.isClosed) {
-            cubit.loadAnalytics();
-          }
-          return cubit;
-        } catch (_) {
-          final db = getIt<AppDatabase>();
-          final ds = AnalyticsLocalDataSourceImpl(db);
-          final repo = AnalyticsRepositoryImpl(ds);
-          return AnalyticsCubit(repo)..loadAnalytics();
-        }
-      }(),
+    return BlocProvider<AnalyticsCubit>.value(
+      value: _cubit,
       child: Builder(
         builder: (context) {
           return Scaffold(
             backgroundColor: colorScheme.surface,
             appBar: AppBar(
-              backgroundColor: colorScheme.surfaceContainerLow,
-              elevation: 0,
-              automaticallyImplyLeading: false,
+              leading: ModalRoute.of(context)?.canPop == true
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.arrow_back_rounded,
+                        color: colorScheme.onSurface,
+                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  : null,
               title: Text(
                 l10n.reports,
                 style: textTheme.headlineSmall?.copyWith(
@@ -250,9 +269,13 @@ class RefinedReportsPage extends StatelessWidget {
                       child: _NetCashFlowCard(
                         report: report,
                         currencySymbol: currencySymbol,
-                        isPrivacyModeNotifier: isPrivacyModeNotifier,
+                        isPrivacyModeNotifier: widget.isPrivacyModeNotifier,
                       ),
                     ),
+                    verticalMarginMedium,
+
+                    // Banner Ad
+                    BannerAdWidget(adUnitId: AdHelper.bannerAdUnitId),
                     verticalMarginMedium,
 
                     // Distribution Donut Chart Card (Delay 50ms) - Matching second card in reference image
@@ -270,7 +293,7 @@ class RefinedReportsPage extends StatelessWidget {
                       child: _NetFlowHeroCard(
                         report: report,
                         currencySymbol: currencySymbol,
-                        isPrivacyModeNotifier: isPrivacyModeNotifier,
+                        isPrivacyModeNotifier: widget.isPrivacyModeNotifier,
                       ),
                     ),
                     verticalMarginMedium,
@@ -285,7 +308,8 @@ class RefinedReportsPage extends StatelessWidget {
                             child: _AvgDailySpendCard(
                               report: report,
                               currencySymbol: currencySymbol,
-                              isPrivacyModeNotifier: isPrivacyModeNotifier,
+                              isPrivacyModeNotifier:
+                                  widget.isPrivacyModeNotifier,
                             ),
                           ),
                           horizontalMarginSmall,
@@ -341,7 +365,7 @@ class RefinedReportsPage extends StatelessWidget {
                         delayMs: 280 + (idx * 40),
                         child: _CategoryBreakdownRow(
                           item: cat,
-                          isPrivacyModeNotifier: isPrivacyModeNotifier,
+                          isPrivacyModeNotifier: widget.isPrivacyModeNotifier,
                         ),
                       );
                     }),
@@ -367,26 +391,33 @@ class RefinedReportsPage extends StatelessWidget {
 
   Future<void> _exportReport(
       BuildContext context, AnalyticsReport report) async {
-    try {
-      final filePath = await getIt<DataExportImportService>()
-          .exportAnalyticsReportToCsv(report: report, openAfterExport: true);
-      if (context.mounted) {
-        StatusComponents.showToast(
-          context,
-          message: 'Report saved to Downloads/Expendly/${p.basename(filePath)}',
-          isSuccess: true,
-        );
-      }
-      await OpenFile.open(filePath);
-    } catch (e) {
-      if (context.mounted) {
-        StatusComponents.showToast(
-          context,
-          message: 'Report export failed: ${e.toString()}',
-          isError: true,
-        );
-      }
-    }
+    InterstitialAdHelper.showAd(
+      onAdDismissed: () async {
+        if (!context.mounted) return;
+        try {
+          final filePath = await getIt<DataExportImportService>()
+              .exportAnalyticsReportToCsv(
+                  report: report, openAfterExport: true);
+          if (context.mounted) {
+            StatusComponents.showToast(
+              context,
+              message:
+                  'Report saved to Downloads/Expendly/${p.basename(filePath)}',
+              isSuccess: true,
+            );
+          }
+          await OpenFile.open(filePath);
+        } catch (e) {
+          if (context.mounted) {
+            StatusComponents.showToast(
+              context,
+              message: 'Report export failed: ${e.toString()}',
+              isError: true,
+            );
+          }
+        }
+      },
+    );
   }
 }
 
@@ -416,25 +447,29 @@ class _PeriodSelectorRow extends StatelessWidget {
         children: periods.map((p) {
           final isSelected = p == selectedPeriod;
           return Expanded(
-            child: GestureDetector(
-              onTap: () => onPeriodSelected(p),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                padding: EdgeInsets.symmetric(vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: isSelected ? colorScheme.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Text(
-                  p,
-                  textAlign: TextAlign.center,
-                  style: customTypography.labelMediumMono.copyWith(
-                    color: isSelected
-                        ? colorScheme.onPrimary
-                        : colorScheme.onSurfaceVariant,
-                    fontWeight:
-                        isSelected ? FontWeights.bold : FontWeights.regular,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 2.w),
+              child: GestureDetector(
+                onTap: () => onPeriodSelected(p),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  padding: EdgeInsets.symmetric(vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color:
+                        isSelected ? colorScheme.primary : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Text(
+                    p,
+                    textAlign: TextAlign.center,
+                    style: customTypography.labelMediumMono.copyWith(
+                      color: isSelected
+                          ? colorScheme.onPrimary
+                          : colorScheme.onSurfaceVariant,
+                      fontWeight:
+                          isSelected ? FontWeights.bold : FontWeights.regular,
+                    ),
                   ),
                 ),
               ),

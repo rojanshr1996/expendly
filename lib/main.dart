@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:expendly/l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,6 +17,7 @@ import 'core/router/app_router.dart';
 import 'core/router/app_router.gr.dart';
 import 'core/services/backup_service.dart';
 import 'core/services/notification_service.dart';
+import 'core/ads/interstitial_ad_helper.dart';
 import 'core/services/preference_service.dart';
 import 'core/services/remote_config_service.dart';
 import 'core/theme/app_theme.dart';
@@ -50,6 +52,15 @@ Future<void> bootstrapApp(AppConfig config) async {
     await getIt<RemoteConfigService>().initialize();
   } catch (e, stackTrace) {
     AppLogger.e('Firebase Initialization Error', e, stackTrace);
+  }
+
+  // Initialize Google Mobile Ads SDK
+  try {
+    await MobileAds.instance.initialize();
+    AppLogger.i('Google Mobile Ads SDK initialized successfully');
+    InterstitialAdHelper.loadAd();
+  } catch (e, stackTrace) {
+    AppLogger.e('Google Mobile Ads Initialization Error', e, stackTrace);
   }
 
   runApp(const ExpendlyApp());

@@ -154,7 +154,7 @@ Future<void> configureDependencies([String? environment]) async {
         () => AnalyticsRepositoryImpl(getIt<AnalyticsLocalDataSource>()));
   }
   if (!getIt.isRegistered<AnalyticsCubit>()) {
-    getIt.registerFactory<AnalyticsCubit>(
+    getIt.registerLazySingleton<AnalyticsCubit>(
         () => AnalyticsCubit(getIt<AnalyticsRepository>()));
   }
 

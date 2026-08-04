@@ -96,6 +96,10 @@ class BudgetLocalDataSourceImpl implements BudgetLocalDataSource {
     if (existing != null) {
       throw StateError('A budget already exists for this category.');
     } else {
+      final allBudgets = await _db.select(_db.budgets).get();
+      if (allBudgets.length >= 4) {
+        throw StateError('Maximum limit of 4 budgets reached.');
+      }
       return await _db.into(_db.budgets).insert(
             BudgetsCompanion.insert(
               categoryId: Value(categoryId),

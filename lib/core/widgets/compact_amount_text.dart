@@ -11,7 +11,7 @@ import '../theme/font_weights.dart';
 /// Reusable Widget that displays amounts compactly (K, M, B for >= 100,000)
 /// and prevents layout overflow using scale down fitting.
 /// Tapping the widget displays a sleek tooltip showing the full exact amount.
-class CompactAmountText extends StatelessWidget {
+class CompactAmountText extends StatefulWidget {
   final num amount;
   final String? currencySymbol;
   final TextStyle? style;
@@ -32,20 +32,41 @@ class CompactAmountText extends StatelessWidget {
     this.isIncome,
     this.type,
     this.compact = true,
-    this.animate = true,
+    this.animate = false,
   });
 
+  @override
+  State<CompactAmountText> createState() => _CompactAmountTextState();
+}
+
+class _CompactAmountTextState extends State<CompactAmountText> {
+  late num _previousAmount;
+
+  @override
+  void initState() {
+    super.initState();
+    _previousAmount = widget.amount;
+  }
+
+  @override
+  void didUpdateWidget(covariant CompactAmountText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.amount != widget.amount) {
+      _previousAmount = oldWidget.amount;
+    }
+  }
+
   void _showFullAmountTooltip(BuildContext context, String effectiveSymbol) {
-    if (isPrivacyMode || !compact) return;
+    if (widget.isPrivacyMode || !widget.compact) return;
 
     final colorScheme = context.colorScheme;
-    final fullFormatted = amount.formatCurrency(
+    final fullFormatted = widget.amount.formatCurrency(
       effectiveSymbol,
       isPrivacyMode: false,
       compact: false,
-      showSign: showSign,
-      isIncome: isIncome,
-      type: type,
+      showSign: widget.showSign,
+      isIncome: widget.isIncome,
+      type: widget.type,
     );
 
     final overlay = Overlay.of(context);
@@ -151,33 +172,35 @@ class CompactAmountText extends StatelessWidget {
       valueListenable: prefs.currencySymbolNotifier,
       builder: (context, activeSymbol, _) {
         final effectiveSymbol =
-            (currencySymbol != null && currencySymbol!.isNotEmpty)
-                ? currencySymbol!
+            (widget.currencySymbol != null && widget.currencySymbol!.isNotEmpty)
+                ? widget.currencySymbol!
                 : activeSymbol;
 
-        if (animate && !isPrivacyMode) {
+        if (widget.animate && !widget.isPrivacyMode) {
           return TweenAnimationBuilder<double>(
-            key: ValueKey('compact_${amount}_${compact}_${showSign}_$type'),
-            tween: Tween<double>(begin: 0.0, end: amount.toDouble()),
-            duration: const Duration(milliseconds: 750),
+            tween: Tween<double>(
+              begin: _previousAmount.toDouble(),
+              end: widget.amount.toDouble(),
+            ),
+            duration: const Duration(milliseconds: 350),
             curve: Curves.easeOutCubic,
             builder: (context, animVal, _) {
               final displayText = animVal.formatCurrency(
                 effectiveSymbol,
                 isPrivacyMode: false,
-                compact: compact,
-                showSign: showSign,
-                isIncome: isIncome,
-                type: type,
+                compact: widget.compact,
+                showSign: widget.showSign,
+                isIncome: widget.isIncome,
+                type: widget.type,
               );
 
               return GestureDetector(
-                onTap: compact
+                onTap: widget.compact
                     ? () => _showFullAmountTooltip(context, effectiveSymbol)
                     : null,
                 behavior: HitTestBehavior.opaque,
                 child: Tooltip(
-                  message: (!compact || isPrivacyMode)
+                  message: (!widget.compact || widget.isPrivacyMode)
                       ? ''
                       : 'Tap to see full amount',
                   child: FittedBox(
@@ -185,7 +208,7 @@ class CompactAmountText extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Text(
                       displayText,
-                      style: style,
+                      style: widget.style,
                       maxLines: 1,
                     ),
                   ),
@@ -195,29 +218,30 @@ class CompactAmountText extends StatelessWidget {
           );
         }
 
-        final displayText = amount.formatCurrency(
+        final displayText = widget.amount.formatCurrency(
           effectiveSymbol,
-          isPrivacyMode: isPrivacyMode,
-          compact: compact,
-          showSign: showSign,
-          isIncome: isIncome,
-          type: type,
+          isPrivacyMode: widget.isPrivacyMode,
+          compact: widget.compact,
+          showSign: widget.showSign,
+          isIncome: widget.isIncome,
+          type: widget.type,
         );
 
         return GestureDetector(
-          onTap: compact
+          onTap: widget.compact
               ? () => _showFullAmountTooltip(context, effectiveSymbol)
               : null,
           behavior: HitTestBehavior.opaque,
           child: Tooltip(
-            message:
-                (!compact || isPrivacyMode) ? '' : 'Tap to see full amount',
+            message: (!widget.compact || widget.isPrivacyMode)
+                ? ''
+                : 'Tap to see full amount',
             child: FittedBox(
               fit: BoxFit.scaleDown,
               alignment: Alignment.center,
               child: Text(
                 displayText,
-                style: style,
+                style: widget.style,
                 maxLines: 1,
               ),
             ),

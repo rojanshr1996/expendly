@@ -101,7 +101,7 @@ class DashboardRecentActivity extends StatelessWidget {
                 final color = tx.type == TransactionType.income
                     ? customColors.semanticGreen
                     : tx.type == TransactionType.transfer
-                        ? colorScheme.primary
+                        ? customColors.semanticBlue
                         : customColors.semanticRed;
 
                 return Container(
@@ -198,7 +198,7 @@ class DashboardRecentActivity extends StatelessWidget {
                                   color: tx.type == TransactionType.income
                                       ? customColors.semanticGreen
                                       : tx.type == TransactionType.transfer
-                                          ? colorScheme.primary
+                                          ? customColors.semanticBlue
                                           : customColors.semanticRed,
                                 ),
                               ),

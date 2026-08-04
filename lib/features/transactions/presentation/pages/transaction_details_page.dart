@@ -14,6 +14,8 @@ import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../../../core/widgets/status_components.dart';
+import '../../../../core/ads/ad_helper.dart';
+import '../../../../core/ads/widgets/banner_ad_widget.dart';
 import '../../../dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../domain/entities/transaction_item.dart';
 import '../cubit/transaction_cubit.dart';
@@ -129,6 +131,13 @@ class TransactionDetailsPage extends StatelessWidget {
                           ),
                         ),
                         verticalMarginLarge,
+
+                        // Banner Ad
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 16.h),
+                          child:
+                              BannerAdWidget(adUnitId: AdHelper.bannerAdUnitId),
+                        ),
                       ],
                     ).defaultCanvasPadding(),
                   ),
@@ -175,7 +184,7 @@ class _HeroHeaderCard extends StatelessWidget {
     final amountColor = transaction.type == TransactionType.income
         ? customColors.semanticGreen
         : transaction.type == TransactionType.transfer
-            ? colorScheme.primary
+            ? customColors.semanticBlue
             : customColors.semanticRed;
 
     return GlassContainer(

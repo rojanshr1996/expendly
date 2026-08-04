@@ -42,6 +42,7 @@ android/app/release/
 *.keystore
 *.jks
 key.properties
+android/fastlane/report.xml
 
 # iOS
 ios/Pods/

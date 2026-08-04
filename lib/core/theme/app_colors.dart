@@ -162,6 +162,7 @@ class AppCustomColors extends ThemeExtension<AppCustomColors> {
   final Color surfaceMid;
   final Color semanticRed;
   final Color semanticGreen;
+  final Color semanticBlue;
   final Color glassStroke;
 
   const AppCustomColors({
@@ -170,6 +171,7 @@ class AppCustomColors extends ThemeExtension<AppCustomColors> {
     required this.surfaceMid,
     required this.semanticRed,
     required this.semanticGreen,
+    required this.semanticBlue,
     required this.glassStroke,
   });
 
@@ -179,6 +181,7 @@ class AppCustomColors extends ThemeExtension<AppCustomColors> {
     surfaceMid: AppColors.surfaceMid,
     semanticRed: AppColors.semanticRed,
     semanticGreen: AppColors.semanticGreen,
+    semanticBlue: Color(0xFF60A5FA),
     glassStroke: AppColors.glassStroke,
   );
 
@@ -188,6 +191,7 @@ class AppCustomColors extends ThemeExtension<AppCustomColors> {
     surfaceMid: AppColors.lightSurfaceMid,
     semanticRed: AppColors.lightSemanticRed,
     semanticGreen: AppColors.lightSemanticGreen,
+    semanticBlue: AppColors.lightPrimary,
     glassStroke: AppColors.lightGlassStroke,
   );
 
@@ -198,6 +202,7 @@ class AppCustomColors extends ThemeExtension<AppCustomColors> {
     Color? surfaceMid,
     Color? semanticRed,
     Color? semanticGreen,
+    Color? semanticBlue,
     Color? glassStroke,
   }) {
     return AppCustomColors(
@@ -206,6 +211,7 @@ class AppCustomColors extends ThemeExtension<AppCustomColors> {
       surfaceMid: surfaceMid ?? this.surfaceMid,
       semanticRed: semanticRed ?? this.semanticRed,
       semanticGreen: semanticGreen ?? this.semanticGreen,
+      semanticBlue: semanticBlue ?? this.semanticBlue,
       glassStroke: glassStroke ?? this.glassStroke,
     );
   }
@@ -219,6 +225,7 @@ class AppCustomColors extends ThemeExtension<AppCustomColors> {
       surfaceMid: Color.lerp(surfaceMid, other.surfaceMid, t)!,
       semanticRed: Color.lerp(semanticRed, other.semanticRed, t)!,
       semanticGreen: Color.lerp(semanticGreen, other.semanticGreen, t)!,
+      semanticBlue: Color.lerp(semanticBlue, other.semanticBlue, t)!,
       glassStroke: Color.lerp(glassStroke, other.glassStroke, t)!,
     );
   }

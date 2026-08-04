@@ -17,6 +17,7 @@ abstract class StatusComponents {
     bool isError = false,
     bool isSuccess = false,
     Duration duration = const Duration(seconds: 3),
+    double? bottomMargin,
   }) {
     final customColors = context.customColors;
     final colorScheme = context.colorScheme;
@@ -33,6 +34,9 @@ abstract class StatusComponents {
       icon = Icons.check_circle_outline;
     }
 
+    final double bottomPadding = MediaQuery.of(context).padding.bottom;
+    final double defaultMargin = bottomMargin ?? (90.h + bottomPadding);
+
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -40,6 +44,11 @@ abstract class StatusComponents {
         elevation: 0,
         behavior: SnackBarBehavior.floating,
         duration: duration,
+        margin: EdgeInsets.only(
+          bottom: defaultMargin,
+          left: 16.w,
+          right: 16.w,
+        ),
         content: GlassContainer(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
           child: Row(

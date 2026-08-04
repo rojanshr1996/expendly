@@ -1226,7 +1226,7 @@ class _TransactionListTile extends StatelessWidget {
     final catColor = transaction.type == TransactionType.income
         ? customColors.semanticGreen
         : transaction.type == TransactionType.transfer
-            ? context.colorScheme.primary
+            ? customColors.semanticBlue
             : customColors.semanticRed;
 
     return InkWell(
@@ -1303,7 +1303,7 @@ class _TransactionListTile extends StatelessWidget {
                 final color = transaction.type == TransactionType.income
                     ? context.customColors.semanticGreen
                     : transaction.type == TransactionType.transfer
-                        ? context.colorScheme.primary
+                        ? context.customColors.semanticBlue
                         : context.customColors.semanticRed;
 
                 return CompactAmountText(
@@ -1511,25 +1511,29 @@ class _ViewModeTabBar extends StatelessWidget {
           final isSelected = currentMode == modeId;
 
           return Expanded(
-            child: GestureDetector(
-              onTap: () => onModeSelected(modeId),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                padding: EdgeInsets.symmetric(vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: isSelected ? colorScheme.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Text(
-                  m['label']!,
-                  textAlign: TextAlign.center,
-                  style: customTypography.labelMediumMono.copyWith(
-                    color: isSelected
-                        ? colorScheme.onPrimary
-                        : colorScheme.onSurfaceVariant,
-                    fontWeight:
-                        isSelected ? FontWeights.bold : FontWeights.regular,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 2.w),
+              child: GestureDetector(
+                onTap: () => onModeSelected(modeId),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  padding: EdgeInsets.symmetric(vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color:
+                        isSelected ? colorScheme.primary : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Text(
+                    m['label']!,
+                    textAlign: TextAlign.center,
+                    style: customTypography.labelMediumMono.copyWith(
+                      color: isSelected
+                          ? colorScheme.onPrimary
+                          : colorScheme.onSurfaceVariant,
+                      fontWeight:
+                          isSelected ? FontWeights.bold : FontWeights.regular,
+                    ),
                   ),
                 ),
               ),

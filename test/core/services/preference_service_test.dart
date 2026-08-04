@@ -33,6 +33,7 @@ void main() {
       expect(preferenceService.isOnboardingCompleted, isFalse);
       expect(preferenceService.currencyCode, equals('USD'));
       expect(preferenceService.currencySymbol, equals('\$'));
+      expect(preferenceService.themeMode, equals('dark'));
       expect(preferenceService.isSecurityPinSet, isFalse);
       expect(preferenceService.securityPin, isNull);
     });

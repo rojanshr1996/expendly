@@ -16,7 +16,7 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   void _onTransactionUpdated() {
     if (!isClosed) {
-      loadDashboardData();
+      loadDashboardData(isSilent: true);
     }
   }
 
@@ -26,16 +26,20 @@ class DashboardCubit extends Cubit<DashboardState> {
     return super.close();
   }
 
-  Future<void> loadDashboardData() async {
+  Future<void> loadDashboardData({bool isSilent = false}) async {
     if (isClosed) return;
-    emit(DashboardLoading());
+    if (!isSilent && state is DashboardInitial) {
+      emit(DashboardLoading());
+    }
     try {
       final summary = await _getFinancialSummary(NoParams());
       if (isClosed) return;
       emit(DashboardLoaded(summary));
     } catch (e) {
       if (isClosed) return;
-      emit(DashboardError(e.toString()));
+      if (state is! DashboardLoaded) {
+        emit(DashboardError(e.toString()));
+      }
     }
   }
 }

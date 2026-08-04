@@ -93,6 +93,8 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textTheme = context.textTheme;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final accentColor = isLight ? colorScheme.primary : const Color(0xFF00E5FF);
 
     return BlocBuilder<DashboardCubit, DashboardState>(
       builder: (context, state) {
@@ -131,7 +133,7 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
                         _currentPage == 0
                             ? Icons.show_chart_rounded
                             : Icons.bar_chart_rounded,
-                        color: const Color(0xFF00E5FF),
+                        color: accentColor,
                         size: 20.sp,
                       ),
                       horizontalMarginXXSmall,
@@ -176,9 +178,9 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
             ),
             verticalMarginSmall,
 
-            // Chart Carousel PageView Container
+            // Chart Carousel PageView Container (Compact 205.h height)
             SizedBox(
-              height: 255.h,
+              height: 205.h,
               child: PageView(
                 controller: _pageController,
                 onPageChanged: (index) {
@@ -210,6 +212,8 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
   Widget _buildFilterPill(String label, ChartTimeFilter filter) {
     final isSelected = _selectedFilter == filter;
     final colorScheme = context.colorScheme;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final accentColor = isLight ? colorScheme.primary : const Color(0xFF00E5FF);
 
     return GestureDetector(
       onTap: () {
@@ -220,12 +224,12 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF00E5FF).withAlpha((0.25 * 255).round())
+              ? accentColor.withAlpha((0.25 * 255).round())
               : colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF00E5FF)
+                ? accentColor
                 : colorScheme.outlineVariant.withAlpha((0.3 * 255).round()),
             width: 1.0,
           ),
@@ -233,9 +237,7 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected
-                ? const Color(0xFF00E5FF)
-                : colorScheme.onSurfaceVariant,
+            color: isSelected ? accentColor : colorScheme.onSurfaceVariant,
             fontSize: 11.sp,
             fontWeight: isSelected ? FontWeights.bold : FontWeights.medium,
             fontFamily: 'JetBrainsMono',
@@ -247,6 +249,10 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
 
   Widget _buildDotIndicator(int pageIndex) {
     final isActive = _currentPage == pageIndex;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final accentColor =
+        isLight ? context.colorScheme.primary : const Color(0xFF00E5FF);
+
     return GestureDetector(
       onTap: () {
         _pageController.animateToPage(
@@ -261,7 +267,7 @@ class _DashboardCashFlowChartState extends State<DashboardCashFlowChart> {
         height: 7.h,
         decoration: BoxDecoration(
           color: isActive
-              ? const Color(0xFF00E5FF)
+              ? accentColor
               : context.colorScheme.outlineVariant
                   .withAlpha((0.5 * 255).round()),
           borderRadius: BorderRadius.circular(4.r),
@@ -290,8 +296,12 @@ class _SmoothLineChartPage extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final customTypography = context.customTypography;
 
-    const cyanPrimary = Color(0xFF00E5FF);
-    const cyanSecondary = Color(0xFF00F5D4);
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final primaryLineColor =
+        isLight ? colorScheme.primary : const Color(0xFF00E5FF);
+    final secondaryLineColor = isLight
+        ? colorScheme.primary.withValues(alpha: 0.7)
+        : const Color(0xFF00F5D4);
 
     // Build spots dynamically based on filtered points
     final spots = <FlSpot>[];
@@ -336,8 +346,8 @@ class _SmoothLineChartPage extends StatelessWidget {
                   Container(
                     width: 8.w,
                     height: 8.w,
-                    decoration: const BoxDecoration(
-                      color: cyanPrimary,
+                    decoration: BoxDecoration(
+                      color: primaryLineColor,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -400,13 +410,17 @@ class _SmoothLineChartPage extends StatelessWidget {
                       verticalInterval:
                           (spots.length / 4).clamp(1.0, double.infinity),
                       getDrawingHorizontalLine: (value) => FlLine(
-                        color: const Color(0xFF2E3B4E)
-                            .withAlpha((0.5 * 255).round()),
+                        color: isLight
+                            ? colorScheme.outlineVariant.withValues(alpha: 0.5)
+                            : const Color(0xFF2E3B4E)
+                                .withAlpha((0.5 * 255).round()),
                         strokeWidth: 1,
                       ),
                       getDrawingVerticalLine: (value) => FlLine(
-                        color: const Color(0xFF2E3B4E)
-                            .withAlpha((0.5 * 255).round()),
+                        color: isLight
+                            ? colorScheme.outlineVariant.withValues(alpha: 0.5)
+                            : const Color(0xFF2E3B4E)
+                                .withAlpha((0.5 * 255).round()),
                         strokeWidth: 1,
                       ),
                     ),
@@ -426,7 +440,9 @@ class _SmoothLineChartPage extends StatelessWidget {
                               '$currencySymbol${_formatCompact(value)}',
                               style: customTypography.labelMediumMono.copyWith(
                                 fontSize: 10.sp,
-                                color: const Color(0xFF8A9BAE),
+                                color: isLight
+                                    ? colorScheme.onSurfaceVariant
+                                    : const Color(0xFF8A9BAE),
                                 fontWeight: FontWeights.bold,
                               ),
                             );
@@ -441,8 +457,9 @@ class _SmoothLineChartPage extends StatelessWidget {
                               (spots.length / 3).clamp(1.0, double.infinity),
                           getTitlesWidget: (value, meta) {
                             final idx = value.toInt();
-                            if (idx < 1 || idx > spots.length)
+                            if (idx < 1 || idx > spots.length) {
                               return const SizedBox.shrink();
+                            }
 
                             String label = '';
                             if (points.isNotEmpty && idx - 1 < points.length) {
@@ -476,7 +493,9 @@ class _SmoothLineChartPage extends StatelessWidget {
                                 style:
                                     customTypography.labelMediumMono.copyWith(
                                   fontSize: 10.sp,
-                                  color: const Color(0xFF8A9BAE),
+                                  color: isLight
+                                      ? colorScheme.onSurfaceVariant
+                                      : const Color(0xFF8A9BAE),
                                   fontWeight: FontWeights.bold,
                                 ),
                               ),
@@ -490,14 +509,14 @@ class _SmoothLineChartPage extends StatelessWidget {
                           sideTitles: SideTitles(showTitles: false)),
                     ),
 
-                    // Floating White Tooltip & Touch Indicator
+                    // Floating Tooltip & Touch Indicator
                     lineTouchData: LineTouchData(
                       enabled: true,
                       getTouchedSpotIndicator: (barData, spotIndexes) {
                         return spotIndexes.map((spotIndex) {
                           return TouchedSpotIndicatorData(
-                            const FlLine(
-                              color: cyanPrimary,
+                            FlLine(
+                              color: primaryLineColor,
                               strokeWidth: 2,
                             ),
                             FlDotData(
@@ -505,9 +524,11 @@ class _SmoothLineChartPage extends StatelessWidget {
                               getDotPainter: (spot, percent, barData, index) {
                                 return FlDotCirclePainter(
                                   radius: 6.r,
-                                  color: cyanPrimary,
+                                  color: primaryLineColor,
                                   strokeWidth: 3.r,
-                                  strokeColor: Colors.white,
+                                  strokeColor: isLight
+                                      ? colorScheme.surface
+                                      : Colors.white,
                                 );
                               },
                             ),
@@ -515,7 +536,9 @@ class _SmoothLineChartPage extends StatelessWidget {
                         }).toList();
                       },
                       touchTooltipData: LineTouchTooltipData(
-                        getTooltipColor: (_) => Colors.white,
+                        getTooltipColor: (_) => isLight
+                            ? colorScheme.surfaceContainerHigh
+                            : Colors.white,
                         tooltipBorder: BorderSide.none,
                         tooltipPadding: EdgeInsets.symmetric(
                             horizontal: 12.w, vertical: 6.h),
@@ -525,7 +548,7 @@ class _SmoothLineChartPage extends StatelessWidget {
                             return LineTooltipItem(
                               '$currencySymbol${spot.y.toStringAsFixed(1)}',
                               TextStyle(
-                                color: cyanPrimary,
+                                color: primaryLineColor,
                                 fontSize: 14.sp,
                                 fontWeight: FontWeights.bold,
                                 fontFamily: 'JetBrainsMono',
@@ -542,8 +565,8 @@ class _SmoothLineChartPage extends StatelessWidget {
                         spots: animatedSpots,
                         isCurved: true,
                         curveSmoothness: 0.45,
-                        gradient: const LinearGradient(
-                          colors: [cyanPrimary, cyanSecondary],
+                        gradient: LinearGradient(
+                          colors: [primaryLineColor, secondaryLineColor],
                         ),
                         barWidth: 3.5,
                         isStrokeCapRound: true,
@@ -552,8 +575,8 @@ class _SmoothLineChartPage extends StatelessWidget {
                           show: true,
                           gradient: LinearGradient(
                             colors: [
-                              cyanPrimary.withAlpha((0.45 * 255).round()),
-                              cyanSecondary.withAlpha((0.02 * 255).round()),
+                              primaryLineColor.withValues(alpha: 0.45),
+                              secondaryLineColor.withValues(alpha: 0.02),
                             ],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
@@ -680,8 +703,11 @@ class _DualBarChartPage extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final customTypography = context.customTypography;
 
-    const cyanColor = Color(0xFF00E5FF);
-    const pinkColor = Color(0xFFFF2A6D);
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final incomeColor =
+        isLight ? context.customColors.semanticGreen : const Color(0xFF00E5FF);
+    final expenseColor =
+        isLight ? context.customColors.semanticRed : const Color(0xFFFF2A6D);
 
     final barDataGroups = _getBarGroups();
     final maxVal = barDataGroups
@@ -705,7 +731,7 @@ class _DualBarChartPage extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  _buildLegendDot(cyanColor),
+                  _buildLegendDot(incomeColor),
                   SizedBox(width: 4.w),
                   Text(
                     'Income',
@@ -716,7 +742,7 @@ class _DualBarChartPage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 12.w),
-                  _buildLegendDot(pinkColor),
+                  _buildLegendDot(expenseColor),
                   SizedBox(width: 4.w),
                   Text(
                     'Expense',
@@ -773,7 +799,9 @@ class _DualBarChartPage extends StatelessWidget {
                               '$currencySymbol${_formatCompact(value)}',
                               style: customTypography.labelMediumMono.copyWith(
                                 fontSize: 10.sp,
-                                color: const Color(0xFF7C8BA1),
+                                color: isLight
+                                    ? colorScheme.onSurfaceVariant
+                                    : const Color(0xFF7C8BA1),
                                 fontWeight: FontWeights.bold,
                               ),
                             );
@@ -796,7 +824,9 @@ class _DualBarChartPage extends StatelessWidget {
                                 style:
                                     customTypography.labelMediumMono.copyWith(
                                   fontSize: 10.sp,
-                                  color: const Color(0xFF8A9BAE),
+                                  color: isLight
+                                      ? colorScheme.onSurfaceVariant
+                                      : const Color(0xFF8A9BAE),
                                   fontWeight: FontWeights.bold,
                                 ),
                               ),
@@ -811,13 +841,15 @@ class _DualBarChartPage extends StatelessWidget {
                     ),
                     barTouchData: BarTouchData(
                       touchTooltipData: BarTouchTooltipData(
-                        getTooltipColor: (_) => Colors.white,
+                        getTooltipColor: (_) => isLight
+                            ? colorScheme.surfaceContainerHigh
+                            : Colors.white,
                         getTooltipItem: (group, groupIndex, rod, rodIndex) {
                           final isIncome = rodIndex == 0;
                           return BarTooltipItem(
                             '${isIncome ? "Income" : "Expense"}: $currencySymbol${rod.toY.toStringAsFixed(1)}',
                             TextStyle(
-                              color: isIncome ? cyanColor : pinkColor,
+                              color: isIncome ? incomeColor : expenseColor,
                               fontSize: 11.sp,
                               fontWeight: FontWeights.bold,
                               fontFamily: 'JetBrainsMono',
@@ -840,17 +872,17 @@ class _DualBarChartPage extends StatelessWidget {
                         x: i,
                         barsSpace: 4.w,
                         barRods: [
-                          // Cyan Bar (Income)
+                          // Income Bar
                           BarChartRodData(
                             toY: incVal.clamp(0.1, double.infinity),
-                            color: cyanColor,
+                            color: incomeColor,
                             width: 7.w,
                             borderRadius: BorderRadius.circular(6.r),
                           ),
-                          // Pink Bar (Expense)
+                          // Expense Bar
                           BarChartRodData(
                             toY: expVal.clamp(0.1, double.infinity),
-                            color: pinkColor,
+                            color: expenseColor,
                             width: 7.w,
                             borderRadius: BorderRadius.circular(6.r),
                           ),

@@ -306,8 +306,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                         {
                           'type': TransactionType.transfer,
                           'label': context.l10n.transfer,
-                          'activeColor': colorScheme.primary,
-                          'onActiveColor': colorScheme.onPrimary,
+                          'activeColor': customColors.semanticBlue,
+                          'onActiveColor': Colors.white,
                         },
                       ];
 
@@ -327,50 +327,54 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                             final onActiveColor = t['onActiveColor'] as Color;
 
                             return Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  _typeNotifier.value = tabType;
-                                  if (tabType == TransactionType.expense) {
-                                    if (_expenseCategories.isNotEmpty) {
-                                      _selectedCategoryNotifier.value =
-                                          _expenseCategories.first;
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 2.w),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _typeNotifier.value = tabType;
+                                    if (tabType == TransactionType.expense) {
+                                      if (_expenseCategories.isNotEmpty) {
+                                        _selectedCategoryNotifier.value =
+                                            _expenseCategories.first;
+                                      }
+                                    } else if (tabType ==
+                                        TransactionType.income) {
+                                      if (_incomeCategories.isNotEmpty) {
+                                        _selectedCategoryNotifier.value =
+                                            _incomeCategories.first;
+                                      }
+                                    } else if (tabType ==
+                                        TransactionType.transfer) {
+                                      _paymentMethodNotifier.value =
+                                          PaymentMethod.cash;
+                                      _destinationPaymentMethodNotifier.value =
+                                          PaymentMethod.account;
                                     }
-                                  } else if (tabType ==
-                                      TransactionType.income) {
-                                    if (_incomeCategories.isNotEmpty) {
-                                      _selectedCategoryNotifier.value =
-                                          _incomeCategories.first;
-                                    }
-                                  } else if (tabType ==
-                                      TransactionType.transfer) {
-                                    _paymentMethodNotifier.value =
-                                        PaymentMethod.cash;
-                                    _destinationPaymentMethodNotifier.value =
-                                        PaymentMethod.account;
-                                  }
-                                },
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 250),
-                                  curve: Curves.easeInOut,
-                                  padding: EdgeInsets.symmetric(vertical: 8.h),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? activeColor
-                                        : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(8.r),
-                                  ),
-                                  child: Text(
-                                    t['label'] as String,
-                                    textAlign: TextAlign.center,
-                                    style: customTypography.labelMediumMono
-                                        .copyWith(
+                                  },
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 250),
+                                    curve: Curves.easeInOut,
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 8.h),
+                                    decoration: BoxDecoration(
                                       color: isSelected
-                                          ? onActiveColor
-                                          : colorScheme.onSurfaceVariant,
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                      fontSize: 12.sp,
+                                          ? activeColor
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                    child: Text(
+                                      t['label'] as String,
+                                      textAlign: TextAlign.center,
+                                      style: customTypography.labelMediumMono
+                                          .copyWith(
+                                        color: isSelected
+                                            ? onActiveColor
+                                            : colorScheme.onSurfaceVariant,
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                        fontSize: 12.sp,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -397,7 +401,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                           final color = type == TransactionType.income
                               ? customColors.semanticGreen
                               : type == TransactionType.transfer
-                                  ? colorScheme.primary
+                                  ? customColors.semanticBlue
                                   : customColors.semanticRed;
 
                           return Column(
@@ -877,6 +881,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                           ],
                         ),
                       ),
+
                     // Save Button
                     Container(
                       color: colorScheme.surfaceContainerLow,

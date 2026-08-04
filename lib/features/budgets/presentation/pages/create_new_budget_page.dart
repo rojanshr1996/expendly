@@ -10,7 +10,9 @@ import '../../../../core/database/enums/database_enums.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/services/preference_service.dart';
+import '../../../../core/ads/interstitial_ad_helper.dart';
 import '../../../../core/widgets/category_picker_sheet.dart';
+import '../../../../core/widgets/status_components.dart';
 import '../../../transactions/domain/entities/category_item.dart';
 import '../cubit/budget_cubit.dart';
 import '../cubit/budget_state.dart';
@@ -41,6 +43,7 @@ class _CreateNewBudgetPageState extends State<CreateNewBudgetPage> {
   void initState() {
     super.initState();
     _loadCategories();
+    InterstitialAdHelper.loadAd();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _amountFocusNode.requestFocus();
     });
@@ -78,11 +81,10 @@ class _CreateNewBudgetPageState extends State<CreateNewBudgetPage> {
   Future<void> _saveBudget() async {
     final amount = double.tryParse(_amountController.text) ?? 0.0;
     if (amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.enterTargetAmountError),
-          backgroundColor: context.colorScheme.error,
-        ),
+      StatusComponents.showToast(
+        context,
+        message: context.l10n.enterTargetAmountError,
+        isError: true,
       );
       return;
     }
@@ -109,20 +111,18 @@ class _CreateNewBudgetPageState extends State<CreateNewBudgetPage> {
       child: BlocListener<BudgetCubit, BudgetState>(
         listener: (context, state) {
           if (state is BudgetActionSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: colorScheme.secondary,
-              ),
+            StatusComponents.showToast(
+              context,
+              message: state.message,
+              isSuccess: true,
             );
             widget.onSaved?.call();
             context.router.maybePop(true);
           } else if (state is BudgetError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: colorScheme.error,
-              ),
+            StatusComponents.showToast(
+              context,
+              message: state.message,
+              isError: true,
             );
           }
         },

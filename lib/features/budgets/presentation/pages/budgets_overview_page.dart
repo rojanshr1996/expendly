@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/ads/ad_helper.dart';
+import '../../../../core/ads/interstitial_ad_helper.dart';
+import '../../../../core/ads/widgets/banner_ad_widget.dart';
 import '../../../../core/database/app_database.dart';
 import '../../../../core/di/injection.dart';
-import '../../../../core/extensions/amount_formatting_extensions.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/compact_amount_text.dart';
+import '../../../../core/widgets/status_components.dart';
 import '../../data/datasources/budget_local_datasource.dart';
 import '../../data/repositories/budget_repository_impl.dart';
 import '../../domain/entities/budget_item.dart';
@@ -31,13 +35,41 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
 
   void _openCreateBudgetScreen(BuildContext context) async {
     final cubit = context.read<BudgetCubit>();
-    final result = await context.router.push(CreateNewBudgetRoute(
-      onSaved: () {
+    int currentBudgetCount = 0;
+    if (cubit.state is BudgetLoaded) {
+      currentBudgetCount = (cubit.state as BudgetLoaded).budgets.length;
+    }
+
+    if (currentBudgetCount >= 4) {
+      StatusComponents.showToast(
+        context,
+        message: 'Maximum limit of 4 budgets reached.',
+        isError: true,
+      );
+      return;
+    }
+
+    Future<void> navigateToCreate() async {
+      final result = await context.router.push(CreateNewBudgetRoute(
+        onSaved: () {
+          cubit.loadBudgets();
+        },
+      ));
+      if (result == true && mounted) {
         cubit.loadBudgets();
-      },
-    ));
-    if (result == true && mounted) {
-      cubit.loadBudgets();
+      }
+    }
+
+    if (currentBudgetCount >= 2) {
+      InterstitialAdHelper.showAd(
+        onAdDismissed: () {
+          if (mounted) {
+            navigateToCreate();
+          }
+        },
+      );
+    } else {
+      navigateToCreate();
     }
   }
 
@@ -79,9 +111,16 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
               ),
             ),
             body: BlocBuilder<BudgetCubit, BudgetState>(
+              buildWhen: (previous, current) {
+                if (previous.runtimeType != current.runtimeType) return true;
+                if (previous is BudgetLoaded && current is BudgetLoaded) {
+                  return previous.budgets != current.budgets;
+                }
+                return true;
+              },
               builder: (context, state) {
                 return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 400),
+                  duration: const Duration(milliseconds: 350),
                   switchInCurve: Curves.easeOutCubic,
                   switchOutCurve: Curves.easeInCubic,
                   transitionBuilder: (child, animation) {
@@ -89,7 +128,7 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
                       opacity: animation,
                       child: SlideTransition(
                         position: Tween<Offset>(
-                          begin: const Offset(0, 0.04),
+                          begin: const Offset(0, 0.03),
                           end: Offset.zero,
                         ).animate(animation),
                         child: child,
@@ -127,12 +166,19 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.account_balance_wallet_outlined,
-                  size: 64,
-                  color: colorScheme.outline,
+                Container(
+                  padding: EdgeInsets.all(20.w),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.account_balance_wallet_outlined,
+                    size: 56.sp,
+                    color: colorScheme.primary,
+                  ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 20.h),
                 Text(
                   context.l10n.noBudgetsSet,
                   style: customTypography.bodyLargeBold.copyWith(
@@ -140,27 +186,28 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
                     fontSize: 20.sp,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Text(
                   context.l10n.noBudgetsDesc,
                   textAlign: TextAlign.center,
                   style: customTypography.bodyMedium.copyWith(
-                    color: colorScheme.outline,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 28.h),
                 ElevatedButton.icon(
                   onPressed: () => _openCreateBudgetScreen(context),
                   icon: const Icon(Icons.add_rounded),
                   label: Text(context.l10n.setFirstBudget),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
+                    foregroundColor: colorScheme.onPrimary,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16.r),
                     ),
+                    elevation: 0,
                   ),
                 ),
               ],
@@ -205,7 +252,12 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
+
+            // Banner Ad
+            BannerAdWidget(adUnitId: AdHelper.bannerAdUnitId),
+
+            const SizedBox(height: 12),
 
             // Section Header (Stagger Delay 100ms)
             _StaggeredEntrance(
@@ -383,20 +435,16 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                             valueListenable:
                                 isPrivacyModeNotifier ?? ValueNotifier(false),
                             builder: (context, isPrivacy, _) {
-                              final displaySpent = totalSpent.formatCurrency(
-                                currencySymbol,
+                              return CompactAmountText(
+                                amount: totalSpent,
+                                currencySymbol: currencySymbol,
                                 isPrivacyMode: isPrivacy,
-                              );
-                              return FittedBox(
-                                fit: BoxFit.scaleDown,
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  displaySpent,
-                                  style: customTypography.headlineLargeMonoBold
-                                      .copyWith(
-                                    color: colorScheme.onSurface,
-                                    fontSize: 28.sp,
-                                  ),
+                                compact: true,
+                                animate: true,
+                                style: customTypography.headlineLargeMonoBold
+                                    .copyWith(
+                                  color: colorScheme.onSurface,
+                                  fontSize: 28.sp,
                                 ),
                               );
                             },
@@ -423,27 +471,50 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                           valueListenable:
                               isPrivacyModeNotifier ?? ValueNotifier(false),
                           builder: (context, isPrivacy, _) {
-                            final displayTarget = totalTarget.formatCurrency(
-                              currencySymbol,
-                              isPrivacyMode: isPrivacy,
-                            );
-                            return Text(
-                              'Limit: $displayTarget',
-                              style: customTypography.labelMediumMono.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Limit: ',
+                                  style:
+                                      customTypography.labelMediumMono.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                CompactAmountText(
+                                  amount: totalTarget,
+                                  currencySymbol: currencySymbol,
+                                  isPrivacyMode: isPrivacy,
+                                  compact: true,
+                                  animate: true,
+                                  style:
+                                      customTypography.labelMediumMono.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
                             );
                           },
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          '$percentage% Utilized',
-                          style: customTypography.labelMediumMono.copyWith(
-                            color: isOver
-                                ? customColors.semanticRed
-                                : colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        TweenAnimationBuilder<double>(
+                          key: ValueKey(
+                              'total_perc_${percentage}_$selectedItem'),
+                          tween: Tween<double>(
+                              begin: 0.0, end: percentage.toDouble()),
+                          duration: const Duration(milliseconds: 750),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, animVal, _) {
+                            return Text(
+                              '${animVal.round()}% Utilized',
+                              style: customTypography.labelMediumMono.copyWith(
+                                color: isOver
+                                    ? customColors.semanticRed
+                                    : colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -568,19 +639,42 @@ class _BudgetCard extends StatelessWidget {
                             valueListenable:
                                 isPrivacyModeNotifier ?? ValueNotifier(false),
                             builder: (context, isPrivacy, _) {
-                              final spent = item.spentAmount.formatCurrency(
-                                symbol,
-                                isPrivacyMode: isPrivacy,
-                              );
-                              final target = item.targetAmount.formatCurrency(
-                                symbol,
-                                isPrivacyMode: isPrivacy,
-                              );
-                              return Text(
-                                '$spent / $target',
-                                style:
-                                    customTypography.labelMediumMono.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
+                              return FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    CompactAmountText(
+                                      amount: item.spentAmount,
+                                      currencySymbol: symbol,
+                                      isPrivacyMode: isPrivacy,
+                                      compact: true,
+                                      animate: true,
+                                      style: customTypography.labelMediumMono
+                                          .copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    Text(
+                                      ' / ',
+                                      style: customTypography.labelMediumMono
+                                          .copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    CompactAmountText(
+                                      amount: item.targetAmount,
+                                      currencySymbol: symbol,
+                                      isPrivacyMode: isPrivacy,
+                                      compact: true,
+                                      animate: true,
+                                      style: customTypography.labelMediumMono
+                                          .copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               );
                             },
@@ -621,12 +715,22 @@ class _BudgetCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '${(progress * 100).toStringAsFixed(0)}% used',
-                  style: customTypography.labelMediumMono.copyWith(
-                    color: progressColor,
-                    fontWeight: FontWeight.bold,
-                  ),
+                TweenAnimationBuilder<double>(
+                  key: ValueKey(
+                      'card_perc_${item.id}_${item.spentAmount}_${item.targetAmount}'),
+                  tween: Tween<double>(
+                      begin: 0.0, end: (progress * 100).clamp(0.0, 9999.0)),
+                  duration: const Duration(milliseconds: 750),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, animVal, _) {
+                    return Text(
+                      '${animVal.round()}% used',
+                      style: customTypography.labelMediumMono.copyWith(
+                        color: progressColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  },
                 ),
                 if (item.isOverBudget)
                   Text(
@@ -691,7 +795,7 @@ class _StaggeredEntrance extends StatelessWidget {
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: 0.0, end: 1.0),
-      duration: Duration(milliseconds: 450 + delayMs),
+      duration: Duration(milliseconds: 400 + delayMs),
       curve: Curves.easeOutCubic,
       builder: (context, value, child) {
         return Opacity(

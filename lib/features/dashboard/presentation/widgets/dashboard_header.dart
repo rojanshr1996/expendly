@@ -12,15 +12,15 @@ import '../../../profile/presentation/cubit/profile_state.dart';
 import '../../../profile/presentation/widgets/user_avatar.dart';
 
 /// Top App Bar matching the Modern Fiscal Core glass header specs.
-/// Includes user profile avatar ring, app title, privacy mode toggle (hides balance with •••••), and settings.
+/// Includes user profile avatar ring, app title, privacy mode toggle (hides balance with •••••), and reports.
 class DashboardHeader extends StatelessWidget {
   final ValueNotifier<bool> isPrivacyModeNotifier;
-  final VoidCallback? onSettingsPressed;
+  final VoidCallback? onReportsPressed;
 
   const DashboardHeader({
     super.key,
     required this.isPrivacyModeNotifier,
-    this.onSettingsPressed,
+    this.onReportsPressed,
   });
 
   @override
@@ -114,15 +114,15 @@ class DashboardHeader extends StatelessWidget {
                   },
                 ),
 
-                // Settings Button
+                // Reports Button
                 IconButton(
-                  tooltip: context.l10n.settings,
+                  tooltip: context.l10n.reports,
                   icon: Icon(
-                    Icons.settings_outlined,
+                    Icons.bar_chart_rounded,
                     color: colorScheme.onSurfaceVariant,
                     size: 22.sp,
                   ),
-                  onPressed: onSettingsPressed,
+                  onPressed: onReportsPressed,
                 ),
               ],
             ),

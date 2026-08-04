@@ -5,7 +5,7 @@ import 'package:injectable/injectable.dart';
 import '../../domain/repositories/analytics_repository.dart';
 import 'analytics_state.dart';
 
-@injectable
+@lazySingleton
 class AnalyticsCubit extends Cubit<AnalyticsState> {
   final AnalyticsRepository _repository;
   String currentPeriod = 'Monthly';
@@ -16,6 +16,7 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
   Future<void> loadAnalytics({
     String? period,
     DateTimeRange? customRange,
+    bool isSilent = false,
   }) async {
     if (period != null) {
       currentPeriod = period;
@@ -26,7 +27,7 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
     if (customRange != null) currentCustomRange = customRange;
 
     if (isClosed) return;
-    if (state is! AnalyticsLoaded) {
+    if (state is! AnalyticsLoaded && !isSilent) {
       emit(AnalyticsLoading());
     }
     try {

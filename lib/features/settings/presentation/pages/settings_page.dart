@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
@@ -23,6 +24,8 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../../../core/widgets/status_components.dart';
+import '../../../../core/ads/ad_helper.dart';
+import '../../../../core/ads/widgets/banner_ad_widget.dart';
 import '../../../profile/presentation/cubit/profile_cubit.dart';
 import '../../../profile/presentation/cubit/profile_state.dart';
 import '../../../profile/presentation/pages/personal_profile_page.dart';
@@ -493,6 +496,12 @@ class _SettingsPageState extends State<SettingsPage>
                 ],
               ),
 
+              // Banner Ad below Security Section
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 14.h),
+                child: BannerAdWidget(adUnitId: AdHelper.bannerAdUnitId),
+              ),
+
               // Appearance Section
               SettingsSectionHeader(title: context.l10n.appearanceSection),
               _buildGroupedCard(
@@ -632,8 +641,28 @@ class _SettingsPageState extends State<SettingsPage>
                     iconColor: colorScheme.tertiary,
                     title: context.l10n.termsAndConditions,
                     subtitle: context.l10n.termsDesc,
-                    onTap: () =>
-                        context.router.push(const TermsConditionsRoute()),
+                    onTap: () async {
+                      final url = Uri.parse(
+                          'https://doc-hosting.flycricket.io/expendly-terms-of-use/fc8322d4-4c18-4bd8-976f-f94e0b2287ec/terms');
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(url,
+                            mode: LaunchMode.externalApplication);
+                      }
+                    },
+                  ),
+                  SettingsTile(
+                    icon: Icons.privacy_tip_outlined,
+                    iconColor: colorScheme.primary,
+                    title: 'Privacy Policy',
+                    subtitle: 'Read our privacy policy',
+                    onTap: () async {
+                      final url = Uri.parse(
+                          'https://app.flycricket.com/documents/policies/edit/dd961a93-40bc-4f46-b199-39fd16377103');
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(url,
+                            mode: LaunchMode.externalApplication);
+                      }
+                    },
                   ),
                   SettingsTile(
                     icon: Icons.help_outline_rounded,
