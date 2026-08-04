@@ -288,6 +288,7 @@ class _TotalBudgetHealthCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final customTypography = context.customTypography;
     final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
 
     return ValueListenableBuilder<String>(
       valueListenable: getIt<PreferenceService>().currencySymbolNotifier,
@@ -315,15 +316,15 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  AppColors.primary.withValues(alpha: 0.12),
-                  AppColors.secondary.withValues(alpha: 0.10),
+                  colorScheme.primary.withValues(alpha: 0.12),
+                  colorScheme.secondary.withValues(alpha: 0.10),
                 ],
               ),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
                 color: selectedItem != null
-                    ? AppColors.primary.withValues(alpha: 0.5)
-                    : AppColors.glassStroke,
+                    ? colorScheme.primary.withValues(alpha: 0.5)
+                    : customColors.glassStroke,
                 width: selectedItem != null ? 1.5 : 1.0,
               ),
             ),
@@ -339,7 +340,7 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                             ? '${selectedItem!.categoryName.toUpperCase()} BUDGET HEALTH'
                             : 'TOTAL BUDGET HEALTH',
                         style: customTypography.labelMediumMono.copyWith(
-                          color: AppColors.outline,
+                          color: colorScheme.onSurfaceVariant,
                           letterSpacing: 1.2,
                           fontWeight: FontWeight.bold,
                         ),
@@ -354,13 +355,13 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.2),
+                            color: colorScheme.primary.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             'Show Total',
                             style: customTypography.labelMediumMono.copyWith(
-                              color: AppColors.primary,
+                              color: colorScheme.primary,
                               fontSize: 10.sp,
                               fontWeight: FontWeight.bold,
                             ),
@@ -393,7 +394,7 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                                   displaySpent,
                                   style: customTypography.headlineLargeMonoBold
                                       .copyWith(
-                                    color: AppColors.onSurface,
+                                    color: colorScheme.onSurface,
                                     fontSize: 28.sp,
                                   ),
                                 ),
@@ -405,8 +406,8 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                             isOver ? 'Exceeded Limit' : 'Within Budget Limit',
                             style: customTypography.bodyMedium.copyWith(
                               color: isOver
-                                  ? AppColors.semanticRed
-                                  : AppColors.semanticGreen,
+                                  ? customColors.semanticRed
+                                  : customColors.semanticGreen,
                               fontSize: 13.sp,
                               fontWeight: FontWeight.bold,
                             ),
@@ -429,7 +430,7 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                             return Text(
                               'Limit: $displayTarget',
                               style: customTypography.labelMediumMono.copyWith(
-                                color: AppColors.outline,
+                                color: colorScheme.onSurfaceVariant,
                               ),
                             );
                           },
@@ -439,8 +440,8 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                           '$percentage% Utilized',
                           style: customTypography.labelMediumMono.copyWith(
                             color: isOver
-                                ? AppColors.semanticRed
-                                : AppColors.primary,
+                                ? customColors.semanticRed
+                                : colorScheme.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -463,7 +464,7 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                         minHeight: 10,
                         backgroundColor: colorScheme.surfaceContainerHigh,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          isOver ? AppColors.semanticRed : AppColors.primary,
+                          isOver ? customColors.semanticRed : colorScheme.primary,
                         ),
                       ),
                     );
@@ -495,13 +496,15 @@ class _BudgetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
     final customTypography = context.customTypography;
     final catColor = _parseColor(item.categoryColorHex);
     final progress = item.progressPercentage;
 
-    Color progressColor = AppColors.primary;
+    Color progressColor = colorScheme.primary;
     if (item.isOverBudget) {
-      progressColor = AppColors.semanticRed;
+      progressColor = customColors.semanticRed;
     } else if (item.isWarning) {
       progressColor = const Color(0xFFFFAC5A);
     }
@@ -514,15 +517,15 @@ class _BudgetCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.1)
-              : AppColors.surfaceContainerLow,
+              ? colorScheme.primary.withValues(alpha: 0.1)
+              : colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
-                ? AppColors.primary
+                ? colorScheme.primary
                 : item.isOverBudget
-                    ? AppColors.semanticRed.withValues(alpha: 0.5)
-                    : AppColors.glassStroke,
+                    ? customColors.semanticRed.withValues(alpha: 0.5)
+                    : customColors.glassStroke,
             width: isSelected ? 1.5 : 1.0,
           ),
         ),
@@ -552,7 +555,7 @@ class _BudgetCard extends StatelessWidget {
                       Text(
                         item.categoryName,
                         style: customTypography.bodyLargeBold.copyWith(
-                          color: AppColors.onSurface,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       ValueListenableBuilder<String>(
@@ -575,7 +578,7 @@ class _BudgetCard extends StatelessWidget {
                                 '$spent / $target',
                                 style:
                                     customTypography.labelMediumMono.copyWith(
-                                  color: AppColors.outline,
+                                  color: colorScheme.onSurfaceVariant,
                                 ),
                               );
                             },
@@ -586,8 +589,8 @@ class _BudgetCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline_rounded,
-                      color: AppColors.outline, size: 20),
+                  icon: Icon(Icons.delete_outline_rounded,
+                      color: colorScheme.onSurfaceVariant, size: 20),
                   onPressed: onDelete,
                 ),
               ],
@@ -605,7 +608,7 @@ class _BudgetCard extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: animatedProgress,
                     minHeight: 8,
-                    backgroundColor: AppColors.surfaceContainerHigh,
+                    backgroundColor: colorScheme.surfaceContainerHigh,
                     valueColor: AlwaysStoppedAnimation<Color>(progressColor),
                   ),
                 );
@@ -627,7 +630,7 @@ class _BudgetCard extends StatelessWidget {
                   Text(
                     'EXCEEDED LIMIT!',
                     style: customTypography.labelMediumMono.copyWith(
-                      color: AppColors.semanticRed,
+                      color: customColors.semanticRed,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

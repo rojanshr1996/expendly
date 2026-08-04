@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
+import '../../../../core/gen/assets.gen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/glass_container.dart';
@@ -54,19 +55,22 @@ class AboutPage extends StatelessWidget {
                 Container(
                   width: 80.w,
                   height: 80.w,
+                  padding: EdgeInsets.all(12.w),
                   decoration: BoxDecoration(
-                    color: colorScheme.primary.withValues(alpha: 0.15),
+                    color: colorScheme.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(20.r),
                     border: Border.all(
-                      color: colorScheme.primary.withValues(alpha: 0.3),
+                      color: context.customColors.glassStroke,
                       width: 1.5,
                     ),
                   ),
-                  child: Icon(
-                    Icons.account_balance_wallet_rounded,
-                    color: colorScheme.primary,
-                    size: 40.sp,
-                  ),
+                  child: (Theme.of(context).brightness == Brightness.light
+                      ? Assets.images.expendlyLogoLight.image(
+                          fit: BoxFit.contain,
+                        )
+                      : Assets.images.expendlyLogo.image(
+                          fit: BoxFit.contain,
+                        )),
                 ),
                 verticalMarginMedium,
 

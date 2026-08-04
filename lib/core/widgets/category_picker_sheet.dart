@@ -68,13 +68,23 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
     super.dispose();
   }
 
-  Color _parseColor(String hex) {
+  Color _parseColor(BuildContext context, String hex) {
     try {
       final clean = hex.replaceAll('#', '');
-      return Color(int.parse('0xFF$clean'));
-    } catch (_) {
-      return Colors.teal;
-    }
+      if (clean.length == 6) {
+        final color = Color(int.parse('FF$clean', radix: 16));
+        if (Theme.of(context).brightness == Brightness.light) {
+          final hsl = HSLColor.fromColor(color);
+          if (hsl.lightness > 0.5) {
+            return hsl
+                .withLightness((hsl.lightness - 0.25).clamp(0.2, 0.45))
+                .toColor();
+          }
+        }
+        return color;
+      }
+    } catch (_) {}
+    return context.colorScheme.primary;
   }
 
   IconData _parseIcon(String name) {
@@ -227,11 +237,11 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                                 horizontal: 6.w, vertical: 8.h),
                             borderStrokeColor: isOverallSelected
                                 ? colorScheme.primary
-                                : colorScheme.outlineVariant,
+                                : context.customColors.glassStroke,
                             backgroundColor: isOverallSelected
                                 ? colorScheme.primary
                                     .withAlpha((0.15 * 255).round())
-                                : colorScheme.surfaceContainerHigh,
+                                : colorScheme.surfaceContainerLow,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
@@ -275,7 +285,7 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                       final cat = filtered[
                           index - (widget.allowOverallLimitOption ? 1 : 0)];
                       final isSelected = widget.selectedCategory?.id == cat.id;
-                      final color = _parseColor(cat.colorHex);
+                      final color = _parseColor(context, cat.colorHex);
                       final icon = _parseIcon(cat.icon);
 
                       return GestureDetector(
@@ -285,11 +295,11 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                               horizontal: 6.w, vertical: 8.h),
                           borderStrokeColor: isSelected
                               ? colorScheme.primary
-                              : colorScheme.outlineVariant,
+                              : context.customColors.glassStroke,
                           backgroundColor: isSelected
                               ? colorScheme.primary
                                   .withAlpha((0.15 * 255).round())
-                              : colorScheme.surfaceContainerHigh,
+                              : colorScheme.surfaceContainerLow,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
@@ -298,7 +308,7 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                                 padding: EdgeInsets.all(6.w),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: color.withAlpha((0.2 * 255).round()),
+                                  color: color.withAlpha((0.25 * 255).round()),
                                 ),
                                 child: Icon(
                                   icon,

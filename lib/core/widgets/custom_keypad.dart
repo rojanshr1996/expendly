@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constants/margin_constants.dart';
 import '../extensions/context_extensions.dart';
-import '../theme/app_colors.dart';
 import '../theme/font_weights.dart';
 
 /// Tactile Custom Keypad for transaction amount entry and PIN security verification.
@@ -139,10 +138,12 @@ class _KeypadButton extends StatelessWidget {
                 height: 56.h,
                 margin: EdgeInsets.symmetric(horizontal: 4.w),
                 decoration: BoxDecoration(
-                  color:
-                      isPressed ? AppColors.surfaceMid : AppColors.surfaceLow,
+                  color: isPressed
+                      ? colorScheme.surfaceContainerHigh
+                      : colorScheme.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: AppColors.glassStroke, width: 1.0),
+                  border: Border.all(
+                      color: context.customColors.glassStroke, width: 1.0),
                 ),
                 alignment: Alignment.center,
                 child: icon != null

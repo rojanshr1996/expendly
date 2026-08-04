@@ -79,6 +79,80 @@ abstract class AppColors {
   // Semantic Financial Colors (Desaturated for low fatigue)
   static const Color semanticRed = Color(0xFFFB7185); // Expense
   static const Color semanticGreen = Color(0xFF34D399); // Income
+
+  // ---------------------------------------------------------------------------
+  // Light Mode Design System Tokens (Sky Fiscal)
+  // ---------------------------------------------------------------------------
+  static const Color lightBackground = Color(0xFFFAF8FF);
+  static const Color lightOnBackground = Color(0xFF131B2E);
+
+  static const Color lightSurface = Color(0xFFFAF8FF);
+  static const Color lightSurfaceDim = Color(0xFFD2D9F4);
+  static const Color lightSurfaceBright = Color(0xFFFAF8FF);
+  static const Color lightSurfaceContainerLowest = Color(0xFFFFFFFF);
+  static const Color lightSurfaceContainerLow = Color(0xFFF2F3FF);
+  static const Color lightSurfaceContainer = Color(0xFFEAEDFF);
+  static const Color lightSurfaceContainerHigh = Color(0xFFE2E7FF);
+  static const Color lightSurfaceContainerHighest = Color(0xFFDAE2FD);
+
+  static const Color lightOnSurface = Color(0xFF131B2E);
+  static const Color lightOnSurfaceVariant = Color(0xFF3F4850);
+  static const Color lightInverseSurface = Color(0xFF283044);
+  static const Color lightInverseOnSurface = Color(0xFFEEF0FF);
+  static const Color lightOutline = Color(0xFF707881);
+  static const Color lightOutlineVariant = Color(0xFFBFC7D2);
+  static const Color lightSurfaceTint = Color(0xFF006398);
+  static const Color lightSurfaceVariant = Color(0xFFDAE2FD);
+
+  // Light Tonal Elevation Layers
+  static const Color lightSurfaceLowest = Color(0xFFFAF8FF);
+  static const Color lightSurfaceLow = Color(0xFFF2F3FF);
+  static const Color lightSurfaceMid = Color(0xFFEAEDFF);
+  static const Color lightGlassStroke = Color(0x1F707881);
+
+  // Light Primary Palette
+  static const Color lightPrimary = Color(0xFF006194);
+  static const Color lightOnPrimary = Color(0xFFFFFFFF);
+  static const Color lightPrimaryContainer = Color(0xFF007BB9);
+  static const Color lightOnPrimaryContainer = Color(0xFFFDFCFF);
+  static const Color lightInversePrimary = Color(0xFF93CCFF);
+
+  static const Color lightPrimaryFixed = Color(0xFFCCE5FF);
+  static const Color lightPrimaryFixedDim = Color(0xFF93CCFF);
+  static const Color lightOnPrimaryFixed = Color(0xFF001D31);
+  static const Color lightOnPrimaryFixedVariant = Color(0xFF004B73);
+
+  // Light Secondary Palette
+  static const Color lightSecondary = Color(0xFF006C49);
+  static const Color lightOnSecondary = Color(0xFFFFFFFF);
+  static const Color lightSecondaryContainer = Color(0xFF6CF8BB);
+  static const Color lightOnSecondaryContainer = Color(0xFF00714D);
+
+  static const Color lightSecondaryFixed = Color(0xFF6FFBBE);
+  static const Color lightSecondaryFixedDim = Color(0xFF4EDEA3);
+  static const Color lightOnSecondaryFixed = Color(0xFF002113);
+  static const Color lightOnSecondaryFixedVariant = Color(0xFF005236);
+
+  // Light Tertiary Palette
+  static const Color lightTertiary = Color(0xFFA53337);
+  static const Color lightOnTertiary = Color(0xFFFFFFFF);
+  static const Color lightTertiaryContainer = Color(0xFFC64B4D);
+  static const Color lightOnTertiaryContainer = Color(0xFFFFFBFF);
+
+  static const Color lightTertiaryFixed = Color(0xFFFFDAD8);
+  static const Color lightTertiaryFixedDim = Color(0xFFFFB3B0);
+  static const Color lightOnTertiaryFixed = Color(0xFF410006);
+  static const Color lightOnTertiaryFixedVariant = Color(0xFF881D24);
+
+  // Light Error & Status Palette
+  static const Color lightError = Color(0xFFBA1A1A);
+  static const Color lightOnError = Color(0xFFFFFFFF);
+  static const Color lightErrorContainer = Color(0xFFFFDAD6);
+  static const Color lightOnErrorContainer = Color(0xFF93000A);
+
+  // Light Financial Semantics
+  static const Color lightSemanticRed = Color(0xFFBA1A1A);
+  static const Color lightSemanticGreen = Color(0xFF006C49);
 }
 
 /// ThemeExtension for custom design system colors not covered by standard Material 3 ColorScheme.
@@ -106,6 +180,15 @@ class AppCustomColors extends ThemeExtension<AppCustomColors> {
     semanticRed: AppColors.semanticRed,
     semanticGreen: AppColors.semanticGreen,
     glassStroke: AppColors.glassStroke,
+  );
+
+  static const light = AppCustomColors(
+    surfaceLowest: AppColors.lightSurfaceLowest,
+    surfaceLow: AppColors.lightSurfaceLow,
+    surfaceMid: AppColors.lightSurfaceMid,
+    semanticRed: AppColors.lightSemanticRed,
+    semanticGreen: AppColors.lightSemanticGreen,
+    glassStroke: AppColors.lightGlassStroke,
   );
 
   @override

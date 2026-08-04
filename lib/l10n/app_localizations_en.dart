@@ -90,7 +90,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modernFiscalCore => 'MODERN FISCAL CORE';
 
   @override
-  String get financeRedefined => 'FINANCE REDEFINED';
+  String get financeRedefined => 'Finances, balanced';
 
   @override
   String get protectedByAes256 => 'Protected & Offline';
@@ -526,6 +526,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get darkMode => 'Dark Mode';
+
+  @override
+  String get lightMode => 'Light Mode';
 
   @override
   String get primaryCurrency => 'Primary Currency';

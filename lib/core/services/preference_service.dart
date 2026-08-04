@@ -32,6 +32,7 @@ class PreferenceService {
       ValueNotifier<String>('USD');
   final ValueNotifier<String> currencySymbolNotifier =
       ValueNotifier<String>('\$');
+  final ValueNotifier<String> themeModeNotifier = ValueNotifier<String>('dark');
 
   // In-memory cache for fast sync access
   bool _onboardingCompleted = false;
@@ -72,6 +73,7 @@ class PreferenceService {
     currencySymbolNotifier.value = _currencySymbol;
     _biometricsEnabled = _prefs?.getBool(keyBiometricsEnabled) ?? false;
     _themeMode = _prefs?.getString(keyThemeMode) ?? 'dark';
+    themeModeNotifier.value = _themeMode;
     _activityViewMode = _prefs?.getString(keyActivityViewMode) ?? 'calendar';
     _lastSnapshotAt = _prefs?.getString(keyLastSnapshotAt);
     _lastSnapshotCount = _prefs?.getInt(keyLastSnapshotCount) ?? 0;
@@ -130,6 +132,7 @@ class PreferenceService {
 
   Future<void> setThemeMode(String mode) async {
     _themeMode = mode;
+    themeModeNotifier.value = mode;
     await _prefs?.setString(keyThemeMode, mode);
     AppLogger.i('Preference persisted: ThemeMode set to $mode');
   }

@@ -108,7 +108,7 @@
   "@modernFiscalCore": {
     "description": "Application tagline displayed on splash screen"
   },
-  "financeRedefined": "FINANCE REDEFINED",
+  "financeRedefined": "Finances, balanced",
   "@financeRedefined": {
     "description": "Subtitle on splash screen"
   },
@@ -669,6 +669,10 @@
   "darkMode": "Dark Mode",
   "@darkMode": {
     "description": "Value display for dark mode theme"
+  },
+  "lightMode": "Light Mode",
+  "@lightMode": {
+    "description": "Value display for light mode theme"
   },
   "primaryCurrency": "Primary Currency",
   "@primaryCurrency": {

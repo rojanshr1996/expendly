@@ -287,6 +287,7 @@ class _SmoothLineChartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
     final customTypography = context.customTypography;
 
     const cyanPrimary = Color(0xFF00E5FF);
@@ -323,7 +324,6 @@ class _SmoothLineChartPage extends StatelessWidget {
         left: 12.w,
         right: 18.w,
       ),
-      backgroundColor: const Color(0xFF19222D),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -345,7 +345,7 @@ class _SmoothLineChartPage extends StatelessWidget {
                   Text(
                     'Net Cash Flow Trajectory',
                     style: customTypography.labelMediumMono.copyWith(
-                      color: Colors.white,
+                      color: colorScheme.onSurface,
                       fontSize: 11.sp,
                       fontWeight: FontWeights.bold,
                     ),
@@ -355,13 +355,13 @@ class _SmoothLineChartPage extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2E3B4E),
+                  color: colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(6.r),
                 ),
                 child: Text(
                   'Values in ($currencySymbol)',
                   style: customTypography.labelMediumMono.copyWith(
-                    color: const Color(0xFF8A9BAE),
+                    color: colorScheme.onSurfaceVariant,
                     fontSize: 9.sp,
                   ),
                 ),
@@ -677,6 +677,7 @@ class _DualBarChartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
     final customTypography = context.customTypography;
 
     const cyanColor = Color(0xFF00E5FF);
@@ -695,7 +696,6 @@ class _DualBarChartPage extends StatelessWidget {
         left: 12.w,
         right: 16.w,
       ),
-      backgroundColor: const Color(0xFF1B2A4A),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -710,7 +710,7 @@ class _DualBarChartPage extends StatelessWidget {
                   Text(
                     'Income',
                     style: customTypography.labelMediumMono.copyWith(
-                      color: Colors.white,
+                      color: colorScheme.onSurface,
                       fontSize: 10.sp,
                       fontWeight: FontWeights.bold,
                     ),
@@ -721,7 +721,7 @@ class _DualBarChartPage extends StatelessWidget {
                   Text(
                     'Expense',
                     style: customTypography.labelMediumMono.copyWith(
-                      color: Colors.white,
+                      color: colorScheme.onSurface,
                       fontSize: 10.sp,
                       fontWeight: FontWeights.bold,
                     ),
@@ -731,13 +731,13 @@ class _DualBarChartPage extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF283A5D),
+                  color: colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(6.r),
                 ),
                 child: Text(
                   'Comparison ($currencySymbol)',
                   style: customTypography.labelMediumMono.copyWith(
-                    color: const Color(0xFF8A9BAE),
+                    color: colorScheme.onSurfaceVariant,
                     fontSize: 9.sp,
                   ),
                 ),

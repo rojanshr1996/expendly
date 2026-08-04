@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../theme/app_colors.dart';
+import '../extensions/context_extensions.dart';
 import '../theme/app_radius.dart';
 
 /// Reusable Glassmorphic Container with blur, semi-transparent background, and 1px stroke border.
@@ -10,7 +10,7 @@ class GlassContainer extends StatelessWidget {
   final Widget child;
   final double blur;
   final Color? backgroundColor;
-  final Color borderStrokeColor;
+  final Color? borderStrokeColor;
   final BorderRadius? borderRadius;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
@@ -23,7 +23,7 @@ class GlassContainer extends StatelessWidget {
     required this.child,
     this.blur = 16.0,
     this.backgroundColor,
-    this.borderStrokeColor = AppColors.glassStroke,
+    this.borderStrokeColor,
     this.borderRadius,
     this.padding,
     this.margin,
@@ -34,9 +34,11 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customColors = context.customColors;
     final effectiveRadius = borderRadius ?? AppRadius.borderLg;
-    final effectiveBg =
-        backgroundColor ?? AppColors.surfaceLow.withAlpha((0.7 * 255).round());
+    final effectiveBg = backgroundColor ??
+        customColors.surfaceLow.withValues(alpha: 0.7);
+    final effectiveStroke = borderStrokeColor ?? customColors.glassStroke;
 
     Widget container = Container(
       width: width,
@@ -44,7 +46,7 @@ class GlassContainer extends StatelessWidget {
       margin: margin,
       decoration: BoxDecoration(
         borderRadius: effectiveRadius,
-        border: Border.all(color: borderStrokeColor, width: 1.0),
+        border: Border.all(color: effectiveStroke, width: 1.0),
       ),
       child: ClipRRect(
         borderRadius: effectiveRadius,
@@ -76,7 +78,7 @@ class GlassHeader extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final Widget? leading;
   final double blur;
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   const GlassHeader({
     super.key,
@@ -84,17 +86,19 @@ class GlassHeader extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.leading,
     this.blur = 20.0,
-    this.backgroundColor =
-        const Color(0x990E1513), // 60% opacity of Midnight Slate #0E1513
+    this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveBg = backgroundColor ??
+        Theme.of(context).colorScheme.surface.withValues(alpha: 0.8);
+
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
         child: Container(
-          color: backgroundColor,
+          color: effectiveBg,
           child: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,

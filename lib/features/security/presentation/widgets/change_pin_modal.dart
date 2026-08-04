@@ -6,7 +6,6 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/services/preference_service.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/custom_keypad.dart';
 import '../../../../core/widgets/glass_container.dart';
@@ -152,7 +151,6 @@ class _ChangePinModalState extends State<ChangePinModal>
       },
       child: GlassContainer(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-        backgroundColor: AppColors.surfaceLow,
         padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 24.h),
         child: Column(
           mainAxisSize: MainAxisSize.min,

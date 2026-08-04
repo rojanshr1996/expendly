@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constants/margin_constants.dart';
 import '../extensions/context_extensions.dart';
-import '../theme/app_colors.dart';
 import '../theme/font_weights.dart';
 import 'glass_container.dart';
 
@@ -31,15 +30,16 @@ class AppSelectionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
     final textTheme = context.textTheme;
 
     return GlassContainer(
       onTap: onTap,
       backgroundColor: isSelected
-          ? AppColors.surfaceMid
-          : AppColors.surfaceLow.withAlpha((0.6 * 255).round()),
+          ? colorScheme.surfaceContainerHigh
+          : colorScheme.surfaceContainerLow.withAlpha((0.7 * 255).round()),
       borderStrokeColor:
-          isSelected ? colorScheme.primary : AppColors.glassStroke,
+          isSelected ? colorScheme.primary : customColors.glassStroke,
       padding:
           padding ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: Row(
@@ -51,7 +51,7 @@ class AppSelectionTile extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isSelected
                     ? colorScheme.primary.withAlpha((0.2 * 255).round())
-                    : AppColors.surfaceContainer,
+                    : colorScheme.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(10.r),
               ),
               alignment: Alignment.center,

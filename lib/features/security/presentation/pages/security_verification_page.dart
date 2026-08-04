@@ -10,7 +10,6 @@ import '../../../../core/extensions/padding_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/biometric_auth_service.dart';
 import '../../../../core/services/preference_service.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_keypad.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../widgets/reset_pin_modal.dart';
@@ -192,8 +191,9 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
                             ValueListenableBuilder<bool>(
                               valueListenable: _isSuccessNotifier,
                               builder: (context, isSuccess, _) {
+                                final customColors = context.customColors;
                                 final iconColor = isSuccess
-                                    ? AppColors.semanticGreen
+                                    ? customColors.semanticGreen
                                     : colorScheme.primary;
                                 return AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
@@ -202,13 +202,13 @@ class _SecurityVerificationPageState extends State<SecurityVerificationPage>
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: isSuccess
-                                        ? AppColors.semanticGreen
+                                        ? customColors.semanticGreen
                                             .withValues(alpha: 0.2)
-                                        : AppColors.surfaceLow,
+                                        : colorScheme.surfaceContainerLow,
                                     border: Border.all(
                                       color: isSuccess
-                                          ? AppColors.semanticGreen
-                                          : AppColors.glassStroke,
+                                          ? customColors.semanticGreen
+                                          : customColors.glassStroke,
                                       width: isSuccess ? 2.0 : 1.0,
                                     ),
                                     boxShadow: [

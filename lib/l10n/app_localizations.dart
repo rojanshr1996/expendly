@@ -259,7 +259,7 @@ abstract class AppLocalizations {
   /// Subtitle on splash screen
   ///
   /// In en, this message translates to:
-  /// **'FINANCE REDEFINED'**
+  /// **'Finances, balanced'**
   String get financeRedefined;
 
   /// Security label on splash screen
@@ -1089,6 +1089,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dark Mode'**
   String get darkMode;
+
+  /// Value display for light mode theme
+  ///
+  /// In en, this message translates to:
+  /// **'Light Mode'**
+  String get lightMode;
 
   /// Label for primary currency setting
   ///

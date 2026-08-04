@@ -498,25 +498,32 @@ class _SettingsPageState extends State<SettingsPage>
               _buildGroupedCard(
                 context,
                 children: [
-                  SettingsTile(
-                    icon: Icons.dark_mode_outlined,
-                    iconColor: colorScheme.onSurfaceVariant,
-                    title: context.l10n.themeLabel,
-                    trailing: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Text(
-                        context.l10n.darkMode,
-                        style: customTypography.labelMediumMono.copyWith(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeights.bold,
+                  ValueListenableBuilder<String>(
+                    valueListenable: pref.themeModeNotifier,
+                    builder: (context, themeMode, _) {
+                      final isDark = themeMode != 'light';
+
+                      return SettingsTile(
+                        icon: isDark
+                            ? Icons.dark_mode_outlined
+                            : Icons.light_mode_outlined,
+                        iconColor: colorScheme.onSurfaceVariant,
+                        title: context.l10n.themeLabel,
+                        subtitle: isDark
+                            ? context.l10n.darkMode
+                            : context.l10n.lightMode,
+                        onTap: () {
+                          pref.setThemeMode(isDark ? 'light' : 'dark');
+                        },
+                        trailing: Switch.adaptive(
+                          value: isDark,
+                          activeTrackColor: colorScheme.primary,
+                          onChanged: (val) {
+                            pref.setThemeMode(val ? 'dark' : 'light');
+                          },
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                   ValueListenableBuilder<String>(
                     valueListenable: pref.currencyCodeNotifier,

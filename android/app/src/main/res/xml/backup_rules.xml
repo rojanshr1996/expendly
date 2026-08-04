@@ -5,8 +5,7 @@
     <!-- shared_preferences (currency, onboarding, theme) -->
     <include domain="sharedpref" path="FlutterSharedPreferences.xml"/>
 
-    <!-- Keystore-wrapped blobs restore as undecryptable garbage: exclude -->
-    <exclude domain="sharedpref" path="FlutterSecureStorage.xml"/>
+    <!-- Keystore-wrapped blobs restore as undecryptable garbage: excluded automatically as only FlutterSharedPreferences.xml is included -->
     <!-- WAL/SHM are meaningless without the exact same DB instance -->
     <exclude domain="file" path="app_flutter/expendly.sqlite-wal"/>
     <exclude domain="file" path="app_flutter/expendly.sqlite-shm"/>

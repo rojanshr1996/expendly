@@ -6,7 +6,6 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/database/enums/database_enums.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
@@ -56,15 +55,6 @@ class DashboardRecentActivity extends StatelessWidget {
     }
   }
 
-  Color _parseColor(String colorHex) {
-    try {
-      final hex = colorHex.replaceAll('#', '');
-      return Color(int.parse('FF$hex', radix: 16));
-    } catch (_) {
-      return AppColors.primary;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
@@ -101,16 +91,18 @@ class DashboardRecentActivity extends StatelessWidget {
         ValueListenableBuilder<bool>(
           valueListenable: isPrivacyModeNotifier,
           builder: (context, isPrivacyMode, _) {
+            final customColors = context.customColors;
+
             return Column(
               children: transactions.map((tx) {
                 final iconData = tx.type == TransactionType.transfer
                     ? Icons.swap_horiz_rounded
                     : _parseIcon(tx.iconName);
                 final color = tx.type == TransactionType.income
-                    ? AppColors.semanticGreen
+                    ? customColors.semanticGreen
                     : tx.type == TransactionType.transfer
-                        ? colorScheme.secondary
-                        : AppColors.semanticRed;
+                        ? colorScheme.primary
+                        : customColors.semanticRed;
 
                 return Container(
                   margin: EdgeInsets.only(bottom: 12.h),
@@ -204,10 +196,10 @@ class DashboardRecentActivity extends StatelessWidget {
                                   fontSize: 14.sp,
                                   fontWeight: FontWeights.bold,
                                   color: tx.type == TransactionType.income
-                                      ? AppColors.semanticGreen
+                                      ? customColors.semanticGreen
                                       : tx.type == TransactionType.transfer
-                                          ? colorScheme.secondary
-                                          : AppColors.semanticRed,
+                                          ? colorScheme.primary
+                                          : customColors.semanticRed,
                                 ),
                               ),
                               verticalMarginXXSmall,

@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../extensions/context_extensions.dart';
 import '../extensions/shimmer_extensions.dart';
-import '../theme/app_colors.dart';
 import '../theme/font_weights.dart';
 import 'glass_container.dart';
 
@@ -126,8 +125,8 @@ class AppButton extends StatelessWidget {
           borderRadius: effectiveRadius,
           backgroundColor: isEnabled
               ? effectiveBgColor
-              : AppColors.surfaceLow.withAlpha((0.3 * 255).round()),
-          borderStrokeColor: effectiveBorderColor ?? AppColors.glassStroke,
+              : context.colorScheme.surfaceContainerLow.withAlpha((0.3 * 255).round()),
+          borderStrokeColor: effectiveBorderColor ?? context.customColors.glassStroke,
           onTap: isEnabled ? onPressed : null,
           child: Center(child: content),
         ),
@@ -223,9 +222,9 @@ class AppButton extends StatelessWidget {
         );
       case AppButtonVariant.glass:
         return _ButtonColors(
-          background: AppColors.surfaceLow.withAlpha((0.6 * 255).round()),
+          background: colorScheme.surfaceContainerLow.withAlpha((0.6 * 255).round()),
           foreground: colorScheme.onSurface,
-          border: AppColors.glassStroke,
+          border: colorScheme.outlineVariant,
         );
       case AppButtonVariant.danger:
         return _ButtonColors(

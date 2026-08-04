@@ -11,7 +11,6 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/services/data_export_import_service.dart';
 import '../../../../core/services/preference_service.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
@@ -511,8 +510,8 @@ class _NetFlowHeroCard extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                 decoration: BoxDecoration(
                   color: (isPositive
-                          ? AppColors.semanticGreen
-                          : AppColors.semanticRed)
+                          ? context.customColors.semanticGreen
+                          : context.customColors.semanticRed)
                       .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20.r),
                 ),
@@ -525,16 +524,16 @@ class _NetFlowHeroCard extends StatelessWidget {
                           : Icons.arrow_downward_rounded,
                       size: 14.sp,
                       color: isPositive
-                          ? AppColors.semanticGreen
-                          : AppColors.semanticRed,
+                          ? context.customColors.semanticGreen
+                          : context.customColors.semanticRed,
                     ),
                     horizontalMarginXXSmall,
                     Text(
                       '${report.savingsRatePercentage.toStringAsFixed(1)}%',
                       style: customTypography.labelMediumMono.copyWith(
                         color: isPositive
-                            ? AppColors.semanticGreen
-                            : AppColors.semanticRed,
+                            ? context.customColors.semanticGreen
+                            : context.customColors.semanticRed,
                         fontWeight: FontWeights.bold,
                       ),
                     ),
@@ -674,14 +673,14 @@ class _AvgDailySpendCard extends StatelessWidget {
               Icon(
                 Icons.arrow_upward_rounded,
                 size: 12.sp,
-                color: AppColors.semanticRed,
+                color: context.customColors.semanticRed,
               ),
               horizontalMarginXXSmall,
               Expanded(
                 child: Text(
                   '${report.avgDailySpendChangePct}% vs previous',
                   style: customTypography.labelMediumMono.copyWith(
-                    color: AppColors.semanticRed,
+                    color: context.customColors.semanticRed,
                   ),
                 ),
               ),
@@ -701,11 +700,12 @@ class _BudgetHealthCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
     final customTypography = context.customTypography;
     final isStable = report.budgetHealthStatus == 'STABLE' ||
         report.budgetHealthStatus == 'OPTIMAL';
     final badgeColor =
-        isStable ? AppColors.semanticGreen : AppColors.semanticRed;
+        isStable ? customColors.semanticGreen : customColors.semanticRed;
 
     return GlassContainer(
       padding: EdgeInsets.all(16.w),
@@ -847,7 +847,7 @@ class _CategoryBreakdownRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final customTypography = context.customTypography;
-    final catColor = _parseColor(item.colorHex);
+    final catColor = _parseColor(context, item.colorHex);
 
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
@@ -855,7 +855,7 @@ class _CategoryBreakdownRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: colorScheme.outlineVariant),
+        border: Border.all(color: context.customColors.glassStroke),
       ),
       child: Column(
         children: [
@@ -865,7 +865,7 @@ class _CategoryBreakdownRow extends StatelessWidget {
                 width: 38.w,
                 height: 38.w,
                 decoration: BoxDecoration(
-                  color: catColor.withValues(alpha: 0.15),
+                  color: catColor.withValues(alpha: 0.25),
                   borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Icon(
@@ -914,8 +914,8 @@ class _CategoryBreakdownRow extends StatelessWidget {
               builder: (context, animValue, _) {
                 return LinearProgressIndicator(
                   value: animValue,
-                  minHeight: 6.h,
-                  backgroundColor: colorScheme.surfaceContainerHigh,
+                  minHeight: 7.h,
+                  backgroundColor: colorScheme.outlineVariant.withValues(alpha: 0.3),
                   valueColor: AlwaysStoppedAnimation<Color>(catColor),
                 );
               },
@@ -928,6 +928,7 @@ class _CategoryBreakdownRow extends StatelessWidget {
               '${item.percentage.toStringAsFixed(1)}%',
               style: customTypography.labelMediumMono.copyWith(
                 color: catColor,
+                fontWeight: FontWeights.bold,
               ),
             ),
           ),
@@ -936,14 +937,23 @@ class _CategoryBreakdownRow extends StatelessWidget {
     );
   }
 
-  Color _parseColor(String hex) {
+  Color _parseColor(BuildContext context, String hex) {
     try {
       final clean = hex.replaceAll('#', '');
       if (clean.length == 6) {
-        return Color(int.parse('FF$clean', radix: 16));
+        final color = Color(int.parse('FF$clean', radix: 16));
+        if (Theme.of(context).brightness == Brightness.light) {
+          final hsl = HSLColor.fromColor(color);
+          if (hsl.lightness > 0.5) {
+            return hsl
+                .withLightness((hsl.lightness - 0.25).clamp(0.2, 0.45))
+                .toColor();
+          }
+        }
+        return color;
       }
     } catch (_) {}
-    return AppColors.primary;
+    return context.colorScheme.primary;
   }
 
   IconData _getIconData(String iconName) {
@@ -1017,12 +1027,13 @@ class _NetCashFlowCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
     final textTheme = context.textTheme;
     final customTypography = context.customTypography;
 
     final isPositive = report.netSavings >= 0;
     final flowColor =
-        isPositive ? AppColors.semanticGreen : AppColors.semanticRed;
+        isPositive ? customColors.semanticGreen : customColors.semanticRed;
     final maxVal = report.totalIncome > 0
         ? report.totalIncome
         : (report.totalExpense > 0 ? report.totalExpense : 1.0);
@@ -1067,8 +1078,8 @@ class _NetCashFlowCard extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
                   color: (isPositive
-                          ? AppColors.semanticGreen
-                          : AppColors.semanticRed)
+                          ? customColors.semanticGreen
+                          : customColors.semanticRed)
                       .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
@@ -1081,16 +1092,16 @@ class _NetCashFlowCard extends StatelessWidget {
                           : Icons.trending_down_rounded,
                       size: 13.sp,
                       color: isPositive
-                          ? AppColors.semanticGreen
-                          : AppColors.semanticRed,
+                          ? customColors.semanticGreen
+                          : customColors.semanticRed,
                     ),
                     horizontalMarginXXSmall,
                     Text(
                       savingsRateText,
                       style: customTypography.labelMediumMono.copyWith(
                         color: isPositive
-                            ? AppColors.semanticGreen
-                            : AppColors.semanticRed,
+                            ? customColors.semanticGreen
+                            : customColors.semanticRed,
                         fontWeight: FontWeights.bold,
                         fontSize: 11.sp,
                       ),
@@ -1238,8 +1249,8 @@ class _NetCashFlowCard extends StatelessWidget {
                   value: animRatio,
                   minHeight: 6.h,
                   backgroundColor: colorScheme.surfaceContainerHigh,
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.semanticRed),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      context.customColors.semanticRed),
                 );
               },
             ),

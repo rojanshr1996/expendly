@@ -16,6 +16,7 @@ import 'core/router/app_router.dart';
 import 'core/router/app_router.gr.dart';
 import 'core/services/backup_service.dart';
 import 'core/services/notification_service.dart';
+import 'core/services/preference_service.dart';
 import 'core/services/remote_config_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/app_logger.dart';
@@ -189,39 +190,54 @@ class _ExpendlyAppState extends State<ExpendlyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final config = AppConfig.instance;
+    final prefService = getIt<PreferenceService>();
 
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp.router(
-          title: config.appName,
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.darkTheme,
-          routerConfig: _appRouter.config(),
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en'), // English
-          ],
-          builder: (context, child) {
-            Widget content = child ?? const SizedBox.shrink();
-            if (config.showFlavorBanner && !config.isProd) {
-              final colorScheme = Theme.of(context).colorScheme;
-              content = Banner(
-                message: config.flavor.name.toUpperCase(),
-                location: BannerLocation.topEnd,
-                color:
-                    config.isDev ? colorScheme.tertiary : colorScheme.secondary,
-                child: content,
-              );
-            }
-            return AppUpdateGuard(child: content);
+        return ValueListenableBuilder<String>(
+          valueListenable: prefService.themeModeNotifier,
+          builder: (context, themeModeStr, child) {
+            final themeMode = themeModeStr == 'light'
+                ? ThemeMode.light
+                : (themeModeStr == 'system'
+                    ? ThemeMode.system
+                    : ThemeMode.dark);
+
+            return MaterialApp.router(
+              title: config.appName,
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeMode,
+              routerConfig: _appRouter.config(),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('en'), // English
+              ],
+              builder: (context, child) {
+                Widget content = child ?? const SizedBox.shrink();
+                if (config.showFlavorBanner && !config.isProd) {
+                  final colorScheme = Theme.of(context).colorScheme;
+                  content = Banner(
+                    message: config.flavor.name.toUpperCase(),
+                    location: BannerLocation.topEnd,
+                    color: config.isDev
+                        ? colorScheme.tertiary
+                        : colorScheme.secondary,
+                    child: content,
+                  );
+                }
+                return AppUpdateGuard(child: content);
+              },
+            );
           },
         );
       },

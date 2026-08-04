@@ -289,24 +289,25 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                   ValueListenableBuilder<TransactionType>(
                     valueListenable: _typeNotifier,
                     builder: (context, type, _) {
+                      final customColors = context.customColors;
                       final tabs = [
                         {
                           'type': TransactionType.expense,
                           'label': context.l10n.expense,
-                          'activeColor': colorScheme.error,
-                          'onActiveColor': colorScheme.onError,
+                          'activeColor': customColors.semanticRed,
+                          'onActiveColor': Colors.white,
                         },
                         {
                           'type': TransactionType.income,
                           'label': context.l10n.income,
-                          'activeColor': colorScheme.primary,
-                          'onActiveColor': colorScheme.onPrimary,
+                          'activeColor': customColors.semanticGreen,
+                          'onActiveColor': Colors.white,
                         },
                         {
                           'type': TransactionType.transfer,
                           'label': context.l10n.transfer,
-                          'activeColor': colorScheme.secondary,
-                          'onActiveColor': colorScheme.onSecondary,
+                          'activeColor': colorScheme.primary,
+                          'onActiveColor': colorScheme.onPrimary,
                         },
                       ];
 
@@ -392,11 +393,12 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                         builder: (context, type, _) {
                           final currencySymbol =
                               getIt<PreferenceService>().currencySymbol;
+                          final customColors = context.customColors;
                           final color = type == TransactionType.income
-                              ? colorScheme.primary
+                              ? customColors.semanticGreen
                               : type == TransactionType.transfer
-                                  ? colorScheme.secondary
-                                  : colorScheme.error;
+                                  ? colorScheme.primary
+                                  : customColors.semanticRed;
 
                           return Column(
                             children: [
@@ -1093,7 +1095,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: colorScheme.primary,
-                              foregroundColor: Colors.black,
+                              foregroundColor: colorScheme.onPrimary,
                               minimumSize: Size(double.infinity, 46.h),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14.r),
@@ -1105,7 +1107,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                   ? 'Update Transaction'
                                   : context.l10n.saveTransaction,
                               style: customTypography.bodyLargeBold.copyWith(
-                                color: Colors.black,
+                                color: colorScheme.onPrimary,
                                 fontSize: 16.sp,
                               ),
                             ),

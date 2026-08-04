@@ -10,7 +10,6 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
@@ -45,7 +44,6 @@ class TransactionDetailsPage extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final textTheme = context.textTheme;
     final l10n = context.l10n;
-    final catColor = _parseColor(transaction.categoryColorHex);
 
     return BlocProvider.value(
       value: getIt<TransactionCubit>(),
@@ -111,7 +109,6 @@ class TransactionDetailsPage extends StatelessWidget {
                           delayMs: 0,
                           child: _HeroHeaderCard(
                             transaction: transaction,
-                            catColor: catColor,
                             isPrivacyModeNotifier: isPrivacyModeNotifier,
                           ),
                         ),
@@ -159,38 +156,27 @@ class TransactionDetailsPage extends StatelessWidget {
       context.read<TransactionCubit>().deleteTransaction(transaction.id);
     }
   }
-
-  static Color _parseColor(String hex) {
-    try {
-      final clean = hex.replaceAll('#', '');
-      if (clean.length == 6) {
-        return Color(int.parse('FF$clean', radix: 16));
-      }
-    } catch (_) {}
-    return AppColors.primary;
-  }
 }
 
 class _HeroHeaderCard extends StatelessWidget {
   final TransactionItem transaction;
-  final Color catColor;
   final ValueNotifier<bool>? isPrivacyModeNotifier;
 
   const _HeroHeaderCard({
     required this.transaction,
-    required this.catColor,
     this.isPrivacyModeNotifier,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
     final customTypography = context.customTypography;
     final amountColor = transaction.type == TransactionType.income
-        ? AppColors.semanticGreen
+        ? customColors.semanticGreen
         : transaction.type == TransactionType.transfer
-            ? colorScheme.secondary
-            : AppColors.semanticRed;
+            ? colorScheme.primary
+            : customColors.semanticRed;
 
     return GlassContainer(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
@@ -222,7 +208,9 @@ class _HeroHeaderCard extends StatelessWidget {
                 ),
               ),
               child: Icon(
-                _getIconData(transaction.categoryIcon),
+                transaction.type == TransactionType.transfer
+                    ? Icons.swap_horiz_rounded
+                    : _getIconData(transaction.categoryIcon),
                 color: amountColor,
                 size: 32.sp,
               ),
@@ -423,7 +411,7 @@ class _MetadataDetailsCard extends StatelessWidget {
     final children = <Widget>[];
     for (int i = 0; i < rows.length; i++) {
       if (i > 0) {
-        children.add(const Divider(height: 24, color: AppColors.glassStroke));
+        children.add(Divider(height: 24, color: context.customColors.glassStroke));
       }
       children.add(
         _StaggeredEntrance(
@@ -515,6 +503,7 @@ class _DeleteTransactionButton extends StatelessWidget {
     final l10n = context.l10n;
     final customTypography = context.customTypography;
 
+    final customColors = context.customColors;
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: 0.0, end: 1.0),
       duration: const Duration(milliseconds: 500),
@@ -531,8 +520,8 @@ class _DeleteTransactionButton extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: onDeletePressed,
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.semanticRed,
-          side: const BorderSide(color: AppColors.semanticRed),
+          foregroundColor: customColors.semanticRed,
+          side: BorderSide(color: customColors.semanticRed),
           padding: EdgeInsets.symmetric(vertical: 14.h),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
@@ -544,7 +533,7 @@ class _DeleteTransactionButton extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: customTypography.bodyLargeBold.copyWith(
-            color: AppColors.semanticRed,
+            color: customColors.semanticRed,
           ),
         ),
       ),

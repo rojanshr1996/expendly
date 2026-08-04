@@ -9,7 +9,6 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/preference_service.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
@@ -353,7 +352,7 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                 icon: Icons.arrow_downward_rounded,
                                 isSelected:
                                     selectedType == TransactionType.expense,
-                                activeColor: AppColors.semanticRed,
+                                activeColor: context.customColors.semanticRed,
                                 onTap: () {
                                   context.read<TransactionCubit>().filterType(
                                         selectedType == TransactionType.expense
@@ -368,7 +367,7 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                 icon: Icons.arrow_upward_rounded,
                                 isSelected:
                                     selectedType == TransactionType.income,
-                                activeColor: AppColors.semanticGreen,
+                                activeColor: context.customColors.semanticGreen,
                                 onTap: () {
                                   context.read<TransactionCubit>().filterType(
                                         selectedType == TransactionType.income
@@ -539,7 +538,7 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                                   );
 
                                             return RefreshIndicator(
-                                              color: AppColors.primary,
+                                              color: colorScheme.primary,
                                               onRefresh: () => context
                                                   .read<TransactionCubit>()
                                                   .loadTransactions(
@@ -704,7 +703,7 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                                   );
 
                                             return RefreshIndicator(
-                                              color: AppColors.primary,
+                                              color: colorScheme.primary,
                                               onRefresh: () => context
                                                   .read<TransactionCubit>()
                                                   .loadTransactions(
@@ -878,7 +877,7 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                           }
 
                                           return RefreshIndicator(
-                                            color: AppColors.primary,
+                                            color: colorScheme.primary,
                                             onRefresh: () => context
                                                 .read<TransactionCubit>()
                                                 .loadTransactions(
@@ -921,7 +920,7 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                                               style: customTypography
                                                                   .labelMediumMono
                                                                   .copyWith(
-                                                                color: AppColors
+                                                                color: colorScheme
                                                                     .outline,
                                                                 letterSpacing:
                                                                     1.2,
@@ -1090,36 +1089,29 @@ class _HorizontalDateSelector extends StatelessWidget {
                   margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? AppColors.primaryContainer.withValues(alpha: 0.25)
+                        ? colorScheme.primaryContainer.withValues(alpha: 0.25)
                         : isToday
                             ? colorScheme.primaryContainer
                                 .withValues(alpha: 0.12)
-                            : colorScheme.surfaceContainerHigh,
+                            : colorScheme.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(16.r),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: colorScheme.primary.withValues(alpha: 0.2),
-                              blurRadius: 8.r,
-                              spreadRadius: 0,
-                            ),
-                          ]
-                        : (isToday
+                    boxShadow: Theme.of(context).brightness == Brightness.dark
+                        ? (isSelected
                             ? [
                                 BoxShadow(
-                                  color: colorScheme.primary
-                                      .withValues(alpha: 0.08),
-                                  blurRadius: 4.r,
+                                  color: colorScheme.primary.withValues(alpha: 0.2),
+                                  blurRadius: 8.r,
                                   spreadRadius: 0,
                                 ),
                               ]
-                            : null),
+                            : null)
+                        : null,
                     border: Border.all(
                       color: isSelected
                           ? colorScheme.primary.withValues(alpha: 0.6)
                           : isToday
                               ? colorScheme.primary.withValues(alpha: 0.45)
-                              : AppColors.glassStroke,
+                              : context.customColors.glassStroke,
                       width: isSelected ? 1.5 : (isToday ? 1.2 : 1.0),
                     ),
                   ),
@@ -1228,11 +1220,12 @@ class _TransactionListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final customTypography = context.customTypography;
+    final customColors = context.customColors;
     final catColor = transaction.type == TransactionType.income
-        ? AppColors.semanticGreen
+        ? customColors.semanticGreen
         : transaction.type == TransactionType.transfer
-            ? context.colorScheme.secondary
-            : AppColors.semanticRed;
+            ? context.colorScheme.primary
+            : customColors.semanticRed;
 
     return InkWell(
       onTap: () {
@@ -1248,9 +1241,9 @@ class _TransactionListTile extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
         padding: EdgeInsets.all(12.r),
         decoration: BoxDecoration(
-          color: AppColors.surfaceContainerLow,
+          color: context.colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: AppColors.glassStroke),
+          border: Border.all(color: context.customColors.glassStroke),
         ),
         child: Row(
           children: [
@@ -1282,7 +1275,7 @@ class _TransactionListTile extends StatelessWidget {
                         ? context.l10n.transfer
                         : transaction.categoryName,
                     style: customTypography.bodyLargeBold.copyWith(
-                      color: AppColors.onSurface,
+                      color: context.colorScheme.onSurface,
                       fontSize: 14.sp,
                     ),
                   ),
@@ -1292,7 +1285,7 @@ class _TransactionListTile extends StatelessWidget {
                       child: Text(
                         transaction.note!,
                         style: customTypography.bodyMedium.copyWith(
-                          color: AppColors.outline,
+                          color: context.colorScheme.onSurfaceVariant,
                           fontSize: 12.sp,
                         ),
                       ),
@@ -1306,10 +1299,10 @@ class _TransactionListTile extends StatelessWidget {
               valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
               builder: (context, isPrivacy, _) {
                 final color = transaction.type == TransactionType.income
-                    ? AppColors.semanticGreen
+                    ? context.customColors.semanticGreen
                     : transaction.type == TransactionType.transfer
-                        ? context.colorScheme.secondary
-                        : AppColors.semanticRed;
+                        ? context.colorScheme.primary
+                        : context.customColors.semanticRed;
 
                 return CompactAmountText(
                   amount: transaction.amount,
@@ -1434,15 +1427,15 @@ class _TypeFilterChip extends StatelessWidget {
             decoration: BoxDecoration(
               color: isSelected
                   ? activeColor.withValues(alpha: 0.18)
-                  : colorScheme.surfaceContainerHigh,
+                  : colorScheme.surfaceContainerLow,
               borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
                 color: isSelected
                     ? activeColor.withValues(alpha: 0.7)
-                    : AppColors.glassStroke,
+                    : context.customColors.glassStroke,
                 width: isSelected ? 1.5 : 1.0,
               ),
-              boxShadow: isSelected
+              boxShadow: (Theme.of(context).brightness == Brightness.dark && isSelected)
                   ? [
                       BoxShadow(
                         color: activeColor.withValues(alpha: 0.25),
@@ -1564,20 +1557,23 @@ class _BalanceSheetSummaryHeader extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh,
+        color: colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.glassStroke),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10.r,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: context.customColors.glassStroke),
+        boxShadow: Theme.of(context).brightness == Brightness.dark
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.15),
+                  blurRadius: 10.r,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
       ),
       child: ValueListenableBuilder<String>(
         valueListenable: getIt<PreferenceService>().currencySymbolNotifier,
         builder: (context, symbol, _) {
+          final customColors = context.customColors;
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -1585,23 +1581,23 @@ class _BalanceSheetSummaryHeader extends StatelessWidget {
                 label: 'INCOME',
                 amount: totalIncome,
                 symbol: symbol,
-                color: AppColors.semanticGreen,
+                color: customColors.semanticGreen,
               ),
               Container(
                 height: 36.h,
                 width: 1.w,
-                color: AppColors.glassStroke,
+                color: customColors.glassStroke,
               ),
               _SummaryColumn(
                 label: 'EXPENSES',
                 amount: totalExpense,
                 symbol: symbol,
-                color: AppColors.semanticRed,
+                color: customColors.semanticRed,
               ),
               Container(
                 height: 36.h,
                 width: 1.w,
-                color: AppColors.glassStroke,
+                color: customColors.glassStroke,
               ),
               _SummaryColumn(
                 label: 'TOTAL BALANCE',
@@ -1610,7 +1606,7 @@ class _BalanceSheetSummaryHeader extends StatelessWidget {
                 isNegative: balance < 0,
                 color: balance >= 0
                     ? colorScheme.onSurface
-                    : AppColors.semanticRed,
+                    : customColors.semanticRed,
               ),
             ],
           );
@@ -1700,9 +1696,9 @@ class _DailyGroupHeader extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerLow,
-        border: const Border(
+        border: Border(
           bottom: BorderSide(
-            color: AppColors.glassStroke,
+            color: context.customColors.glassStroke,
             width: 0.5,
           ),
         ),
@@ -1763,7 +1759,7 @@ class _DailyGroupHeader extends StatelessWidget {
                     showSign: true,
                     isIncome: true,
                     style: customTypography.labelMediumMono.copyWith(
-                      color: AppColors.semanticGreen,
+                      color: context.customColors.semanticGreen,
                       fontWeight: FontWeights.bold,
                       fontSize: 12.sp,
                     ),
@@ -1775,7 +1771,7 @@ class _DailyGroupHeader extends StatelessWidget {
                     showSign: true,
                     isIncome: false,
                     style: customTypography.labelMediumMono.copyWith(
-                      color: AppColors.semanticRed,
+                      color: context.customColors.semanticRed,
                       fontWeight: FontWeights.bold,
                       fontSize: 12.sp,
                     ),
@@ -1815,9 +1811,9 @@ class _MonthlyGroupHeader extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerLow,
-        border: const Border(
+        border: Border(
           bottom: BorderSide(
-            color: AppColors.glassStroke,
+            color: context.customColors.glassStroke,
             width: 0.5,
           ),
         ),
@@ -1849,7 +1845,7 @@ class _MonthlyGroupHeader extends StatelessWidget {
                     showSign: true,
                     isIncome: true,
                     style: customTypography.labelMediumMono.copyWith(
-                      color: AppColors.semanticGreen,
+                      color: context.customColors.semanticGreen,
                       fontWeight: FontWeights.bold,
                       fontSize: 12.sp,
                     ),
@@ -1861,7 +1857,7 @@ class _MonthlyGroupHeader extends StatelessWidget {
                     showSign: true,
                     isIncome: false,
                     style: customTypography.labelMediumMono.copyWith(
-                      color: AppColors.semanticRed,
+                      color: context.customColors.semanticRed,
                       fontWeight: FontWeights.bold,
                       fontSize: 12.sp,
                     ),

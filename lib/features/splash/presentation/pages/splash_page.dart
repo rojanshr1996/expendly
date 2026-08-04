@@ -147,13 +147,17 @@ class _SplashPageState extends State<SplashPage>
                               height: 130.w,
                               borderRadius: BorderRadius.circular(28.r),
                               padding: EdgeInsets.all(20.w),
-                              backgroundColor: AppColors.surfaceLow
-                                  .withAlpha((0.6 * 255).round()),
+                              backgroundColor: colorScheme.surfaceContainerLow,
                               borderStrokeColor: colorScheme.primary
                                   .withAlpha((0.3 * 255).round()),
-                              child: Assets.images.expendlyLogo.image(
-                                fit: BoxFit.contain,
-                              ),
+                              child: (Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Assets.images.expendlyLogoLight.image(
+                                      fit: BoxFit.contain,
+                                    )
+                                  : Assets.images.expendlyLogo.image(
+                                      fit: BoxFit.contain,
+                                    )),
                             ),
                             verticalMarginLarge,
                             Text(
@@ -169,7 +173,7 @@ class _SplashPageState extends State<SplashPage>
                             Text(
                               l10n.financeRedefined,
                               style: customTypography.labelMediumMono.copyWith(
-                                letterSpacing: 3.0,
+                                letterSpacing: 1.5,
                                 color: colorScheme.onSurfaceVariant,
                               ),
                             ),

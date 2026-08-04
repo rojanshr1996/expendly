@@ -10,7 +10,6 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/biometric_auth_service.dart';
 import '../../../../core/services/preference_service.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
@@ -248,8 +247,6 @@ class _ResetPinModalState extends State<ResetPinModal> {
         child: GlassContainer(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-          backgroundColor:
-              AppColors.surfaceContainerHigh.withAlpha((0.95 * 255).round()),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -291,23 +288,24 @@ class _ResetPinModalState extends State<ResetPinModal> {
                         valueListenable: _errorMessageNotifier,
                         builder: (context, errorMsg, _) {
                           if (errorMsg == null) return const SizedBox.shrink();
+                          final customColors = context.customColors;
                           return Container(
                             width: double.infinity,
                             margin: EdgeInsets.only(bottom: 12.h),
                             padding: EdgeInsets.symmetric(
                                 horizontal: 14.w, vertical: 10.h),
                             decoration: BoxDecoration(
-                              color: AppColors.semanticRed
+                              color: customColors.semanticRed
                                   .withAlpha((0.2 * 255).round()),
                               borderRadius: BorderRadius.circular(10.r),
                               border: Border.all(
-                                  color: AppColors.semanticRed
+                                  color: customColors.semanticRed
                                       .withAlpha((0.5 * 255).round())),
                             ),
                             child: Row(
                               children: [
                                 Icon(Icons.error_outline_rounded,
-                                    color: AppColors.semanticRed, size: 20.sp),
+                                    color: customColors.semanticRed, size: 20.sp),
                                 horizontalMarginSmall,
                                 Expanded(
                                   child: Text(
@@ -315,7 +313,7 @@ class _ResetPinModalState extends State<ResetPinModal> {
                                     style: (textTheme.bodySmall ??
                                             const TextStyle())
                                         .copyWith(
-                                      color: AppColors.semanticRed,
+                                      color: customColors.semanticRed,
                                       fontWeight: FontWeights.bold,
                                     ),
                                   ),
@@ -339,10 +337,10 @@ class _ResetPinModalState extends State<ResetPinModal> {
                                         horizontal: 16.w, vertical: 8.h),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12.r),
-                                      side: const BorderSide(
-                                          color: AppColors.glassStroke),
+                                      side: BorderSide(
+                                          color: context.customColors.glassStroke),
                                     ),
-                                    tileColor: AppColors.surfaceLow,
+                                    tileColor: colorScheme.surfaceContainerLow,
                                     leading: Icon(Icons.fingerprint_rounded,
                                         color: colorScheme.primary,
                                         size: 28.sp),
@@ -366,10 +364,10 @@ class _ResetPinModalState extends State<ResetPinModal> {
                                         horizontal: 16.w, vertical: 8.h),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12.r),
-                                      side: const BorderSide(
-                                          color: AppColors.glassStroke),
+                                      side: BorderSide(
+                                          color: context.customColors.glassStroke),
                                     ),
-                                    tileColor: AppColors.surfaceLow,
+                                    tileColor: colorScheme.surfaceContainerLow,
                                     leading: Icon(Icons.quiz_outlined,
                                         color: colorScheme.secondary,
                                         size: 28.sp),

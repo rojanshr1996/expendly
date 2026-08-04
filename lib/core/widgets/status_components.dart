@@ -5,7 +5,6 @@ import '../constants/margin_constants.dart';
 import '../extensions/context_extensions.dart';
 import '../extensions/padding_extensions.dart';
 import '../extensions/shimmer_extensions.dart';
-import '../theme/app_colors.dart';
 
 import 'glass_container.dart';
 
@@ -43,7 +42,6 @@ abstract class StatusComponents {
         duration: duration,
         content: GlassContainer(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-          backgroundColor: AppColors.surfaceLow.withAlpha((0.95 * 255).round()),
           child: Row(
             children: [
               Icon(icon, color: iconColor, size: 20.sp),
@@ -83,7 +81,6 @@ abstract class StatusComponents {
       builder: (context) {
         return GlassContainer(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-          backgroundColor: AppColors.surfaceLow,
           padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 32.h),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -164,6 +161,7 @@ class AppEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
     final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
 
     return Center(
       child: Column(
@@ -173,9 +171,9 @@ class AppEmptyState extends StatelessWidget {
             width: 72.w,
             height: 72.w,
             decoration: BoxDecoration(
-              color: AppColors.surfaceMid.withAlpha((0.5 * 255).round()),
+              color: colorScheme.surfaceContainerHigh,
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.glassStroke),
+              border: Border.all(color: customColors.glassStroke),
             ),
             child: Icon(
               icon,

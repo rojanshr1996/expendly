@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../extensions/context_extensions.dart';
-import '../theme/app_colors.dart';
 
 /// Standardized custom text field component matching the Modern Fiscal Core design system.
 /// Reusable across search bars, form inputs, numerical balance entries, and settings inputs.
@@ -93,9 +92,9 @@ class AppTextField extends StatelessWidget {
 
     final defaultHintStyle = isAmount
         ? (customTypography.labelMediumMono)
-            .copyWith(color: AppColors.onSurfaceVariant)
+            .copyWith(color: colorScheme.onSurfaceVariant)
         : (textTheme.bodyMedium ?? const TextStyle())
-            .copyWith(color: AppColors.onSurfaceVariant);
+            .copyWith(color: colorScheme.onSurfaceVariant);
 
     final defaultLabelStyle =
         (textTheme.labelMedium ?? const TextStyle()).copyWith(
@@ -144,12 +143,12 @@ class AppTextField extends StatelessWidget {
             suffixIcon: suffixIcon,
             suffixIconConstraints: suffixIconConstraints,
             filled: true,
-            fillColor: fillColor ?? AppColors.surfaceContainer,
+            fillColor: fillColor ?? colorScheme.surfaceContainerLow,
             contentPadding: contentPadding ??
                 EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             enabledBorder: OutlineInputBorder(
               borderRadius: effectiveRadius,
-              borderSide: const BorderSide(color: AppColors.glassStroke),
+              borderSide: BorderSide(color: context.customColors.glassStroke),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: effectiveRadius,
@@ -166,7 +165,7 @@ class AppTextField extends StatelessWidget {
             disabledBorder: OutlineInputBorder(
               borderRadius: effectiveRadius,
               borderSide: BorderSide(
-                  color: AppColors.glassStroke.withAlpha((0.5 * 255).round())),
+                  color: context.customColors.glassStroke.withAlpha((0.5 * 255).round())),
             ),
           ),
         ),

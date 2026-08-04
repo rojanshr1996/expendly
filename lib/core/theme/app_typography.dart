@@ -117,22 +117,28 @@ abstract class AppTypography {
       );
 
   /// Build complete ThemeData TextTheme
-  static TextTheme buildTextTheme() {
+  static TextTheme buildTextTheme({Brightness brightness = Brightness.dark}) {
+    final isDark = brightness == Brightness.dark;
+    final onSurface = isDark ? AppColors.onSurface : AppColors.lightOnSurface;
+    final onSurfaceVariant =
+        isDark ? AppColors.onSurfaceVariant : AppColors.lightOnSurfaceVariant;
+    final outline = isDark ? AppColors.outline : AppColors.lightOutline;
+
     return TextTheme(
-      headlineLarge: headlineLarge,
-      headlineMedium: headlineMedium,
-      bodyLarge: bodyLarge,
-      bodyMedium: bodyMedium,
-      labelMedium: labelMedium,
+      headlineLarge: headlineLarge.copyWith(color: onSurface),
+      headlineMedium: headlineMedium.copyWith(color: onSurface),
+      bodyLarge: bodyLarge.copyWith(color: onSurface),
+      bodyMedium: bodyMedium.copyWith(color: onSurfaceVariant),
+      labelMedium: labelMedium.copyWith(color: onSurfaceVariant),
       titleMedium: GoogleFonts.hankenGrotesk(
         fontSize: 18.sp,
         fontWeight: FontWeight.w600,
-        color: AppColors.onSurface,
+        color: onSurface,
       ),
       labelSmall: GoogleFonts.hankenGrotesk(
         fontSize: 10.sp,
         fontWeight: FontWeight.w500,
-        color: AppColors.outline,
+        color: outline,
       ),
     );
   }
@@ -172,6 +178,27 @@ class AppCustomTypography extends ThemeExtension<AppCustomTypography> {
     bodyMedium: AppTypography.bodyMedium,
     headlineMediumMonoBold: AppTypography.headlineMediumMonoBold,
     headlineLargeMonoBold: AppTypography.headlineLargeMonoBold,
+  );
+
+  static final light = AppCustomTypography(
+    headlineLargeMobile: AppTypography.headlineLargeMobile
+        .copyWith(color: AppColors.lightOnSurface),
+    labelMediumMono: AppTypography.labelMediumMono
+        .copyWith(color: AppColors.lightOnSurfaceVariant),
+    amountDisplay: AppTypography.amountDisplay
+        .copyWith(color: AppColors.lightPrimary),
+    amountLarge: AppTypography.amountLarge
+        .copyWith(color: AppColors.lightOnSurface),
+    bodyLarge: AppTypography.bodyLarge
+        .copyWith(color: AppColors.lightOnSurface),
+    bodyLargeBold: AppTypography.bodyLargeBold
+        .copyWith(color: AppColors.lightOnSurface),
+    bodyMedium: AppTypography.bodyMedium
+        .copyWith(color: AppColors.lightOnSurfaceVariant),
+    headlineMediumMonoBold: AppTypography.headlineMediumMonoBold
+        .copyWith(color: AppColors.lightOnSurface),
+    headlineLargeMonoBold: AppTypography.headlineLargeMonoBold
+        .copyWith(color: AppColors.lightOnSurface),
   );
 
   @override

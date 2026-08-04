@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
@@ -25,6 +24,7 @@ class DashboardBentoGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
     final textTheme = context.textTheme;
     final customTypography = context.customTypography;
     final l10n = context.l10n;
@@ -33,9 +33,9 @@ class DashboardBentoGrid extends StatelessWidget {
 
     // Balance color: green when positive, red when negative, muted when zero
     final balanceColor = summary.totalBalance > 0
-        ? AppColors.semanticGreen
+        ? customColors.semanticGreen
         : isNegativeBalance
-            ? AppColors.semanticRed
+            ? customColors.semanticRed
             : colorScheme.onSurfaceVariant;
 
     return ValueListenableBuilder<bool>(
@@ -128,7 +128,7 @@ class DashboardBentoGrid extends StatelessWidget {
                         Row(
                           children: [
                             Icon(Icons.trending_down_rounded,
-                                color: AppColors.semanticRed, size: 18.sp),
+                                color: customColors.semanticRed, size: 18.sp),
                             horizontalMarginXXSmall,
                             Text(
                               l10n.expenses.toUpperCase(),
@@ -146,7 +146,7 @@ class DashboardBentoGrid extends StatelessWidget {
                           amount: summary.totalExpense,
                           isPrivacyMode: isPrivacyMode,
                           style: (customTypography.amountDisplay).copyWith(
-                            color: AppColors.semanticRed,
+                            color: customColors.semanticRed,
                             fontSize: 20.sp,
                           ),
                         ),
@@ -174,7 +174,7 @@ class DashboardBentoGrid extends StatelessWidget {
                         Row(
                           children: [
                             Icon(Icons.trending_up_rounded,
-                                color: AppColors.semanticGreen, size: 18.sp),
+                                color: customColors.semanticGreen, size: 18.sp),
                             horizontalMarginXXSmall,
                             Text(
                               l10n.income.toUpperCase(),
@@ -192,7 +192,7 @@ class DashboardBentoGrid extends StatelessWidget {
                           amount: summary.totalIncome,
                           isPrivacyMode: isPrivacyMode,
                           style: (customTypography.amountDisplay).copyWith(
-                            color: AppColors.semanticGreen,
+                            color: customColors.semanticGreen,
                             fontSize: 20.sp,
                           ),
                         ),

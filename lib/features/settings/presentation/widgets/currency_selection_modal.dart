@@ -5,7 +5,6 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/services/preference_service.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/app_selection_tile.dart';
 import '../../../../core/widgets/app_text_field.dart';
@@ -85,7 +84,6 @@ class _CurrencySelectionModalState extends State<CurrencySelectionModal> {
       builder: (context, scrollController) {
         return GlassContainer(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-          backgroundColor: AppColors.surfaceLow,
           padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 24.h),
           child: Column(
             children: [
@@ -115,9 +113,9 @@ class _CurrencySelectionModalState extends State<CurrencySelectionModal> {
                 controller: _searchController,
                 onChanged: (val) => _searchQueryNotifier.value = val,
                 hintText: context.l10n.searchCurrencyHint,
-                prefixIcon: const Icon(
+                prefixIcon: Icon(
                   Icons.search_rounded,
-                  color: AppColors.onSurfaceVariant,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               verticalMarginSmall,
