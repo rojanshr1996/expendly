@@ -4,6 +4,32 @@
 
 ---
 
+## 📖 About
+
+**Expendly** is a privacy-first, offline personal finance tracker built for people who want full control over their financial data — without ever sending it to the cloud.
+
+Designed around the principle of **Fiscal Calm**, Expendly gives you a clear, distraction-free view of your income, expenses, and financial health — entirely on your device. There is no account required, no cloud sync, and no telemetry. Your data stays yours.
+
+### Core Philosophy
+
+| Pillar | Description |
+| :--- | :--- |
+| 🔒 **100% Offline & Private** | All financial data is stored strictly on-device. No cloud sync, no tracking, zero telemetry. |
+| 📱 **Local-First Storage** | Transactions and settings are persisted securely via Drift SQLite on Android & iOS. |
+| 🏗️ **Modern Fiscal Architecture** | Built with Flutter Clean Architecture, `flutter_bloc` Cubits, and a custom fiscal design system. |
+| 🎨 **Premium Design System** | Custom HSL color palettes, HankenGrotesk typography, and a responsive layout powered by `flutter_screenutil`. |
+
+### Who is it for?
+
+Expendly is ideal for individuals who:
+- Want a **simple, fast, and beautiful** expense tracker without signing up for an account.
+- Value **privacy** and don't want financial data sent to third-party servers.
+- Prefer a **native mobile experience** over web-based budgeting tools.
+
+> *"Expendly • Designed for Fiscal Calm"*
+
+---
+
 ## 🌟 Key Features
 
 - 📱 **Modern Fiscal Core Design**: Custom theme extensions, tailored HSL color palettes, and responsive typography scaling using `flutter_screenutil`.

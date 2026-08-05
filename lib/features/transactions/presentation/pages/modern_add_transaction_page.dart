@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -311,14 +313,10 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                         },
                       ];
 
-                      return Container(
+                      return _LiquidGlassCard(
                         margin: horizontalPaddingLarge,
                         padding: EdgeInsets.all(4.w),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerLow,
-                          borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(color: colorScheme.outlineVariant),
-                        ),
+                        borderRadius: BorderRadius.circular(12.r),
                         child: Row(
                           children: tabs.map((t) {
                             final tabType = t['type'] as TransactionType;
@@ -361,6 +359,16 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                           ? activeColor
                                           : Colors.transparent,
                                       borderRadius: BorderRadius.circular(8.r),
+                                      boxShadow: isSelected
+                                          ? [
+                                              BoxShadow(
+                                                color: activeColor.withValues(
+                                                    alpha: 0.35),
+                                                blurRadius: 8.r,
+                                                offset: const Offset(0, 2),
+                                              )
+                                            ]
+                                          : null,
                                     ),
                                     child: Text(
                                       t['label'] as String,
@@ -1260,6 +1268,78 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LiquidGlassCard extends StatelessWidget {
+  final Widget child;
+  final BorderRadius? borderRadius;
+  final EdgeInsetsGeometry? margin;
+  final EdgeInsetsGeometry? padding;
+
+  const _LiquidGlassCard({
+    required this.child,
+    this.borderRadius,
+    this.margin,
+    this.padding,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final br = borderRadius ?? BorderRadius.circular(16.r);
+
+    return Container(
+      margin: margin,
+      decoration: BoxDecoration(
+        borderRadius: br,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isLight
+              ? [
+                  colorScheme.surfaceContainerLowest.withValues(alpha: 0.35),
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.20),
+                ]
+              : [
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.25),
+                  colorScheme.surfaceContainerLow.withValues(alpha: 0.15),
+                ],
+        ),
+        border: Border.all(
+          color: isLight
+              ? Colors.white.withValues(alpha: 0.50)
+              : customColors.glassStroke.withValues(alpha: 0.40),
+          width: 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withValues(alpha: isLight ? 0.5 : 0.0),
+            blurRadius: 6.r,
+            spreadRadius: -1.r,
+            offset: const Offset(0, -1),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isLight ? 0.06 : 0.18),
+            blurRadius: 12.r,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: br,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Padding(
+            padding: padding ?? EdgeInsets.zero,
+            child: child,
           ),
         ),
       ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:injectable/injectable.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -19,6 +20,7 @@ class RemoteConfigService {
   static const String keyMinRequiredVersion = 'min_required_version';
   static const String keyLatestVersion = 'latest_version';
   static const String keyIsMaintenanceMode = 'is_maintenance_mode';
+  static const String keyIsAdsEnabled = 'is_ads_enabled';
 
   static const String keyForceUpdateTitle = 'force_update_title';
   static const String keyForceUpdateMessage = 'force_update_message';
@@ -41,6 +43,10 @@ class RemoteConfigService {
   Stream<AppUpdateStatus> get onUpdateStatusChanged =>
       _updateStatusStreamController.stream;
 
+  final StreamController<bool> _adsEnabledStreamController =
+      StreamController<bool>.broadcast();
+  Stream<bool> get onAdsEnabledChanged => _adsEnabledStreamController.stream;
+
   /// Initializes Remote Config defaults, fetch strategy, and listeners.
   Future<void> initialize() async {
     // Unconditionally set minimumFetchInterval to Duration.zero to ensure
@@ -57,6 +63,7 @@ class RemoteConfigService {
       keyMinRequiredVersion: '1.0.0',
       keyLatestVersion: '1.0.0',
       keyIsMaintenanceMode: false,
+      keyIsAdsEnabled: true,
       keyForceUpdateTitle: 'Update Required',
       keyForceUpdateMessage:
           'A mandatory update is required to continue using Expendly.',
@@ -103,6 +110,7 @@ class RemoteConfigService {
 
   void _notifyListeners() {
     _maintenanceStreamController.add(isMaintenanceMode);
+    _adsEnabledStreamController.add(isAdsEnabled);
     checkUpdateStatus(fetchRemote: false).then((status) {
       _updateStatusStreamController.add(status);
     });
@@ -110,6 +118,7 @@ class RemoteConfigService {
 
   // --- Getters ---
   bool get isMaintenanceMode => _remoteConfig.getBool(keyIsMaintenanceMode);
+  bool get isAdsEnabled => _remoteConfig.getBool(keyIsAdsEnabled);
 
   String get minRequiredVersion =>
       _remoteConfig.getString(keyMinRequiredVersion);
@@ -206,5 +215,6 @@ class RemoteConfigService {
   void dispose() {
     _maintenanceStreamController.close();
     _updateStatusStreamController.close();
+    _adsEnabledStreamController.close();
   }
 }

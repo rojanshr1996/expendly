@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -5,7 +6,6 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
-import '../../../../core/widgets/glass_container.dart';
 import '../../domain/entities/financial_summary.dart';
 
 /// Bento Grid section displaying Net Balance (compact), Monthly Expenses, and Monthly Income.
@@ -43,8 +43,8 @@ class DashboardBentoGrid extends StatelessWidget {
       builder: (context, isPrivacyMode, _) {
         return Column(
           children: [
-            // Compact Net Balance row — less prominent than expense/income cards
-            GlassContainer(
+            // Compact Net Balance row — Liquid Glass Card
+            _DashboardLiquidGlassCard(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               child: Row(
                 children: [
@@ -118,9 +118,9 @@ class DashboardBentoGrid extends StatelessWidget {
             // Two-card row: Expenses | Income
             Row(
               children: [
-                // Monthly Expenses Bento Card
+                // Monthly Expenses Bento Liquid Glass Card
                 Expanded(
-                  child: GlassContainer(
+                  child: _DashboardLiquidGlassCard(
                     padding: EdgeInsets.all(16.w),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,9 +164,9 @@ class DashboardBentoGrid extends StatelessWidget {
                 ),
                 horizontalMarginSmall,
 
-                // Monthly Income Bento Card
+                // Monthly Income Bento Liquid Glass Card
                 Expanded(
-                  child: GlassContainer(
+                  child: _DashboardLiquidGlassCard(
                     padding: EdgeInsets.all(16.w),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,6 +213,73 @@ class DashboardBentoGrid extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _DashboardLiquidGlassCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+
+  const _DashboardLiquidGlassCard({
+    required this.child,
+    this.padding,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final br = BorderRadius.circular(16.r);
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: br,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isLight
+              ? [
+                  colorScheme.surfaceContainerLowest.withValues(alpha: 0.35),
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.20),
+                ]
+              : [
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.25),
+                  colorScheme.surfaceContainerLow.withValues(alpha: 0.15),
+                ],
+        ),
+        border: Border.all(
+          color: isLight
+              ? Colors.white.withValues(alpha: 0.50)
+              : customColors.glassStroke.withValues(alpha: 0.40),
+          width: 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withValues(alpha: isLight ? 0.5 : 0.0),
+            blurRadius: 6.r,
+            spreadRadius: -1.r,
+            offset: const Offset(0, -1),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isLight ? 0.06 : 0.18),
+            blurRadius: 12.r,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: br,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Padding(
+            padding: padding ?? EdgeInsets.zero,
+            child: child,
+          ),
+        ),
+      ),
     );
   }
 }

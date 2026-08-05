@@ -8,7 +8,9 @@ import '../../../../core/widgets/glass_container.dart';
 
 /// Skeleton shimmer loader widget for [AllTransactionsPage] (Activity screen).
 class AllTransactionsShimmer extends StatelessWidget {
-  const AllTransactionsShimmer({super.key});
+  final double topPadding;
+
+  const AllTransactionsShimmer({super.key, this.topPadding = 0.0});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,7 @@ class AllTransactionsShimmer extends StatelessWidget {
 
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.only(bottom: 24.h),
+      padding: EdgeInsets.only(top: topPadding, bottom: 24.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

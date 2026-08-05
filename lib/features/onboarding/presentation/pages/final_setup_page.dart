@@ -33,8 +33,6 @@ class _FinalSetupPageState extends State<FinalSetupPage>
 
   final ValueNotifier<bool> _enableBiometricsNotifier =
       ValueNotifier<bool>(false);
-  final ValueNotifier<bool> _enableNotificationsNotifier =
-      ValueNotifier<bool>(true);
   final ValueNotifier<bool> _isLoadingNotifier = ValueNotifier<bool>(false);
 
   @override
@@ -84,7 +82,6 @@ class _FinalSetupPageState extends State<FinalSetupPage>
     _entranceController.dispose();
     _pulseController.dispose();
     _enableBiometricsNotifier.dispose();
-    _enableNotificationsNotifier.dispose();
     _isLoadingNotifier.dispose();
     super.dispose();
   }
@@ -367,64 +364,6 @@ class _FinalSetupPageState extends State<FinalSetupPage>
 
                                 _enableBiometricsNotifier.value = val;
                               },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  verticalMarginXSmall,
-
-                  // Push Notifications Toggle Card
-                  GlassContainer(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(8.w),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainer,
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                          child: Icon(
-                            Icons.notifications_active_outlined,
-                            color: colorScheme.secondary,
-                            size: 22.sp,
-                          ),
-                        ),
-                        horizontalMarginSmall,
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.pushNotifications,
-                                style:
-                                    (textTheme.bodyLarge ?? const TextStyle())
-                                        .copyWith(
-                                  fontWeight: FontWeights.semiBold,
-                                ),
-                              ),
-                              Text(
-                                l10n.notificationsDescription,
-                                style:
-                                    (textTheme.labelMedium ?? const TextStyle())
-                                        .copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        ValueListenableBuilder<bool>(
-                          valueListenable: _enableNotificationsNotifier,
-                          builder: (context, enableNotifications, _) {
-                            return Switch.adaptive(
-                              value: enableNotifications,
-                              activeColor: colorScheme.primary,
-                              onChanged: (val) =>
-                                  _enableNotificationsNotifier.value = val,
                             );
                           },
                         ),
