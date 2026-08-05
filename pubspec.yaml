@@ -1,7 +1,7 @@
 name: expendly
 description: "Expendly - Personal finance management application with modern fiscal design."
 publish_to: 'none'
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -70,7 +70,9 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/images/
+    - assets/images/expendly_icon.png
+    - assets/images/expendly_logo.png
+    - assets/images/expendly_logo_light.png
     - assets/google_fonts/
   fonts:
     - family: HankenGrotesk
