@@ -13,7 +13,8 @@ abstract class AppSpacing {
 
   // EdgeInsets helpers
   static EdgeInsets get paddingContainer => EdgeInsets.all(24.w);
-  static EdgeInsets get paddingHorizontalContainer => EdgeInsets.symmetric(horizontal: 24.w);
+  static EdgeInsets get paddingHorizontalContainer =>
+      EdgeInsets.symmetric(horizontal: 24.w);
   static EdgeInsets get paddingGutter => EdgeInsets.all(16.w);
   static EdgeInsets get paddingInner => EdgeInsets.all(12.w);
   static EdgeInsets get paddingBase => EdgeInsets.all(8.w);

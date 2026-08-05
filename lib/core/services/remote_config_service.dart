@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../config/app_config.dart';
+import '../utils/app_logger.dart';
 
 enum AppUpdateStatus {
   none,
@@ -44,14 +43,12 @@ class RemoteConfigService {
 
   /// Initializes Remote Config defaults, fetch strategy, and listeners.
   Future<void> initialize() async {
-    final isDevOrQa = AppConfig.instance.isDev || AppConfig.instance.isQa;
-
+    // Unconditionally set minimumFetchInterval to Duration.zero to ensure
+    // remote config is freshly fetched from the server every time.
     await _remoteConfig.setConfigSettings(
       RemoteConfigSettings(
         fetchTimeout: const Duration(seconds: 10),
-        minimumFetchInterval: isDevOrQa
-            ? Duration.zero
-            : const Duration(hours: 1),
+        minimumFetchInterval: Duration.zero,
       ),
     );
 
@@ -75,26 +72,38 @@ class RemoteConfigService {
     });
 
     // 2. Fetch and Activate latest Remote Config values
-    try {
-      await _remoteConfig.fetchAndActivate();
-    } catch (e) {
-      if (kDebugMode) {
-        print('RemoteConfig fetch error: $e');
-      }
-    }
+    await fetchAndActivate(notify: false);
 
     // 3. Real-time update listener for server-side config changes
     _remoteConfig.onConfigUpdated.listen((event) async {
       await _remoteConfig.activate();
+      AppLogger.i(
+          'RemoteConfig real-time config updated: ${event.updatedKeys}');
       _notifyListeners();
     });
 
     _notifyListeners();
   }
 
+  /// Explicitly fetch and activate fresh Remote Config values from server.
+  Future<bool> fetchAndActivate({bool notify = true}) async {
+    try {
+      final activated = await _remoteConfig.fetchAndActivate();
+      AppLogger.i(
+          'RemoteConfig fetchAndActivate completed (activated: $activated, minVer: $minRequiredVersion, latestVer: $latestVersion)');
+      if (notify) {
+        _notifyListeners();
+      }
+      return activated;
+    } catch (e, stackTrace) {
+      AppLogger.w('RemoteConfig fetch error: $e', e, stackTrace);
+      return false;
+    }
+  }
+
   void _notifyListeners() {
     _maintenanceStreamController.add(isMaintenanceMode);
-    checkUpdateStatus().then((status) {
+    checkUpdateStatus(fetchRemote: false).then((status) {
       _updateStatusStreamController.add(status);
     });
   }
@@ -102,41 +111,55 @@ class RemoteConfigService {
   // --- Getters ---
   bool get isMaintenanceMode => _remoteConfig.getBool(keyIsMaintenanceMode);
 
-  String get minRequiredVersion => _remoteConfig.getString(keyMinRequiredVersion);
+  String get minRequiredVersion =>
+      _remoteConfig.getString(keyMinRequiredVersion);
   String get latestVersion => _remoteConfig.getString(keyLatestVersion);
 
   String get forceUpdateTitle => _remoteConfig.getString(keyForceUpdateTitle);
-  String get forceUpdateMessage => _remoteConfig.getString(keyForceUpdateMessage);
+  String get forceUpdateMessage =>
+      _remoteConfig.getString(keyForceUpdateMessage);
 
-  String get optionalUpdateTitle => _remoteConfig.getString(keyOptionalUpdateTitle);
+  String get optionalUpdateTitle =>
+      _remoteConfig.getString(keyOptionalUpdateTitle);
   String get optionalUpdateMessage =>
       _remoteConfig.getString(keyOptionalUpdateMessage);
 
   String get maintenanceTitle => _remoteConfig.getString(keyMaintenanceTitle);
-  String get maintenanceMessage => _remoteConfig.getString(keyMaintenanceMessage);
+  String get maintenanceMessage =>
+      _remoteConfig.getString(keyMaintenanceMessage);
 
   String get updateUrlAndroid => _remoteConfig.getString(keyUpdateUrlAndroid);
   String get updateUrlIos => _remoteConfig.getString(keyUpdateUrlIos);
 
   /// Checks installed app version against Remote Config thresholds
-  Future<AppUpdateStatus> checkUpdateStatus() async {
+  Future<AppUpdateStatus> checkUpdateStatus({bool fetchRemote = false}) async {
     try {
+      if (fetchRemote) {
+        await _remoteConfig.fetchAndActivate();
+      }
+
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = packageInfo.version;
 
-      if (_isVersionLower(currentVersion, minRequiredVersion)) {
+      final minVer = minRequiredVersion;
+      final latestVer = latestVersion;
+
+      AppLogger.i(
+          'RemoteConfig checkUpdateStatus - Installed: $currentVersion, MinRequired: $minVer, Latest: $latestVer');
+
+      if (_isVersionLower(currentVersion, minVer)) {
+        AppLogger.i('RemoteConfig -> Triggering Force Update popup/screen');
         return AppUpdateStatus.forceUpdate;
       }
 
-      if (_isVersionLower(currentVersion, latestVersion)) {
+      if (_isVersionLower(currentVersion, latestVer)) {
+        AppLogger.i('RemoteConfig -> Triggering Optional Update popup/screen');
         return AppUpdateStatus.optionalUpdate;
       }
 
       return AppUpdateStatus.none;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error checking app update status: $e');
-      }
+    } catch (e, stackTrace) {
+      AppLogger.e('Error checking app update status', e, stackTrace);
       return AppUpdateStatus.none;
     }
   }
@@ -144,8 +167,27 @@ class RemoteConfigService {
   /// Utility to compare semantic version strings (e.g., "1.0.0" vs "1.1.0")
   bool _isVersionLower(String versionA, String versionB) {
     try {
-      final partsA = versionA.split('.').map((e) => int.parse(e.split('+').first)).toList();
-      final partsB = versionB.split('.').map((e) => int.parse(e.split('+').first)).toList();
+      final cleanA = versionA
+          .trim()
+          .toLowerCase()
+          .replaceAll(RegExp(r'^v'), '')
+          .split('+')
+          .first;
+      final cleanB = versionB
+          .trim()
+          .toLowerCase()
+          .replaceAll(RegExp(r'^v'), '')
+          .split('+')
+          .first;
+
+      final partsA = cleanA
+          .split('.')
+          .map((e) => int.tryParse(e.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0)
+          .toList();
+      final partsB = cleanB
+          .split('.')
+          .map((e) => int.tryParse(e.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0)
+          .toList();
 
       for (int i = 0; i < 3; i++) {
         final valA = i < partsA.length ? partsA[i] : 0;
@@ -154,7 +196,8 @@ class RemoteConfigService {
         if (valA < valB) return true;
         if (valA > valB) return false;
       }
-    } catch (_) {
+    } catch (e) {
+      AppLogger.w('Version parsing error ($versionA vs $versionB): $e');
       return false;
     }
     return false;

@@ -1,60 +1,48 @@
-# Fastlane Android Setup for Firebase App Distribution
+fastlane documentation
+----
 
-This setup automates building and distributing Expendly Android builds (`dev`, `qa`, `prod`) to Firebase App Distribution.
+# Installation
 
-## 📋 Prerequisites
+Make sure you have the latest version of the Xcode command line tools installed:
 
-1. **Install Dependencies**:
-   Navigate to the `android/` directory and install gems:
-   ```bash
-   cd android
-   bundle install
-   ```
+```sh
+xcode-select --install
+```
 
-2. **Authentication Options**:
-   Choose one of the following authentication methods for Firebase:
+For _fastlane_ installation instructions, see [Installing _fastlane_](https://docs.fastlane.tools/#installing-fastlane)
 
-   - **Method A: Service Account Key (Recommended for CI/CD)**:
-     Download a GCP Service Account Key JSON with *Firebase App Distribution Admin* role and set the environment variable:
-     ```bash
-     export FIREBASE_SERVICE_ACCOUNT_KEY_PATH="/path/to/service-account-key.json"
-     ```
+# Available Actions
 
-   - **Method B: Firebase CLI Token**:
-     Generate a CLI token via `npx -y firebase-tools@latest login:ci` and set the environment variable:
-     ```bash
-     export FIREBASE_CLI_TOKEN="your_firebase_cli_token"
-     ```
+## Android
 
----
+### android distribute_dev
 
-## 🚀 Usage Commands
+```sh
+[bundle exec] fastlane android distribute_dev
+```
 
-You can run Fastlane commands using `rps` or `bundle exec fastlane`:
+Build and Distribute DEV APK to Firebase App Distribution
 
-### 1. DEV Flavor
-- **RPS Command**: `rps distribute dev`
-- **Fastlane Command**:
-  ```bash
-  cd android
-  bundle exec fastlane distribute_dev groups:"dev-testers" release_notes:"Feature update"
-  ```
-- **Firebase App ID**: `1:748636232967:android:87bd73587100d5a126b9a2` (`com.expendly.app.dev`)
+### android distribute_qa
 
-### 2. QA Flavor
-- **RPS Command**: `rps distribute qa`
-- **Fastlane Command**:
-  ```bash
-  cd android
-  bundle exec fastlane distribute_qa groups:"qa-testers" release_notes:"QA Sprint build"
-  ```
-- **Firebase App ID**: `1:748636232967:android:d5c5362c2afc683726b9a2` (`com.expendly.app.qa`)
+```sh
+[bundle exec] fastlane android distribute_qa
+```
 
-### 3. PROD Flavor
-- **RPS Command**: `rps distribute prod`
-- **Fastlane Command**:
-  ```bash
-  cd android
-  bundle exec fastlane distribute_prod groups:"prod-testers" release_notes:"Production release candidate"
-  ```
-- **Firebase App ID**: `1:748636232967:android:b869f641ba48869026b9a2` (`com.expendly.app`)
+Build and Distribute QA APK to Firebase App Distribution
+
+### android distribute_prod
+
+```sh
+[bundle exec] fastlane android distribute_prod
+```
+
+Build and Distribute PROD APK to Firebase App Distribution
+
+----
+
+This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
+
+More information about _fastlane_ can be found on [fastlane.tools](https://fastlane.tools).
+
+The documentation of _fastlane_ can be found on [docs.fastlane.tools](https://docs.fastlane.tools).

@@ -5,10 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 /// Design Tokens for Typography matching Modern Fiscal Core specs.
-/// Uses [Hanken Grotesk] for headers/body and [JetBrains Mono] for numerical/technical labels.
-/// All font sizes use `.sp` for responsive scaling via flutter_screenutil.
+/// Uses [Hanken Grotesk] for all general UI titles, body, labels, and text fields.
+/// Uses [JetBrains Mono] strictly for monetary amounts, timestamps, and financial figures.
 abstract class AppTypography {
-  // Base TextStyles using Google Fonts
+  // Base TextStyles using Hanken Grotesk for General UI
 
   /// Headline Large (32px, Bold, Line Height 40px, Tracking -0.04em)
   static TextStyle get headlineLarge => GoogleFonts.hankenGrotesk(
@@ -46,6 +46,15 @@ abstract class AppTypography {
         color: AppColors.onSurface,
       );
 
+  /// Body Large Bold (16px, Bold 700)
+  static TextStyle get bodyLargeBold => GoogleFonts.hankenGrotesk(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w700,
+        height: 24 / 16,
+        letterSpacing: -0.16,
+        color: AppColors.onSurface,
+      );
+
   /// Body Medium (14px, Regular 400, Line Height 20px, Tracking 0.0em)
   static TextStyle get bodyMedium => GoogleFonts.hankenGrotesk(
         fontSize: 14.sp,
@@ -55,8 +64,18 @@ abstract class AppTypography {
         color: AppColors.onSurfaceVariant,
       );
 
-  /// Label Medium Monospaced (12px, Medium 500, Line Height 16px, Tracking 0.02em)
-  /// Primary style for technical metadata, timestamps, and tabular labels.
+  /// Label Medium (12px, Medium 500, Line Height 16px, Tracking 0.02em - Hanken Grotesk)
+  static TextStyle get labelMedium => GoogleFonts.hankenGrotesk(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w500,
+        height: 16 / 12,
+        letterSpacing: 0.24,
+        color: AppColors.onSurfaceVariant,
+      );
+
+  // Monospaced Styles strictly for Amounts & Financial Figures (JetBrains Mono)
+
+  /// Label Medium Monospaced (12px, Medium 500 - JetBrains Mono)
   static TextStyle get labelMediumMono => GoogleFonts.jetBrainsMono(
         fontSize: 12.sp,
         fontWeight: FontWeight.w500,
@@ -65,7 +84,7 @@ abstract class AppTypography {
         color: AppColors.onSurfaceVariant,
       );
 
-  /// Currency & Amount Monospaced Display (24px, Bold)
+  /// Currency & Amount Monospaced Display (24px, Bold - JetBrains Mono)
   static TextStyle get amountDisplay => GoogleFonts.jetBrainsMono(
         fontSize: 24.sp,
         fontWeight: FontWeight.w700,
@@ -74,7 +93,7 @@ abstract class AppTypography {
         color: AppColors.primary,
       );
 
-  /// Amount Large Display (36px, Bold)
+  /// Amount Large Display (36px, Bold - JetBrains Mono)
   static TextStyle get amountLarge => GoogleFonts.jetBrainsMono(
         fontSize: 36.sp,
         fontWeight: FontWeight.w700,
@@ -83,23 +102,43 @@ abstract class AppTypography {
         color: AppColors.onSurface,
       );
 
+  /// Headline Medium Monospaced Bold (20px, Bold - JetBrains Mono)
+  static TextStyle get headlineMediumMonoBold => GoogleFonts.jetBrainsMono(
+        fontSize: 20.sp,
+        fontWeight: FontWeight.w700,
+        color: AppColors.onSurface,
+      );
+
+  /// Headline Large Monospaced Bold (32px, Bold - JetBrains Mono)
+  static TextStyle get headlineLargeMonoBold => GoogleFonts.jetBrainsMono(
+        fontSize: 32.sp,
+        fontWeight: FontWeight.w700,
+        color: AppColors.onSurface,
+      );
+
   /// Build complete ThemeData TextTheme
-  static TextTheme buildTextTheme() {
+  static TextTheme buildTextTheme({Brightness brightness = Brightness.dark}) {
+    final isDark = brightness == Brightness.dark;
+    final onSurface = isDark ? AppColors.onSurface : AppColors.lightOnSurface;
+    final onSurfaceVariant =
+        isDark ? AppColors.onSurfaceVariant : AppColors.lightOnSurfaceVariant;
+    final outline = isDark ? AppColors.outline : AppColors.lightOutline;
+
     return TextTheme(
-      headlineLarge: headlineLarge,
-      headlineMedium: headlineMedium,
-      bodyLarge: bodyLarge,
-      bodyMedium: bodyMedium,
-      labelMedium: labelMediumMono,
+      headlineLarge: headlineLarge.copyWith(color: onSurface),
+      headlineMedium: headlineMedium.copyWith(color: onSurface),
+      bodyLarge: bodyLarge.copyWith(color: onSurface),
+      bodyMedium: bodyMedium.copyWith(color: onSurfaceVariant),
+      labelMedium: labelMedium.copyWith(color: onSurfaceVariant),
       titleMedium: GoogleFonts.hankenGrotesk(
         fontSize: 18.sp,
         fontWeight: FontWeight.w600,
-        color: AppColors.onSurface,
+        color: onSurface,
       ),
-      labelSmall: GoogleFonts.jetBrainsMono(
+      labelSmall: GoogleFonts.hankenGrotesk(
         fontSize: 10.sp,
         fontWeight: FontWeight.w500,
-        color: AppColors.outline,
+        color: outline,
       ),
     );
   }
@@ -111,12 +150,22 @@ class AppCustomTypography extends ThemeExtension<AppCustomTypography> {
   final TextStyle labelMediumMono;
   final TextStyle amountDisplay;
   final TextStyle amountLarge;
+  final TextStyle bodyLarge;
+  final TextStyle bodyLargeBold;
+  final TextStyle bodyMedium;
+  final TextStyle headlineMediumMonoBold;
+  final TextStyle headlineLargeMonoBold;
 
   const AppCustomTypography({
     required this.headlineLargeMobile,
     required this.labelMediumMono,
     required this.amountDisplay,
     required this.amountLarge,
+    required this.bodyLarge,
+    required this.bodyLargeBold,
+    required this.bodyMedium,
+    required this.headlineMediumMonoBold,
+    required this.headlineLargeMonoBold,
   });
 
   static final dark = AppCustomTypography(
@@ -124,6 +173,32 @@ class AppCustomTypography extends ThemeExtension<AppCustomTypography> {
     labelMediumMono: AppTypography.labelMediumMono,
     amountDisplay: AppTypography.amountDisplay,
     amountLarge: AppTypography.amountLarge,
+    bodyLarge: AppTypography.bodyLarge,
+    bodyLargeBold: AppTypography.bodyLargeBold,
+    bodyMedium: AppTypography.bodyMedium,
+    headlineMediumMonoBold: AppTypography.headlineMediumMonoBold,
+    headlineLargeMonoBold: AppTypography.headlineLargeMonoBold,
+  );
+
+  static final light = AppCustomTypography(
+    headlineLargeMobile: AppTypography.headlineLargeMobile
+        .copyWith(color: AppColors.lightOnSurface),
+    labelMediumMono: AppTypography.labelMediumMono
+        .copyWith(color: AppColors.lightOnSurfaceVariant),
+    amountDisplay:
+        AppTypography.amountDisplay.copyWith(color: AppColors.lightPrimary),
+    amountLarge:
+        AppTypography.amountLarge.copyWith(color: AppColors.lightOnSurface),
+    bodyLarge:
+        AppTypography.bodyLarge.copyWith(color: AppColors.lightOnSurface),
+    bodyLargeBold:
+        AppTypography.bodyLargeBold.copyWith(color: AppColors.lightOnSurface),
+    bodyMedium: AppTypography.bodyMedium
+        .copyWith(color: AppColors.lightOnSurfaceVariant),
+    headlineMediumMonoBold: AppTypography.headlineMediumMonoBold
+        .copyWith(color: AppColors.lightOnSurface),
+    headlineLargeMonoBold: AppTypography.headlineLargeMonoBold
+        .copyWith(color: AppColors.lightOnSurface),
   );
 
   @override
@@ -132,23 +207,45 @@ class AppCustomTypography extends ThemeExtension<AppCustomTypography> {
     TextStyle? labelMediumMono,
     TextStyle? amountDisplay,
     TextStyle? amountLarge,
+    TextStyle? bodyLarge,
+    TextStyle? bodyLargeBold,
+    TextStyle? bodyMedium,
+    TextStyle? headlineMediumMonoBold,
+    TextStyle? headlineLargeMonoBold,
   }) {
     return AppCustomTypography(
       headlineLargeMobile: headlineLargeMobile ?? this.headlineLargeMobile,
       labelMediumMono: labelMediumMono ?? this.labelMediumMono,
       amountDisplay: amountDisplay ?? this.amountDisplay,
       amountLarge: amountLarge ?? this.amountLarge,
+      bodyLarge: bodyLarge ?? this.bodyLarge,
+      bodyLargeBold: bodyLargeBold ?? this.bodyLargeBold,
+      bodyMedium: bodyMedium ?? this.bodyMedium,
+      headlineMediumMonoBold:
+          headlineMediumMonoBold ?? this.headlineMediumMonoBold,
+      headlineLargeMonoBold:
+          headlineLargeMonoBold ?? this.headlineLargeMonoBold,
     );
   }
 
   @override
-  AppCustomTypography lerp(ThemeExtension<AppCustomTypography>? other, double t) {
+  AppCustomTypography lerp(
+      ThemeExtension<AppCustomTypography>? other, double t) {
     if (other is! AppCustomTypography) return this;
     return AppCustomTypography(
-      headlineLargeMobile: TextStyle.lerp(headlineLargeMobile, other.headlineLargeMobile, t)!,
-      labelMediumMono: TextStyle.lerp(labelMediumMono, other.labelMediumMono, t)!,
+      headlineLargeMobile:
+          TextStyle.lerp(headlineLargeMobile, other.headlineLargeMobile, t)!,
+      labelMediumMono:
+          TextStyle.lerp(labelMediumMono, other.labelMediumMono, t)!,
       amountDisplay: TextStyle.lerp(amountDisplay, other.amountDisplay, t)!,
       amountLarge: TextStyle.lerp(amountLarge, other.amountLarge, t)!,
+      bodyLarge: TextStyle.lerp(bodyLarge, other.bodyLarge, t)!,
+      bodyLargeBold: TextStyle.lerp(bodyLargeBold, other.bodyLargeBold, t)!,
+      bodyMedium: TextStyle.lerp(bodyMedium, other.bodyMedium, t)!,
+      headlineMediumMonoBold: TextStyle.lerp(
+          headlineMediumMonoBold, other.headlineMediumMonoBold, t)!,
+      headlineLargeMonoBold: TextStyle.lerp(
+          headlineLargeMonoBold, other.headlineLargeMonoBold, t)!,
     );
   }
 }

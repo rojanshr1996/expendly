@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,39 +25,42 @@ class AppUpdateGuard extends StatefulWidget {
 class _AppUpdateGuardState extends State<AppUpdateGuard> {
   final RemoteConfigService _remoteConfig = getIt<RemoteConfigService>();
 
-  bool _isMaintenance = false;
-  AppUpdateStatus _updateStatus = AppUpdateStatus.none;
-  bool _optionalUpdateDismissed = false;
+  late final ValueNotifier<bool> _isMaintenanceNotifier;
+  late final ValueNotifier<AppUpdateStatus> _updateStatusNotifier;
+  final ValueNotifier<bool> _optionalUpdateDismissedNotifier =
+      ValueNotifier<bool>(false);
 
   @override
   void initState() {
     super.initState();
-    _isMaintenance = _remoteConfig.isMaintenanceMode;
+    _isMaintenanceNotifier =
+        ValueNotifier<bool>(_remoteConfig.isMaintenanceMode);
+    _updateStatusNotifier =
+        ValueNotifier<AppUpdateStatus>(AppUpdateStatus.none);
     _checkInitialState();
 
     _remoteConfig.onMaintenanceChanged.listen((isMaint) {
-      if (mounted) {
-        setState(() {
-          _isMaintenance = isMaint;
-        });
-      }
+      _isMaintenanceNotifier.value = isMaint;
     });
 
     _remoteConfig.onUpdateStatusChanged.listen((status) {
-      if (mounted) {
-        setState(() {
-          _updateStatus = status;
-        });
-      }
+      _updateStatusNotifier.value = status;
     });
   }
 
+  @override
+  void dispose() {
+    _isMaintenanceNotifier.dispose();
+    _updateStatusNotifier.dispose();
+    _optionalUpdateDismissedNotifier.dispose();
+    super.dispose();
+  }
+
   Future<void> _checkInitialState() async {
-    final status = await _remoteConfig.checkUpdateStatus();
+    final status = await _remoteConfig.checkUpdateStatus(fetchRemote: true);
     if (mounted) {
-      setState(() {
-        _updateStatus = status;
-      });
+      _isMaintenanceNotifier.value = _remoteConfig.isMaintenanceMode;
+      _updateStatusNotifier.value = status;
     }
   }
 
@@ -77,25 +81,44 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
       children: [
         widget.child,
 
-        // Maintenance Mode Overlay (Blocks entire application)
-        if (_isMaintenance)
-          Positioned.fill(
-            child: _buildMaintenanceScreen(context),
-          ),
+        // ValueListenableBuilder for reactive overlays
+        ValueListenableBuilder<bool>(
+          valueListenable: _isMaintenanceNotifier,
+          builder: (context, isMaintenance, _) {
+            if (isMaintenance) {
+              return Positioned.fill(
+                child: _buildMaintenanceScreen(context),
+              );
+            }
 
-        // Mandatory Force Update Overlay (Blocks application until updated)
-        if (!_isMaintenance && _updateStatus == AppUpdateStatus.forceUpdate)
-          Positioned.fill(
-            child: _buildForceUpdateScreen(context),
-          ),
+            return ValueListenableBuilder<AppUpdateStatus>(
+              valueListenable: _updateStatusNotifier,
+              builder: (context, updateStatus, _) {
+                if (updateStatus == AppUpdateStatus.forceUpdate) {
+                  return Positioned.fill(
+                    child: _buildForceUpdateScreen(context),
+                  );
+                }
 
-        // Optional Update Banner / Dialog Overlay
-        if (!_isMaintenance &&
-            _updateStatus == AppUpdateStatus.optionalUpdate &&
-            !_optionalUpdateDismissed)
-          Positioned.fill(
-            child: _buildOptionalUpdateDialog(context),
-          ),
+                if (updateStatus == AppUpdateStatus.optionalUpdate) {
+                  return ValueListenableBuilder<bool>(
+                    valueListenable: _optionalUpdateDismissedNotifier,
+                    builder: (context, dismissed, _) {
+                      if (!dismissed) {
+                        return Positioned.fill(
+                          child: _buildOptionalUpdateDialog(context),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  );
+                }
+
+                return const SizedBox.shrink();
+              },
+            );
+          },
+        ),
       ],
     );
   }
@@ -245,11 +268,8 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () {
-                        setState(() {
-                          _optionalUpdateDismissed = true;
-                        });
-                      },
+                      onPressed: () =>
+                          _optionalUpdateDismissedNotifier.value = true,
                       child: const Text('Later'),
                     ),
                   ),
@@ -257,9 +277,7 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        setState(() {
-                          _optionalUpdateDismissed = true;
-                        });
+                        _optionalUpdateDismissedNotifier.value = true;
                         _openStoreUrl();
                       },
                       child: const Text('Update'),

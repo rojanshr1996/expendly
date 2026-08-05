@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="file" path="app_flutter/expendly.sqlite"/>
+        <include domain="sharedpref" path="FlutterSharedPreferences.xml"/>
+        <exclude domain="file" path="app_flutter/expendly.sqlite-wal"/>
+        <exclude domain="file" path="app_flutter/expendly.sqlite-shm"/>
+    </cloud-backup>
+    <device-transfer>
+        <include domain="file" path="app_flutter/expendly.sqlite"/>
+        <include domain="sharedpref" path="FlutterSharedPreferences.xml"/>
+    </device-transfer>
+</data-extraction-rules>
