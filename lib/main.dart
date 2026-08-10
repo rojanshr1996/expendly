@@ -9,7 +9,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'core/ads/interstitial_ad_helper.dart';
 import 'core/config/app_config.dart';
@@ -23,6 +22,7 @@ import 'core/services/notification_service.dart';
 import 'core/services/preference_service.dart';
 import 'core/services/remote_config_service.dart';
 import 'core/theme/app_theme.dart';
+import 'core/utils/url_utils.dart';
 import 'core/utils/app_logger.dart';
 import 'core/widgets/app_update_guard.dart';
 import 'core/widgets/notification_detail_dialog.dart';
@@ -148,20 +148,7 @@ class _ExpendlyAppState extends State<ExpendlyApp> with WidgetsBindingObserver {
         if (getIt.isRegistered<NotificationService>()) {
           await getIt<NotificationService>().launchExternalUrl(url);
         } else {
-          try {
-            String formattedUrl = url.trim();
-            if (!formattedUrl.startsWith('http://') &&
-                !formattedUrl.startsWith('https://')) {
-              formattedUrl = 'https://$formattedUrl';
-            }
-            final uri = Uri.parse(formattedUrl);
-            if (await canLaunchUrl(uri)) {
-              await launchUrl(uri, mode: LaunchMode.externalApplication);
-            }
-          } catch (e) {
-            AppLogger.e(
-                'Failed to launch URL from notification payload: $url', e);
-          }
+          await UrlUtils.launchExternalUrl(url);
         }
         return;
       }

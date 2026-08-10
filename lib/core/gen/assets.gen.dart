@@ -16,22 +16,27 @@ class $AssetsGoogleFontsGen {
   String get hankenGroteskBold => 'assets/google_fonts/HankenGrotesk-Bold.ttf';
 
   /// File path: assets/google_fonts/HankenGrotesk-Medium.ttf
-  String get hankenGroteskMedium => 'assets/google_fonts/HankenGrotesk-Medium.ttf';
+  String get hankenGroteskMedium =>
+      'assets/google_fonts/HankenGrotesk-Medium.ttf';
 
   /// File path: assets/google_fonts/HankenGrotesk-Regular.ttf
-  String get hankenGroteskRegular => 'assets/google_fonts/HankenGrotesk-Regular.ttf';
+  String get hankenGroteskRegular =>
+      'assets/google_fonts/HankenGrotesk-Regular.ttf';
 
   /// File path: assets/google_fonts/HankenGrotesk-SemiBold.ttf
-  String get hankenGroteskSemiBold => 'assets/google_fonts/HankenGrotesk-SemiBold.ttf';
+  String get hankenGroteskSemiBold =>
+      'assets/google_fonts/HankenGrotesk-SemiBold.ttf';
 
   /// File path: assets/google_fonts/JetBrainsMono-Bold.ttf
   String get jetBrainsMonoBold => 'assets/google_fonts/JetBrainsMono-Bold.ttf';
 
   /// File path: assets/google_fonts/JetBrainsMono-Medium.ttf
-  String get jetBrainsMonoMedium => 'assets/google_fonts/JetBrainsMono-Medium.ttf';
+  String get jetBrainsMonoMedium =>
+      'assets/google_fonts/JetBrainsMono-Medium.ttf';
 
   /// File path: assets/google_fonts/JetBrainsMono-Regular.ttf
-  String get jetBrainsMonoRegular => 'assets/google_fonts/JetBrainsMono-Regular.ttf';
+  String get jetBrainsMonoRegular =>
+      'assets/google_fonts/JetBrainsMono-Regular.ttf';
 
   /// List of all assets
   List<String> get values => [
@@ -49,16 +54,20 @@ class $AssetsImagesGen {
   const $AssetsImagesGen();
 
   /// File path: assets/images/expendly_icon.png
-  AssetGenImage get expendlyIcon => const AssetGenImage('assets/images/expendly_icon.png');
+  AssetGenImage get expendlyIcon =>
+      const AssetGenImage('assets/images/expendly_icon.png');
 
   /// File path: assets/images/expendly_logo.png
-  AssetGenImage get expendlyLogo => const AssetGenImage('assets/images/expendly_logo.png');
+  AssetGenImage get expendlyLogo =>
+      const AssetGenImage('assets/images/expendly_logo.png');
 
   /// File path: assets/images/expendly_logo_light.png
-  AssetGenImage get expendlyLogoLight => const AssetGenImage('assets/images/expendly_logo_light.png');
+  AssetGenImage get expendlyLogoLight =>
+      const AssetGenImage('assets/images/expendly_logo_light.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [expendlyIcon, expendlyLogo, expendlyLogoLight];
+  List<AssetGenImage> get values =>
+      [expendlyIcon, expendlyLogo, expendlyLogoLight];
 }
 
 class Assets {

@@ -9,11 +9,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../config/app_config.dart';
 import '../models/notification_payload.dart';
 import '../utils/app_logger.dart';
+import '../utils/url_utils.dart';
 
 /// Helper to download image from URL and save locally for notification attachments
 Future<String?> _downloadAndSaveNotificationImage(
@@ -271,28 +271,9 @@ class NotificationService {
     );
   }
 
-  /// Launches an external URL using url_launcher package.
+  /// Launches an external URL using UrlUtils.
   Future<bool> launchExternalUrl(String urlString) async {
-    try {
-      String formattedUrl = urlString.trim();
-      if (!formattedUrl.startsWith('http://') &&
-          !formattedUrl.startsWith('https://') &&
-          !formattedUrl.startsWith('mailto:') &&
-          !formattedUrl.startsWith('tel:')) {
-        formattedUrl = 'https://$formattedUrl';
-      }
-      final uri = Uri.parse(formattedUrl);
-      if (await canLaunchUrl(uri)) {
-        AppLogger.i(
-            'Launching external URL from NotificationService: $formattedUrl');
-        return await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        AppLogger.w('Cannot launch external URL: $formattedUrl');
-      }
-    } catch (e, stackTrace) {
-      AppLogger.e('Error launching external URL: $urlString', e, stackTrace);
-    }
-    return false;
+    return await UrlUtils.launchExternalUrl(urlString);
   }
 
   /// Automatically launches link using url launcher when actionType is externalUrl or payload is a URL action.
