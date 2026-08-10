@@ -24,6 +24,7 @@ Thumbs.db
 .pub-cache/
 .pub/
 build/
+**/build/
 doc/api/
 coverage/
 

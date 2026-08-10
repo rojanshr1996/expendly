@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -136,8 +137,7 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
                       ),
                     );
                   },
-                  child: _buildStateContent(
-                      context, state, colorScheme, customTypography),
+                  child: _buildStateContent(context, state, colorScheme, customTypography),
                 );
               },
             ),
@@ -203,8 +203,7 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
+                    padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16.r),
                     ),
@@ -360,16 +359,13 @@ class _TotalBudgetHealthCard extends StatelessWidget {
     return ValueListenableBuilder<String>(
       valueListenable: getIt<PreferenceService>().currencySymbolNotifier,
       builder: (context, currencySymbol, _) {
-        final double totalSpent = selectedItem != null
-            ? selectedItem!.spentAmount
-            : budgets.fold(0.0, (sum, b) => sum + b.spentAmount);
+        final double totalSpent =
+            selectedItem != null ? selectedItem!.spentAmount : budgets.fold(0.0, (sum, b) => sum + b.spentAmount);
 
-        final double totalTarget = selectedItem != null
-            ? selectedItem!.targetAmount
-            : budgets.fold(0.0, (sum, b) => sum + b.targetAmount);
+        final double totalTarget =
+            selectedItem != null ? selectedItem!.targetAmount : budgets.fold(0.0, (sum, b) => sum + b.targetAmount);
 
-        final double ratio =
-            totalTarget > 0 ? (totalSpent / totalTarget).clamp(0.0, 1.0) : 0.0;
+        final double ratio = totalTarget > 0 ? (totalSpent / totalTarget).clamp(0.0, 1.0) : 0.0;
         final int percentage = (ratio * 100).round();
 
         final bool isOver = totalTarget > 0 && totalSpent > totalTarget;
@@ -408,8 +404,7 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                       InkWell(
                         onTap: onResetSelection,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: colorScheme.primary.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
@@ -436,8 +431,7 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ValueListenableBuilder<bool>(
-                            valueListenable:
-                                isPrivacyModeNotifier ?? ValueNotifier(false),
+                            valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
                             builder: (context, isPrivacy, _) {
                               return CompactAmountText(
                                 amount: totalSpent,
@@ -445,8 +439,7 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                                 isPrivacyMode: isPrivacy,
                                 compact: true,
                                 animate: true,
-                                style: customTypography.headlineLargeMonoBold
-                                    .copyWith(
+                                style: customTypography.headlineLargeMonoBold.copyWith(
                                   color: colorScheme.onSurface,
                                   fontSize: 28.sp,
                                 ),
@@ -457,9 +450,7 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                           Text(
                             isOver ? 'Exceeded Limit' : 'Within Budget Limit',
                             style: customTypography.bodyMedium.copyWith(
-                              color: isOver
-                                  ? customColors.semanticRed
-                                  : customColors.semanticGreen,
+                              color: isOver ? customColors.semanticRed : customColors.semanticGreen,
                               fontSize: 13.sp,
                               fontWeight: FontWeight.bold,
                             ),
@@ -472,16 +463,14 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         ValueListenableBuilder<bool>(
-                          valueListenable:
-                              isPrivacyModeNotifier ?? ValueNotifier(false),
+                          valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
                           builder: (context, isPrivacy, _) {
                             return Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
                                   'Limit: ',
-                                  style:
-                                      customTypography.labelMediumMono.copyWith(
+                                  style: customTypography.labelMediumMono.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                   ),
                                 ),
@@ -491,8 +480,7 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                                   isPrivacyMode: isPrivacy,
                                   compact: true,
                                   animate: true,
-                                  style:
-                                      customTypography.labelMediumMono.copyWith(
+                                  style: customTypography.labelMediumMono.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                   ),
                                 ),
@@ -502,19 +490,15 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         TweenAnimationBuilder<double>(
-                          key: ValueKey(
-                              'total_perc_${percentage}_$selectedItem'),
-                          tween: Tween<double>(
-                              begin: 0.0, end: percentage.toDouble()),
+                          key: ValueKey('total_perc_${percentage}_$selectedItem'),
+                          tween: Tween<double>(begin: 0.0, end: percentage.toDouble()),
                           duration: const Duration(milliseconds: 750),
                           curve: Curves.easeOutCubic,
                           builder: (context, animVal, _) {
                             return Text(
                               '${animVal.round()}% Utilized',
                               style: customTypography.labelMediumMono.copyWith(
-                                color: isOver
-                                    ? customColors.semanticRed
-                                    : colorScheme.primary,
+                                color: isOver ? customColors.semanticRed : colorScheme.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             );
@@ -539,9 +523,7 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                         minHeight: 10,
                         backgroundColor: colorScheme.surfaceContainerHigh,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          isOver
-                              ? customColors.semanticRed
-                              : colorScheme.primary,
+                          isOver ? customColors.semanticRed : colorScheme.primary,
                         ),
                       ),
                     );
@@ -593,9 +575,7 @@ class _BudgetCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 14),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primary.withValues(alpha: 0.1)
-              : colorScheme.surfaceContainerLow,
+          color: isSelected ? colorScheme.primary.withValues(alpha: 0.1) : colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
@@ -636,12 +616,10 @@ class _BudgetCard extends StatelessWidget {
                         ),
                       ),
                       ValueListenableBuilder<String>(
-                        valueListenable:
-                            getIt<PreferenceService>().currencySymbolNotifier,
+                        valueListenable: getIt<PreferenceService>().currencySymbolNotifier,
                         builder: (context, symbol, _) {
                           return ValueListenableBuilder<bool>(
-                            valueListenable:
-                                isPrivacyModeNotifier ?? ValueNotifier(false),
+                            valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
                             builder: (context, isPrivacy, _) {
                               return FittedBox(
                                 fit: BoxFit.scaleDown,
@@ -655,15 +633,13 @@ class _BudgetCard extends StatelessWidget {
                                       isPrivacyMode: isPrivacy,
                                       compact: true,
                                       animate: true,
-                                      style: customTypography.labelMediumMono
-                                          .copyWith(
+                                      style: customTypography.labelMediumMono.copyWith(
                                         color: colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                                     Text(
                                       ' / ',
-                                      style: customTypography.labelMediumMono
-                                          .copyWith(
+                                      style: customTypography.labelMediumMono.copyWith(
                                         color: colorScheme.onSurfaceVariant,
                                       ),
                                     ),
@@ -673,8 +649,7 @@ class _BudgetCard extends StatelessWidget {
                                       isPrivacyMode: isPrivacy,
                                       compact: true,
                                       animate: true,
-                                      style: customTypography.labelMediumMono
-                                          .copyWith(
+                                      style: customTypography.labelMediumMono.copyWith(
                                         color: colorScheme.onSurfaceVariant,
                                       ),
                                     ),
@@ -689,8 +664,7 @@ class _BudgetCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete_outline_rounded,
-                      color: colorScheme.onSurfaceVariant, size: 20),
+                  icon: Icon(Icons.delete_outline_rounded, color: colorScheme.onSurfaceVariant, size: 20),
                   onPressed: onDelete,
                 ),
               ],
@@ -720,10 +694,8 @@ class _BudgetCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TweenAnimationBuilder<double>(
-                  key: ValueKey(
-                      'card_perc_${item.id}_${item.spentAmount}_${item.targetAmount}'),
-                  tween: Tween<double>(
-                      begin: 0.0, end: (progress * 100).clamp(0.0, 9999.0)),
+                  key: ValueKey('card_perc_${item.id}_${item.spentAmount}_${item.targetAmount}'),
+                  tween: Tween<double>(begin: 0.0, end: (progress * 100).clamp(0.0, 9999.0)),
                   duration: const Duration(milliseconds: 750),
                   curve: Curves.easeOutCubic,
                   builder: (context, animVal, _) {
@@ -851,9 +823,7 @@ class _BudgetsLiquidGlassCard extends StatelessWidget {
         ),
         border: customBorder ??
             Border.all(
-              color: isLight
-                  ? Colors.white.withValues(alpha: 0.50)
-                  : customColors.glassStroke.withValues(alpha: 0.40),
+              color: isLight ? Colors.white.withValues(alpha: 0.50) : customColors.glassStroke.withValues(alpha: 0.40),
               width: 1.0,
             ),
         boxShadow: [
