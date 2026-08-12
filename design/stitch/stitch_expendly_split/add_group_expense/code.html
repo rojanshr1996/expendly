@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add Expense - Expendly</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error": "#ffb4ab",
+                      "on-primary-fixed": "#00201c",
+                      "surface-container-highest": "#2f3634",
+                      "tertiary-fixed": "#ffdcc0",
+                      "on-tertiary-container": "#744000",
+                      "semantic-red": "#fb7185",
+                      "surface-bright": "#333b39",
+                      "on-primary-container": "#00574d",
+                      "surface-container-low": "#161d1b",
+                      "on-background": "#dde4e1",
+                      "glass-stroke": "rgba(255, 255, 255, 0.05)",
+                      "inverse-primary": "#006b5f",
+                      "surface-container-lowest": "#09100e",
+                      "tertiary": "#ffd1aa",
+                      "secondary-fixed-dim": "#c0c1ff",
+                      "surface-dim": "#0e1513",
+                      "surface-container-high": "#242b2a",
+                      "surface-container": "#1a211f",
+                      "on-secondary-fixed-variant": "#2f2ebe",
+                      "outline": "#859490",
+                      "outline-variant": "#3c4a46",
+                      "on-error-container": "#ffdad6",
+                      "primary-fixed": "#62fae3",
+                      "on-tertiary": "#4b2800",
+                      "on-secondary-container": "#b0b2ff",
+                      "on-secondary": "#1000a9",
+                      "inverse-surface": "#dde4e1",
+                      "surface-variant": "#2f3634",
+                      "secondary": "#c0c1ff",
+                      "on-error": "#690005",
+                      "secondary-fixed": "#e1e0ff",
+                      "tertiary-container": "#ffac5a",
+                      "surface-tint": "#3cddc7",
+                      "inverse-on-surface": "#2b3230",
+                      "primary-container": "#2dd4bf",
+                      "primary-fixed-dim": "#3cddc7",
+                      "background": "#0e1513",
+                      "on-surface-variant": "#bacac5",
+                      "on-tertiary-fixed-variant": "#6b3b00",
+                      "error-container": "#93000a",
+                      "on-primary-fixed-variant": "#005047",
+                      "secondary-container": "#3131c0",
+                      "surface": "#0e1513",
+                      "on-secondary-fixed": "#07006c",
+                      "semantic-green": "#34d399",
+                      "tertiary-fixed-dim": "#ffb875",
+                      "glass-overlay": "rgba(14, 21, 19, 0.7)",
+                      "on-surface": "#dde4e1",
+                      "primary": "#57f1db",
+                      "on-primary": "#003731",
+                      "on-tertiary-fixed": "#2d1600"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-tight": "4px",
+                      "base": "8px",
+                      "gutter-md": "16px",
+                      "container-padding": "24px",
+                      "inner-component": "12px"
+              },
+              "fontFamily": {
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-md": [
+                              "JetBrains Mono"
+                      ],
+                      "body-sm": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "title-lg": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "label-sm": [
+                              "10px",
+                              {
+                                      "lineHeight": "12px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "22px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "11px",
+                              {
+                                      "lineHeight": "14px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "15px",
+                              {
+                                      "lineHeight": "22px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "title-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+            },
+          },
+        }
+      </script>
+<style>
+        .glow-shadow-primary {
+            box-shadow: 0 0 20px rgba(87, 241, 219, 0.3);
+        }
+        .bento-card {
+            background-color: theme('colors.surface-container');
+            border: 1px solid theme('colors.glass-stroke');
+            border-radius: theme('borderRadius.xl');
+            padding: theme('spacing.container-padding');
+        }
+        /* Hide scrollbar for clean UI */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+      </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md min-h-screen selection:bg-primary selection:text-on-primary overflow-x-hidden">
+<!-- TopAppBar (Transactional - Hidden Nav Shell Context, but keeping header for action) -->
+<header class="w-full sticky top-0 backdrop-blur-xl bg-glass-overlay dark:bg-glass-overlay border-b border-glass-stroke flat no shadows z-50">
+<div class="flex items-center justify-between px-container-padding py-base w-full z-50">
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform text-primary dark:text-primary p-2 -ml-2 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-on-surface">Add Expense</h1>
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform text-primary dark:text-primary p-2 -mr-2 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">more_vert</span>
+</button>
+</div>
+</header>
+<main class="max-w-2xl mx-auto p-container-padding pb-32">
+<form class="space-y-gutter-md flex flex-col">
+<!-- Amount Input (Hero Section) -->
+<div class="bento-card flex flex-col items-center justify-center py-10 relative overflow-hidden group">
+<!-- Subtle background glow -->
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl pointer-events-none"></div>
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-4" for="amount">Amount</label>
+<div class="flex items-center text-primary font-display-lg text-display-lg text-5xl">
+<span class="mr-2 opacity-80">$</span>
+<input autofocus="" class="bg-transparent border-none text-center w-full max-w-[200px] text-5xl focus:ring-0 placeholder:text-surface-bright p-0" id="amount" placeholder="0.00" type="number"/>
+</div>
+</div>
+<!-- Description Input -->
+<div class="bento-card">
+<label class="block font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-stack-tight" for="description">Description</label>
+<div class="relative mt-2">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">description</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-3 border border-outline-variant rounded-lg leading-5 bg-surface-container-highest text-on-surface placeholder-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm transition-colors" id="description" placeholder="e.g., Dinner, Taxi..." type="text"/>
+</div>
+</div>
+<!-- Paid By Dropdown -->
+<div class="bento-card">
+<label class="block font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-stack-tight" for="paid_by">Paid By</label>
+<div class="relative mt-2">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">person</span>
+</div>
+<select class="block w-full pl-10 pr-10 py-3 text-on-surface bg-surface-container-highest border border-outline-variant rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm appearance-none transition-colors" id="paid_by">
+<option selected="" value="you">You</option>
+<option value="alex">Alex</option>
+<option value="sarah">Sarah</option>
+<option value="mike">Mike</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Split Among Section -->
+<div class="bento-card">
+<div class="flex justify-between items-center mb-4">
+<label class="block font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Split Among</label>
+<div class="flex items-center space-x-2">
+<span class="text-xs text-on-surface-variant">Equally</span>
+<button aria-checked="true" class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-primary transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background" role="switch" type="button">
+<span aria-hidden="true" class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-on-primary-fixed shadow ring-0 transition duration-200 ease-in-out translate-x-4"></span>
+</button>
+</div>
+</div>
+<div class="space-y-2 mt-4">
+<!-- Participant 1 -->
+<label class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-highest border border-transparent hover:border-glass-stroke transition-all cursor-pointer group">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-sm">
+                                Y
+                            </div>
+<span class="font-body-md text-on-surface group-hover:text-primary transition-colors">You</span>
+</div>
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary bg-surface-container-highest focus:ring-primary focus:ring-offset-background" type="checkbox"/>
+</label>
+<!-- Participant 2 -->
+<label class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-highest border border-transparent hover:border-glass-stroke transition-all cursor-pointer group">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-bold text-sm">
+                                A
+                            </div>
+<span class="font-body-md text-on-surface group-hover:text-primary transition-colors">Alex</span>
+</div>
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary bg-surface-container-highest focus:ring-primary focus:ring-offset-background" type="checkbox"/>
+</label>
+<!-- Participant 3 -->
+<label class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-highest border border-transparent hover:border-glass-stroke transition-all cursor-pointer group">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-full bg-surface-bright text-on-surface flex items-center justify-center font-bold text-sm">
+                                S
+                            </div>
+<span class="font-body-md text-on-surface group-hover:text-primary transition-colors">Sarah</span>
+</div>
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary bg-surface-container-highest focus:ring-primary focus:ring-offset-background" type="checkbox"/>
+</label>
+<!-- Participant 4 -->
+<label class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-highest border border-transparent hover:border-glass-stroke transition-all cursor-pointer group">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-full bg-surface-bright text-on-surface flex items-center justify-center font-bold text-sm">
+                                M
+                            </div>
+<span class="font-body-md text-on-surface group-hover:text-primary transition-colors">Mike</span>
+</div>
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary bg-surface-container-highest focus:ring-primary focus:ring-offset-background" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- Sticky Action Button Area (mobile) -->
+<div class="fixed bottom-0 left-0 w-full p-container-padding bg-gradient-to-t from-background via-background/90 to-transparent z-40 md:relative md:bg-none md:p-0 md:mt-8">
+<button class="w-full bg-primary text-on-primary-fixed py-4 rounded-xl font-title-lg text-title-lg glow-shadow-primary hover:opacity-90 active:scale-95 transition-all" type="submit">
+                    Save Expense
+                </button>
+</div>
+</form>
+</main>
+</body></html>
