@@ -114,7 +114,7 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i535.SecureStorageService(gh<_i558.FlutterSecureStorage>()));
     gh.lazySingleton<_i1021.BudgetRepository>(
         () => _i654.BudgetRepositoryImpl(gh<_i334.BudgetLocalDataSource>()));
-    gh.factory<_i821.AnalyticsCubit>(
+    gh.lazySingleton<_i821.AnalyticsCubit>(
         () => _i821.AnalyticsCubit(gh<_i1044.AnalyticsRepository>()));
     gh.lazySingleton<_i32.BudgetCubit>(
         () => _i32.BudgetCubit(gh<_i1021.BudgetRepository>()));

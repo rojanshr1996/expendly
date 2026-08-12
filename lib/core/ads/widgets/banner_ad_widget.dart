@@ -1,6 +1,10 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+import '../../di/injection.dart';
+import '../../services/remote_config_service.dart';
 
 class BannerAdWidget extends StatefulWidget {
   final String adUnitId;
@@ -19,6 +23,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget>
   late final Animation<double> _fadeAnimation;
   late final Animation<double> _sizeAnimation;
   late final Animation<Offset> _slideAnimation;
+  StreamSubscription<bool>? _adsEnabledSubscription;
 
   @override
   void initState() {
@@ -46,10 +51,40 @@ class _BannerAdWidgetState extends State<BannerAdWidget>
       curve: Curves.easeOutCubic,
     ));
 
-    _loadAd();
+    try {
+      final remoteConfig = getIt<RemoteConfigService>();
+      _adsEnabledSubscription =
+          remoteConfig.onAdsEnabledChanged.listen((enabled) {
+        if (!mounted) return;
+        if (!enabled) {
+          if (_isLoaded) {
+            _controller.reverse().then((_) {
+              if (mounted) {
+                setState(() {
+                  _isLoaded = false;
+                });
+              }
+            });
+          }
+        } else if (!_isLoaded && _bannerAd == null) {
+          _loadAd();
+        }
+      });
+      if (remoteConfig.isAdsEnabled) {
+        _loadAd();
+      }
+    } catch (_) {
+      _loadAd();
+    }
   }
 
   void _loadAd() {
+    try {
+      if (!getIt<RemoteConfigService>().isAdsEnabled) {
+        return;
+      }
+    } catch (_) {}
+
     _bannerAd = BannerAd(
       adUnitId: widget.adUnitId,
       request: const AdRequest(),
@@ -75,6 +110,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget>
 
   @override
   void dispose() {
+    _adsEnabledSubscription?.cancel();
     _controller.dispose();
     _bannerAd?.dispose();
     super.dispose();
@@ -82,6 +118,12 @@ class _BannerAdWidgetState extends State<BannerAdWidget>
 
   @override
   Widget build(BuildContext context) {
+    try {
+      if (!getIt<RemoteConfigService>().isAdsEnabled) {
+        return const SizedBox.shrink();
+      }
+    } catch (_) {}
+
     if (!_isLoaded || _bannerAd == null) {
       return const SizedBox.shrink();
     }

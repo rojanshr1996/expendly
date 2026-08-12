@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,10 +39,15 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
   late final AnimationController _pageAnimationController;
   late final Animation<double> _headerFadeAnimation;
   late final Animation<Offset> _headerSlideAnimation;
+  late final TransactionCubit _cubit;
 
   @override
   void initState() {
     super.initState();
+    _cubit = getIt<TransactionCubit>();
+    if (_cubit.state is! TransactionLoaded) {
+      _cubit.loadTransactions();
+    }
     final prefs = getIt<PreferenceService>();
     final now = DateTime.now();
 
@@ -187,13 +194,7 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
     final customTypography = context.customTypography;
 
     return BlocProvider.value(
-      value: () {
-        final cubit = getIt<TransactionCubit>();
-        if (!cubit.isClosed) {
-          cubit.loadTransactions();
-        }
-        return cubit;
-      }(),
+      value: _cubit,
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -294,18 +295,19 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                   opacity: _headerFadeAnimation,
                   child: SlideTransition(
                     position: _headerSlideAnimation,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
+                    child: _LiquidGlassCard(
+                      margin: EdgeInsets.symmetric(
                         horizontal: 20.w,
                         vertical: 6.h,
                       ),
+                      borderRadius: BorderRadius.circular(16.r),
                       child: AppTextField(
                         hintText: context.l10n.searchCategoryHint,
                         prefixIcon: Icon(
                           Icons.search_rounded,
                           color: colorScheme.outline,
                         ),
-                        fillColor: colorScheme.surfaceContainerHigh,
+                        fillColor: Colors.transparent,
                         borderRadius: BorderRadius.circular(16.r),
                         onChanged: (val) {
                           context.read<TransactionCubit>().filterSearch(val);
@@ -1413,6 +1415,7 @@ class _TypeFilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final customTypography = context.customTypography;
+    final isLight = Theme.of(context).brightness == Brightness.light;
 
     return AnimatedScale(
       scale: isSelected ? 1.04 : 1.0,
@@ -1428,17 +1431,15 @@ class _TypeFilterChip extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
             decoration: BoxDecoration(
               color: isSelected
-                  ? activeColor.withValues(alpha: 0.18)
+                  ? activeColor.withValues(alpha: 0.22)
                   : colorScheme.surfaceContainerLow,
               borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
-                color: isSelected
-                    ? activeColor.withValues(alpha: 0.7)
-                    : context.customColors.glassStroke,
+                color:
+                    isSelected ? activeColor : context.customColors.glassStroke,
                 width: isSelected ? 1.5 : 1.0,
               ),
-              boxShadow: (Theme.of(context).brightness == Brightness.dark &&
-                      isSelected)
+              boxShadow: isSelected
                   ? [
                       BoxShadow(
                         color: activeColor.withValues(alpha: 0.25),
@@ -1454,14 +1455,22 @@ class _TypeFilterChip extends StatelessWidget {
                 Icon(
                   icon,
                   size: 16.r,
-                  color: isSelected ? activeColor : colorScheme.outline,
+                  color: isSelected
+                      ? activeColor
+                      : (isLight
+                          ? colorScheme.outline.withValues(alpha: 0.75)
+                          : colorScheme.outline),
                 ),
                 SizedBox(width: 6.w),
                 Text(
                   label,
                   style: customTypography.labelMediumMono.copyWith(
-                    color:
-                        isSelected ? activeColor : colorScheme.onSurfaceVariant,
+                    color: isSelected
+                        ? activeColor
+                        : (isLight
+                            ? colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.75)
+                            : colorScheme.onSurfaceVariant),
                     fontWeight:
                         isSelected ? FontWeights.bold : FontWeights.regular,
                     fontSize: 12.sp,
@@ -1490,6 +1499,7 @@ class _ViewModeTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final customTypography = context.customTypography;
+    final isLight = Theme.of(context).brightness == Brightness.light;
 
     final modes = [
       {'id': 'daily', 'label': 'Daily'},
@@ -1497,14 +1507,10 @@ class _ViewModeTabBar extends StatelessWidget {
       {'id': 'monthly', 'label': 'Monthly'},
     ];
 
-    return Container(
+    return _LiquidGlassCard(
       margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 6.h),
       padding: EdgeInsets.all(4.w),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
+      borderRadius: BorderRadius.circular(12.r),
       child: Row(
         children: modes.map((m) {
           final modeId = m['id']!;
@@ -1523,6 +1529,15 @@ class _ViewModeTabBar extends StatelessWidget {
                     color:
                         isSelected ? colorScheme.primary : Colors.transparent,
                     borderRadius: BorderRadius.circular(8.r),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: colorScheme.primary.withValues(alpha: 0.3),
+                              blurRadius: 8.r,
+                              offset: const Offset(0, 2),
+                            )
+                          ]
+                        : null,
                   ),
                   child: Text(
                     m['label']!,
@@ -1530,7 +1545,10 @@ class _ViewModeTabBar extends StatelessWidget {
                     style: customTypography.labelMediumMono.copyWith(
                       color: isSelected
                           ? colorScheme.onPrimary
-                          : colorScheme.onSurfaceVariant,
+                          : (isLight
+                              ? colorScheme.onSurfaceVariant
+                                  .withValues(alpha: 0.75)
+                              : colorScheme.onSurfaceVariant),
                       fontWeight:
                           isSelected ? FontWeights.bold : FontWeights.regular,
                     ),
@@ -1540,6 +1558,78 @@ class _ViewModeTabBar extends StatelessWidget {
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+class _LiquidGlassCard extends StatelessWidget {
+  final Widget child;
+  final BorderRadius? borderRadius;
+  final EdgeInsetsGeometry? margin;
+  final EdgeInsetsGeometry? padding;
+
+  const _LiquidGlassCard({
+    required this.child,
+    this.borderRadius,
+    this.margin,
+    this.padding,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final br = borderRadius ?? BorderRadius.circular(16.r);
+
+    return Container(
+      margin: margin,
+      decoration: BoxDecoration(
+        borderRadius: br,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isLight
+              ? [
+                  colorScheme.surfaceContainerLowest.withValues(alpha: 0.35),
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.20),
+                ]
+              : [
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.25),
+                  colorScheme.surfaceContainerLow.withValues(alpha: 0.15),
+                ],
+        ),
+        border: Border.all(
+          color: isLight
+              ? Colors.white.withValues(alpha: 0.50)
+              : customColors.glassStroke.withValues(alpha: 0.40),
+          width: 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withValues(alpha: isLight ? 0.5 : 0.0),
+            blurRadius: 6.r,
+            spreadRadius: -1.r,
+            offset: const Offset(0, -1),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isLight ? 0.06 : 0.18),
+            blurRadius: 12.r,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: br,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Padding(
+            padding: padding ?? EdgeInsets.zero,
+            child: child,
+          ),
+        ),
       ),
     );
   }

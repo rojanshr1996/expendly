@@ -31,7 +31,7 @@ class BackupService {
     this._notificationService,
   );
 
-  static const Duration backupInterval = Duration(hours: 24);
+  static const Duration backupInterval = Duration(days: 1);
   static const int _notificationId = 888;
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────

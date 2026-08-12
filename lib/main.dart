@@ -2,13 +2,15 @@ import 'dart:async';
 
 import 'package:expendly/l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import 'core/ads/interstitial_ad_helper.dart';
 import 'core/config/app_config.dart';
 import 'core/config/firebase_options_factory.dart';
 import 'core/di/injection.dart';
@@ -17,10 +19,10 @@ import 'core/router/app_router.dart';
 import 'core/router/app_router.gr.dart';
 import 'core/services/backup_service.dart';
 import 'core/services/notification_service.dart';
-import 'core/ads/interstitial_ad_helper.dart';
 import 'core/services/preference_service.dart';
 import 'core/services/remote_config_service.dart';
 import 'core/theme/app_theme.dart';
+import 'core/utils/url_utils.dart';
 import 'core/utils/app_logger.dart';
 import 'core/widgets/app_update_guard.dart';
 import 'core/widgets/notification_detail_dialog.dart';
@@ -47,6 +49,12 @@ Future<void> bootstrapApp(AppConfig config) async {
     );
     AppLogger.i('Firebase initialized successfully');
 
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+
     // Initialize Notification and Remote Config Services
     await getIt<NotificationService>().initialize();
     await getIt<RemoteConfigService>().initialize();
@@ -56,6 +64,15 @@ Future<void> bootstrapApp(AppConfig config) async {
 
   // Initialize Google Mobile Ads SDK
   try {
+    // Register test device IDs for non-prod flavors so test ads load correctly.
+    if (!config.isProd) {
+      MobileAds.instance.updateRequestConfiguration(
+        RequestConfiguration(
+          tagForChildDirectedTreatment: TagForChildDirectedTreatment.no,
+          testDeviceIds: ['3183F11873D9EFBD0B19C0236AB90048'],
+        ),
+      );
+    }
     await MobileAds.instance.initialize();
     AppLogger.i('Google Mobile Ads SDK initialized successfully');
     InterstitialAdHelper.loadAd();
@@ -131,20 +148,7 @@ class _ExpendlyAppState extends State<ExpendlyApp> with WidgetsBindingObserver {
         if (getIt.isRegistered<NotificationService>()) {
           await getIt<NotificationService>().launchExternalUrl(url);
         } else {
-          try {
-            String formattedUrl = url.trim();
-            if (!formattedUrl.startsWith('http://') &&
-                !formattedUrl.startsWith('https://')) {
-              formattedUrl = 'https://$formattedUrl';
-            }
-            final uri = Uri.parse(formattedUrl);
-            if (await canLaunchUrl(uri)) {
-              await launchUrl(uri, mode: LaunchMode.externalApplication);
-            }
-          } catch (e) {
-            AppLogger.e(
-                'Failed to launch URL from notification payload: $url', e);
-          }
+          await UrlUtils.launchExternalUrl(url);
         }
         return;
       }

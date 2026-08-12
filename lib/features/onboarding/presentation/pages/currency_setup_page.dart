@@ -27,16 +27,53 @@ class CurrencyItem {
 }
 
 const List<CurrencyItem> defaultCurrencies = [
+  CurrencyItem(code: 'NPR', symbol: 'रू', name: 'Nepalese Rupee'),
   CurrencyItem(code: 'USD', symbol: '\$', name: 'United States Dollar'),
   CurrencyItem(code: 'EUR', symbol: '€', name: 'Euro'),
   CurrencyItem(code: 'GBP', symbol: '£', name: 'British Pound Sterling'),
+  CurrencyItem(code: 'INR', symbol: '₹', name: 'Indian Rupee'),
   CurrencyItem(code: 'JPY', symbol: '¥', name: 'Japanese Yen'),
   CurrencyItem(code: 'CAD', symbol: 'CA\$', name: 'Canadian Dollar'),
   CurrencyItem(code: 'AUD', symbol: 'A\$', name: 'Australian Dollar'),
-  CurrencyItem(code: 'NPR', symbol: 'रू', name: 'Nepalese Rupee'),
-  CurrencyItem(code: 'INR', symbol: '₹', name: 'Indian Rupee'),
   CurrencyItem(code: 'CHF', symbol: 'CHF', name: 'Swiss Franc'),
   CurrencyItem(code: 'CNY', symbol: '¥', name: 'Chinese Yuan'),
+  CurrencyItem(code: 'SGD', symbol: 'S\$', name: 'Singapore Dollar'),
+  CurrencyItem(code: 'AED', symbol: 'د.إ', name: 'United Arab Emirates Dirham'),
+  CurrencyItem(code: 'SAR', symbol: '﷼', name: 'Saudi Riyal'),
+  CurrencyItem(code: 'QAR', symbol: '﷼', name: 'Qatari Riyal'),
+  CurrencyItem(code: 'MYR', symbol: 'RM', name: 'Malaysian Ringgit'),
+  CurrencyItem(code: 'THB', symbol: '฿', name: 'Thai Baht'),
+  CurrencyItem(code: 'KRW', symbol: '₩', name: 'South Korean Won'),
+  CurrencyItem(code: 'HKD', symbol: 'HK\$', name: 'Hong Kong Dollar'),
+  CurrencyItem(code: 'NZD', symbol: 'NZ\$', name: 'New Zealand Dollar'),
+  CurrencyItem(code: 'BRL', symbol: 'R\$', name: 'Brazilian Real'),
+  CurrencyItem(code: 'MXN', symbol: 'Mex\$', name: 'Mexican Peso'),
+  CurrencyItem(code: 'ZAR', symbol: 'R', name: 'South African Rand'),
+  CurrencyItem(code: 'SEK', symbol: 'kr', name: 'Swedish Krona'),
+  CurrencyItem(code: 'NOK', symbol: 'kr', name: 'Norwegian Krone'),
+  CurrencyItem(code: 'DKK', symbol: 'kr', name: 'Danish Krone'),
+  CurrencyItem(code: 'PLN', symbol: 'zł', name: 'Polish Zloty'),
+  CurrencyItem(code: 'TRY', symbol: '₺', name: 'Turkish Lira'),
+  CurrencyItem(code: 'RUB', symbol: '₽', name: 'Russian Ruble'),
+  CurrencyItem(code: 'IDR', symbol: 'Rp', name: 'Indonesian Rupiah'),
+  CurrencyItem(code: 'PHP', symbol: '₱', name: 'Philippine Peso'),
+  CurrencyItem(code: 'VND', symbol: '₫', name: 'Vietnamese Dong'),
+  CurrencyItem(code: 'PKR', symbol: '₨', name: 'Pakistani Rupee'),
+  CurrencyItem(code: 'BDT', symbol: '৳', name: 'Bangladeshi Taka'),
+  CurrencyItem(code: 'LKR', symbol: 'Rs', name: 'Sri Lankan Rupee'),
+  CurrencyItem(code: 'EGP', symbol: 'E£', name: 'Egyptian Pound'),
+  CurrencyItem(code: 'NGN', symbol: '₦', name: 'Nigerian Naira'),
+  CurrencyItem(code: 'KES', symbol: 'KSh', name: 'Kenyan Shilling'),
+  CurrencyItem(code: 'GHS', symbol: 'GH₵', name: 'Ghanaian Cedi'),
+  CurrencyItem(code: 'ARS', symbol: '\$', name: 'Argentine Peso'),
+  CurrencyItem(code: 'CLP', symbol: '\$', name: 'Chilean Peso'),
+  CurrencyItem(code: 'COP', symbol: '\$', name: 'Colombian Peso'),
+  CurrencyItem(code: 'PEN', symbol: 'S/', name: 'Peruvian Sol'),
+  CurrencyItem(code: 'ILS', symbol: '₪', name: 'Israeli New Shekel'),
+  CurrencyItem(code: 'KWD', symbol: 'KD', name: 'Kuwaiti Dinar'),
+  CurrencyItem(code: 'BHD', symbol: 'BD', name: 'Bahraini Dinar'),
+  CurrencyItem(code: 'OMR', symbol: 'RO', name: 'Omani Rial'),
+  CurrencyItem(code: 'JOD', symbol: 'JD', name: 'Jordanian Dinar'),
 ];
 
 @RoutePage()
@@ -51,7 +88,7 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
   final TextEditingController _searchController = TextEditingController();
   final ValueNotifier<String> _searchQueryNotifier = ValueNotifier<String>('');
   final ValueNotifier<String> _selectedCodeNotifier =
-      ValueNotifier<String>('USD');
+      ValueNotifier<String>('NPR');
 
   void _onContinue() async {
     final selectedCode = _selectedCodeNotifier.value;

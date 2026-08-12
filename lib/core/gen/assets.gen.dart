@@ -57,18 +57,6 @@ class $AssetsImagesGen {
   AssetGenImage get expendlyIcon =>
       const AssetGenImage('assets/images/expendly_icon.png');
 
-  /// File path: assets/images/expendly_icon_dev.png
-  AssetGenImage get expendlyIconDev =>
-      const AssetGenImage('assets/images/expendly_icon_dev.png');
-
-  /// File path: assets/images/expendly_icon_light.png
-  AssetGenImage get expendlyIconLight =>
-      const AssetGenImage('assets/images/expendly_icon_light.png');
-
-  /// File path: assets/images/expendly_icon_qa.png
-  AssetGenImage get expendlyIconQa =>
-      const AssetGenImage('assets/images/expendly_icon_qa.png');
-
   /// File path: assets/images/expendly_logo.png
   AssetGenImage get expendlyLogo =>
       const AssetGenImage('assets/images/expendly_logo.png');
@@ -78,14 +66,8 @@ class $AssetsImagesGen {
       const AssetGenImage('assets/images/expendly_logo_light.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [
-        expendlyIcon,
-        expendlyIconDev,
-        expendlyIconLight,
-        expendlyIconQa,
-        expendlyLogo,
-        expendlyLogoLight
-      ];
+  List<AssetGenImage> get values =>
+      [expendlyIcon, expendlyLogo, expendlyLogoLight];
 }
 
 class Assets {

@@ -17,6 +17,7 @@ let package = Package(
     dependencies: [
         .package(name: "file_picker", path: "../.packages/file_picker-8.3.7"),
         .package(name: "firebase_core", path: "../.packages/firebase_core-3.15.2"),
+        .package(name: "firebase_crashlytics", path: "../.packages/firebase_crashlytics-4.3.10"),
         .package(name: "firebase_messaging", path: "../.packages/firebase_messaging-15.2.10"),
         .package(name: "firebase_remote_config", path: "../.packages/firebase_remote_config-5.5.0"),
         .package(name: "google_mobile_ads", path: "../.packages/google_mobile_ads-9.0.0"),
@@ -37,6 +38,7 @@ let package = Package(
             dependencies: [
                 .product(name: "file-picker", package: "file_picker"),
                 .product(name: "firebase-core", package: "firebase_core"),
+                .product(name: "firebase-crashlytics", package: "firebase_crashlytics"),
                 .product(name: "firebase-messaging", package: "firebase_messaging"),
                 .product(name: "firebase-remote-config", package: "firebase_remote_config"),
                 .product(name: "google-mobile-ads", package: "google_mobile_ads"),

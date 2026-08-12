@@ -19,7 +19,6 @@ import '../../../analytics/presentation/pages/refined_reports_page.dart';
 import '../../../budgets/presentation/cubit/budget_cubit.dart';
 import '../../../budgets/presentation/cubit/budget_state.dart';
 import '../../../budgets/presentation/pages/budgets_overview_page.dart';
-import '../../../profile/presentation/cubit/profile_cubit.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
 import '../../../transactions/presentation/pages/all_transactions_page.dart';
 import '../../domain/entities/financial_summary.dart';
@@ -141,7 +140,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   extendBody: true,
                   backgroundColor: context.colorScheme.surface,
                   body: IndexedStack(
-                    index: currentTab,
+                    index: currentTab.clamp(0, 2),
                     children: [
                       // Tab 0: Overview
                       _buildOverviewTab(context),
@@ -153,9 +152,6 @@ class _DashboardPageState extends State<DashboardPage> {
                       // Tab 2: Budgets Overview
                       BudgetsOverviewPage(
                           isPrivacyModeNotifier: _isPrivacyModeNotifier),
-
-                      // Tab 3: Settings
-                      const SettingsPage(),
                     ],
                   ),
 
@@ -165,8 +161,19 @@ class _DashboardPageState extends State<DashboardPage> {
                     builder: (context, currentTab, _) {
                       return _FloatingBottomNavBar(
                         currentTab: currentTab,
-                        onTabSelected: (index) =>
-                            _currentTabNotifier.value = index,
+                        onTabSelected: (index) {
+                          if (index == 3) {
+                            HapticFeedback.selectionClick();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (_) => const SettingsPage(),
+                              ),
+                            );
+                          } else {
+                            _currentTabNotifier.value = index;
+                          }
+                        },
                         onCenterFabPressed: () =>
                             _handleCenterFabPress(context, currentTab),
                       );
@@ -182,25 +189,13 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildOverviewTab(BuildContext context) {
-    return Column(
-      children: [
-        // Glass Header
-        DashboardHeader(
-          isPrivacyModeNotifier: _isPrivacyModeNotifier,
-          onReportsPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (_) => RefinedReportsPage(
-                  isPrivacyModeNotifier: _isPrivacyModeNotifier,
-                ),
-              ),
-            );
-          },
-        ),
+    final topInset = MediaQuery.of(context).padding.top;
+    final headerPaddingTop = topInset + 64.h;
 
-        // Scrollable Dashboard Body with Smooth Animated Shimmer Cross-Fade
-        Expanded(
+    return Stack(
+      children: [
+        // 1. Scrollable Dashboard Body (Scrolls UNDER the glass header)
+        Positioned.fill(
           child: BlocBuilder<DashboardCubit, DashboardState>(
             buildWhen: (previous, current) {
               if (previous.runtimeType != current.runtimeType) return true;
@@ -211,9 +206,36 @@ class _DashboardPageState extends State<DashboardPage> {
             },
             builder: (context, state) {
               if (state is DashboardLoading) {
-                return const DashboardShimmer(key: ValueKey('shimmer'));
+                return Padding(
+                  padding: EdgeInsets.only(top: headerPaddingTop),
+                  child: const DashboardShimmer(key: ValueKey('shimmer')),
+                );
               }
-              return _buildLoadedOrErrorContent(context, state);
+              return _buildLoadedOrErrorContent(
+                context,
+                state,
+                headerPaddingTop,
+              );
+            },
+          ),
+        ),
+
+        // 2. Pinned Liquid Glass Header
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: DashboardHeader(
+            isPrivacyModeNotifier: _isPrivacyModeNotifier,
+            onReportsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (_) => RefinedReportsPage(
+                    isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                  ),
+                ),
+              );
             },
           ),
         ),
@@ -222,14 +244,20 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildLoadedOrErrorContent(
-      BuildContext context, DashboardState state) {
+    BuildContext context,
+    DashboardState state,
+    double headerPaddingTop,
+  ) {
     if (state is DashboardError) {
-      return Center(
-        key: const ValueKey('error'),
-        child: Text(
-          context.l10n.errorMessage(state.message),
-          style: (context.textTheme.bodyLarge ?? const TextStyle()).copyWith(
-            color: context.colorScheme.error,
+      return Padding(
+        padding: EdgeInsets.only(top: headerPaddingTop),
+        child: Center(
+          key: const ValueKey('error'),
+          child: Text(
+            context.l10n.errorMessage(state.message),
+            style: (context.textTheme.bodyLarge ?? const TextStyle()).copyWith(
+              color: context.colorScheme.error,
+            ),
           ),
         ),
       );
@@ -242,21 +270,31 @@ class _DashboardPageState extends State<DashboardPage> {
           summary.totalExpense == 0;
 
       if (isEmptyState) {
-        return EmptyDashboardView(
-          key: const ValueKey('empty'),
-          onAddTransaction: () {
-            _openAddTransaction(context);
-          },
+        return Padding(
+          padding: EdgeInsets.only(top: headerPaddingTop),
+          child: EmptyDashboardView(
+            key: const ValueKey('empty'),
+            onAddTransaction: () {
+              _openAddTransaction(context);
+            },
+          ),
         );
       }
 
       return RefreshIndicator(
         key: const ValueKey('loaded_content'),
         color: AppColors.primary,
+        edgeOffset: headerPaddingTop,
+        displacement: 30.h,
         onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.only(bottom: 120.h),
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          padding: EdgeInsets.only(
+            top: headerPaddingTop + 8.h,
+            bottom: 120.h,
+          ),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 600),
@@ -391,33 +429,33 @@ class _FloatingBottomNavBar extends StatelessWidget {
               colors: isLight
                   ? [
                       colorScheme.surfaceContainerLowest
-                          .withValues(alpha: 0.50),
-                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.40),
+                          .withValues(alpha: 0.25),
+                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.15),
                     ]
                   : [
-                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.45),
-                      colorScheme.surfaceContainerLow.withValues(alpha: 0.35),
+                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.22),
+                      colorScheme.surfaceContainerLow.withValues(alpha: 0.12),
                     ],
             ),
             border: Border.all(
               color: isLight
-                  ? Colors.white.withValues(alpha: 0.6)
-                  : customColors.glassStroke,
+                  ? Colors.white.withValues(alpha: 0.45)
+                  : customColors.glassStroke.withValues(alpha: 0.5),
               width: 1.2,
             ),
             boxShadow: [
               // Liquid Ambient Highlight Glow
               BoxShadow(
                 color: isLight
-                    ? Colors.white.withValues(alpha: 0.5)
-                    : colorScheme.primary.withValues(alpha: 0.08),
+                    ? Colors.white.withValues(alpha: 0.3)
+                    : colorScheme.primary.withValues(alpha: 0.05),
                 blurRadius: 10.r,
                 spreadRadius: -2.r,
                 offset: const Offset(0, -2),
               ),
               // Soft Liquid Glass Drop Shadow
               BoxShadow(
-                color: Colors.black.withValues(alpha: isLight ? 0.12 : 0.28),
+                color: Colors.black.withValues(alpha: isLight ? 0.08 : 0.20),
                 blurRadius: 30.r,
                 spreadRadius: 2.r,
                 offset: const Offset(0, 10),
@@ -427,56 +465,59 @@ class _FloatingBottomNavBar extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(32.r),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-              child: Row(
-                children: [
-                  // Tab 0: Overview
-                  Expanded(
-                    child: _NavBarItem(
-                      icon: Icons.dashboard_outlined,
-                      activeIcon: Icons.dashboard_rounded,
-                      label: l10n.overview,
-                      isSelected: currentTab == 0,
-                      onTap: () => onTabSelected(0),
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                child: Row(
+                  children: [
+                    // Tab 0: Overview
+                    Expanded(
+                      child: _NavBarItem(
+                        icon: Icons.dashboard_outlined,
+                        activeIcon: Icons.dashboard_rounded,
+                        label: l10n.overview,
+                        isSelected: currentTab == 0,
+                        onTap: () => onTabSelected(0),
+                      ),
                     ),
-                  ),
 
-                  // Tab 1: Activity
-                  Expanded(
-                    child: _NavBarItem(
-                      icon: Icons.receipt_long_outlined,
-                      activeIcon: Icons.receipt_long_rounded,
-                      label: l10n.activity,
-                      isSelected: currentTab == 1,
-                      onTap: () => onTabSelected(1),
+                    // Tab 1: Activity
+                    Expanded(
+                      child: _NavBarItem(
+                        icon: Icons.receipt_long_outlined,
+                        activeIcon: Icons.receipt_long_rounded,
+                        label: l10n.activity,
+                        isSelected: currentTab == 1,
+                        onTap: () => onTabSelected(1),
+                      ),
                     ),
-                  ),
 
-                  // Gap space for docked center FAB
-                  SizedBox(width: fabSize + 8.w),
+                    // Gap space for docked center FAB
+                    SizedBox(width: fabSize + 8.w),
 
-                  // Tab 2: Budgets
-                  Expanded(
-                    child: _NavBarItem(
-                      icon: Icons.account_balance_wallet_outlined,
-                      activeIcon: Icons.account_balance_wallet_rounded,
-                      label: l10n.budgets,
-                      isSelected: currentTab == 2,
-                      onTap: () => onTabSelected(2),
+                    // Tab 2: Budgets
+                    Expanded(
+                      child: _NavBarItem(
+                        icon: Icons.account_balance_wallet_outlined,
+                        activeIcon: Icons.account_balance_wallet_rounded,
+                        label: l10n.budgets,
+                        isSelected: currentTab == 2,
+                        onTap: () => onTabSelected(2),
+                      ),
                     ),
-                  ),
 
-                  // Tab 3: Settings
-                  Expanded(
-                    child: _NavBarItem(
-                      icon: Icons.settings_outlined,
-                      activeIcon: Icons.settings_rounded,
-                      label: l10n.settings,
-                      isSelected: currentTab == 3,
-                      onTap: () => onTabSelected(3),
+                    // Tab 3: Settings
+                    Expanded(
+                      child: _NavBarItem(
+                        icon: Icons.settings_outlined,
+                        activeIcon: Icons.settings_rounded,
+                        label: l10n.settings,
+                        isSelected: currentTab == 3,
+                        onTap: () => onTabSelected(3),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

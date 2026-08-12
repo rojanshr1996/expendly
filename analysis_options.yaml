@@ -5,6 +5,9 @@ analyzer:
     - "**/*.g.dart"
     - "lib/core/gen/**"
     - "build/**"
+    - "**/build/**"
+    - "android/**"
+    - "ios/**"
     - ".dart_tool/**"
 linter:
   rules:

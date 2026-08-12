@@ -32,7 +32,7 @@ class CompactAmountText extends StatefulWidget {
     this.isIncome,
     this.type,
     this.compact = true,
-    this.animate = false,
+    this.animate = true,
   });
 
   @override
@@ -45,7 +45,7 @@ class _CompactAmountTextState extends State<CompactAmountText> {
   @override
   void initState() {
     super.initState();
-    _previousAmount = widget.amount;
+    _previousAmount = widget.animate ? 0 : widget.amount;
   }
 
   @override
@@ -182,7 +182,7 @@ class _CompactAmountTextState extends State<CompactAmountText> {
               begin: _previousAmount.toDouble(),
               end: widget.amount.toDouble(),
             ),
-            duration: const Duration(milliseconds: 350),
+            duration: const Duration(milliseconds: 600),
             curve: Curves.easeOutCubic,
             builder: (context, animVal, _) {
               final displayText = animVal.formatCurrency(

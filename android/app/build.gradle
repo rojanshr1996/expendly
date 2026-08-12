@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
     id "com.google.gms.google-services"
+    id "com.google.firebase.crashlytics"
 }
 
 def localProperties = new Properties()
@@ -16,14 +17,23 @@ if (localPropertiesFile.exists()) {
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
 def hasKeystore = false
+def resolvedKeystoreFile = null
 
 if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.withReader('UTF-8') { reader ->
         keystoreProperties.load(reader)
     }
     def storeFilePath = keystoreProperties.getProperty('storeFile')
-    if (storeFilePath != null && !storeFilePath.trim().isEmpty() && rootProject.file(storeFilePath).exists()) {
-        hasKeystore = true
+    if (storeFilePath != null && !storeFilePath.trim().isEmpty()) {
+        def fileCandidates = [
+            rootProject.file(storeFilePath),
+            file(storeFilePath),
+            new File(keystorePropertiesFile.parentFile, storeFilePath)
+        ]
+        resolvedKeystoreFile = fileCandidates.find { it != null && it.exists() }
+        if (resolvedKeystoreFile != null) {
+            hasKeystore = true
+        }
     }
 }
 
@@ -69,7 +79,7 @@ android {
             release {
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
-                storeFile rootProject.file(keystoreProperties['storeFile'])
+                storeFile resolvedKeystoreFile
                 storePassword keystoreProperties['storePassword']
             }
         }
@@ -97,6 +107,9 @@ android {
     buildTypes {
         release {
             signingConfig (hasKeystore ? signingConfigs.release : signingConfigs.debug)
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }

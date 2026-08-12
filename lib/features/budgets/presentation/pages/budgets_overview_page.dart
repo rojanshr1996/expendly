@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -228,17 +230,94 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
         }
       }
 
-      return RefreshIndicator(
-        key: const ValueKey('loaded_content'),
-        color: AppColors.primary,
-        onRefresh: () => context.read<BudgetCubit>().loadBudgets(),
-        child: ListView(
-          physics: const BouncingScrollPhysics(),
-          padding:
-              const EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 120),
-          children: [
-            // Total Budget Health Summary Card (Stagger Delay 0ms)
-            _StaggeredEntrance(
+      return Stack(
+        children: [
+          // 1. Scrollable Content (Banner Ad, Category Header, Budget Cards scroll UNDER pinned Total Budget Health section)
+          Positioned.fill(
+            child: RefreshIndicator(
+              key: const ValueKey('loaded_content'),
+              color: AppColors.primary,
+              onRefresh: () => context.read<BudgetCubit>().loadBudgets(),
+              child: ListView(
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.only(
+                  left: 20.w,
+                  right: 20.w,
+                  top: 215.h,
+                  bottom: 120.h,
+                ),
+                children: [
+                  // Banner Ad
+                  BannerAdWidget(adUnitId: AdHelper.bannerAdUnitId),
+
+                  const SizedBox(height: 12),
+
+                  // Section Header (Stagger Delay 100ms)
+                  _StaggeredEntrance(
+                    delayMs: 100,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Categories',
+                          style: customTypography.bodyLargeBold.copyWith(
+                            color: colorScheme.onSurface,
+                            fontSize: 18.sp,
+                          ),
+                        ),
+                        Text(
+                          '${budgets.length} Active',
+                          style: customTypography.labelMediumMono.copyWith(
+                            color: colorScheme.outline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Budgets List with Staggered Entrance Animations
+                  ...budgets.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    final isSelected = item.id == _selectedBudgetId;
+
+                    return _StaggeredEntrance(
+                      delayMs: 150 + (index * 60),
+                      child: _BudgetCard(
+                        item: item,
+                        isSelected: isSelected,
+                        isPrivacyModeNotifier: widget.isPrivacyModeNotifier,
+                        onTap: () {
+                          setState(() {
+                            if (_selectedBudgetId == item.id) {
+                              _selectedBudgetId = null;
+                            } else {
+                              _selectedBudgetId = item.id;
+                            }
+                          });
+                        },
+                        onDelete: () {
+                          if (_selectedBudgetId == item.id) {
+                            _selectedBudgetId = null;
+                          }
+                          context.read<BudgetCubit>().deleteBudget(item.id);
+                        },
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+
+          // 2. Fixed Non-Scrollable Pinned Total Budget Health Component at Top
+          Positioned(
+            top: 12.h,
+            left: 20.w,
+            right: 20.w,
+            child: _StaggeredEntrance(
               delayMs: 0,
               child: _TotalBudgetHealthCard(
                 budgets: budgets,
@@ -251,71 +330,8 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
                 },
               ),
             ),
-
-            const SizedBox(height: 12),
-
-            // Banner Ad
-            BannerAdWidget(adUnitId: AdHelper.bannerAdUnitId),
-
-            const SizedBox(height: 12),
-
-            // Section Header (Stagger Delay 100ms)
-            _StaggeredEntrance(
-              delayMs: 100,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Categories',
-                    style: customTypography.bodyLargeBold.copyWith(
-                      color: colorScheme.onSurface,
-                      fontSize: 18.sp,
-                    ),
-                  ),
-                  Text(
-                    '${budgets.length} Active',
-                    style: customTypography.labelMediumMono.copyWith(
-                      color: colorScheme.outline,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // Budgets List with Staggered Entrance Animations
-            ...budgets.asMap().entries.map((entry) {
-              final index = entry.key;
-              final item = entry.value;
-              final isSelected = item.id == _selectedBudgetId;
-
-              return _StaggeredEntrance(
-                delayMs: 150 + (index * 60),
-                child: _BudgetCard(
-                  item: item,
-                  isSelected: isSelected,
-                  isPrivacyModeNotifier: widget.isPrivacyModeNotifier,
-                  onTap: () {
-                    setState(() {
-                      if (_selectedBudgetId == item.id) {
-                        _selectedBudgetId = null;
-                      } else {
-                        _selectedBudgetId = item.id;
-                      }
-                    });
-                  },
-                  onDelete: () {
-                    if (_selectedBudgetId == item.id) {
-                      _selectedBudgetId = null;
-                    }
-                    context.read<BudgetCubit>().deleteBudget(item.id);
-                  },
-                ),
-              );
-            }),
-          ],
-        ),
+          ),
+        ],
       );
     }
 
@@ -361,25 +377,14 @@ class _TotalBudgetHealthCard extends StatelessWidget {
 
         return GestureDetector(
           onTap: selectedItem != null ? onResetSelection : null,
-          child: Container(
+          child: _BudgetsLiquidGlassCard(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  colorScheme.primary.withValues(alpha: 0.12),
-                  colorScheme.secondary.withValues(alpha: 0.10),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: selectedItem != null
-                    ? colorScheme.primary.withValues(alpha: 0.5)
-                    : customColors.glassStroke,
-                width: selectedItem != null ? 1.5 : 1.0,
-              ),
-            ),
+            customBorder: selectedItem != null
+                ? Border.all(
+                    color: colorScheme.primary.withValues(alpha: 0.6),
+                    width: 1.5,
+                  )
+                : null,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -807,6 +812,76 @@ class _StaggeredEntrance extends StatelessWidget {
         );
       },
       child: child,
+    );
+  }
+}
+
+class _BudgetsLiquidGlassCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+  final Border? customBorder;
+
+  const _BudgetsLiquidGlassCard({
+    required this.child,
+    this.padding,
+    this.customBorder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final br = BorderRadius.circular(24.r);
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: br,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isLight
+              ? [
+                  colorScheme.surfaceContainerLowest.withValues(alpha: 0.35),
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.20),
+                ]
+              : [
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.25),
+                  colorScheme.surfaceContainerLow.withValues(alpha: 0.15),
+                ],
+        ),
+        border: customBorder ??
+            Border.all(
+              color: isLight
+                  ? Colors.white.withValues(alpha: 0.50)
+                  : customColors.glassStroke.withValues(alpha: 0.40),
+              width: 1.0,
+            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withValues(alpha: isLight ? 0.5 : 0.0),
+            blurRadius: 6.r,
+            spreadRadius: -1.r,
+            offset: const Offset(0, -1),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isLight ? 0.06 : 0.18),
+            blurRadius: 12.r,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: br,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Padding(
+            padding: padding ?? EdgeInsets.zero,
+            child: child,
+          ),
+        ),
+      ),
     );
   }
 }

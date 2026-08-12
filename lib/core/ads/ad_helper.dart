@@ -1,8 +1,14 @@
 import 'dart:io';
 
+import 'package:expendly/core/config/app_config.dart';
+
 class AdHelper {
-  // Test Ad Unit IDs provided by Google
+  static const _prodAdUnitId = 'ca-app-pub-6085838191865376/8343302097';
+
   static String get bannerAdUnitId {
+    if (AppConfig.instance.isProd) return _prodAdUnitId;
+
+    // Test Ad Unit IDs provided by Google
     if (Platform.isAndroid) {
       return 'ca-app-pub-3940256099942544/6300978111';
     } else if (Platform.isIOS) {
@@ -13,6 +19,9 @@ class AdHelper {
   }
 
   static String get interstitialAdUnitId {
+    if (AppConfig.instance.isProd) return _prodAdUnitId;
+
+    // Test Ad Unit IDs provided by Google
     if (Platform.isAndroid) {
       return 'ca-app-pub-3940256099942544/1033173712';
     } else if (Platform.isIOS) {

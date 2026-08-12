@@ -1,0 +1,5 @@
+# Expendly Authorized Digital Sellers (app-ads.txt)
+# Official Google AdMob app-ads.txt verification file for Expendly App
+# Developer Website: https://expendly.web.app
+
+google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
