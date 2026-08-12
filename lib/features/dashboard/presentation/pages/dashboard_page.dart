@@ -1,291 +1,367 @@
+import 'dart:ui';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/ads/interstitial_ad_helper.dart';
+import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/theme/app_radius.dart';
-import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/extensions/padding_extensions.dart';
+import '../../../../core/router/app_router.gr.dart';
+import '../../../../core/services/preference_service.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/usecase/usecase.dart';
+import '../../../../core/widgets/status_components.dart';
+import '../../../analytics/presentation/pages/refined_reports_page.dart';
+import '../../../budgets/presentation/cubit/budget_cubit.dart';
+import '../../../budgets/presentation/cubit/budget_state.dart';
+import '../../../budgets/presentation/pages/budgets_overview_page.dart';
+import '../../../settings/presentation/pages/settings_page.dart';
+import '../../../transactions/presentation/pages/all_transactions_page.dart';
 import '../../domain/entities/financial_summary.dart';
 import '../../domain/repositories/dashboard_repository.dart';
 import '../../domain/usecases/get_financial_summary.dart';
 import '../cubit/dashboard_cubit.dart';
 import '../cubit/dashboard_state.dart';
-import '../widgets/summary_card.dart';
+import '../widgets/dashboard_bento_grid.dart';
+import '../widgets/dashboard_cash_flow_chart.dart';
+import '../widgets/dashboard_header.dart';
+import '../widgets/dashboard_recent_activity.dart';
+import '../widgets/dashboard_shimmer.dart';
+import '../widgets/empty_dashboard_view.dart';
 
 @RoutePage()
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) {
-        try {
-          return getIt<DashboardCubit>()..loadDashboardData();
-        } catch (_) {
-          return DashboardCubit(_FallbackGetFinancialSummary())..loadDashboardData();
-        }
-      },
-      child: const _DashboardView(),
-    );
-  }
+  State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _DashboardView extends StatelessWidget {
-  const _DashboardView();
+class _DashboardPageState extends State<DashboardPage> {
+  final ValueNotifier<int> _currentTabNotifier = ValueNotifier<int>(0);
+  final ValueNotifier<bool> _isPrivacyModeNotifier = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _isPrivacyModeNotifier.dispose();
+    _currentTabNotifier.dispose();
+    super.dispose();
+  }
+
+  void _openAddTransaction(BuildContext context) async {
+    final result = await context.router.push(ModernAddTransactionRoute());
+    if (result == true && mounted) {
+      context.read<DashboardCubit>().loadDashboardData();
+    }
+  }
+
+  void _handleCenterFabPress(BuildContext context, int currentTab) async {
+    if (currentTab == 2) {
+      final cubit = getIt<BudgetCubit>();
+      int currentBudgetCount = 0;
+      if (cubit.state is BudgetLoaded) {
+        currentBudgetCount = (cubit.state as BudgetLoaded).budgets.length;
+      }
+
+      if (currentBudgetCount >= 4) {
+        StatusComponents.showToast(
+          context,
+          message: 'Maximum limit of 4 budgets reached.',
+          isError: true,
+        );
+        return;
+      }
+
+      Future<void> navigateToCreate() async {
+        final result = await context.router.push(CreateNewBudgetRoute(
+          onSaved: () {
+            cubit.loadBudgets();
+          },
+        ));
+        if (result == true && mounted) {
+          cubit.loadBudgets();
+        }
+      }
+
+      if (currentBudgetCount >= 2) {
+        InterstitialAdHelper.showAd(
+          onAdDismissed: () {
+            if (mounted) {
+              navigateToCreate();
+            }
+          },
+        );
+      } else {
+        navigateToCreate();
+      }
+    } else {
+      _openAddTransaction(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final colorScheme = context.colorScheme;
-    final textTheme = context.textTheme;
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<DashboardCubit>(
+          create: (_) => getIt<DashboardCubit>()..loadDashboardData(),
+        ),
+        BlocProvider<BudgetCubit>.value(
+          value: () {
+            try {
+              final cubit = getIt<BudgetCubit>();
+              if (!cubit.isClosed) {
+                cubit.loadBudgets();
+              }
+              return cubit;
+            } catch (_) {
+              return getIt<BudgetCubit>();
+            }
+          }(),
+        ),
+      ],
+      child: Builder(
+        builder: (context) {
+          return ValueListenableBuilder<int>(
+            valueListenable: _currentTabNotifier,
+            builder: (context, currentTab, _) {
+              return PopScope(
+                canPop: currentTab == 0,
+                onPopInvokedWithResult: (didPop, _) {
+                  if (!didPop) {
+                    _currentTabNotifier.value = 0;
+                  }
+                },
+                child: Scaffold(
+                  extendBody: true,
+                  backgroundColor: context.colorScheme.surface,
+                  body: IndexedStack(
+                    index: currentTab.clamp(0, 2),
+                    children: [
+                      // Tab 0: Overview
+                      _buildOverviewTab(context),
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          l10n.appName,
-          style: (textTheme.headlineMedium ?? const TextStyle()).copyWith(
-            color: colorScheme.primary,
+                      // Tab 1: Activity / All Transactions
+                      AllTransactionsPage(
+                          isPrivacyModeNotifier: _isPrivacyModeNotifier),
+
+                      // Tab 2: Budgets Overview
+                      BudgetsOverviewPage(
+                          isPrivacyModeNotifier: _isPrivacyModeNotifier),
+                    ],
+                  ),
+
+                  // Floating Bottom Navigation Bar with Center Add FAB
+                  bottomNavigationBar: ValueListenableBuilder<int>(
+                    valueListenable: _currentTabNotifier,
+                    builder: (context, currentTab, _) {
+                      return _FloatingBottomNavBar(
+                        currentTab: currentTab,
+                        onTabSelected: (index) {
+                          if (index == 3) {
+                            HapticFeedback.selectionClick();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (_) => const SettingsPage(),
+                              ),
+                            );
+                          } else {
+                            _currentTabNotifier.value = index;
+                          }
+                        },
+                        onCenterFabPressed: () =>
+                            _handleCenterFabPress(context, currentTab),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildOverviewTab(BuildContext context) {
+    final topInset = MediaQuery.of(context).padding.top;
+    final headerPaddingTop = topInset + 64.h;
+
+    return Stack(
+      children: [
+        // 1. Scrollable Dashboard Body (Scrolls UNDER the glass header)
+        Positioned.fill(
+          child: BlocBuilder<DashboardCubit, DashboardState>(
+            buildWhen: (previous, current) {
+              if (previous.runtimeType != current.runtimeType) return true;
+              if (previous is DashboardLoaded && current is DashboardLoaded) {
+                return previous.summary != current.summary;
+              }
+              return true;
+            },
+            builder: (context, state) {
+              if (state is DashboardLoading) {
+                return Padding(
+                  padding: EdgeInsets.only(top: headerPaddingTop),
+                  child: const DashboardShimmer(key: ValueKey('shimmer')),
+                );
+              }
+              return _buildLoadedOrErrorContent(
+                context,
+                state,
+                headerPaddingTop,
+              );
+            },
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_none_rounded, color: colorScheme.onSurface),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.tune_rounded, color: colorScheme.onSurface),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: BlocBuilder<DashboardCubit, DashboardState>(
-        builder: (context, state) {
-          if (state is DashboardLoading) {
-            return Center(
-              child: CircularProgressIndicator(color: colorScheme.primary),
-            );
-          }
 
-          if (state is DashboardError) {
-            return Center(
-              child: Text(
-                'Error: ${state.message}',
-                style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(color: colorScheme.error),
-              ),
-            );
-          }
+        // 2. Pinned Liquid Glass Header
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: DashboardHeader(
+            isPrivacyModeNotifier: _isPrivacyModeNotifier,
+            onReportsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (_) => RefinedReportsPage(
+                    isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
 
-          if (state is DashboardLoaded) {
-            return SingleChildScrollView(
-              padding: AppSpacing.paddingHorizontalContainer,
+  Widget _buildLoadedOrErrorContent(
+    BuildContext context,
+    DashboardState state,
+    double headerPaddingTop,
+  ) {
+    if (state is DashboardError) {
+      return Padding(
+        padding: EdgeInsets.only(top: headerPaddingTop),
+        child: Center(
+          key: const ValueKey('error'),
+          child: Text(
+            context.l10n.errorMessage(state.message),
+            style: (context.textTheme.bodyLarge ?? const TextStyle()).copyWith(
+              color: context.colorScheme.error,
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (state is DashboardLoaded) {
+      final summary = state.summary;
+      final bool isEmptyState = summary.recentTransactions.isEmpty &&
+          summary.totalIncome == 0 &&
+          summary.totalExpense == 0;
+
+      if (isEmptyState) {
+        return Padding(
+          padding: EdgeInsets.only(top: headerPaddingTop),
+          child: EmptyDashboardView(
+            key: const ValueKey('empty'),
+            onAddTransaction: () {
+              _openAddTransaction(context);
+            },
+          ),
+        );
+      }
+
+      return RefreshIndicator(
+        key: const ValueKey('loaded_content'),
+        color: AppColors.primary,
+        edgeOffset: headerPaddingTop,
+        displacement: 30.h,
+        onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          padding: EdgeInsets.only(
+            top: headerPaddingTop + 8.h,
+            bottom: 120.h,
+          ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AppSpacing.gapContainer,
-                  SummaryCard(summary: state.summary),
-                  AppSpacing.gapContainer,
-                  _buildQuickActions(context),
-                  AppSpacing.gapContainer,
-                  _buildRecentActivityHeader(context),
-                  AppSpacing.gapGutter,
-                  _buildMockTransactionList(context),
-                  AppSpacing.gapSection,
+                  // Summary Bento Grid Cards (Stagger Delay 0ms)
+                  _StaggeredEntrance(
+                    delayMs: 0,
+                    child: DashboardBentoGrid(
+                      summary: summary,
+                      isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                    ),
+                  ),
+                  verticalMarginMedium,
+
+                  // Cash Flow Summary Section (Stagger Delay 100ms)
+                  const _StaggeredEntrance(
+                    delayMs: 100,
+                    child: DashboardCashFlowChart(),
+                  ),
+                  verticalMarginMedium,
+
+                  // Recent Activity Section (Stagger Delay 200ms)
+                  _StaggeredEntrance(
+                    delayMs: 200,
+                    child: DashboardRecentActivity(
+                      transactions: summary.recentTransactions,
+                      currencySymbol: summary.currencySymbol,
+                      isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                      onSeeAllPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (_) => AllTransactionsPage(
+                              isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  verticalMarginLarge,
                 ],
-              ),
-            );
-          }
-
-          return const SizedBox.shrink();
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        icon: const Icon(Icons.add_rounded),
-        label: Text(
-          l10n.addExpense,
-          style: (textTheme.bodyMedium ?? const TextStyle()).copyWith(
-            fontWeight: FontWeight.w600,
-            color: colorScheme.onPrimary,
+              ).defaultCanvasPadding(),
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
-  Widget _buildQuickActions(BuildContext context) {
-    final l10n = context.l10n;
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.add_rounded),
-            label: Text(l10n.addTransaction),
-          ),
-        ),
-        AppSpacing.gapHorizontalGutter,
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.pie_chart_outline_rounded),
-            label: Text(l10n.analytics),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRecentActivityHeader(BuildContext context) {
-    final l10n = context.l10n;
-    final colorScheme = context.colorScheme;
-    final textTheme = context.textTheme;
-    final customTypography = context.customTypography;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          l10n.recentActivity,
-          style: (textTheme.headlineMedium ?? const TextStyle()).copyWith(fontSize: 20.sp),
-        ),
-        TextButton(
-          onPressed: () {},
-          child: Text(
-            l10n.seeAll,
-            style: customTypography.labelMediumMono.copyWith(color: colorScheme.primary),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMockTransactionList(BuildContext context) {
-    final l10n = context.l10n;
-    final colorScheme = context.colorScheme;
-    final customColors = context.customColors;
-
-    final mockItems = [
-      _TransactionItem(
-        title: l10n.groceryShopping,
-        category: l10n.foodAndDining,
-        amount: '-\$124.50',
-        date: '${l10n.today}, 14:30',
-        icon: Icons.shopping_bag_outlined,
-        color: colorScheme.tertiary,
-      ),
-      _TransactionItem(
-        title: l10n.freelancePayout,
-        category: l10n.income,
-        amount: '+\$1,200.00',
-        date: l10n.yesterday,
-        icon: Icons.account_balance_wallet_outlined,
-        color: customColors.semanticGreen,
-        isIncome: true,
-      ),
-      _TransactionItem(
-        title: l10n.netflixSubscription,
-        category: l10n.entertainment,
-        amount: '-\$15.99',
-        date: 'Jul 22, 2026',
-        icon: Icons.movie_creation_outlined,
-        color: colorScheme.secondary,
-      ),
-    ];
-
-    return Column(
-      children: mockItems.map((item) => _TransactionTile(item: item)).toList(),
-    );
+    return const SizedBox.shrink(key: ValueKey('none'));
   }
 }
 
-class _TransactionItem {
-  final String title;
-  final String category;
-  final String amount;
-  final String date;
-  final IconData icon;
-  final Color color;
-  final bool isIncome;
+class _StaggeredEntrance extends StatelessWidget {
+  final Widget child;
+  final int delayMs;
 
-  _TransactionItem({
-    required this.title,
-    required this.category,
-    required this.amount,
-    required this.date,
-    required this.icon,
-    required this.color,
-    this.isIncome = false,
+  const _StaggeredEntrance({
+    required this.child,
+    this.delayMs = 0,
   });
-}
-
-class _TransactionTile extends StatelessWidget {
-  final _TransactionItem item;
-
-  const _TransactionTile({required this.item});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    final textTheme = context.textTheme;
-    final customColors = context.customColors;
-    final customTypography = context.customTypography;
-
-    return Container(
-      margin: EdgeInsets.only(bottom: 16.h),
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: customColors.surfaceLow,
-        borderRadius: AppRadius.borderLg,
-        border: Border.all(color: customColors.glassStroke, width: 1.0),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(10.w),
-            decoration: BoxDecoration(
-              color: item.color.withValues(alpha: 0.1),
-              borderRadius: AppRadius.borderLg,
-            ),
-            child: Icon(item.icon, color: item.color, size: 20.sp),
-          ),
-          AppSpacing.gapHorizontalGutter,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.title,
-                  style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(fontWeight: FontWeight.w600),
-                ),
-                AppSpacing.gapTight,
-                Text(
-                  item.category,
-                  style: textTheme.bodyMedium,
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                item.amount,
-                style: customTypography.amountDisplay.copyWith(
-                  fontSize: 16.sp,
-                  color: item.isIncome ? customColors.semanticGreen : colorScheme.onSurface,
-                ),
-              ),
-              AppSpacing.gapTight,
-              Text(item.date, style: customTypography.labelMediumMono),
-            ],
-          ),
-        ],
-      ),
-    );
+    return child;
   }
 }
 
@@ -297,12 +373,255 @@ class _FallbackGetFinancialSummary implements GetFinancialSummary {
   Future<FinancialSummary> call(NoParams params) async {
     final now = DateTime.now();
     return FinancialSummary(
-      totalBalance: 14850.50,
-      totalIncome: 18500.00,
-      totalExpense: 3649.50,
-      currencySymbol: '\$',
+      totalBalance: 0.0,
+      totalIncome: 0.0,
+      totalExpense: 0.0,
+      monthlyBudgetLimit: 5000.00,
+      currencySymbol: getIt<PreferenceService>().currencySymbol,
       periodStart: DateTime(now.year, now.month, 1),
       periodEnd: now,
+      recentTransactions: const [],
+      categoryBreakdowns: const [],
+    );
+  }
+}
+
+class _FloatingBottomNavBar extends StatelessWidget {
+  final int currentTab;
+  final ValueChanged<int> onTabSelected;
+  final VoidCallback onCenterFabPressed;
+
+  const _FloatingBottomNavBar({
+    required this.currentTab,
+    required this.onTabSelected,
+    required this.onCenterFabPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final l10n = context.l10n;
+
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final double fabSize = 54.w;
+    final double barHeight = 64.h;
+    final double bottomMargin =
+        16.h + MediaQuery.of(context).viewPadding.bottom * 0.4;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.bottomCenter,
+      children: [
+        // 1. Liquid Glass Floating Bar Container
+        Container(
+          margin: EdgeInsets.only(
+            left: 16.w,
+            right: 16.w,
+            bottom: bottomMargin,
+          ),
+          height: barHeight,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(32.r),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isLight
+                  ? [
+                      colorScheme.surfaceContainerLowest
+                          .withValues(alpha: 0.25),
+                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.15),
+                    ]
+                  : [
+                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.22),
+                      colorScheme.surfaceContainerLow.withValues(alpha: 0.12),
+                    ],
+            ),
+            border: Border.all(
+              color: isLight
+                  ? Colors.white.withValues(alpha: 0.45)
+                  : customColors.glassStroke.withValues(alpha: 0.5),
+              width: 1.2,
+            ),
+            boxShadow: [
+              // Liquid Ambient Highlight Glow
+              BoxShadow(
+                color: isLight
+                    ? Colors.white.withValues(alpha: 0.3)
+                    : colorScheme.primary.withValues(alpha: 0.05),
+                blurRadius: 10.r,
+                spreadRadius: -2.r,
+                offset: const Offset(0, -2),
+              ),
+              // Soft Liquid Glass Drop Shadow
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isLight ? 0.08 : 0.20),
+                blurRadius: 30.r,
+                spreadRadius: 2.r,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(32.r),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                child: Row(
+                  children: [
+                    // Tab 0: Overview
+                    Expanded(
+                      child: _NavBarItem(
+                        icon: Icons.dashboard_outlined,
+                        activeIcon: Icons.dashboard_rounded,
+                        label: l10n.overview,
+                        isSelected: currentTab == 0,
+                        onTap: () => onTabSelected(0),
+                      ),
+                    ),
+
+                    // Tab 1: Activity
+                    Expanded(
+                      child: _NavBarItem(
+                        icon: Icons.receipt_long_outlined,
+                        activeIcon: Icons.receipt_long_rounded,
+                        label: l10n.activity,
+                        isSelected: currentTab == 1,
+                        onTap: () => onTabSelected(1),
+                      ),
+                    ),
+
+                    // Gap space for docked center FAB
+                    SizedBox(width: fabSize + 8.w),
+
+                    // Tab 2: Budgets
+                    Expanded(
+                      child: _NavBarItem(
+                        icon: Icons.account_balance_wallet_outlined,
+                        activeIcon: Icons.account_balance_wallet_rounded,
+                        label: l10n.budgets,
+                        isSelected: currentTab == 2,
+                        onTap: () => onTabSelected(2),
+                      ),
+                    ),
+
+                    // Tab 3: Settings
+                    Expanded(
+                      child: _NavBarItem(
+                        icon: Icons.settings_outlined,
+                        activeIcon: Icons.settings_rounded,
+                        label: l10n.settings,
+                        isSelected: currentTab == 3,
+                        onTap: () => onTabSelected(3),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // 2. Clean Liquid FAB (Expanded Touch Target for Effortless Taps)
+        Positioned(
+          bottom: bottomMargin + barHeight - (fabSize / 2) - 10.h,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              HapticFeedback.heavyImpact();
+              onCenterFabPressed();
+            },
+            child: Container(
+              width: fabSize + 20.w,
+              height: fabSize + 20.h,
+              alignment: Alignment.center,
+              color: Colors.transparent,
+              child: Container(
+                width: fabSize,
+                height: fabSize,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      colorScheme.primary,
+                      colorScheme.primary.withValues(alpha: 0.85),
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colorScheme.primary.withValues(alpha: 0.25),
+                      blurRadius: 10.r,
+                      spreadRadius: 0.r,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.add_rounded,
+                  color: colorScheme.onPrimary,
+                  size: 32.sp,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _NavBarItem extends StatelessWidget {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavBarItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final customTypography = context.customTypography;
+
+    final color =
+        isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant;
+
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(20.r),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            isSelected ? activeIcon : icon,
+            color: color,
+            size: 22.sp,
+          ),
+          SizedBox(height: 2.h),
+          Text(
+            label,
+            style: customTypography.labelMediumMono.copyWith(
+              color: color,
+              fontSize: 10.sp,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -6,7 +6,7 @@ void main() async {
     const AppConfig(
       flavor: AppFlavor.prod,
       appName: 'Expendly',
-      enableLogging: false,
+      enableLogging: true,
       showFlavorBanner: false,
     ),
   );

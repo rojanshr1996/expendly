@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "748636232967",
+    "project_id": "expendly-b1247",
+    "storage_bucket": "expendly-b1247.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:748636232967:android:b869f641ba48869026b9a2",
+        "android_client_info": {
+          "package_name": "com.expendly.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJRDmvM-ypCJ7GoByiqJ6ad6EgFU6Z-YA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

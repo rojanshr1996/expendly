@@ -2,7 +2,7 @@ import 'package:injectable/injectable.dart';
 
 import '../../domain/entities/financial_summary.dart';
 import '../../domain/repositories/dashboard_repository.dart';
-import '../datasources/dashboard_local_data_source.dart';
+import '../datasources/dashboard_local_datasource.dart';
 
 @LazySingleton(as: DashboardRepository)
 class DashboardRepositoryImpl implements DashboardRepository {

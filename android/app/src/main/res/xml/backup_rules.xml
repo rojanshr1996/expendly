@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- drift database: getApplicationDocumentsDirectory() -> app_flutter/ -->
+    <include domain="file" path="app_flutter/expendly.sqlite"/>
+    <!-- shared_preferences (currency, onboarding, theme) -->
+    <include domain="sharedpref" path="FlutterSharedPreferences.xml"/>
+
+    <!-- Keystore-wrapped blobs restore as undecryptable garbage: excluded automatically as only FlutterSharedPreferences.xml is included -->
+    <!-- WAL/SHM are meaningless without the exact same DB instance -->
+    <exclude domain="file" path="app_flutter/expendly.sqlite-wal"/>
+    <exclude domain="file" path="app_flutter/expendly.sqlite-shm"/>
+</full-backup-content>

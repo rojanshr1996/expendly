@@ -24,6 +24,7 @@ Thumbs.db
 .pub-cache/
 .pub/
 build/
+**/build/
 doc/api/
 coverage/
 
@@ -42,6 +43,7 @@ android/app/release/
 *.keystore
 *.jks
 key.properties
+android/fastlane/report.xml
 
 # iOS
 ios/Pods/

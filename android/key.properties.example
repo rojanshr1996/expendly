@@ -1,0 +1,9 @@
+# Android Release Keystore Properties
+# Copy this file to android/key.properties and fill in your keystore values.
+# DO NOT commit key.properties or your *.jks / *.keystore files to version control.
+
+storePassword=YOUR_STORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=YOUR_KEY_ALIAS
+# storeFile: relative path from android/ dir, e.g. app/expendly-upload-keystore.jks
+storeFile=YOUR_KEYSTORE_FILE_PATH

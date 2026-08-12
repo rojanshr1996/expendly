@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact & Support • Expendly Finance App</title>
+  <meta name="description" content="Get support, ask questions, or contact the Expendly development team. Official support channels and FAQ for Expendly personal finance app.">
+  <link rel="canonical" href="https://expendly.web.app/contact">
+  <link rel="icon" type="image/png" href="/assets/images/expendly_icon.png">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-link">
+        <img src="/assets/images/expendly_logo.png" alt="Expendly Logo" class="brand-logo">
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/privacy" class="nav-link">Privacy Policy</a></li>
+        <li><a href="/terms" class="nav-link">Terms</a></li>
+        <li><a href="/contact" class="nav-link active">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">☀️</button>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Navigation">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="container">
+      <span class="badge">Developer Support</span>
+      <h1 style="font-size: 2.5rem; margin-top: 0.5rem;">Contact & Support</h1>
+      <p style="color: var(--color-text-secondary);">Have a question, feedback, or need assistance? We're here to help.</p>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="policy-content">
+    <div class="container">
+      <div class="contact-grid">
+        
+        <!-- Contact Form -->
+        <div class="policy-card">
+          <h2>Send Us a Message</h2>
+          <p style="margin-bottom: 1.5rem;">Fill out the form below and our developer support team will respond promptly.</p>
+
+          <form id="contact-form" class="contact-form">
+            <div class="form-group">
+              <label for="name">Your Name</label>
+              <input type="text" id="name" class="form-control" placeholder="Jane Doe" required>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" class="form-control" placeholder="jane@example.com" required>
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <select id="subject" class="form-control" required>
+                <option value="general">General Support & Inquiry</option>
+                <option value="privacy">Privacy & Security Question</option>
+                <option value="admob">AdMob / Verification Request</option>
+                <option value="feedback">Feature Feedback & Suggestions</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" class="form-control" placeholder="How can we assist you with Expendly?" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem; width: 100%;">
+              <span>Send Message</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+          </form>
+
+          <div id="form-status" style="display: none; margin-top: 1rem;"></div>
+        </div>
+
+        <!-- Support Info & FAQs -->
+        <div>
+          <div class="policy-card" style="margin-bottom: 2rem;">
+            <h2>Official Channels</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1rem;">
+              <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                <div class="pillar-icon" style="width: 44px; height: 44px; margin-bottom: 0; font-size: 1.2rem;">✉️</div>
+                <div>
+                  <h4 style="font-size: 1rem; color: var(--color-text-primary);">Online Support Desk</h4>
+                  <p style="font-size: 0.9rem; margin-bottom: 0; color: var(--color-text-secondary);">Submit questions or feedback using our secure online form.</p>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                <div class="pillar-icon" style="width: 44px; height: 44px; margin-bottom: 0; font-size: 1.2rem;">⏱️</div>
+                <div>
+                  <h4 style="font-size: 1rem; color: var(--color-text-primary);">Response Commitment</h4>
+                  <p style="font-size: 0.9rem; margin-bottom: 0; color: var(--color-text-secondary);">We typically respond to inquiries within 24 to 48 business hours.</p>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                <div class="pillar-icon" style="width: 44px; height: 44px; margin-bottom: 0; font-size: 1.2rem;">🌐</div>
+                <div>
+                  <h4 style="font-size: 1rem; color: var(--color-text-primary);">Google AdMob app-ads.txt</h4>
+                  <p style="font-size: 0.9rem; margin-bottom: 0;"><a href="/app-ads.txt" target="_blank">View Verification File</a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Accordion -->
+          <div class="policy-card">
+            <h2>Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+              <div class="faq-question">
+                <span>Where is my financial data stored?</span>
+                <span class="toggle-icon">+</span>
+              </div>
+              <div class="faq-answer" style="display: none;">
+                All transaction logs, budget categories, and currency settings are stored strictly on your local mobile device using Drift SQLite. Nothing is sent to cloud servers.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-question">
+                <span>Does Expendly sell or track my usage?</span>
+                <span class="toggle-icon">+</span>
+              </div>
+              <div class="faq-answer" style="display: none;">
+                No. Expendly operates with zero user telemetry and zero behavioral tracking. AdMob ads served in app adhere to Google's standard ad policies.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-question">
+                <span>How can AdMob crawlers verify this domain?</span>
+                <span class="toggle-icon">+</span>
+              </div>
+              <div class="faq-answer" style="display: none;">
+                The root domain hosts <code>https://expendly.web.app/app-ads.txt</code> which specifies the authorized seller information for Google AdMob crawlers.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>© 2026 Expendly. All rights reserved.</div>
+        <div><a href="/">Home</a> • <a href="/privacy">Privacy Policy</a> • <a href="/terms">Terms & Conditions</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/script.js"></script>
+</body>
+</html>
