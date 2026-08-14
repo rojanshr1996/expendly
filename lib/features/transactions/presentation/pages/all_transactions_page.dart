@@ -92,6 +92,7 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
   void _previousPeriod() {
     final mode = _viewModeNotifier.value;
     final currentMonth = _selectedMonthNotifier.value;
+    final now = DateTime.now();
 
     if (mode == 'monthly') {
       _selectedMonthNotifier.value =
@@ -99,15 +100,22 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
     } else {
       final prevMonth = DateTime(currentMonth.year, currentMonth.month - 1);
       _selectedMonthNotifier.value = prevMonth;
-      _selectedDateNotifier.value =
-          DateTime(prevMonth.year, prevMonth.month, 1);
-      _scrollToSelectedDate(animated: true);
+      if (prevMonth.year == now.year && prevMonth.month == now.month) {
+        _selectedDateNotifier.value = now;
+      } else {
+        _selectedDateNotifier.value =
+            DateTime(prevMonth.year, prevMonth.month, 1);
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToSelectedDate(animated: true);
+      });
     }
   }
 
   void _nextPeriod() {
     final mode = _viewModeNotifier.value;
     final currentMonth = _selectedMonthNotifier.value;
+    final now = DateTime.now();
 
     if (mode == 'monthly') {
       _selectedMonthNotifier.value =
@@ -115,9 +123,15 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
     } else {
       final nextMonth = DateTime(currentMonth.year, currentMonth.month + 1);
       _selectedMonthNotifier.value = nextMonth;
-      _selectedDateNotifier.value =
-          DateTime(nextMonth.year, nextMonth.month, 1);
-      _scrollToSelectedDate(animated: true);
+      if (nextMonth.year == now.year && nextMonth.month == now.month) {
+        _selectedDateNotifier.value = now;
+      } else {
+        _selectedDateNotifier.value =
+            DateTime(nextMonth.year, nextMonth.month, 1);
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToSelectedDate(animated: true);
+      });
     }
   }
 
@@ -330,10 +344,11 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
 
                         return SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
+                          clipBehavior: Clip.none,
                           physics: const BouncingScrollPhysics(),
                           padding: EdgeInsets.symmetric(
                             horizontal: 20.w,
-                            vertical: 4.h,
+                            vertical: 6.h,
                           ),
                           child: Row(
                             children: [
@@ -384,7 +399,7 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                 icon: Icons.swap_horiz_rounded,
                                 isSelected:
                                     selectedType == TransactionType.transfer,
-                                activeColor: colorScheme.primary,
+                                activeColor: context.customColors.semanticBlue,
                                 onTap: () {
                                   context.read<TransactionCubit>().filterType(
                                         selectedType == TransactionType.transfer
@@ -1036,6 +1051,7 @@ class _HorizontalDateSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final customTypography = context.customTypography;
+    final isLight = Theme.of(context).brightness == Brightness.light;
     final locale = Localizations.localeOf(context).languageCode;
 
     final daysInMonth = DateUtils.getDaysInMonth(
@@ -1048,12 +1064,13 @@ class _HorizontalDateSelector extends StatelessWidget {
     );
 
     return SizedBox(
-      height: 76.h,
+      height: 84.h,
       child: ListView.builder(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
         physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
         itemCount: dates.length,
         itemBuilder: (context, index) {
           final date = dates[index];
@@ -1083,7 +1100,7 @@ class _HorizontalDateSelector extends StatelessWidget {
             child: GestureDetector(
               onTap: () => onDateSelected(date),
               child: AnimatedScale(
-                scale: isSelected ? 1.06 : 1.0,
+                scale: isSelected ? 1.05 : 1.0,
                 duration: const Duration(milliseconds: 200),
                 curve: Curves.easeOutCubic,
                 child: AnimatedContainer(
@@ -1092,31 +1109,35 @@ class _HorizontalDateSelector extends StatelessWidget {
                   margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? colorScheme.primaryContainer.withValues(alpha: 0.25)
+                        ? colorScheme.primary
                         : isToday
-                            ? colorScheme.primaryContainer
-                                .withValues(alpha: 0.12)
-                            : colorScheme.surfaceContainerLow,
+                            ? colorScheme.primary
+                                .withValues(alpha: isLight ? 0.14 : 0.18)
+                            : (isLight
+                                ? colorScheme.surfaceContainerHighest
+                                    .withValues(alpha: 0.45)
+                                : colorScheme.surfaceContainerLow),
                     borderRadius: BorderRadius.circular(16.r),
-                    boxShadow: Theme.of(context).brightness == Brightness.dark
-                        ? (isSelected
-                            ? [
-                                BoxShadow(
-                                  color: colorScheme.primary
-                                      .withValues(alpha: 0.2),
-                                  blurRadius: 8.r,
-                                  spreadRadius: 0,
-                                ),
-                              ]
-                            : null)
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: colorScheme.primary
+                                  .withValues(alpha: isLight ? 0.22 : 0.28),
+                              blurRadius: 8.r,
+                              offset: const Offset(0, 3),
+                            ),
+                          ]
                         : null,
                     border: Border.all(
                       color: isSelected
-                          ? colorScheme.primary.withValues(alpha: 0.6)
+                          ? colorScheme.primary
                           : isToday
-                              ? colorScheme.primary.withValues(alpha: 0.45)
-                              : context.customColors.glassStroke,
-                      width: isSelected ? 1.5 : (isToday ? 1.2 : 1.0),
+                              ? colorScheme.primary.withValues(alpha: 0.75)
+                              : (isLight
+                                  ? colorScheme.outlineVariant
+                                      .withValues(alpha: 0.6)
+                                  : context.customColors.glassStroke),
+                      width: isSelected ? 1.5 : (isToday ? 1.4 : 1.0),
                     ),
                   ),
                   child: Column(
@@ -1126,21 +1147,25 @@ class _HorizontalDateSelector extends StatelessWidget {
                         weekdayStr.toUpperCase(),
                         style: customTypography.labelMediumMono.copyWith(
                           fontSize: 10.sp,
-                          color: isSelected || isToday
-                              ? colorScheme.primary
-                              : colorScheme.outline,
+                          color: isSelected
+                              ? colorScheme.onPrimary
+                              : isToday
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurfaceVariant,
                           fontWeight: isSelected || isToday
                               ? FontWeights.bold
-                              : FontWeights.regular,
+                              : FontWeights.medium,
                         ),
                       ),
                       SizedBox(height: 2.h),
                       Text(
                         '${date.day}',
                         style: customTypography.bodyLargeBold.copyWith(
-                          color: isSelected || isToday
-                              ? colorScheme.primary
-                              : colorScheme.onSurface,
+                          color: isSelected
+                              ? colorScheme.onPrimary
+                              : isToday
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurface,
                           fontSize: 18.sp,
                         ),
                       ),
@@ -1151,7 +1176,9 @@ class _HorizontalDateSelector extends StatelessWidget {
                           height: 4.w,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: colorScheme.primary,
+                            color: isSelected
+                                ? colorScheme.onPrimary
+                                : colorScheme.primary,
                           ),
                         ),
                       ],
@@ -1417,6 +1444,10 @@ class _TypeFilterChip extends StatelessWidget {
     final customTypography = context.customTypography;
     final isLight = Theme.of(context).brightness == Brightness.light;
 
+    final onActiveTextColor = (activeColor == colorScheme.primary && !isLight)
+        ? colorScheme.onPrimary
+        : Colors.white;
+
     return AnimatedScale(
       scale: isSelected ? 1.04 : 1.0,
       duration: const Duration(milliseconds: 200),
@@ -1431,20 +1462,27 @@ class _TypeFilterChip extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
             decoration: BoxDecoration(
               color: isSelected
-                  ? activeColor.withValues(alpha: 0.22)
-                  : colorScheme.surfaceContainerLow,
+                  ? activeColor
+                  : (isLight
+                      ? colorScheme.surfaceContainerHighest
+                          .withValues(alpha: 0.6)
+                      : colorScheme.surfaceContainerLow),
               borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
-                color:
-                    isSelected ? activeColor : context.customColors.glassStroke,
+                color: isSelected
+                    ? activeColor
+                    : (isLight
+                        ? colorScheme.outlineVariant.withValues(alpha: 0.6)
+                        : context.customColors.glassStroke),
                 width: isSelected ? 1.5 : 1.0,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: activeColor.withValues(alpha: 0.25),
+                        color:
+                            activeColor.withValues(alpha: isLight ? 0.35 : 0.4),
                         blurRadius: 8.r,
-                        spreadRadius: 0,
+                        offset: const Offset(0, 2),
                       ),
                     ]
                   : null,
@@ -1456,23 +1494,17 @@ class _TypeFilterChip extends StatelessWidget {
                   icon,
                   size: 16.r,
                   color: isSelected
-                      ? activeColor
-                      : (isLight
-                          ? colorScheme.outline.withValues(alpha: 0.75)
-                          : colorScheme.outline),
+                      ? onActiveTextColor
+                      : colorScheme.onSurfaceVariant,
                 ),
                 SizedBox(width: 6.w),
                 Text(
                   label,
                   style: customTypography.labelMediumMono.copyWith(
-                    color: isSelected
-                        ? activeColor
-                        : (isLight
-                            ? colorScheme.onSurfaceVariant
-                                .withValues(alpha: 0.75)
-                            : colorScheme.onSurfaceVariant),
+                    color:
+                        isSelected ? onActiveTextColor : colorScheme.onSurface,
                     fontWeight:
-                        isSelected ? FontWeights.bold : FontWeights.regular,
+                        isSelected ? FontWeights.bold : FontWeights.medium,
                     fontSize: 12.sp,
                   ),
                 ),
@@ -1545,12 +1577,9 @@ class _ViewModeTabBar extends StatelessWidget {
                     style: customTypography.labelMediumMono.copyWith(
                       color: isSelected
                           ? colorScheme.onPrimary
-                          : (isLight
-                              ? colorScheme.onSurfaceVariant
-                                  .withValues(alpha: 0.75)
-                              : colorScheme.onSurfaceVariant),
+                          : colorScheme.onSurfaceVariant,
                       fontWeight:
-                          isSelected ? FontWeights.bold : FontWeights.regular,
+                          isSelected ? FontWeights.bold : FontWeights.medium,
                     ),
                   ),
                 ),

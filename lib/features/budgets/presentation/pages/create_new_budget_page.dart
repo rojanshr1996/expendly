@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/ads/interstitial_ad_helper.dart';
+import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/category_picker_sheet.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../../transactions/domain/entities/category_item.dart';
@@ -342,15 +344,10 @@ class _CreateNewBudgetPageState extends State<CreateNewBudgetPage> {
                                   color: colorScheme.outline,
                                 ),
                               ),
-                              const SizedBox(height: 10),
-                              Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.surfaceContainerLow,
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                      color: colorScheme.outlineVariant),
-                                ),
+                              SizedBox(height: 10.h),
+                              _LiquidGlassCard(
+                                padding: EdgeInsets.all(4.w),
+                                borderRadius: BorderRadius.circular(14.r),
                                 child: Row(
                                   children: [
                                     _buildPeriodTab(
@@ -474,28 +471,45 @@ class _CreateNewBudgetPageState extends State<CreateNewBudgetPage> {
   Widget _buildPeriodTab(
       {required String label, required BudgetPeriod period}) {
     final colorScheme = context.colorScheme;
+    final customTypography = context.customTypography;
     final isSelected = _selectedPeriod == period;
 
     return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedPeriod = period;
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: isSelected ? colorScheme.primary : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: context.customTypography.labelMediumMono.copyWith(
-              color: isSelected ? colorScheme.onPrimary : colorScheme.outline,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 2.w),
+        child: GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedPeriod = period;
+            });
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            padding: EdgeInsets.symmetric(vertical: 9.h),
+            decoration: BoxDecoration(
+              color: isSelected ? colorScheme.primary : Colors.transparent,
+              borderRadius: BorderRadius.circular(10.r),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: colorScheme.primary.withValues(alpha: 0.35),
+                        blurRadius: 8.r,
+                        offset: const Offset(0, 2),
+                      )
+                    ]
+                  : null,
+            ),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: customTypography.labelMediumMono.copyWith(
+                color: isSelected
+                    ? colorScheme.onPrimary
+                    : colorScheme.onSurfaceVariant,
+                fontWeight: isSelected ? FontWeights.bold : FontWeights.medium,
+                fontSize: 12.sp,
+              ),
             ),
           ),
         ),
@@ -534,5 +548,77 @@ class _CreateNewBudgetPageState extends State<CreateNewBudgetPage> {
       default:
         return Icons.all_inclusive_rounded;
     }
+  }
+}
+
+class _LiquidGlassCard extends StatelessWidget {
+  final Widget child;
+  final BorderRadius? borderRadius;
+  final EdgeInsetsGeometry? margin;
+  final EdgeInsetsGeometry? padding;
+
+  const _LiquidGlassCard({
+    required this.child,
+    this.borderRadius,
+    this.margin,
+    this.padding,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final br = borderRadius ?? BorderRadius.circular(16.r);
+
+    return Container(
+      margin: margin,
+      decoration: BoxDecoration(
+        borderRadius: br,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isLight
+              ? [
+                  colorScheme.surfaceContainerLowest.withValues(alpha: 0.35),
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.20),
+                ]
+              : [
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.25),
+                  colorScheme.surfaceContainerLow.withValues(alpha: 0.15),
+                ],
+        ),
+        border: Border.all(
+          color: isLight
+              ? Colors.white.withValues(alpha: 0.50)
+              : customColors.glassStroke.withValues(alpha: 0.40),
+          width: 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withValues(alpha: isLight ? 0.5 : 0.0),
+            blurRadius: 6.r,
+            spreadRadius: -1.r,
+            offset: const Offset(0, -1),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isLight ? 0.06 : 0.18),
+            blurRadius: 12.r,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: br,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Padding(
+            padding: padding ?? EdgeInsets.zero,
+            child: child,
+          ),
+        ),
+      ),
+    );
   }
 }

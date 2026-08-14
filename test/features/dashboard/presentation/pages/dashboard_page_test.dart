@@ -157,8 +157,9 @@ void main() {
       final mockTxList = [
         DashboardTransactionItem(
           id: 1,
-          title: 'Grocery Shopping',
+          title: 'Food & Dining',
           categoryName: 'Food & Dining',
+          note: 'Grocery Shopping',
           iconName: 'shopping_bag',
           colorHex: '#FB7185',
           amount: 850.20,

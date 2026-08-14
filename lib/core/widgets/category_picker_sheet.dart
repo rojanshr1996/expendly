@@ -226,56 +226,105 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                     itemCount: filtered.length +
                         (widget.allowOverallLimitOption ? 1 : 0),
                     itemBuilder: (context, index) {
+                      final isDark =
+                          Theme.of(context).brightness == Brightness.dark;
+
                       // "Overall" option always appears first when enabled
                       if (widget.allowOverallLimitOption && index == 0) {
                         final isOverallSelected =
                             widget.selectedCategory == null;
                         return GestureDetector(
                           onTap: () => Navigator.pop(context, null),
-                          child: GlassContainer(
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
                             padding: EdgeInsets.symmetric(
                                 horizontal: 6.w, vertical: 8.h),
-                            borderStrokeColor: isOverallSelected
-                                ? colorScheme.primary
-                                : context.customColors.glassStroke,
-                            backgroundColor: isOverallSelected
-                                ? colorScheme.primary
-                                    .withAlpha((0.15 * 255).round())
-                                : colorScheme.surfaceContainerLow,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.r),
+                              color: isOverallSelected
+                                  ? colorScheme.primary
+                                  : colorScheme.surfaceContainerLow,
+                              border: Border.all(
+                                color: isOverallSelected
+                                    ? colorScheme.primary
+                                    : context.customColors.glassStroke,
+                                width: isOverallSelected ? 1.5 : 1.0,
+                              ),
+                              boxShadow: isOverallSelected
+                                  ? [
+                                      BoxShadow(
+                                        color: colorScheme.primary.withValues(
+                                            alpha: isDark ? 0.45 : 0.30),
+                                        blurRadius: 10.r,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              alignment: Alignment.center,
                               children: [
-                                Container(
-                                  padding: EdgeInsets.all(6.w),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: colorScheme.primary
-                                        .withAlpha((0.2 * 255).round()),
-                                  ),
-                                  child: Icon(
-                                    Icons.all_inclusive_rounded,
-                                    color: colorScheme.primary,
-                                    size: 20.sp,
-                                  ),
-                                ),
-                                SizedBox(height: 4.h),
-                                Text(
-                                  l10n.overallMonthlyLimit,
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style:
-                                      (textTheme.bodySmall ?? const TextStyle())
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(7.w),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: isOverallSelected
+                                            ? colorScheme.onPrimary
+                                                .withValues(alpha: 0.22)
+                                            : colorScheme.primary
+                                                .withValues(alpha: 0.15),
+                                      ),
+                                      child: Icon(
+                                        Icons.all_inclusive_rounded,
+                                        color: isOverallSelected
+                                            ? colorScheme.onPrimary
+                                            : colorScheme.primary,
+                                        size: 22.sp,
+                                      ),
+                                    ),
+                                    SizedBox(height: 6.h),
+                                    Text(
+                                      l10n.overallMonthlyLimit,
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: (textTheme.bodySmall ??
+                                              const TextStyle())
                                           .copyWith(
-                                    fontSize: 11.sp,
-                                    height: 1.2,
-                                    fontWeight: FontWeights.bold,
-                                    color: isOverallSelected
-                                        ? colorScheme.primary
-                                        : colorScheme.onSurface,
-                                  ),
+                                        fontSize: 11.sp,
+                                        height: 1.2,
+                                        fontWeight: isOverallSelected
+                                            ? FontWeights.bold
+                                            : FontWeights.medium,
+                                        color: isOverallSelected
+                                            ? colorScheme.onPrimary
+                                            : colorScheme.onSurface,
+                                      ),
+                                    ),
+                                  ],
                                 ),
+                                if (isOverallSelected)
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: Container(
+                                      padding: EdgeInsets.all(2.r),
+                                      decoration: BoxDecoration(
+                                        color: colorScheme.onPrimary,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.check_rounded,
+                                        size: 11.sp,
+                                        color: colorScheme.primary,
+                                      ),
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
@@ -290,51 +339,95 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
 
                       return GestureDetector(
                         onTap: () => Navigator.pop(context, cat),
-                        child: GlassContainer(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
                           padding: EdgeInsets.symmetric(
                               horizontal: 6.w, vertical: 8.h),
-                          borderStrokeColor: isSelected
-                              ? colorScheme.primary
-                              : context.customColors.glassStroke,
-                          backgroundColor: isSelected
-                              ? colorScheme.primary
-                                  .withAlpha((0.15 * 255).round())
-                              : colorScheme.surfaceContainerLow,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16.r),
+                            color: isSelected
+                                ? colorScheme.primary
+                                : colorScheme.surfaceContainerLow,
+                            border: Border.all(
+                              color: isSelected
+                                  ? colorScheme.primary
+                                  : context.customColors.glassStroke,
+                              width: isSelected ? 1.5 : 1.0,
+                            ),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: colorScheme.primary.withValues(
+                                          alpha: isDark ? 0.45 : 0.30),
+                                      blurRadius: 10.r,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.center,
                             children: [
-                              Container(
-                                padding: EdgeInsets.all(6.w),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: color.withAlpha((0.25 * 255).round()),
-                                ),
-                                child: Icon(
-                                  icon,
-                                  color: color,
-                                  size: 20.sp,
-                                ),
-                              ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                cat.name,
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style:
-                                    (textTheme.bodySmall ?? const TextStyle())
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(7.w),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isSelected
+                                          ? colorScheme.onPrimary
+                                              .withValues(alpha: 0.22)
+                                          : color.withValues(alpha: 0.15),
+                                    ),
+                                    child: Icon(
+                                      icon,
+                                      color: isSelected
+                                          ? colorScheme.onPrimary
+                                          : color,
+                                      size: 22.sp,
+                                    ),
+                                  ),
+                                  SizedBox(height: 6.h),
+                                  Text(
+                                    cat.name,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: (textTheme.bodySmall ??
+                                            const TextStyle())
                                         .copyWith(
-                                  fontSize: 11.sp,
-                                  height: 1.2,
-                                  fontWeight: isSelected
-                                      ? FontWeights.bold
-                                      : FontWeights.medium,
-                                  color: isSelected
-                                      ? colorScheme.primary
-                                      : colorScheme.onSurface,
-                                ),
+                                      fontSize: 11.sp,
+                                      height: 1.2,
+                                      fontWeight: isSelected
+                                          ? FontWeights.bold
+                                          : FontWeights.medium,
+                                      color: isSelected
+                                          ? colorScheme.onPrimary
+                                          : colorScheme.onSurface,
+                                    ),
+                                  ),
+                                ],
                               ),
+                              if (isSelected)
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: Container(
+                                    padding: EdgeInsets.all(2.r),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.onPrimary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.check_rounded,
+                                      size: 11.sp,
+                                      color: colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ),

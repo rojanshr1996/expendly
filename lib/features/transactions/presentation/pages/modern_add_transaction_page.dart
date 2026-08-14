@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -34,8 +35,8 @@ class ModernAddTransactionPage extends StatefulWidget {
 class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
   final ValueNotifier<TransactionType> _typeNotifier =
       ValueNotifier<TransactionType>(TransactionType.expense);
-  final ValueNotifier<String> _amountStringNotifier =
-      ValueNotifier<String>('0');
+  final TextEditingController _amountController = TextEditingController();
+  final FocusNode _amountFocusNode = FocusNode();
   final ValueNotifier<CategoryItem?> _selectedCategoryNotifier =
       ValueNotifier<CategoryItem?>(null);
   final ValueNotifier<PaymentMethod> _destinationPaymentMethodNotifier =
@@ -54,6 +55,11 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
   void initState() {
     super.initState();
     _loadCategories();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _amountFocusNode.requestFocus();
+      }
+    });
   }
 
   Future<void> _loadCategories() async {
@@ -90,7 +96,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
         if (widget.initialTransaction != null) {
           final tx = widget.initialTransaction!;
           _typeNotifier.value = tx.type;
-          _amountStringNotifier.value =
+          _amountController.text =
               tx.amount.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
           _dateNotifier.value = tx.timestamp;
           if (tx.paymentMethod != null) {
@@ -188,7 +194,8 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
   @override
   void dispose() {
     _typeNotifier.dispose();
-    _amountStringNotifier.dispose();
+    _amountController.dispose();
+    _amountFocusNode.dispose();
     _selectedCategoryNotifier.dispose();
     _destinationPaymentMethodNotifier.dispose();
     _dateNotifier.dispose();
@@ -196,34 +203,6 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
     _noteController.dispose();
     _feeController.dispose();
     super.dispose();
-  }
-
-  void _onKeypadTap(String value) {
-    final current = _amountStringNotifier.value;
-    if (value == '<') {
-      if (current.length > 1) {
-        _amountStringNotifier.value = current.substring(0, current.length - 1);
-      } else {
-        _amountStringNotifier.value = '0';
-      }
-    } else if (value == '.') {
-      if (!current.contains('.')) {
-        _amountStringNotifier.value = '$current.';
-      }
-    } else {
-      if (current == '0') {
-        _amountStringNotifier.value = value;
-      } else {
-        // Limit to 2 decimal places if dot exists
-        if (current.contains('.')) {
-          final parts = current.split('.');
-          if (parts.length > 1 && parts[1].length >= 2) {
-            return;
-          }
-        }
-        _amountStringNotifier.value = current + value;
-      }
-    }
   }
 
   @override
@@ -281,8 +260,10 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
               centerTitle: true,
             ),
             body: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
               child: Column(
                 children: [
                   verticalMarginMedium,
@@ -396,48 +377,95 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
 
                   verticalMarginLarge,
 
-                  // Amount Display with Dynamic Signup Currency Symbol
-                  ValueListenableBuilder<String>(
-                    valueListenable: _amountStringNotifier,
-                    builder: (context, amountStr, _) {
-                      return ValueListenableBuilder<TransactionType>(
-                        valueListenable: _typeNotifier,
-                        builder: (context, type, _) {
-                          final currencySymbol =
-                              getIt<PreferenceService>().currencySymbol;
-                          final customColors = context.customColors;
-                          final color = type == TransactionType.income
-                              ? customColors.semanticGreen
-                              : type == TransactionType.transfer
-                                  ? customColors.semanticBlue
-                                  : customColors.semanticRed;
+                  // Amount Display with Dynamic Signup Currency Symbol & System Keyboard
+                  ValueListenableBuilder<TransactionType>(
+                    valueListenable: _typeNotifier,
+                    builder: (context, type, _) {
+                      final currencySymbol =
+                          getIt<PreferenceService>().currencySymbol;
+                      final customColors = context.customColors;
+                      final color = type == TransactionType.income
+                          ? customColors.semanticGreen
+                          : type == TransactionType.transfer
+                              ? customColors.semanticBlue
+                              : customColors.semanticRed;
 
-                          return Column(
-                            children: [
-                              Text(
-                                context.l10n.amountLabel,
-                                style:
-                                    customTypography.labelMediumMono.copyWith(
-                                  color: colorScheme.outline,
-                                  letterSpacing: 1.5,
-                                  fontSize: 11.sp,
-                                ),
+                      return GestureDetector(
+                        onTap: () => _amountFocusNode.requestFocus(),
+                        behavior: HitTestBehavior.opaque,
+                        child: Column(
+                          children: [
+                            Text(
+                              context.l10n.amountLabel,
+                              style: customTypography.labelMediumMono.copyWith(
+                                color: colorScheme.outline,
+                                letterSpacing: 1.5,
+                                fontSize: 11.sp,
                               ),
-                              verticalMarginXSmall,
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  '$currencySymbol $amountStr',
-                                  style: customTypography.headlineLargeMonoBold
-                                      .copyWith(
-                                    color: color,
-                                    fontSize: 34.sp,
+                            ),
+                            verticalMarginXSmall,
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.alphabetic,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    '$currencySymbol ',
+                                    style: customTypography
+                                        .headlineLargeMonoBold
+                                        .copyWith(
+                                      color: color,
+                                      fontSize: 36.sp,
+                                    ),
                                   ),
-                                ),
+                                  IntrinsicWidth(
+                                    child: TextField(
+                                      controller: _amountController,
+                                      focusNode: _amountFocusNode,
+                                      autofocus: true,
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                              decimal: true),
+                                      textInputAction: TextInputAction.next,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(r'^\d*\.?\d{0,2}')),
+                                      ],
+                                      style: customTypography
+                                          .headlineLargeMonoBold
+                                          .copyWith(
+                                        color: color,
+                                        fontSize: 36.sp,
+                                      ),
+                                      cursorColor: color,
+                                      decoration: InputDecoration(
+                                        filled: false,
+                                        fillColor: Colors.transparent,
+                                        hintText: '0',
+                                        hintStyle: customTypography
+                                            .headlineLargeMonoBold
+                                            .copyWith(
+                                          color: color.withValues(alpha: 0.4),
+                                          fontSize: 36.sp,
+                                        ),
+                                        border: InputBorder.none,
+                                        enabledBorder: InputBorder.none,
+                                        focusedBorder: InputBorder.none,
+                                        errorBorder: InputBorder.none,
+                                        disabledBorder: InputBorder.none,
+                                        contentPadding: EdgeInsets.zero,
+                                        isDense: true,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          );
-                        },
+                            ),
+                          ],
+                        ),
                       );
                     },
                   ),
@@ -770,400 +798,350 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
 
                   verticalMargin20,
 
-                  // Note Input & Date Picker (Consistent height & 14px radius)
+                  // Date Picker
                   Padding(
                     padding: horizontalPaddingLarge,
-                    child: IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Date Selector Button matching AppTextField height
-                          ValueListenableBuilder<DateTime>(
-                            valueListenable: _dateNotifier,
-                            builder: (context, selectedDate, _) {
-                              return InkWell(
-                                onTap: () async {
-                                  final picked = await showDatePicker(
-                                    context: context,
-                                    initialDate: selectedDate,
-                                    firstDate: DateTime(2020),
-                                    lastDate: DateTime(2100),
-                                  );
-                                  if (picked != null) {
-                                    _dateNotifier.value = picked;
-                                  }
-                                },
-                                borderRadius: BorderRadius.circular(14.r),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 12.w, vertical: 10.h),
-                                  decoration: BoxDecoration(
-                                    color: colorScheme.surfaceContainerHigh,
-                                    borderRadius: BorderRadius.circular(14.r),
-                                    border: Border.all(
-                                      color: colorScheme.outlineVariant,
-                                      width: 1.0,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.calendar_today_rounded,
-                                        size: 16.sp,
-                                        color: colorScheme.primary,
-                                      ),
-                                      horizontalMarginXSmall,
-                                      Text(
-                                        '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                                        style: customTypography.bodyMedium
-                                            .copyWith(
-                                          color: colorScheme.onSurface,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12.5.sp,
-                                        ),
-                                      ),
-                                    ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.dateAndTimeLabel,
+                          style: customTypography.labelMediumMono.copyWith(
+                            color: colorScheme.outline,
+                            letterSpacing: 1.2,
+                            fontSize: 11.sp,
+                          ),
+                        ),
+                        verticalMarginXSmall,
+                        ValueListenableBuilder<DateTime>(
+                          valueListenable: _dateNotifier,
+                          builder: (context, selectedDate, _) {
+                            return InkWell(
+                              onTap: () async {
+                                final picked = await showDatePicker(
+                                  context: context,
+                                  initialDate: selectedDate,
+                                  firstDate: DateTime(2020),
+                                  lastDate: DateTime(2100),
+                                );
+                                if (picked != null) {
+                                  _dateNotifier.value = picked;
+                                }
+                              },
+                              borderRadius: BorderRadius.circular(14.r),
+                              child: Container(
+                                height: 48.h,
+                                padding: horizontalPaddingMedium,
+                                decoration: BoxDecoration(
+                                  color: colorScheme.surfaceContainerHigh,
+                                  borderRadius: BorderRadius.circular(14.r),
+                                  border: Border.all(
+                                    color: colorScheme.outlineVariant,
+                                    width: 1.0,
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-
-                          horizontalMarginSmall,
-
-                          // Note Field using custom AppTextField component
-                          Expanded(
-                            child: AppTextField(
-                              controller: _noteController,
-                              hintText: context.l10n.addNoteHint,
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurface,
-                                fontSize: 13.sp,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.calendar_today_rounded,
+                                          size: 18.sp,
+                                          color: colorScheme.primary,
+                                        ),
+                                        horizontalMarginSmall,
+                                        Text(
+                                          '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                                          style: customTypography.bodyMedium
+                                              .copyWith(
+                                            color: colorScheme.onSurface,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13.5.sp,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Icon(
+                                      Icons.edit_calendar_rounded,
+                                      color: colorScheme.outline,
+                                      size: 18.sp,
+                                    ),
+                                  ],
+                                ),
                               ),
-                              hintStyle: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.outline,
-                                fontSize: 12.5.sp,
-                              ),
-                              prefixIcon: Icon(
-                                Icons.sticky_note_2_outlined,
-                                color: colorScheme.outline,
-                                size: 16.sp,
-                              ),
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 12.w, vertical: 10.h),
-                              fillColor: colorScheme.surfaceContainerHigh,
-                              borderRadius: BorderRadius.circular(14.r),
-                            ),
-                          ),
-                        ],
-                      ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
 
-                  verticalMarginLarge,
+                  verticalMarginMedium,
+
+                  // Note / Description Field (Full Width below Date)
+                  Padding(
+                    padding: horizontalPaddingLarge,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.noteLabel,
+                          style: customTypography.labelMediumMono.copyWith(
+                            color: colorScheme.outline,
+                            letterSpacing: 1.2,
+                            fontSize: 11.sp,
+                          ),
+                        ),
+                        verticalMarginXSmall,
+                        AppTextField(
+                          controller: _noteController,
+                          hintText: context.l10n.addNoteHint,
+                          textInputAction: TextInputAction.done,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurface,
+                            fontSize: 13.sp,
+                          ),
+                          hintStyle: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.outline,
+                            fontSize: 12.5.sp,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.sticky_note_2_outlined,
+                            color: colorScheme.outline,
+                            size: 18.sp,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 14.w, vertical: 12.h),
+                          fillColor: colorScheme.surfaceContainerHigh,
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 100.h),
                 ],
               ),
             ),
-            bottomNavigationBar: Builder(
-              builder: (context) {
-                final isKeyboardOpen =
-                    MediaQuery.of(context).viewInsets.bottom > 0;
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Custom Numeric Keypad (hidden when system keyboard is active)
-                    if (!isKeyboardOpen)
-                      Container(
-                        color: colorScheme.surfaceContainerLow,
-                        padding: verticalPaddingSmall,
-                        child: Column(
-                          children: [
-                            _buildKeypadRow(['1', '2', '3']),
-                            verticalMarginXSmall,
-                            _buildKeypadRow(['4', '5', '6']),
-                            verticalMarginXSmall,
-                            _buildKeypadRow(['7', '8', '9']),
-                            verticalMarginXSmall,
-                            _buildKeypadRow(['.', '0', '<']),
-                          ],
-                        ),
-                      ),
+            bottomNavigationBar: Container(
+              color: colorScheme.surfaceContainerLow,
+              padding: EdgeInsets.only(
+                left: 24.w,
+                right: 24.w,
+                top: 12.h,
+                bottom: 12.h + MediaQuery.of(context).viewPadding.bottom,
+              ),
+              child: Builder(
+                builder: (blocContext) {
+                  return ElevatedButton(
+                    onPressed: () async {
+                      final amount =
+                          double.tryParse(_amountController.text.trim()) ?? 0.0;
+                      if (amount <= 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(context.l10n.enterAmountError),
+                            backgroundColor: colorScheme.error,
+                          ),
+                        );
+                        return;
+                      }
 
-                    // Save Button
-                    Container(
-                      color: colorScheme.surfaceContainerLow,
-                      padding: EdgeInsets.only(
-                        left: 24.w,
-                        right: 24.w,
-                        top: 12.h,
-                        bottom:
-                            12.h + MediaQuery.of(context).viewPadding.bottom,
-                      ),
-                      child: Builder(
-                        builder: (blocContext) {
-                          return ElevatedButton(
-                            onPressed: () async {
-                              final amount = double.tryParse(
-                                      _amountStringNotifier.value) ??
-                                  0.0;
-                              if (amount <= 0) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content:
-                                        Text(context.l10n.enterAmountError),
-                                    backgroundColor: colorScheme.error,
-                                  ),
-                                );
-                                return;
-                              }
+                      CategoryItem? selectedCat =
+                          _selectedCategoryNotifier.value;
+                      if (selectedCat == null) {
+                        if (_expenseCategories.isNotEmpty) {
+                          selectedCat = _expenseCategories.first;
+                        } else if (_incomeCategories.isNotEmpty) {
+                          selectedCat = _incomeCategories.first;
+                        }
+                      }
 
-                              CategoryItem? selectedCat =
-                                  _selectedCategoryNotifier.value;
-                              if (selectedCat == null) {
-                                if (_expenseCategories.isNotEmpty) {
-                                  selectedCat = _expenseCategories.first;
-                                } else if (_incomeCategories.isNotEmpty) {
-                                  selectedCat = _incomeCategories.first;
-                                }
-                              }
+                      if (selectedCat == null &&
+                          _typeNotifier.value != TransactionType.transfer) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(context.l10n.selectCategoryError),
+                            backgroundColor: colorScheme.error,
+                          ),
+                        );
+                        return;
+                      }
 
-                              if (selectedCat == null &&
-                                  _typeNotifier.value !=
-                                      TransactionType.transfer) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content:
-                                        Text(context.l10n.selectCategoryError),
-                                    backgroundColor: colorScheme.error,
-                                  ),
-                                );
-                                return;
-                              }
+                      final catId = selectedCat?.id ?? 1;
+                      final cubit = blocContext.read<TransactionCubit>();
 
-                              final catId = selectedCat?.id ?? 1;
-                              final cubit =
-                                  blocContext.read<TransactionCubit>();
+                      String? noteText;
+                      final baseNote = _noteController.text.trim();
+                      final fee = double.tryParse(_feeController.text.trim());
 
-                              String? noteText;
-                              final baseNote = _noteController.text.trim();
-                              final fee =
-                                  double.tryParse(_feeController.text.trim());
+                      final fromName = _formatPaymentMethodName(
+                          context, _paymentMethodNotifier.value);
+                      final toName = _formatPaymentMethodName(
+                          context, _destinationPaymentMethodNotifier.value);
 
-                              final fromName = _formatPaymentMethodName(
-                                  context, _paymentMethodNotifier.value);
-                              final toName = _formatPaymentMethodName(context,
-                                  _destinationPaymentMethodNotifier.value);
+                      if (_typeNotifier.value == TransactionType.transfer) {
+                        final feePart = (fee != null && fee > 0)
+                            ? ' (Fee: ${getIt<PreferenceService>().currencySymbol}$fee)'
+                            : '';
+                        final transferDesc =
+                            'Transfer: $fromName → $toName$feePart';
+                        noteText = baseNote.isNotEmpty
+                            ? '$transferDesc | $baseNote'
+                            : transferDesc;
+                      } else {
+                        noteText = baseNote.isNotEmpty ? baseNote : null;
+                      }
 
-                              if (_typeNotifier.value ==
-                                  TransactionType.transfer) {
-                                final feePart = (fee != null && fee > 0)
-                                    ? ' (Fee: ${getIt<PreferenceService>().currencySymbol}$fee)'
-                                    : '';
-                                final transferDesc =
-                                    'Transfer: $fromName → $toName$feePart';
-                                noteText = baseNote.isNotEmpty
-                                    ? '$transferDesc | $baseNote'
-                                    : transferDesc;
-                              } else {
-                                noteText =
-                                    baseNote.isNotEmpty ? baseNote : null;
-                              }
+                      final PaymentMethod paymentMethod =
+                          _paymentMethodNotifier.value;
 
-                              final PaymentMethod paymentMethod =
-                                  _paymentMethodNotifier.value;
+                      if (widget.initialTransaction != null) {
+                        final initialTx = widget.initialTransaction!;
+                        await cubit.updateTransaction(
+                          id: initialTx.id,
+                          type: _typeNotifier.value,
+                          amount: amount,
+                          categoryId: catId,
+                          timestamp: _dateNotifier.value,
+                          note: noteText,
+                          paymentMethod: paymentMethod,
+                        );
 
-                              if (widget.initialTransaction != null) {
-                                final initialTx = widget.initialTransaction!;
-                                await cubit.updateTransaction(
-                                  id: initialTx.id,
-                                  type: _typeNotifier.value,
-                                  amount: amount,
-                                  categoryId: catId,
-                                  timestamp: _dateNotifier.value,
-                                  note: noteText,
-                                  paymentMethod: paymentMethod,
-                                );
+                        if (_typeNotifier.value == TransactionType.transfer) {
+                          final feeTx = cubit.allTransactions
+                              .where(
+                                (t) =>
+                                    t.type == TransactionType.expense &&
+                                    (t.note?.contains(
+                                                '[Ref: #${initialTx.id}]') ==
+                                            true ||
+                                        (t.note?.startsWith('Transfer Fee') ==
+                                                true &&
+                                            (t.timestamp
+                                                        .difference(
+                                                            _dateNotifier.value)
+                                                        .inSeconds)
+                                                    .abs() <
+                                                60)),
+                              )
+                              .firstOrNull;
 
-                                if (_typeNotifier.value ==
-                                    TransactionType.transfer) {
-                                  final feeTx = cubit.allTransactions
-                                      .where(
-                                        (t) =>
-                                            t.type == TransactionType.expense &&
-                                            (t.note?.contains(
-                                                        '[Ref: #${initialTx.id}]') ==
-                                                    true ||
-                                                (t.note?.startsWith(
-                                                            'Transfer Fee') ==
-                                                        true &&
-                                                    (t.timestamp
-                                                                .difference(
-                                                                    _dateNotifier
-                                                                        .value)
-                                                                .inSeconds)
-                                                            .abs() <
-                                                        60)),
-                                      )
-                                      .firstOrNull;
+                          final feeNote =
+                              'Transfer Fee ($fromName → $toName) [Ref: #${initialTx.id}]';
 
-                                  final feeNote =
-                                      'Transfer Fee ($fromName → $toName) [Ref: #${initialTx.id}]';
-
-                                  if (fee != null && fee > 0) {
-                                    if (feeTx != null) {
-                                      await cubit.updateTransaction(
-                                        id: feeTx.id,
-                                        type: TransactionType.expense,
-                                        amount: fee,
-                                        categoryId: catId,
-                                        timestamp: _dateNotifier.value,
-                                        note: feeNote,
-                                        paymentMethod: paymentMethod,
-                                      );
-                                    } else {
-                                      await cubit.addTransaction(
-                                        type: TransactionType.expense,
-                                        amount: fee,
-                                        categoryId: catId,
-                                        timestamp: _dateNotifier.value,
-                                        note: feeNote,
-                                        paymentMethod: paymentMethod,
-                                      );
-                                    }
-                                  } else if (feeTx != null) {
-                                    await cubit.deleteTransaction(feeTx.id);
-                                  }
-                                } else if (initialTx.type ==
-                                        TransactionType.expense &&
-                                    initialTx.note?.contains('Transfer Fee') ==
-                                        true) {
-                                  final refMatch = RegExp(r'\[Ref:\s*#(\d+)\]')
-                                      .firstMatch(initialTx.note!);
-                                  if (refMatch != null &&
-                                      refMatch.groupCount >= 1) {
-                                    final parentId =
-                                        int.tryParse(refMatch.group(1)!);
-                                    if (parentId != null) {
-                                      final parentTx = cubit.allTransactions
-                                          .where((t) => t.id == parentId)
-                                          .firstOrNull;
-                                      if (parentTx != null &&
-                                          parentTx.note != null) {
-                                        final symbol =
-                                            getIt<PreferenceService>()
-                                                .currencySymbol;
-                                        final updatedNote =
-                                            parentTx.note!.replaceAll(
-                                          RegExp(r'\(Fee:\s*[^)]+\)'),
-                                          '(Fee: $symbol${amount.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '')})',
-                                        );
-                                        await cubit.updateTransaction(
-                                          id: parentTx.id,
-                                          type: parentTx.type,
-                                          amount: parentTx.amount,
-                                          categoryId: parentTx.categoryId,
-                                          timestamp: parentTx.timestamp,
-                                          note: updatedNote,
-                                          paymentMethod: parentTx.paymentMethod,
-                                        );
-                                      }
-                                    }
-                                  }
-                                }
-                              } else {
-                                final newId =
-                                    await cubit.addTransactionAndReturnId(
-                                  type: _typeNotifier.value,
-                                  amount: amount,
-                                  categoryId: catId,
-                                  timestamp: _dateNotifier.value,
-                                  note: noteText,
-                                  paymentMethod: paymentMethod,
-                                );
-
-                                if (_typeNotifier.value ==
-                                        TransactionType.transfer &&
-                                    fee != null &&
-                                    fee > 0) {
-                                  final feeRef =
-                                      newId != null ? ' [Ref: #$newId]' : '';
-                                  await cubit.addTransaction(
-                                    type: TransactionType.expense,
-                                    amount: fee,
-                                    categoryId: catId,
-                                    timestamp: _dateNotifier.value,
-                                    note:
-                                        'Transfer Fee ($fromName → $toName)$feeRef',
-                                    paymentMethod: paymentMethod,
-                                  );
-                                }
-                              }
-
-                              cubit.emitActionSuccess(
-                                widget.initialTransaction != null
-                                    ? 'Transaction updated successfully'
-                                    : 'Transaction saved successfully',
+                          if (fee != null && fee > 0) {
+                            if (feeTx != null) {
+                              await cubit.updateTransaction(
+                                id: feeTx.id,
+                                type: TransactionType.expense,
+                                amount: fee,
+                                categoryId: catId,
+                                timestamp: _dateNotifier.value,
+                                note: feeNote,
+                                paymentMethod: paymentMethod,
                               );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: colorScheme.primary,
-                              foregroundColor: colorScheme.onPrimary,
-                              minimumSize: Size(double.infinity, 46.h),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14.r),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Text(
-                              widget.initialTransaction != null
-                                  ? 'Update Transaction'
-                                  : context.l10n.saveTransaction,
-                              style: customTypography.bodyLargeBold.copyWith(
-                                color: colorScheme.onPrimary,
-                                fontSize: 16.sp,
-                              ),
-                            ),
+                            } else {
+                              await cubit.addTransaction(
+                                type: TransactionType.expense,
+                                amount: fee,
+                                categoryId: catId,
+                                timestamp: _dateNotifier.value,
+                                note: feeNote,
+                                paymentMethod: paymentMethod,
+                              );
+                            }
+                          } else if (feeTx != null) {
+                            await cubit.deleteTransaction(feeTx.id);
+                          }
+                        } else if (initialTx.type == TransactionType.expense &&
+                            initialTx.note?.contains('Transfer Fee') == true) {
+                          final refMatch = RegExp(r'\[Ref:\s*#(\d+)\]')
+                              .firstMatch(initialTx.note!);
+                          if (refMatch != null && refMatch.groupCount >= 1) {
+                            final parentId = int.tryParse(refMatch.group(1)!);
+                            if (parentId != null) {
+                              final parentTx = cubit.allTransactions
+                                  .where((t) => t.id == parentId)
+                                  .firstOrNull;
+                              if (parentTx != null && parentTx.note != null) {
+                                final symbol =
+                                    getIt<PreferenceService>().currencySymbol;
+                                final updatedNote = parentTx.note!.replaceAll(
+                                  RegExp(r'\(Fee:\s*[^)]+\)'),
+                                  '(Fee: $symbol${amount.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '')})',
+                                );
+                                await cubit.updateTransaction(
+                                  id: parentTx.id,
+                                  type: parentTx.type,
+                                  amount: parentTx.amount,
+                                  categoryId: parentTx.categoryId,
+                                  timestamp: parentTx.timestamp,
+                                  note: updatedNote,
+                                  paymentMethod: parentTx.paymentMethod,
+                                );
+                              }
+                            }
+                          }
+                        }
+                      } else {
+                        final newId = await cubit.addTransactionAndReturnId(
+                          type: _typeNotifier.value,
+                          amount: amount,
+                          categoryId: catId,
+                          timestamp: _dateNotifier.value,
+                          note: noteText,
+                          paymentMethod: paymentMethod,
+                        );
+
+                        if (_typeNotifier.value == TransactionType.transfer &&
+                            fee != null &&
+                            fee > 0) {
+                          final feeRef = newId != null ? ' [Ref: #$newId]' : '';
+                          await cubit.addTransaction(
+                            type: TransactionType.expense,
+                            amount: fee,
+                            categoryId: catId,
+                            timestamp: _dateNotifier.value,
+                            note: 'Transfer Fee ($fromName → $toName)$feeRef',
+                            paymentMethod: paymentMethod,
                           );
-                        },
+                        }
+                      }
+
+                      cubit.emitActionSuccess(
+                        widget.initialTransaction != null
+                            ? 'Transaction updated successfully'
+                            : 'Transaction saved successfully',
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      minimumSize: Size(double.infinity, 46.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14.r),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      widget.initialTransaction != null
+                          ? 'Update Transaction'
+                          : context.l10n.saveTransaction,
+                      style: customTypography.bodyLargeBold.copyWith(
+                        color: colorScheme.onPrimary,
+                        fontSize: 16.sp,
                       ),
                     ),
-                  ],
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildKeypadRow(List<String> keys) {
-    final colorScheme = context.colorScheme;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: keys.map((key) {
-        return InkWell(
-          onTap: () => _onKeypadTap(key),
-          borderRadius: BorderRadius.circular(32.r),
-          child: Container(
-            width: 72.w,
-            height: 42.h,
-            alignment: Alignment.center,
-            child: key == '<'
-                ? Icon(Icons.backspace_outlined,
-                    color: colorScheme.onSurface, size: 20.sp)
-                : Text(
-                    key,
-                    style: context.customTypography.headlineMediumMonoBold
-                        .copyWith(
-                      color: colorScheme.onSurface,
-                      fontSize: 20.sp,
-                    ),
-                  ),
-          ),
-        );
-      }).toList(),
     );
   }
 
