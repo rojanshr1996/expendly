@@ -18,6 +18,7 @@ import '../di/injection.dart';
 import '../events/transaction_events.dart';
 import '../models/backup_result.dart';
 import '../utils/app_logger.dart';
+import 'pdf_report_service.dart';
 import 'preference_service.dart';
 
 /// Backup file name — single file, always overwritten.
@@ -38,6 +39,7 @@ const String _sUserProfiles = 'USER_PROFILES';
 ///
 /// Features:
 ///  - [exportAnalyticsReportToCsv] — export financial reports to Downloads/Expendly
+///  - [exportAnalyticsReportToPdf] — export visual PDF financial reports with charts & insights
 ///  - [exportBackupCsv]            — full app backup using BackupStorageProvider
 ///  - [importBackupCsv]            — restore from a [kBackupFileName] file
 ///  - [findBackupFile]             — locate the current backup file
@@ -53,6 +55,53 @@ class DataExportImportService {
     BackupStorageProvider? storageProvider,
   ]) : _storageProvider =
             storageProvider ?? BackupStorageProviderFactory.create();
+
+  // ── Analytics PDF ─────────────────────────────────────────────────────────
+
+  /// Exports a detailed Financial Analytics Report in PDF format with visual charts
+  /// and explanatory narratives into Downloads/Expendly.
+  Future<String> exportAnalyticsReportToPdf({
+    required AnalyticsReport report,
+    String periodName = 'Monthly',
+    bool openAfterExport = true,
+  }) async {
+    try {
+      final currency = _preferenceService.currencySymbol;
+      final categoriesList = await _db.select(_db.categories).get();
+      final transactionsList = await _db.select(_db.transactions).get();
+      final categoryMap = {for (var c in categoriesList) c.id: c.name};
+
+      final formattedTransactions = transactionsList.map((t) {
+        return {
+          'id': t.id,
+          'date': t.timestamp.toIso8601String().replaceAll('T', ' '),
+          'type': t.type.name,
+          'category': categoryMap[t.categoryId] ?? 'Uncategorized',
+          'amount': t.amount / 100.0,
+          'paymentMethod': t.paymentMethod?.name ?? '',
+          'note': t.note ?? '',
+        };
+      }).toList();
+
+      final pdfService = PdfReportService();
+      final filePath = await pdfService.generateAnalyticsReportPdf(
+        report: report,
+        currencySymbol: currency,
+        transactions: formattedTransactions,
+        periodName: report.periodName,
+      );
+
+      if (openAfterExport) {
+        await OpenFile.open(filePath, type: 'application/pdf');
+      }
+
+      return filePath;
+    } catch (e, stack) {
+      AppLogger.e(
+          'DataExportImportService: Analytics PDF Export failed', e, stack);
+      rethrow;
+    }
+  }
 
   // ── Analytics CSV ─────────────────────────────────────────────────────────
 

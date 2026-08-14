@@ -1,3 +1,4 @@
+import 'package:expendly/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -85,7 +86,8 @@ class AppButton extends StatelessWidget {
       content = child!;
     } else {
       final labelStyle =
-          (textStyle ?? textTheme.titleMedium ?? const TextStyle()).copyWith(
+          (textStyle ?? textTheme.titleMedium ?? AppTypography.titleMedium)
+              .copyWith(
         color: effectiveFgColor,
         fontWeight: FontWeights.semiBold,
       );

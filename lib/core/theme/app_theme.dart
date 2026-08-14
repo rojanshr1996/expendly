@@ -12,6 +12,8 @@ abstract class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      fontFamily: 'HankenGrotesk',
+      fontFamilyFallback: const ['HankenGrotesk', 'JetBrainsMono'],
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.background,
       primaryColor: AppColors.primary,
@@ -67,7 +69,8 @@ abstract class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: AppTypography.headlineMedium,
+        titleTextStyle:
+            AppTypography.titleLarge.copyWith(color: AppColors.onSurface),
         iconTheme: const IconThemeData(color: AppColors.onSurface),
       ),
 
@@ -170,6 +173,8 @@ abstract class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      fontFamily: 'HankenGrotesk',
+      fontFamilyFallback: const ['HankenGrotesk', 'JetBrainsMono'],
       brightness: Brightness.light,
       scaffoldBackgroundColor: AppColors.lightBackground,
       primaryColor: AppColors.lightPrimary,
@@ -226,8 +231,8 @@ abstract class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: AppTypography.headlineMedium
-            .copyWith(color: AppColors.lightOnSurface),
+        titleTextStyle:
+            AppTypography.titleLarge.copyWith(color: AppColors.lightOnSurface),
         iconTheme: const IconThemeData(color: AppColors.lightOnSurface),
       ),
 

@@ -34,8 +34,6 @@ class DashboardRecentActivity extends StatelessWidget {
         return Icons.restaurant_rounded;
       case 'shopping_cart':
         return Icons.shopping_cart_rounded;
-      case 'shopping_bag':
-        return Icons.shopping_bag_outlined;
       case 'home':
         return Icons.home_rounded;
       case 'receipt_long':
@@ -43,15 +41,21 @@ class DashboardRecentActivity extends StatelessWidget {
       case 'directions_bus':
         return Icons.directions_bus_rounded;
       case 'movie':
-        return Icons.movie_outlined;
+        return Icons.movie_rounded;
       case 'medical_services':
         return Icons.medical_services_rounded;
-      case 'work':
-        return Icons.work_outline_rounded;
+      case 'shopping_bag':
+        return Icons.shopping_bag_rounded;
       case 'payments':
-        return Icons.payments_outlined;
+        return Icons.payments_rounded;
+      case 'work':
+        return Icons.work_rounded;
+      case 'trending_up':
+        return Icons.trending_up_rounded;
+      case 'storefront':
+        return Icons.storefront_rounded;
       default:
-        return Icons.receipt_long_rounded;
+        return Icons.category_rounded;
     }
   }
 
@@ -118,7 +122,7 @@ class DashboardRecentActivity extends StatelessWidget {
                         categoryIcon: tx.iconName,
                         categoryColorHex: tx.colorHex,
                         timestamp: tx.date,
-                        note: tx.title != tx.categoryName ? tx.title : null,
+                        note: tx.note,
                       );
                       context.router.push(
                         TransactionDetailsRoute(
@@ -128,90 +132,80 @@ class DashboardRecentActivity extends StatelessWidget {
                       );
                     },
                     borderRadius: BorderRadius.circular(16.r),
-                    child: GlassContainer(
-                      padding: EdgeInsets.all(12.w),
+                    child: Container(
+                      padding: EdgeInsets.all(12.r),
+                      decoration: BoxDecoration(
+                        color: context.colorScheme.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(16.r),
+                        border:
+                            Border.all(color: context.customColors.glassStroke),
+                      ),
                       child: Row(
                         children: [
                           // Category Icon Avatar
                           Container(
-                            width: 42.w,
-                            height: 42.w,
+                            width: 44.w,
+                            height: 44.h,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.r),
-                              color: color.withAlpha((0.15 * 255).round()),
-                              border: Border.all(
-                                color: color.withAlpha((0.3 * 255).round()),
-                              ),
+                              color: color.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12.r),
                             ),
-                            child: Icon(iconData, color: color, size: 20.sp),
+                            child: Icon(
+                              iconData,
+                              color: color,
+                              size: 22.r,
+                            ),
                           ),
-                          horizontalMarginSmall,
+                          SizedBox(width: 14.w),
 
-                          // Title & Category
+                          // Title & Note (matching AllTransactionsPage)
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  tx.title,
+                                  tx.type == TransactionType.transfer
+                                      ? l10n.transfer
+                                      : tx.categoryName,
                                   style:
-                                      (textTheme.bodyLarge ?? const TextStyle())
-                                          .copyWith(
-                                    fontWeight: FontWeights.bold,
+                                      customTypography.bodyLargeBold.copyWith(
                                     color: colorScheme.onSurface,
                                     fontSize: 14.sp,
                                   ),
                                 ),
-                                if (tx.type != TransactionType.transfer)
-                                  Text(
-                                    tx.categoryName,
-                                    style: (textTheme.bodyMedium ??
-                                            const TextStyle())
-                                        .copyWith(
-                                      color: colorScheme.onSurfaceVariant,
-                                      fontSize: 12.sp,
+                                if (tx.note?.isNotEmpty == true)
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 2.h),
+                                    child: Text(
+                                      tx.note!,
+                                      style:
+                                          customTypography.bodyMedium.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                        fontSize: 12.sp,
+                                      ),
                                     ),
                                   ),
                               ],
                             ),
                           ),
 
-                          // Amount & Date
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              CompactAmountText(
-                                amount: tx.amount,
-                                currencySymbol: currencySymbol,
-                                isPrivacyMode: isPrivacyMode,
-                                showSign: true,
-                                type: tx.type,
-                                isIncome: tx.type == TransactionType.income
-                                    ? true
-                                    : (tx.type == TransactionType.expense
-                                        ? false
-                                        : null),
-                                style:
-                                    (customTypography.labelMediumMono).copyWith(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeights.bold,
-                                  color: tx.type == TransactionType.income
-                                      ? customColors.semanticGreen
-                                      : tx.type == TransactionType.transfer
-                                          ? customColors.semanticBlue
-                                          : customColors.semanticRed,
-                                ),
-                              ),
-                              verticalMarginXXSmall,
-                              Text(
-                                l10n.today,
-                                style:
-                                    customTypography.labelMediumMono.copyWith(
-                                  fontSize: 10.sp,
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
+                          // Amount Display
+                          CompactAmountText(
+                            amount: tx.amount,
+                            currencySymbol: currencySymbol,
+                            isPrivacyMode: isPrivacyMode,
+                            showSign: true,
+                            type: tx.type,
+                            isIncome: tx.type == TransactionType.income
+                                ? true
+                                : (tx.type == TransactionType.expense
+                                    ? false
+                                    : null),
+                            style: customTypography.headlineMediumMonoBold
+                                .copyWith(
+                              color: color,
+                              fontSize: 16.sp,
+                            ),
                           ),
                         ],
                       ),

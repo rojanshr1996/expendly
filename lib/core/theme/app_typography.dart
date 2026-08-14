@@ -37,6 +37,41 @@ abstract class AppTypography {
         color: AppColors.onSurface,
       );
 
+  /// Headline Small (20px, SemiBold 600, Line Height 28px, Tracking -0.02em)
+  static TextStyle get headlineSmall => GoogleFonts.hankenGrotesk(
+        fontSize: 20.sp,
+        fontWeight: FontWeight.w600,
+        height: 28 / 20,
+        letterSpacing: -0.4,
+        color: AppColors.onSurface,
+      );
+
+  /// Title Large (22px, Bold 700, Line Height 28px, Tracking -0.02em)
+  static TextStyle get titleLarge => GoogleFonts.hankenGrotesk(
+        fontSize: 22.sp,
+        fontWeight: FontWeight.w700,
+        height: 28 / 22,
+        letterSpacing: -0.44,
+        color: AppColors.onSurface,
+      );
+
+  /// Title Medium (18px, SemiBold 600, Line Height 24px, Tracking -0.01em)
+  static TextStyle get titleMedium => GoogleFonts.hankenGrotesk(
+        fontSize: 18.sp,
+        fontWeight: FontWeight.w600,
+        height: 24 / 18,
+        letterSpacing: -0.18,
+        color: AppColors.onSurface,
+      );
+
+  /// Title Small (14px, SemiBold 600, Line Height 20px)
+  static TextStyle get titleSmall => GoogleFonts.hankenGrotesk(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w600,
+        height: 20 / 14,
+        color: AppColors.onSurface,
+      );
+
   /// Body Large (16px, Regular 400, Line Height 24px, Tracking -0.01em)
   static TextStyle get bodyLarge => GoogleFonts.hankenGrotesk(
         fontSize: 16.sp,
@@ -64,6 +99,23 @@ abstract class AppTypography {
         color: AppColors.onSurfaceVariant,
       );
 
+  /// Body Small (12px, Regular 400, Line Height 16px)
+  static TextStyle get bodySmall => GoogleFonts.hankenGrotesk(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w400,
+        height: 16 / 12,
+        color: AppColors.onSurfaceVariant,
+      );
+
+  /// Label Large (14px, SemiBold 600, Line Height 20px, Tracking 0.01em)
+  static TextStyle get labelLarge => GoogleFonts.hankenGrotesk(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w600,
+        height: 20 / 14,
+        letterSpacing: 0.14,
+        color: AppColors.onSurface,
+      );
+
   /// Label Medium (12px, Medium 500, Line Height 16px, Tracking 0.02em - Hanken Grotesk)
   static TextStyle get labelMedium => GoogleFonts.hankenGrotesk(
         fontSize: 12.sp,
@@ -71,6 +123,14 @@ abstract class AppTypography {
         height: 16 / 12,
         letterSpacing: 0.24,
         color: AppColors.onSurfaceVariant,
+      );
+
+  /// Label Small (10px, Medium 500, Line Height 14px)
+  static TextStyle get labelSmall => GoogleFonts.hankenGrotesk(
+        fontSize: 10.sp,
+        fontWeight: FontWeight.w500,
+        height: 14 / 10,
+        color: AppColors.outline,
       );
 
   // Monospaced Styles strictly for Amounts & Financial Figures (JetBrains Mono)
@@ -116,7 +176,7 @@ abstract class AppTypography {
         color: AppColors.onSurface,
       );
 
-  /// Build complete ThemeData TextTheme
+  /// Build complete ThemeData TextTheme with Hanken Grotesk for all typography levels
   static TextTheme buildTextTheme({Brightness brightness = Brightness.dark}) {
     final isDark = brightness == Brightness.dark;
     final onSurface = isDark ? AppColors.onSurface : AppColors.lightOnSurface;
@@ -125,21 +185,34 @@ abstract class AppTypography {
     final outline = isDark ? AppColors.outline : AppColors.lightOutline;
 
     return TextTheme(
-      headlineLarge: headlineLarge.copyWith(color: onSurface),
-      headlineMedium: headlineMedium.copyWith(color: onSurface),
-      bodyLarge: bodyLarge.copyWith(color: onSurface),
-      bodyMedium: bodyMedium.copyWith(color: onSurfaceVariant),
-      labelMedium: labelMedium.copyWith(color: onSurfaceVariant),
-      titleMedium: GoogleFonts.hankenGrotesk(
-        fontSize: 18.sp,
-        fontWeight: FontWeight.w600,
+      displayLarge: GoogleFonts.hankenGrotesk(
+        fontSize: 57.sp,
+        fontWeight: FontWeight.w400,
+        letterSpacing: -0.25,
         color: onSurface,
       ),
-      labelSmall: GoogleFonts.hankenGrotesk(
-        fontSize: 10.sp,
-        fontWeight: FontWeight.w500,
-        color: outline,
+      displayMedium: GoogleFonts.hankenGrotesk(
+        fontSize: 45.sp,
+        fontWeight: FontWeight.w400,
+        color: onSurface,
       ),
+      displaySmall: GoogleFonts.hankenGrotesk(
+        fontSize: 36.sp,
+        fontWeight: FontWeight.w400,
+        color: onSurface,
+      ),
+      headlineLarge: headlineLarge.copyWith(color: onSurface),
+      headlineMedium: headlineMedium.copyWith(color: onSurface),
+      headlineSmall: headlineSmall.copyWith(color: onSurface),
+      titleLarge: titleLarge.copyWith(color: onSurface),
+      titleMedium: titleMedium.copyWith(color: onSurface),
+      titleSmall: titleSmall.copyWith(color: onSurface),
+      bodyLarge: bodyLarge.copyWith(color: onSurface),
+      bodyMedium: bodyMedium.copyWith(color: onSurfaceVariant),
+      bodySmall: bodySmall.copyWith(color: onSurfaceVariant),
+      labelLarge: labelLarge.copyWith(color: onSurface),
+      labelMedium: labelMedium.copyWith(color: onSurfaceVariant),
+      labelSmall: labelSmall.copyWith(color: outline),
     );
   }
 }

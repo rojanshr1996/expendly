@@ -63,10 +63,9 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
         DashboardTransactionItem(
           id: tx.id,
           categoryId: tx.categoryId,
-          title: tx.note?.isNotEmpty == true
-              ? tx.note!
-              : (cat?.name ?? 'Transaction'),
+          title: cat?.name ?? 'Transaction',
           categoryName: cat?.name ?? 'General',
+          note: tx.note,
           iconName: cat?.icon ?? 'receipt_long',
           colorHex: cat?.color ?? '#57F1DB',
           amount: tx.amount / 100.0,

@@ -1,9 +1,9 @@
+import 'package:expendly/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/glass_container.dart';
@@ -214,10 +214,11 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
                             width: 140.w,
                             height: 140.w,
                             decoration: BoxDecoration(
-                              color: AppColors.surfaceLow
+                              color: context.customColors.surfaceLow
                                   .withAlpha((0.5 * 255).round()),
                               borderRadius: BorderRadius.circular(24.r),
-                              border: Border.all(color: AppColors.glassStroke),
+                              border: Border.all(
+                                  color: context.customColors.glassStroke),
                             ),
                           ),
                         ),
@@ -244,7 +245,7 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
                           iconSize: 22.sp,
                           iconColor: colorScheme.primary,
                           containerSize: 42.w,
-                          backgroundColor: AppColors.surfaceLow,
+                          backgroundColor: context.customColors.surfaceLow,
                           borderRadius: BorderRadius.circular(14.r),
                           scaleAnimation: _topBadgeScaleAnimation,
                           floatAnimation: _badgeFloatAnimation,
@@ -260,7 +261,7 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
                           iconSize: 24.sp,
                           iconColor: colorScheme.secondary,
                           containerSize: 44.w,
-                          backgroundColor: AppColors.surfaceLow,
+                          backgroundColor: context.customColors.surfaceLow,
                           borderRadius: BorderRadius.circular(14.r),
                           scaleAnimation: _bottomBadgeScaleAnimation,
                           floatAnimation: _badgeFloatAnimation,
@@ -277,7 +278,8 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
             Text(
               context.l10n.welcomeFinancialJourney,
               textAlign: TextAlign.center,
-              style: (textTheme.headlineSmall ?? const TextStyle()).copyWith(
+              style: (textTheme.headlineSmall ?? AppTypography.headlineSmall)
+                  .copyWith(
                 fontWeight: FontWeights.bold,
                 color: colorScheme.onSurface,
               ),
@@ -289,7 +291,8 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
               child: Text(
                 context.l10n.emptyDashboardDesc,
                 textAlign: TextAlign.center,
-                style: (textTheme.bodyMedium ?? const TextStyle()).copyWith(
+                style:
+                    (textTheme.bodyMedium ?? AppTypography.bodyMedium).copyWith(
                   color: colorScheme.onSurfaceVariant,
                   height: 1.4,
                 ),
@@ -335,9 +338,9 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
                 Container(
                   width: 4.w,
                   height: 4.w,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.outlineVariant,
+                    color: colorScheme.outlineVariant,
                   ),
                 ),
                 horizontalMarginMedium,
@@ -419,7 +422,10 @@ class AnimatedLargeIconCard extends StatelessWidget {
             padding: EdgeInsets.zero,
             borderRadius: borderRadius ?? BorderRadius.circular(24.r),
             backgroundColor: backgroundColor ??
-                AppColors.surfaceContainerHigh.withAlpha((0.8 * 255).round()),
+                Theme.of(context)
+                    .colorScheme
+                    .surfaceContainerHigh
+                    .withAlpha((0.8 * 255).round()),
             child: Center(
               child: Icon(
                 icon,

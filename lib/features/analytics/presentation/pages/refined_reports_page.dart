@@ -98,7 +98,8 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
                         color: colorScheme.primary,
                         size: 24.sp,
                       ),
-                      onPressed: () => _exportReport(context, state.report),
+                      onPressed: () =>
+                          _showExportOptionsSheet(context, state.report),
                     );
                   },
                 ),
@@ -136,6 +137,261 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
           );
         },
       ),
+    );
+  }
+
+  void _showExportOptionsSheet(BuildContext context, AnalyticsReport report) {
+    final colorScheme = context.colorScheme;
+    final textTheme = context.textTheme;
+    final customTypography = context.customTypography;
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+            border: Border.all(color: colorScheme.outlineVariant, width: 1.0),
+          ),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Drag handle
+                Center(
+                  child: Container(
+                    width: 40.w,
+                    height: 4.h,
+                    decoration: BoxDecoration(
+                      color: colorScheme.outline.withAlpha((0.4 * 255).round()),
+                      borderRadius: BorderRadius.circular(2.r),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                // Title
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Download Financial Report',
+                      style:
+                          (textTheme.titleMedium ?? const TextStyle()).copyWith(
+                        fontWeight: FontWeights.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close_rounded,
+                          color: colorScheme.onSurfaceVariant),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                  ],
+                ),
+                Text(
+                  'Choose your preferred format for the ${report.periodName} analysis report.',
+                  style: customTypography.bodyMedium.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontSize: 12.sp,
+                  ),
+                ),
+                SizedBox(height: 20.h),
+
+                // PDF Option (Visual Charts & Insights)
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _exportReport(context, report, isPdf: true);
+                  },
+                  borderRadius: BorderRadius.circular(16.r),
+                  child: Container(
+                    padding: EdgeInsets.all(14.r),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(16.r),
+                      border:
+                          Border.all(color: context.customColors.glassStroke),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 46.w,
+                          height: 46.h,
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Icon(
+                            Icons.picture_as_pdf_rounded,
+                            color: Colors.redAccent,
+                            size: 26.sp,
+                          ),
+                        ),
+                        SizedBox(width: 14.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'PDF Visual Report',
+                                    style:
+                                        customTypography.bodyLargeBold.copyWith(
+                                      color: colorScheme.onSurface,
+                                      fontSize: 14.sp,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 6.w, vertical: 2.h),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.primary
+                                          .withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(6.r),
+                                    ),
+                                    child: Text(
+                                      'With Charts',
+                                      style: customTypography.labelMediumMono
+                                          .copyWith(
+                                        fontSize: 9.sp,
+                                        color: colorScheme.primary,
+                                        fontWeight: FontWeights.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                'Includes vector charts, category breakdown bars, and financial analysis narratives.',
+                                style: customTypography.bodyMedium.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                  fontSize: 11.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.chevron_right_rounded,
+                            color: colorScheme.onSurfaceVariant),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12.h),
+
+                // CSV Option
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _exportReport(context, report, isPdf: false);
+                  },
+                  borderRadius: BorderRadius.circular(16.r),
+                  child: Container(
+                    padding: EdgeInsets.all(14.r),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(16.r),
+                      border:
+                          Border.all(color: context.customColors.glassStroke),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 46.w,
+                          height: 46.h,
+                          decoration: BoxDecoration(
+                            color: Colors.green.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Icon(
+                            Icons.table_chart_rounded,
+                            color: Colors.green,
+                            size: 26.sp,
+                          ),
+                        ),
+                        SizedBox(width: 14.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'CSV Data Spreadsheet',
+                                style: customTypography.bodyLargeBold.copyWith(
+                                  color: colorScheme.onSurface,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                'Raw itemized transaction ledger for Excel, Google Sheets, or Numbers.',
+                                style: customTypography.bodyMedium.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                  fontSize: 11.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.chevron_right_rounded,
+                            color: colorScheme.onSurfaceVariant),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 8.h),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _exportReport(
+    BuildContext context,
+    AnalyticsReport report, {
+    bool isPdf = true,
+  }) async {
+    InterstitialAdHelper.showAd(
+      onAdDismissed: () async {
+        if (!context.mounted) return;
+        try {
+          final exportService = getIt<DataExportImportService>();
+          final filePath = isPdf
+              ? await exportService.exportAnalyticsReportToPdf(
+                  report: report, openAfterExport: true)
+              : await exportService.exportAnalyticsReportToCsv(
+                  report: report, openAfterExport: true);
+
+          if (context.mounted) {
+            final formatName = isPdf ? 'PDF Report' : 'CSV Report';
+            StatusComponents.showToast(
+              context,
+              message:
+                  '$formatName saved to Downloads/Expendly/${p.basename(filePath)}',
+              isSuccess: true,
+            );
+          }
+          await OpenFile.open(filePath,
+              type: isPdf ? 'application/pdf' : 'text/csv');
+        } catch (e) {
+          if (context.mounted) {
+            StatusComponents.showToast(
+              context,
+              message: 'Report export failed: ${e.toString()}',
+              isError: true,
+            );
+          }
+        }
+      },
     );
   }
 
@@ -402,37 +658,6 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
         }
 
         return const SizedBox.shrink(key: ValueKey('none'));
-      },
-    );
-  }
-
-  Future<void> _exportReport(
-      BuildContext context, AnalyticsReport report) async {
-    InterstitialAdHelper.showAd(
-      onAdDismissed: () async {
-        if (!context.mounted) return;
-        try {
-          final filePath = await getIt<DataExportImportService>()
-              .exportAnalyticsReportToCsv(
-                  report: report, openAfterExport: true);
-          if (context.mounted) {
-            StatusComponents.showToast(
-              context,
-              message:
-                  'Report saved to Downloads/Expendly/${p.basename(filePath)}',
-              isSuccess: true,
-            );
-          }
-          await OpenFile.open(filePath);
-        } catch (e) {
-          if (context.mounted) {
-            StatusComponents.showToast(
-              context,
-              message: 'Report export failed: ${e.toString()}',
-              isError: true,
-            );
-          }
-        }
       },
     );
   }

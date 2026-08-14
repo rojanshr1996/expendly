@@ -215,11 +215,11 @@ class _ExpendlyAppState extends State<ExpendlyApp> with WidgetsBindingObserver {
         return ValueListenableBuilder<String>(
           valueListenable: prefService.themeModeNotifier,
           builder: (context, themeModeStr, child) {
-            final themeMode = themeModeStr == 'light'
-                ? ThemeMode.light
+            final themeMode = themeModeStr == 'dark'
+                ? ThemeMode.dark
                 : (themeModeStr == 'system'
                     ? ThemeMode.system
-                    : ThemeMode.dark);
+                    : ThemeMode.light);
 
             return MaterialApp.router(
               title: config.appName,
