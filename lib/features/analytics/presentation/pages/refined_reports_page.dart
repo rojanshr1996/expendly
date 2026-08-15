@@ -19,6 +19,7 @@ import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
+import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../data/datasources/analytics_local_datasource.dart';
 import '../../data/repositories/analytics_repository_impl.dart';
@@ -66,25 +67,15 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
       value: _cubit,
       child: Builder(
         builder: (context) {
+          final topInset = MediaQuery.of(context).padding.top;
+          final headerPaddingTop = topInset + kToolbarHeight;
+
           return Scaffold(
             backgroundColor: colorScheme.surface,
-            appBar: AppBar(
-              leading: ModalRoute.of(context)?.canPop == true
-                  ? IconButton(
-                      icon: Icon(
-                        Icons.arrow_back_rounded,
-                        color: colorScheme.onSurface,
-                      ),
-                      onPressed: () => Navigator.of(context).pop(),
-                    )
-                  : null,
-              title: Text(
-                l10n.reports,
-                style: textTheme.headlineSmall?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeights.bold,
-                ),
-              ),
+            extendBodyBehindAppBar: true,
+            appBar: LiquidGlassAppBar(
+              showLeading: ModalRoute.of(context)?.canPop == true,
+              titleText: l10n.reports,
               actions: [
                 BlocBuilder<AnalyticsCubit, AnalyticsState>(
                   builder: (context, state) {
@@ -105,34 +96,37 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
                 ),
               ],
             ),
-            body: BlocBuilder<AnalyticsCubit, AnalyticsState>(
-              builder: (context, state) {
-                return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 350),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0, 0.03),
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: _buildStateContent(
-                    context: context,
-                    state: state,
-                    colorScheme: colorScheme,
-                    textTheme: textTheme,
-                    customTypography: customTypography,
-                    l10n: l10n,
-                  ),
-                );
-              },
+            body: Padding(
+              padding: EdgeInsets.only(top: headerPaddingTop),
+              child: BlocBuilder<AnalyticsCubit, AnalyticsState>(
+                builder: (context, state) {
+                  return AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 350),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    transitionBuilder: (child, animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 0.03),
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: _buildStateContent(
+                      context: context,
+                      state: state,
+                      colorScheme: colorScheme,
+                      textTheme: textTheme,
+                      customTypography: customTypography,
+                      l10n: l10n,
+                    ),
+                  );
+                },
+              ),
             ),
           );
         },
@@ -416,6 +410,7 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
               report.categoryBreakdowns.isEmpty;
 
           return Stack(
+            fit: StackFit.expand,
             children: [
               // 1. Scrollable Reports Content (All original report cards scroll UNDER the pinned liquid glass tab bar)
               Positioned.fill(

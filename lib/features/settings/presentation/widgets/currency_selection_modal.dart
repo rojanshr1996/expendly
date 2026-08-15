@@ -12,6 +12,7 @@ import '../../../analytics/presentation/cubit/analytics_cubit.dart';
 import '../../../budgets/presentation/cubit/budget_cubit.dart';
 import '../../../currency/domain/repositories/exchange_rate_repository.dart';
 import '../../../dashboard/presentation/cubit/dashboard_cubit.dart';
+import '../../../groups/presentation/cubit/groups_cubit.dart';
 import '../../../onboarding/presentation/pages/currency_setup_page.dart';
 import '../../../transactions/presentation/cubit/transaction_cubit.dart';
 
@@ -264,6 +265,9 @@ class _CurrencySelectionModalState extends State<CurrencySelectionModal> {
         }
         if (getIt.isRegistered<AnalyticsCubit>()) {
           getIt<AnalyticsCubit>().loadAnalytics(isSilent: true);
+        }
+        if (getIt.isRegistered<GroupsCubit>()) {
+          getIt<GroupsCubit>().loadEvents(isSilent: true);
         }
         TransactionEvents.notifyUpdated();
       } catch (_) {}

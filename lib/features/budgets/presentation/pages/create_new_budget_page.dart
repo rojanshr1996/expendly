@@ -14,6 +14,7 @@ import '../../../../core/services/preference_service.dart';
 import '../../../../core/ads/interstitial_ad_helper.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/category_picker_sheet.dart';
+import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../../transactions/domain/entities/category_item.dart';
 import '../cubit/budget_cubit.dart';
@@ -132,335 +133,322 @@ class _CreateNewBudgetPageState extends State<CreateNewBudgetPage> {
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Scaffold(
             backgroundColor: colorScheme.surface,
-            appBar: AppBar(
-              backgroundColor: colorScheme.surfaceContainerLow,
-              elevation: 0,
+            extendBodyBehindAppBar: true,
+            appBar: LiquidGlassAppBar(
               leading: IconButton(
                 icon: Icon(Icons.close_rounded, color: colorScheme.onSurface),
                 onPressed: () => context.router.maybePop(),
               ),
-              title: Text(
-                'Add Budget',
-                style: (textTheme.titleLarge ?? const TextStyle()).copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              centerTitle: true,
-              actions: const [],
+              titleText: 'Add Budget',
             ),
-            body: SafeArea(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 16),
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 500),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              verticalMarginMedium,
+            body: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: EdgeInsets.only(
+                      left: 24.w,
+                      right: 24.w,
+                      top: MediaQuery.of(context).padding.top +
+                          kToolbarHeight +
+                          16.h,
+                      bottom: 16.h,
+                    ),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 500),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            verticalMarginMedium,
 
-                              // Amount Display Section matching modern_add_transaction_page.dart
-                              Column(
-                                children: [
-                                  Text(
-                                    'LIMIT AMOUNT',
-                                    style: customTypography.labelMediumMono
-                                        .copyWith(
-                                      color: colorScheme.outline,
-                                      letterSpacing: 1.5,
-                                    ),
+                            // Amount Display Section matching modern_add_transaction_page.dart
+                            Column(
+                              children: [
+                                Text(
+                                  'LIMIT AMOUNT',
+                                  style:
+                                      customTypography.labelMediumMono.copyWith(
+                                    color: colorScheme.outline,
+                                    letterSpacing: 1.5,
                                   ),
-                                  verticalMarginXSmall,
-                                  FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.baseline,
-                                      textBaseline: TextBaseline.alphabetic,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          '$currencySymbol ',
+                                ),
+                                verticalMarginXSmall,
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.baseline,
+                                    textBaseline: TextBaseline.alphabetic,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '$currencySymbol ',
+                                        style: customTypography
+                                            .headlineLargeMonoBold
+                                            .copyWith(
+                                          color: colorScheme.primary,
+                                          fontSize: 42.sp,
+                                        ),
+                                      ),
+                                      IntrinsicWidth(
+                                        child: TextField(
+                                          controller: _amountController,
+                                          focusNode: _amountFocusNode,
+                                          keyboardType: const TextInputType
+                                              .numberWithOptions(decimal: true),
                                           style: customTypography
                                               .headlineLargeMonoBold
                                               .copyWith(
                                             color: colorScheme.primary,
                                             fontSize: 42.sp,
                                           ),
-                                        ),
-                                        IntrinsicWidth(
-                                          child: TextField(
-                                            controller: _amountController,
-                                            focusNode: _amountFocusNode,
-                                            keyboardType: const TextInputType
-                                                .numberWithOptions(
-                                                decimal: true),
-                                            style: customTypography
+                                          cursorColor: colorScheme.primary,
+                                          decoration: InputDecoration(
+                                            filled: false,
+                                            fillColor: Colors.transparent,
+                                            hintText: '0',
+                                            hintStyle: customTypography
                                                 .headlineLargeMonoBold
                                                 .copyWith(
-                                              color: colorScheme.primary,
+                                              color: colorScheme.primary
+                                                  .withValues(alpha: 0.4),
                                               fontSize: 42.sp,
                                             ),
-                                            cursorColor: colorScheme.primary,
-                                            decoration: InputDecoration(
-                                              filled: false,
-                                              fillColor: Colors.transparent,
-                                              hintText: '0',
-                                              hintStyle: customTypography
-                                                  .headlineLargeMonoBold
-                                                  .copyWith(
-                                                color: colorScheme.primary
-                                                    .withValues(alpha: 0.4),
-                                                fontSize: 42.sp,
-                                              ),
-                                              border: InputBorder.none,
-                                              enabledBorder: InputBorder.none,
-                                              focusedBorder: InputBorder.none,
-                                              errorBorder: InputBorder.none,
-                                              disabledBorder: InputBorder.none,
-                                              contentPadding: EdgeInsets.zero,
-                                              isDense: true,
-                                            ),
+                                            border: InputBorder.none,
+                                            enabledBorder: InputBorder.none,
+                                            focusedBorder: InputBorder.none,
+                                            errorBorder: InputBorder.none,
+                                            disabledBorder: InputBorder.none,
+                                            contentPadding: EdgeInsets.zero,
+                                            isDense: true,
                                           ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            verticalMarginLarge,
+
+                            // Category Selector Button (Bottom Sheet Approach using CategoryPickerSheet)
+                            Text(
+                              context.l10n.categoryLabel,
+                              style: customTypography.labelMediumMono.copyWith(
+                                color: colorScheme.outline,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            verticalMarginXSmall,
+                            ValueListenableBuilder<CategoryItem?>(
+                              valueListenable: _selectedCategoryNotifier,
+                              builder: (context, selectedCat, _) {
+                                final catName = selectedCat?.name ??
+                                    context.l10n.overallMonthlyLimit;
+                                final catColor = _parseColor(
+                                    selectedCat?.colorHex ?? '#57F1DB',
+                                    colorScheme.primary);
+                                final iconData = _getIconData(
+                                    selectedCat?.icon ?? 'all_inclusive');
+
+                                return InkWell(
+                                  onTap: () async {
+                                    final picked =
+                                        await CategoryPickerSheet.show(
+                                      context: context,
+                                      categories: _expenseCategories,
+                                      selectedCategory: selectedCat,
+                                      initialType: TransactionType.expense,
+                                      allowOverallLimitOption: true,
+                                    );
+                                    setState(() {
+                                      _selectedCategoryNotifier.value = picked;
+                                    });
+                                  },
+                                  borderRadius: BorderRadius.circular(16.r),
+                                  child: Container(
+                                    height: 56.h,
+                                    padding: horizontalPaddingMedium,
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.surfaceContainerHigh,
+                                      borderRadius: BorderRadius.circular(16.r),
+                                      border: Border.all(
+                                        color: colorScheme.outlineVariant,
+                                        width: 1.0,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding: allXSmall,
+                                              decoration: BoxDecoration(
+                                                color: catColor.withValues(
+                                                    alpha: 0.2),
+                                                borderRadius:
+                                                    BorderRadius.circular(10.r),
+                                              ),
+                                              child: Icon(
+                                                iconData,
+                                                color: catColor,
+                                                size: 20.sp,
+                                              ),
+                                            ),
+                                            horizontalMarginSmall,
+                                            Text(
+                                              catName,
+                                              style: customTypography
+                                                  .bodyLargeBold
+                                                  .copyWith(
+                                                color: colorScheme.onSurface,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Icon(
+                                          Icons.unfold_more_rounded,
+                                          color: colorScheme.outline,
+                                          size: 22.sp,
                                         ),
                                       ],
                                     ),
                                   ),
+                                );
+                              },
+                            ),
+
+                            verticalMarginLarge,
+
+                            // Renewal Period Section
+                            Text(
+                              'Renewal Period',
+                              style: customTypography.labelMediumMono.copyWith(
+                                color: colorScheme.outline,
+                              ),
+                            ),
+                            SizedBox(height: 10.h),
+                            _LiquidGlassCard(
+                              padding: EdgeInsets.all(4.w),
+                              borderRadius: BorderRadius.circular(14.r),
+                              child: Row(
+                                children: [
+                                  _buildPeriodTab(
+                                    label: 'Weekly',
+                                    period: BudgetPeriod.weekly,
+                                  ),
+                                  _buildPeriodTab(
+                                    label: 'Monthly',
+                                    period: BudgetPeriod.monthly,
+                                  ),
+                                  _buildPeriodTab(
+                                    label: 'Yearly',
+                                    period: BudgetPeriod.yearly,
+                                  ),
                                 ],
                               ),
+                            ),
 
-                              verticalMarginLarge,
+                            verticalMarginMedium,
 
-                              // Category Selector Button (Bottom Sheet Approach using CategoryPickerSheet)
-                              Text(
-                                context.l10n.categoryLabel,
-                                style:
-                                    customTypography.labelMediumMono.copyWith(
-                                  color: colorScheme.outline,
-                                  letterSpacing: 1.2,
-                                ),
+                            // Threshold Alert Toggle Section
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceContainerLow,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                    color: colorScheme.outlineVariant),
                               ),
-                              verticalMarginXSmall,
-                              ValueListenableBuilder<CategoryItem?>(
-                                valueListenable: _selectedCategoryNotifier,
-                                builder: (context, selectedCat, _) {
-                                  final catName = selectedCat?.name ??
-                                      context.l10n.overallMonthlyLimit;
-                                  final catColor = _parseColor(
-                                      selectedCat?.colorHex ?? '#57F1DB',
-                                      colorScheme.primary);
-                                  final iconData = _getIconData(
-                                      selectedCat?.icon ?? 'all_inclusive');
-
-                                  return InkWell(
-                                    onTap: () async {
-                                      final picked =
-                                          await CategoryPickerSheet.show(
-                                        context: context,
-                                        categories: _expenseCategories,
-                                        selectedCategory: selectedCat,
-                                        initialType: TransactionType.expense,
-                                        allowOverallLimitOption: true,
-                                      );
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Threshold Alert',
+                                        style: customTypography.bodyLargeBold
+                                            .copyWith(
+                                          color: colorScheme.onSurface,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'Notify me when I reach $_thresholdPercentage%',
+                                        style: customTypography.bodyMedium
+                                            .copyWith(
+                                          color: colorScheme.outline,
+                                          fontSize: 13.sp,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Switch(
+                                    value: _notifyAtThreshold,
+                                    activeThumbColor: colorScheme.primary,
+                                    activeTrackColor: colorScheme.primary
+                                        .withValues(alpha: 0.3),
+                                    inactiveThumbColor: colorScheme.outline,
+                                    inactiveTrackColor:
+                                        colorScheme.surfaceContainerHigh,
+                                    onChanged: (val) {
                                       setState(() {
-                                        _selectedCategoryNotifier.value =
-                                            picked;
+                                        _notifyAtThreshold = val;
                                       });
                                     },
-                                    borderRadius: BorderRadius.circular(16.r),
-                                    child: Container(
-                                      height: 56.h,
-                                      padding: horizontalPaddingMedium,
-                                      decoration: BoxDecoration(
-                                        color: colorScheme.surfaceContainerHigh,
-                                        borderRadius:
-                                            BorderRadius.circular(16.r),
-                                        border: Border.all(
-                                          color: colorScheme.outlineVariant,
-                                          width: 1.0,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Container(
-                                                padding: allXSmall,
-                                                decoration: BoxDecoration(
-                                                  color: catColor.withValues(
-                                                      alpha: 0.2),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.r),
-                                                ),
-                                                child: Icon(
-                                                  iconData,
-                                                  color: catColor,
-                                                  size: 20.sp,
-                                                ),
-                                              ),
-                                              horizontalMarginSmall,
-                                              Text(
-                                                catName,
-                                                style: customTypography
-                                                    .bodyLargeBold
-                                                    .copyWith(
-                                                  color: colorScheme.onSurface,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Icon(
-                                            Icons.unfold_more_rounded,
-                                            color: colorScheme.outline,
-                                            size: 22.sp,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
+                                  ),
+                                ],
                               ),
+                            ),
 
-                              verticalMarginLarge,
-
-                              // Renewal Period Section
-                              Text(
-                                'Renewal Period',
-                                style:
-                                    customTypography.labelMediumMono.copyWith(
-                                  color: colorScheme.outline,
-                                ),
-                              ),
-                              SizedBox(height: 10.h),
-                              _LiquidGlassCard(
-                                padding: EdgeInsets.all(4.w),
-                                borderRadius: BorderRadius.circular(14.r),
-                                child: Row(
-                                  children: [
-                                    _buildPeriodTab(
-                                      label: 'Weekly',
-                                      period: BudgetPeriod.weekly,
-                                    ),
-                                    _buildPeriodTab(
-                                      label: 'Monthly',
-                                      period: BudgetPeriod.monthly,
-                                    ),
-                                    _buildPeriodTab(
-                                      label: 'Yearly',
-                                      period: BudgetPeriod.yearly,
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              verticalMarginMedium,
-
-                              // Threshold Alert Toggle Section
-                              Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.surfaceContainerLow,
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                      color: colorScheme.outlineVariant),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Threshold Alert',
-                                          style: customTypography.bodyLargeBold
-                                              .copyWith(
-                                            color: colorScheme.onSurface,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          'Notify me when I reach $_thresholdPercentage%',
-                                          style: customTypography.bodyMedium
-                                              .copyWith(
-                                            color: colorScheme.outline,
-                                            fontSize: 13.sp,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Switch(
-                                      value: _notifyAtThreshold,
-                                      activeColor: colorScheme.primary,
-                                      activeTrackColor: colorScheme.primary
-                                          .withValues(alpha: 0.3),
-                                      inactiveThumbColor: colorScheme.outline,
-                                      inactiveTrackColor:
-                                          colorScheme.surfaceContainerHigh,
-                                      onChanged: (val) {
-                                        setState(() {
-                                          _notifyAtThreshold = val;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              verticalMarginLarge,
-                            ],
-                          ),
+                            verticalMarginLarge,
+                          ],
                         ),
                       ),
                     ),
                   ),
+                ),
 
-                  // Bottom Area: Save Button
-                  Container(
-                    color: colorScheme.surfaceContainerLow,
-                    padding: EdgeInsets.only(
-                      left: 24.w,
-                      right: 24.w,
-                      top: 12.h,
-                      bottom: 12.h + MediaQuery.of(context).viewPadding.bottom,
-                    ),
-                    child: ElevatedButton.icon(
-                      onPressed: _saveBudget,
-                      icon: const Icon(Icons.add_circle_rounded, size: 22),
-                      label: Text(
-                        context.l10n.createBudget,
-                        style: customTypography.headlineMediumMonoBold.copyWith(
-                          color: colorScheme.onPrimary,
-                          fontSize: 16.sp,
-                        ),
+                // Bottom Area: Save Button
+                Container(
+                  color: colorScheme.surfaceContainerLow,
+                  padding: EdgeInsets.only(
+                    left: 24.w,
+                    right: 24.w,
+                    top: 12.h,
+                    bottom: 12.h + MediaQuery.of(context).viewPadding.bottom,
+                  ),
+                  child: ElevatedButton.icon(
+                    onPressed: _saveBudget,
+                    icon: const Icon(Icons.add_circle_rounded, size: 22),
+                    label: Text(
+                      context.l10n.createBudget,
+                      style: customTypography.headlineMediumMonoBold.copyWith(
+                        color: colorScheme.onPrimary,
+                        fontSize: 16.sp,
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        minimumSize: Size(double.infinity, 52.h),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.r),
-                        ),
-                        elevation: 0,
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      minimumSize: Size(double.infinity, 52.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.r),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -560,9 +548,8 @@ class _LiquidGlassCard extends StatelessWidget {
   const _LiquidGlassCard({
     required this.child,
     this.borderRadius,
-    this.margin,
     this.padding,
-  });
+  }) : margin = null;
 
   @override
   Widget build(BuildContext context) {

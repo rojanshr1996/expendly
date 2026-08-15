@@ -54,12 +54,35 @@ Future<void> bootstrapApp(AppConfig config) async {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       return true;
     };
-
-    // Initialize Notification and Remote Config Services
-    await getIt<NotificationService>().initialize();
-    await getIt<RemoteConfigService>().initialize();
   } catch (e, stackTrace) {
     AppLogger.e('Firebase Initialization Error', e, stackTrace);
+  }
+
+  // Launch UI immediately
+  runApp(const ExpendlyApp());
+
+  // Non-blocking asynchronous initialization of background/network services
+  unawaited(_initBackgroundServices(config));
+}
+
+/// Initializes non-critical background services concurrently without blocking UI startup.
+Future<void> _initBackgroundServices(AppConfig config) async {
+  // Initialize Notification Service
+  try {
+    if (getIt.isRegistered<NotificationService>()) {
+      await getIt<NotificationService>().initialize();
+    }
+  } catch (e, stackTrace) {
+    AppLogger.e('NotificationService Initialization Error', e, stackTrace);
+  }
+
+  // Initialize Remote Config Service
+  try {
+    if (getIt.isRegistered<RemoteConfigService>()) {
+      await getIt<RemoteConfigService>().initialize();
+    }
+  } catch (e, stackTrace) {
+    AppLogger.e('RemoteConfigService Initialization Error', e, stackTrace);
   }
 
   // Initialize Google Mobile Ads SDK
@@ -79,8 +102,6 @@ Future<void> bootstrapApp(AppConfig config) async {
   } catch (e, stackTrace) {
     AppLogger.e('Google Mobile Ads Initialization Error', e, stackTrace);
   }
-
-  runApp(const ExpendlyApp());
 }
 
 void main() async {

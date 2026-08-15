@@ -160,7 +160,7 @@ abstract class AppLocalizations {
   /// **'Income'**
   String get income;
 
-  /// Label for financial expenses
+  /// Expenses tab label
   ///
   /// In en, this message translates to:
   /// **'Expenses'**
@@ -184,7 +184,7 @@ abstract class AppLocalizations {
   /// **'Add Transaction'**
   String get addTransaction;
 
-  /// FAB text to log a quick expense
+  /// Title for adding an expense
   ///
   /// In en, this message translates to:
   /// **'Add Expense'**
@@ -277,7 +277,7 @@ abstract class AppLocalizations {
   /// App version label on splash screen
   ///
   /// In en, this message translates to:
-  /// **'VER 1.0.0'**
+  /// **'VER 1.1.0'**
   String get appVersion;
 
   /// Header title for currency setup page
@@ -1687,7 +1687,7 @@ abstract class AppLocalizations {
   /// Subtitle for About page menu item
   ///
   /// In en, this message translates to:
-  /// **'Version 1.0.0 • Modern Fiscal Core'**
+  /// **'Version 1.1.0'**
   String get aboutExpendlySubtitle;
 
   /// Menu title for Terms & Conditions page
@@ -2073,6 +2073,396 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OK'**
   String get ok;
+
+  /// Groups tab navigation label
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get groups;
+
+  /// Title for shared events page
+  ///
+  /// In en, this message translates to:
+  /// **'Shared Events'**
+  String get sharedEvents;
+
+  /// Button to create a new event
+  ///
+  /// In en, this message translates to:
+  /// **'New Event'**
+  String get newEvent;
+
+  /// Title for event creation page
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new event'**
+  String get createNewEvent;
+
+  /// Label for event name input
+  ///
+  /// In en, this message translates to:
+  /// **'Event Name'**
+  String get eventName;
+
+  /// Label for category selector
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get category;
+
+  /// Label for participants section
+  ///
+  /// In en, this message translates to:
+  /// **'Participants'**
+  String get participants;
+
+  /// Button to create event
+  ///
+  /// In en, this message translates to:
+  /// **'Create Event'**
+  String get createEvent;
+
+  /// Title for editing event
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Event'**
+  String get editEvent;
+
+  /// Trip category
+  ///
+  /// In en, this message translates to:
+  /// **'Trip'**
+  String get trip;
+
+  /// Dinner category
+  ///
+  /// In en, this message translates to:
+  /// **'Dinner'**
+  String get dinner;
+
+  /// Home category
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// Party category
+  ///
+  /// In en, this message translates to:
+  /// **'Party'**
+  String get party;
+
+  /// Message when participant is added
+  ///
+  /// In en, this message translates to:
+  /// **'Participant Added'**
+  String get participantAdded;
+
+  /// Label for event owner
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get owner;
+
+  /// Button to add participant
+  ///
+  /// In en, this message translates to:
+  /// **'Add Participant'**
+  String get addParticipant;
+
+  /// Button to remove participant
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Participant'**
+  String get removeParticipant;
+
+  /// Badge showing number of participants added
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Added'**
+  String nAdded(int count);
+
+  /// Label for total event spend
+  ///
+  /// In en, this message translates to:
+  /// **'Total Spend'**
+  String get totalSpend;
+
+  /// Balances tab label
+  ///
+  /// In en, this message translates to:
+  /// **'Balances'**
+  String get balances;
+
+  /// Label showing who paid an expense
+  ///
+  /// In en, this message translates to:
+  /// **'Paid by {name}'**
+  String paidBy(String name);
+
+  /// Label showing number of split shares
+  ///
+  /// In en, this message translates to:
+  /// **'{count} shares'**
+  String nShares(int count);
+
+  /// Label for expense amount
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// Label for expense description
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// Header for splitting expense
+  ///
+  /// In en, this message translates to:
+  /// **'SPLIT AMONG'**
+  String get splitAmong;
+
+  /// Toggle for splitting equally
+  ///
+  /// In en, this message translates to:
+  /// **'Equally'**
+  String get equally;
+
+  /// Button to save expense
+  ///
+  /// In en, this message translates to:
+  /// **'Save Expense'**
+  String get saveExpense;
+
+  /// Label for net balances position
+  ///
+  /// In en, this message translates to:
+  /// **'Net Position'**
+  String get netPosition;
+
+  /// Label showing amount owed to user
+  ///
+  /// In en, this message translates to:
+  /// **'You are owed {amount}'**
+  String youAreOwed(String amount);
+
+  /// Label showing amount user owes
+  ///
+  /// In en, this message translates to:
+  /// **'You owe {amount}'**
+  String youOwe(String amount);
+
+  /// Label showing someone owes user
+  ///
+  /// In en, this message translates to:
+  /// **'{name} owes you'**
+  String owesYou(String name);
+
+  /// Label showing user owes someone
+  ///
+  /// In en, this message translates to:
+  /// **'You owe {name}'**
+  String youOweText(String name);
+
+  /// Button to mark settlement as paid
+  ///
+  /// In en, this message translates to:
+  /// **'Settle Up'**
+  String get settleUp;
+
+  /// Button to send reminder
+  ///
+  /// In en, this message translates to:
+  /// **'Remind'**
+  String get remind;
+
+  /// Title for export page
+  ///
+  /// In en, this message translates to:
+  /// **'Export & Settle'**
+  String get exportAndSettle;
+
+  /// Header for settlement summary
+  ///
+  /// In en, this message translates to:
+  /// **'SETTLEMENT SUMMARY'**
+  String get settlementSummary;
+
+  /// Label for total expense in summary
+  ///
+  /// In en, this message translates to:
+  /// **'TOTAL EXPENSE'**
+  String get totalExpense;
+
+  /// Label for user share in summary
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR SHARE'**
+  String get yourShare;
+
+  /// Header for debts list
+  ///
+  /// In en, this message translates to:
+  /// **'DEBTS TO BE CLEARED'**
+  String get debtsToCleared;
+
+  /// Button to export CSV
+  ///
+  /// In en, this message translates to:
+  /// **'Export to CSV'**
+  String get exportToCsv;
+
+  /// Button to send email
+  ///
+  /// In en, this message translates to:
+  /// **'Send via Email'**
+  String get sendViaEmail;
+
+  /// Badge for pending settlements
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pending'**
+  String nPending(int count);
+
+  /// Active status badge
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVE'**
+  String get active;
+
+  /// Settled status badge
+  ///
+  /// In en, this message translates to:
+  /// **'SETTLED'**
+  String get settled;
+
+  /// Recurring status badge
+  ///
+  /// In en, this message translates to:
+  /// **'RECURRING'**
+  String get recurring;
+
+  /// Toast for event creation
+  ///
+  /// In en, this message translates to:
+  /// **'Event created successfully'**
+  String get eventCreatedSuccess;
+
+  /// Toast for event update
+  ///
+  /// In en, this message translates to:
+  /// **'Event updated successfully'**
+  String get eventUpdatedSuccess;
+
+  /// Toast for event deletion
+  ///
+  /// In en, this message translates to:
+  /// **'Event deleted successfully'**
+  String get eventDeletedSuccess;
+
+  /// Toast for event settlement
+  ///
+  /// In en, this message translates to:
+  /// **'Event marked as settled'**
+  String get eventSettledSuccess;
+
+  /// Toast for expense added
+  ///
+  /// In en, this message translates to:
+  /// **'Expense added successfully'**
+  String get expenseAddedSuccess;
+
+  /// Toast for expense deletion
+  ///
+  /// In en, this message translates to:
+  /// **'Expense deleted successfully'**
+  String get expenseDeletedSuccess;
+
+  /// Toast for failed operation
+  ///
+  /// In en, this message translates to:
+  /// **'Operation failed'**
+  String get operationFailed;
+
+  /// Title for delete event confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Event?'**
+  String get deleteEventConfirmTitle;
+
+  /// Message for delete event confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this event? This action cannot be undone.'**
+  String get deleteEventConfirmMessage;
+
+  /// Title for delete expense confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Expense?'**
+  String get deleteExpenseConfirmTitle;
+
+  /// Message for delete expense confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this expense?'**
+  String get deleteExpenseConfirmMessage;
+
+  /// Label for members count
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get members;
+
+  /// Title for empty events list
+  ///
+  /// In en, this message translates to:
+  /// **'No events yet'**
+  String get noEventsYet;
+
+  /// Title for empty expenses list
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses yet'**
+  String get noExpensesYet;
+
+  /// Button for empty events list
+  ///
+  /// In en, this message translates to:
+  /// **'Create First Event'**
+  String get createFirstEvent;
+
+  /// Header or label for splitting bill
+  ///
+  /// In en, this message translates to:
+  /// **'Split Bill'**
+  String get splitBill;
+
+  /// Header for balances view selector
+  ///
+  /// In en, this message translates to:
+  /// **'View balances for'**
+  String get viewBalancesFor;
+
+  /// Title for group expense details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Details'**
+  String get expenseDetails;
+
+  /// Header for split breakdown section
+  ///
+  /// In en, this message translates to:
+  /// **'SPLIT BREAKDOWN'**
+  String get splitBreakdown;
+
+  /// Button to delete an expense
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Expense'**
+  String get deleteExpense;
 }
 
 class _AppLocalizationsDelegate

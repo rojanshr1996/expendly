@@ -14,6 +14,10 @@ import 'tables/recurring_transactions.dart';
 import 'tables/tags.dart';
 import 'tables/transactions.dart';
 import 'tables/user_profiles.dart';
+import 'tables/sharing_events.dart';
+import 'tables/event_participants.dart';
+import 'tables/group_expenses.dart';
+import 'tables/expense_splits.dart';
 
 part 'app_database.g.dart';
 
@@ -28,6 +32,10 @@ part 'app_database.g.dart';
   Budgets,
   RecurringTransactions,
   UserProfiles,
+  SharingEvents,
+  EventParticipants,
+  GroupExpenses,
+  ExpenseSplits,
 ])
 class AppDatabase extends _$AppDatabase {
   @factoryMethod
@@ -35,7 +43,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -69,6 +77,12 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 5) {
           await m.createTable(userProfiles);
+        }
+        if (from < 6) {
+          await m.createTable(sharingEvents);
+          await m.createTable(eventParticipants);
+          await m.createTable(groupExpenses);
+          await m.createTable(expenseSplits);
         }
       },
     );

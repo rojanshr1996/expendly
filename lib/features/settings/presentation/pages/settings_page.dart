@@ -10,6 +10,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../core/ads/ad_helper.dart';
+import '../../../../core/ads/widgets/banner_ad_widget.dart';
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
@@ -23,9 +25,8 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../../../core/utils/url_utils.dart';
+import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/status_components.dart';
-import '../../../../core/ads/ad_helper.dart';
-import '../../../../core/ads/widgets/banner_ad_widget.dart';
 import '../../../profile/presentation/cubit/profile_cubit.dart';
 import '../../../profile/presentation/cubit/profile_state.dart';
 import '../../../profile/presentation/pages/personal_profile_page.dart';
@@ -389,25 +390,19 @@ class _SettingsPageState extends State<SettingsPage>
       },
       child: Scaffold(
         backgroundColor: colorScheme.surface,
-        appBar: AppBar(
-          backgroundColor: colorScheme.surfaceContainerLow,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_rounded, color: colorScheme.onSurface),
-            onPressed: () => context.router.maybePop(),
-          ),
-          title: Text(
-            context.l10n.settings,
-            style: (textTheme.titleLarge ?? const TextStyle()).copyWith(
-              color: colorScheme.onSurface,
-              fontWeight: FontWeights.bold,
-            ),
-          ),
-          centerTitle: true,
+        extendBodyBehindAppBar: true,
+        appBar: LiquidGlassAppBar(
+          titleText: context.l10n.settings,
+          onLeadingPressed: () => context.router.maybePop(),
         ),
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          padding: EdgeInsets.only(
+            left: 20.w,
+            right: 20.w,
+            top: MediaQuery.of(context).padding.top + kToolbarHeight + 16.h,
+            bottom: 16.h,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -669,61 +664,48 @@ class _SettingsPageState extends State<SettingsPage>
             ],
           ),
         ),
-        bottomNavigationBar: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerLow,
-            border: Border(
-              top: BorderSide(
-                color: colorScheme.outlineVariant,
-                width: 1.0,
-              ),
-            ),
-          ),
-          child: SafeArea(
-            top: false,
-            child: SizedBox(
-              width: double.infinity,
-              height: 48.h,
-              child: OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: pref.canLogout
-                      ? colorScheme.error
-                      : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                  side: BorderSide(
-                    color: pref.canLogout
-                        ? colorScheme.error.withValues(alpha: 0.5)
-                        : colorScheme.outlineVariant,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+        bottomNavigationBar: !pref.isSecurityPinSet
+            ? null
+            : Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerLow,
+                  border: Border(
+                    top: BorderSide(
+                      color: colorScheme.outlineVariant,
+                      width: 1.0,
+                    ),
                   ),
                 ),
-                icon: Icon(Icons.logout_rounded, size: 20.sp),
-                label: Text(
-                  context.l10n.logout,
-                  style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(
-                    fontWeight: FontWeights.bold,
-                    color: pref.canLogout
-                        ? colorScheme.error
-                        : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                child: SafeArea(
+                  top: false,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 48.h,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: colorScheme.error,
+                        side: BorderSide(
+                          color: colorScheme.error.withValues(alpha: 0.5),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
+                      icon: Icon(Icons.logout_rounded, size: 20.sp),
+                      label: Text(
+                        context.l10n.logout,
+                        style:
+                            (textTheme.bodyLarge ?? const TextStyle()).copyWith(
+                          fontWeight: FontWeights.bold,
+                          color: colorScheme.error,
+                        ),
+                      ),
+                      onPressed: () => _showLogoutDialog(context),
+                    ),
                   ),
                 ),
-                onPressed: () {
-                  if (pref.canLogout) {
-                    _showLogoutDialog(context);
-                  } else {
-                    StatusComponents.showToast(
-                      context,
-                      message: context.l10n.noSecurityPinForLogout,
-                      isError: true,
-                    );
-                  }
-                },
               ),
-            ),
-          ),
-        ),
       ),
     );
   }

@@ -99,7 +99,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get offlineEncryption => 'OFFLINE DATA';
 
   @override
-  String get appVersion => 'VER 1.0.0';
+  String get appVersion => 'VER 1.1.0';
 
   @override
   String get selectPrimaryCurrency => 'Select Primary Currency';
@@ -877,7 +877,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutExpendly => 'About Expendly';
 
   @override
-  String get aboutExpendlySubtitle => 'Version 1.0.0 • Modern Fiscal Core';
+  String get aboutExpendlySubtitle => 'Version 1.1.0';
 
   @override
   String get termsAndConditions => 'Terms & Conditions';
@@ -1094,4 +1094,217 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get groups => 'Groups';
+
+  @override
+  String get sharedEvents => 'Shared Events';
+
+  @override
+  String get newEvent => 'New Event';
+
+  @override
+  String get createNewEvent => 'Create a new event';
+
+  @override
+  String get eventName => 'Event Name';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get participants => 'Participants';
+
+  @override
+  String get createEvent => 'Create Event';
+
+  @override
+  String get editEvent => 'Edit Event';
+
+  @override
+  String get trip => 'Trip';
+
+  @override
+  String get dinner => 'Dinner';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get party => 'Party';
+
+  @override
+  String get participantAdded => 'Participant Added';
+
+  @override
+  String get owner => 'Owner';
+
+  @override
+  String get addParticipant => 'Add Participant';
+
+  @override
+  String get removeParticipant => 'Remove Participant';
+
+  @override
+  String nAdded(int count) {
+    return '$count Added';
+  }
+
+  @override
+  String get totalSpend => 'Total Spend';
+
+  @override
+  String get balances => 'Balances';
+
+  @override
+  String paidBy(String name) {
+    return 'Paid by $name';
+  }
+
+  @override
+  String nShares(int count) {
+    return '$count shares';
+  }
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get splitAmong => 'SPLIT AMONG';
+
+  @override
+  String get equally => 'Equally';
+
+  @override
+  String get saveExpense => 'Save Expense';
+
+  @override
+  String get netPosition => 'Net Position';
+
+  @override
+  String youAreOwed(String amount) {
+    return 'You are owed $amount';
+  }
+
+  @override
+  String youOwe(String amount) {
+    return 'You owe $amount';
+  }
+
+  @override
+  String owesYou(String name) {
+    return '$name owes you';
+  }
+
+  @override
+  String youOweText(String name) {
+    return 'You owe $name';
+  }
+
+  @override
+  String get settleUp => 'Settle Up';
+
+  @override
+  String get remind => 'Remind';
+
+  @override
+  String get exportAndSettle => 'Export & Settle';
+
+  @override
+  String get settlementSummary => 'SETTLEMENT SUMMARY';
+
+  @override
+  String get totalExpense => 'TOTAL EXPENSE';
+
+  @override
+  String get yourShare => 'YOUR SHARE';
+
+  @override
+  String get debtsToCleared => 'DEBTS TO BE CLEARED';
+
+  @override
+  String get exportToCsv => 'Export to CSV';
+
+  @override
+  String get sendViaEmail => 'Send via Email';
+
+  @override
+  String nPending(int count) {
+    return '$count pending';
+  }
+
+  @override
+  String get active => 'ACTIVE';
+
+  @override
+  String get settled => 'SETTLED';
+
+  @override
+  String get recurring => 'RECURRING';
+
+  @override
+  String get eventCreatedSuccess => 'Event created successfully';
+
+  @override
+  String get eventUpdatedSuccess => 'Event updated successfully';
+
+  @override
+  String get eventDeletedSuccess => 'Event deleted successfully';
+
+  @override
+  String get eventSettledSuccess => 'Event marked as settled';
+
+  @override
+  String get expenseAddedSuccess => 'Expense added successfully';
+
+  @override
+  String get expenseDeletedSuccess => 'Expense deleted successfully';
+
+  @override
+  String get operationFailed => 'Operation failed';
+
+  @override
+  String get deleteEventConfirmTitle => 'Delete Event?';
+
+  @override
+  String get deleteEventConfirmMessage =>
+      'Are you sure you want to delete this event? This action cannot be undone.';
+
+  @override
+  String get deleteExpenseConfirmTitle => 'Delete Expense?';
+
+  @override
+  String get deleteExpenseConfirmMessage =>
+      'Are you sure you want to delete this expense?';
+
+  @override
+  String get members => 'Members';
+
+  @override
+  String get noEventsYet => 'No events yet';
+
+  @override
+  String get noExpensesYet => 'No expenses yet';
+
+  @override
+  String get createFirstEvent => 'Create First Event';
+
+  @override
+  String get splitBill => 'Split Bill';
+
+  @override
+  String get viewBalancesFor => 'View balances for';
+
+  @override
+  String get expenseDetails => 'Expense Details';
+
+  @override
+  String get splitBreakdown => 'SPLIT BREAKDOWN';
+
+  @override
+  String get deleteExpense => 'Delete Expense';
 }

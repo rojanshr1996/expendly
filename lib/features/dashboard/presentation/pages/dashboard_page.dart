@@ -11,27 +11,24 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
-import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/usecase/usecase.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../../analytics/presentation/pages/refined_reports_page.dart';
 import '../../../budgets/presentation/cubit/budget_cubit.dart';
 import '../../../budgets/presentation/cubit/budget_state.dart';
 import '../../../budgets/presentation/pages/budgets_overview_page.dart';
-import '../../../settings/presentation/pages/settings_page.dart';
 import '../../../transactions/presentation/pages/all_transactions_page.dart';
-import '../../domain/entities/financial_summary.dart';
-import '../../domain/repositories/dashboard_repository.dart';
-import '../../domain/usecases/get_financial_summary.dart';
 import '../cubit/dashboard_cubit.dart';
 import '../cubit/dashboard_state.dart';
 import '../widgets/dashboard_bento_grid.dart';
 import '../widgets/dashboard_cash_flow_chart.dart';
 import '../widgets/dashboard_header.dart';
 import '../widgets/dashboard_recent_activity.dart';
+import '../widgets/dashboard_recent_groups.dart';
 import '../widgets/dashboard_shimmer.dart';
 import '../widgets/empty_dashboard_view.dart';
+import '../../../groups/presentation/cubit/groups_cubit.dart';
+import '../../../groups/presentation/pages/groups_list_page.dart';
 
 @RoutePage()
 class DashboardPage extends StatefulWidget {
@@ -107,6 +104,19 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<GroupsCubit>.value(
+          value: () {
+            try {
+              final cubit = getIt<GroupsCubit>();
+              if (!cubit.isClosed) {
+                cubit.loadEvents(isSilent: true);
+              }
+              return cubit;
+            } catch (_) {
+              return getIt<GroupsCubit>();
+            }
+          }(),
+        ),
         BlocProvider<DashboardCubit>(
           create: (_) => getIt<DashboardCubit>()..loadDashboardData(),
         ),
@@ -163,13 +173,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         currentTab: currentTab,
                         onTabSelected: (index) {
                           if (index == 3) {
-                            HapticFeedback.selectionClick();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (_) => const SettingsPage(),
-                              ),
-                            );
+                            context.router.push(const SettingsRoute());
                           } else {
                             _currentTabNotifier.value = index;
                           }
@@ -193,6 +197,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final headerPaddingTop = topInset + 64.h;
 
     return Stack(
+      fit: StackFit.expand,
       children: [
         // 1. Scrollable Dashboard Body (Scrolls UNDER the glass header)
         Positioned.fill(
@@ -288,8 +293,8 @@ class _DashboardPageState extends State<DashboardPage> {
         displacement: 30.h,
         onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
           ),
           padding: EdgeInsets.only(
             top: headerPaddingTop + 8.h,
@@ -337,6 +342,22 @@ class _DashboardPageState extends State<DashboardPage> {
                       },
                     ),
                   ),
+                  verticalMarginMedium,
+
+                  // Shared Groups Section (Stagger Delay 300ms)
+                  _StaggeredEntrance(
+                    delayMs: 300,
+                    child: DashboardRecentGroups(
+                      onSeeAllPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (_) => const GroupsListPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                   verticalMarginLarge,
                 ],
               ).defaultCanvasPadding(),
@@ -362,27 +383,6 @@ class _StaggeredEntrance extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return child;
-  }
-}
-
-class _FallbackGetFinancialSummary implements GetFinancialSummary {
-  @override
-  DashboardRepository get repository => throw UnimplementedError();
-
-  @override
-  Future<FinancialSummary> call(NoParams params) async {
-    final now = DateTime.now();
-    return FinancialSummary(
-      totalBalance: 0.0,
-      totalIncome: 0.0,
-      totalExpense: 0.0,
-      monthlyBudgetLimit: 5000.00,
-      currencySymbol: getIt<PreferenceService>().currencySymbol,
-      periodStart: DateTime(now.year, now.month, 1),
-      periodEnd: now,
-      recentTransactions: const [],
-      categoryBreakdowns: const [],
-    );
   }
 }
 
@@ -470,7 +470,7 @@ class _FloatingBottomNavBar extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 8.w),
                 child: Row(
                   children: [
-                    // Tab 0: Overview
+                    // Tab 0: Overview (Left 1)
                     Expanded(
                       child: _NavBarItem(
                         icon: Icons.dashboard_outlined,
@@ -481,7 +481,7 @@ class _FloatingBottomNavBar extends StatelessWidget {
                       ),
                     ),
 
-                    // Tab 1: Activity
+                    // Tab 1: Activity (Left 2)
                     Expanded(
                       child: _NavBarItem(
                         icon: Icons.receipt_long_outlined,
@@ -492,10 +492,10 @@ class _FloatingBottomNavBar extends StatelessWidget {
                       ),
                     ),
 
-                    // Gap space for docked center FAB
+                    // Symmetrical gap space for docked center FAB
                     SizedBox(width: fabSize + 8.w),
 
-                    // Tab 2: Budgets
+                    // Tab 2: Budgets (Right 1)
                     Expanded(
                       child: _NavBarItem(
                         icon: Icons.account_balance_wallet_outlined,
@@ -506,7 +506,7 @@ class _FloatingBottomNavBar extends StatelessWidget {
                       ),
                     ),
 
-                    // Tab 3: Settings
+                    // Tab 3: Settings (Right 2)
                     Expanded(
                       child: _NavBarItem(
                         icon: Icons.settings_outlined,

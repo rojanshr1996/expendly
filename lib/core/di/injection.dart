@@ -42,6 +42,14 @@ import '../services/secure_storage_service.dart';
 import '../utils/app_logger.dart';
 import 'injection.config.dart';
 
+import '../../features/groups/data/datasources/groups_local_datasource.dart';
+import '../../features/groups/data/repositories/groups_repository_impl.dart';
+import '../../features/groups/domain/repositories/groups_repository.dart';
+import '../../features/groups/domain/usecases/calculate_splits.dart';
+import '../../features/groups/domain/usecases/calculate_settlements.dart';
+import '../../features/groups/presentation/cubit/groups_cubit.dart';
+import '../../features/groups/presentation/cubit/event_detail_cubit.dart';
+
 final GetIt getIt = GetIt.instance;
 
 @InjectableInit(
@@ -207,5 +215,34 @@ Future<void> configureDependencies([String? environment]) async {
   if (!getIt.isRegistered<DashboardCubit>()) {
     getIt.registerFactory<DashboardCubit>(
         () => DashboardCubit(getIt<GetFinancialSummary>()));
+  }
+
+  // Groups Feature — Datasource & Repository
+  if (!getIt.isRegistered<GroupsLocalDataSource>()) {
+    getIt.registerLazySingleton<GroupsLocalDataSource>(
+        () => GroupsLocalDataSourceImpl(getIt<AppDatabase>()));
+  }
+  if (!getIt.isRegistered<GroupsRepository>()) {
+    getIt.registerLazySingleton<GroupsRepository>(
+        () => GroupsRepositoryImpl(getIt<GroupsLocalDataSource>()));
+  }
+
+  // Groups Feature — Use Cases
+  if (!getIt.isRegistered<CalculateSplits>()) {
+    getIt.registerLazySingleton<CalculateSplits>(() => CalculateSplits());
+  }
+  if (!getIt.isRegistered<CalculateSettlements>()) {
+    getIt.registerLazySingleton<CalculateSettlements>(
+        () => CalculateSettlements());
+  }
+
+  // Groups Feature — Cubits
+  if (!getIt.isRegistered<GroupsCubit>()) {
+    getIt.registerLazySingleton<GroupsCubit>(
+        () => GroupsCubit(getIt<GroupsRepository>()));
+  }
+  if (!getIt.isRegistered<EventDetailCubit>()) {
+    getIt.registerFactory<EventDetailCubit>(() => EventDetailCubit(
+        getIt<GroupsRepository>(), getIt<CalculateSettlements>()));
   }
 }

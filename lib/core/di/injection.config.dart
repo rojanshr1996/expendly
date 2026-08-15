@@ -28,6 +28,14 @@ import '../../features/budgets/data/repositories/budget_repository_impl.dart'
 import '../../features/budgets/domain/repositories/budget_repository.dart'
     as _i1021;
 import '../../features/budgets/presentation/cubit/budget_cubit.dart' as _i32;
+import '../../features/currency/data/datasources/exchange_rate_local_datasource.dart'
+    as _i628;
+import '../../features/currency/data/datasources/exchange_rate_remote_datasource.dart'
+    as _i149;
+import '../../features/currency/data/repositories/exchange_rate_repository_impl.dart'
+    as _i276;
+import '../../features/currency/domain/repositories/exchange_rate_repository.dart'
+    as _i364;
 import '../../features/dashboard/data/datasources/dashboard_local_datasource.dart'
     as _i806;
 import '../../features/dashboard/data/repositories/dashboard_repository_impl.dart'
@@ -38,6 +46,17 @@ import '../../features/dashboard/domain/usecases/get_financial_summary.dart'
     as _i119;
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart'
     as _i24;
+import '../../features/groups/data/datasources/groups_local_datasource.dart'
+    as _i470;
+import '../../features/groups/data/repositories/groups_repository_impl.dart'
+    as _i485;
+import '../../features/groups/domain/repositories/groups_repository.dart'
+    as _i137;
+import '../../features/groups/domain/usecases/calculate_settlements.dart'
+    as _i792;
+import '../../features/groups/presentation/cubit/event_detail_cubit.dart'
+    as _i21;
+import '../../features/groups/presentation/cubit/groups_cubit.dart' as _i1067;
 import '../../features/profile/data/datasources/profile_local_datasource.dart'
     as _i1046;
 import '../../features/profile/data/repositories/profile_repository_impl.dart'
@@ -54,11 +73,13 @@ import '../../features/transactions/domain/repositories/transaction_repository.d
 import '../../features/transactions/presentation/cubit/transaction_cubit.dart'
     as _i1035;
 import '../database/app_database.dart' as _i982;
+import '../network/dio_client.dart' as _i667;
 import '../services/backup_service.dart' as _i832;
 import '../services/biometric_auth_service.dart' as _i919;
 import '../services/data_export_import_service.dart' as _i115;
 import '../services/encryption_service.dart' as _i180;
 import '../services/notification_service.dart' as _i941;
+import '../services/pdf_report_service.dart' as _i839;
 import '../services/preference_service.dart' as _i605;
 import '../services/remote_config_service.dart' as _i858;
 import '../services/secure_storage_service.dart' as _i535;
@@ -86,23 +107,31 @@ extension GetItInjectableX on _i174.GetIt {
         () => registerModule.secureStorage);
     gh.lazySingleton<_i152.LocalAuthentication>(
         () => registerModule.localAuthentication);
+    gh.lazySingleton<_i667.DioClient>(() => _i667.DioClient());
     gh.lazySingleton<_i924.AppLogger>(() => _i924.AppLogger());
     gh.lazySingleton<_i858.RemoteConfigService>(
         () => _i858.RemoteConfigService());
     gh.lazySingleton<_i941.NotificationService>(
         () => _i941.NotificationService());
+    gh.lazySingleton<_i839.PdfReportService>(() => _i839.PdfReportService());
     gh.lazySingleton<_i378.AnalyticsLocalDataSource>(
         () => _i378.AnalyticsLocalDataSourceImpl(gh<_i982.AppDatabase>()));
     gh.lazySingleton<_i394.TransactionLocalDataSource>(
         () => _i394.TransactionLocalDataSourceImpl(gh<_i982.AppDatabase>()));
+    gh.lazySingleton<_i628.ExchangeRateLocalDataSource>(
+        () => _i628.ExchangeRateLocalDataSourceImpl());
     gh.lazySingleton<_i1046.ProfileLocalDataSource>(
         () => _i1046.ProfileLocalDataSourceImpl(gh<_i982.AppDatabase>()));
     gh.lazySingleton<_i1044.AnalyticsRepository>(() =>
         _i425.AnalyticsRepositoryImpl(gh<_i378.AnalyticsLocalDataSource>()));
     gh.lazySingleton<_i919.BiometricAuthService>(
         () => _i919.BiometricAuthService(gh<_i152.LocalAuthentication>()));
+    gh.lazySingleton<_i470.GroupsLocalDataSource>(
+        () => _i470.GroupsLocalDataSourceImpl(gh<_i982.AppDatabase>()));
     gh.lazySingleton<_i334.BudgetLocalDataSource>(
         () => _i334.BudgetLocalDataSourceImpl(gh<_i982.AppDatabase>()));
+    gh.lazySingleton<_i149.ExchangeRateRemoteDataSource>(
+        () => _i149.ExchangeRateRemoteDataSourceImpl(gh<_i667.DioClient>()));
     gh.lazySingleton<_i349.BackupStorageProvider>(
       () => _i349.AndroidMediaStoreBackupStorageProvider(),
       registerFor: {
@@ -116,6 +145,12 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i654.BudgetRepositoryImpl(gh<_i334.BudgetLocalDataSource>()));
     gh.lazySingleton<_i821.AnalyticsCubit>(
         () => _i821.AnalyticsCubit(gh<_i1044.AnalyticsRepository>()));
+    gh.lazySingleton<_i364.ExchangeRateRepository>(
+        () => _i276.ExchangeRateRepositoryImpl(
+              gh<_i149.ExchangeRateRemoteDataSource>(),
+              gh<_i628.ExchangeRateLocalDataSource>(),
+              gh<_i982.AppDatabase>(),
+            ));
     gh.lazySingleton<_i32.BudgetCubit>(
         () => _i32.BudgetCubit(gh<_i1021.BudgetRepository>()));
     gh.lazySingleton<_i421.TransactionRepository>(() =>
@@ -127,6 +162,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i605.PreferenceService(gh<_i535.SecureStorageService>()));
     gh.lazySingleton<_i894.ProfileRepository>(
         () => _i334.ProfileRepositoryImpl(gh<_i1046.ProfileLocalDataSource>()));
+    gh.lazySingleton<_i137.GroupsRepository>(
+        () => _i485.GroupsRepositoryImpl(gh<_i470.GroupsLocalDataSource>()));
     gh.factory<_i1035.TransactionCubit>(
         () => _i1035.TransactionCubit(gh<_i421.TransactionRepository>()));
     gh.lazySingleton<_i36.ProfileCubit>(
@@ -136,12 +173,18 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i982.AppDatabase>(),
               gh<_i605.PreferenceService>(),
             ));
+    gh.lazySingleton<_i1067.GroupsCubit>(
+        () => _i1067.GroupsCubit(gh<_i137.GroupsRepository>()));
     gh.lazySingleton<_i115.DataExportImportService>(
         () => _i115.DataExportImportService(
               gh<_i982.AppDatabase>(),
               gh<_i605.PreferenceService>(),
               gh<_i349.BackupStorageProvider>(),
             ));
+    gh.factory<_i21.EventDetailCubit>(() => _i21.EventDetailCubit(
+          gh<_i137.GroupsRepository>(),
+          gh<_i792.CalculateSettlements>(),
+        ));
     gh.lazySingleton<_i665.DashboardRepository>(() =>
         _i509.DashboardRepositoryImpl(gh<_i806.DashboardLocalDataSource>()));
     gh.lazySingleton<_i832.BackupService>(() => _i832.BackupService(

@@ -6,7 +6,6 @@ import '../database/enums/database_enums.dart';
 import '../extensions/context_extensions.dart';
 import '../theme/font_weights.dart';
 import 'app_text_field.dart';
-import 'glass_container.dart';
 
 /// Reusable modal sheet for picking a category from a responsive grid.
 /// Solves category pill scrolling issues by offering search, icons, and clean grid views.

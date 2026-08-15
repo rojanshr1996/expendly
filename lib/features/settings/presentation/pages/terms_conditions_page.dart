@@ -7,6 +7,7 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/glass_container.dart';
+import '../../../../core/widgets/liquid_glass_app_bar.dart';
 
 @RoutePage()
 class TermsConditionsPage extends StatelessWidget {
@@ -21,26 +22,15 @@ class TermsConditionsPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: colorScheme.surfaceContainerLow,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_rounded,
-            color: colorScheme.onSurface,
-          ),
-          onPressed: () => context.router.maybePop(),
-        ),
-        title: Text(
-          l10n.termsAndConditions,
-          style: textTheme.titleLarge?.copyWith(
-            color: colorScheme.onSurface,
-            fontWeight: FontWeights.bold,
-          ),
-        ),
-        centerTitle: true,
+      extendBodyBehindAppBar: true,
+      appBar: LiquidGlassAppBar(
+        titleText: l10n.termsAndConditions,
+        onLeadingPressed: () => context.router.maybePop(),
       ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top + kToolbarHeight,
+        ),
         physics: const BouncingScrollPhysics(),
         child: Center(
           child: ConstrainedBox(
