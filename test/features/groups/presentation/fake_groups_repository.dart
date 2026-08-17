@@ -113,6 +113,27 @@ class FakeGroupsRepository implements GroupsRepository {
   }
 
   @override
+  Future<void> updateParticipant({
+    required int participantId,
+    String? name,
+    String? email,
+  }) async {
+    if (shouldThrow) throw Exception('Error');
+    final index = participants.indexWhere((p) => p.id == participantId);
+    if (index >= 0) {
+      final old = participants[index];
+      participants[index] = EventParticipant(
+        id: old.id,
+        eventId: old.eventId,
+        name: name ?? old.name,
+        email: email != null ? (email.trim().isEmpty ? null : email.trim()) : old.email,
+        isOwner: old.isOwner,
+        colorIndex: old.colorIndex,
+      );
+    }
+  }
+
+  @override
   Future<void> removeParticipant(int participantId) async {
     if (shouldThrow) throw Exception('Error');
     participants.removeWhere((p) => p.id == participantId);

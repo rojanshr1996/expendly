@@ -87,11 +87,29 @@ class AboutPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _HighlightItem(
-                        icon: Icons.groups_rounded,
+                        icon: Icons.account_balance_wallet_rounded,
                         iconColor: colorScheme.primary,
+                        title: 'Smart Expense & Income Tracking',
+                        description:
+                            'Log daily expenses and income in seconds. Categorize transactions with custom icons and colors, attach payment details and notes, and gain full clarity over your personal spending history.',
+                      ),
+                      Divider(
+                          height: 24, color: context.customColors.glassStroke),
+                      _HighlightItem(
+                        icon: Icons.groups_rounded,
+                        iconColor: colorScheme.secondary,
                         title: 'Group Bill Split & Share',
                         description:
                             'Organize shared events for trips, dinners, and flatmates. Split bills equally or with custom percentages, calculate direct pairwise balances, and settle debts with complete clarity.',
+                      ),
+                      Divider(
+                          height: 24, color: context.customColors.glassStroke),
+                      _HighlightItem(
+                        icon: Icons.donut_large_rounded,
+                        iconColor: context.customColors.semanticBlue,
+                        title: 'Budgets & Visual Analytics',
+                        description:
+                            'Set monthly category budgets, track spending progress in real time, analyze cashflow trends with visual charts, and export financial records to CSV.',
                       ),
                       Divider(
                           height: 24, color: context.customColors.glassStroke),
@@ -100,16 +118,7 @@ class AboutPage extends StatelessWidget {
                         iconColor: context.customColors.semanticGreen,
                         title: '100% Offline & Private',
                         description:
-                            'All personal ledger records and group shared events are stored strictly on your device. Zero cloud sync, no tracking, zero telemetry.',
-                      ),
-                      Divider(
-                          height: 24, color: context.customColors.glassStroke),
-                      _HighlightItem(
-                        icon: Icons.donut_large_rounded,
-                        iconColor: colorScheme.secondary,
-                        title: 'Budgets & Insights',
-                        description:
-                            'Set multi-category budgets, visualize monthly cashflows, customize primary currencies, and manage offline CSV export & restore.',
+                            'All personal ledger records and group shared events are stored strictly on your device using local SQLite. Zero cloud sync, no tracking, zero telemetry.',
                       ),
                     ],
                   ),

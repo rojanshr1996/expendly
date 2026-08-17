@@ -22,8 +22,8 @@ import 'core/services/notification_service.dart';
 import 'core/services/preference_service.dart';
 import 'core/services/remote_config_service.dart';
 import 'core/theme/app_theme.dart';
-import 'core/utils/url_utils.dart';
 import 'core/utils/app_logger.dart';
+import 'core/utils/url_utils.dart';
 import 'core/widgets/app_update_guard.dart';
 import 'core/widgets/notification_detail_dialog.dart';
 
@@ -87,8 +87,8 @@ Future<void> _initBackgroundServices(AppConfig config) async {
 
   // Initialize Google Mobile Ads SDK
   try {
-    // Register test device IDs for non-prod flavors so test ads load correctly.
-    if (!config.isProd) {
+    // Register test device IDs for non-prod flavors or debug builds so test ads load correctly.
+    if (!config.isProd || kDebugMode) {
       MobileAds.instance.updateRequestConfiguration(
         RequestConfiguration(
           tagForChildDirectedTreatment: TagForChildDirectedTreatment.no,

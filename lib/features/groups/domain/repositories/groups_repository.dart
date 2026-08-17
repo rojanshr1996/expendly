@@ -48,6 +48,11 @@ abstract class GroupsRepository {
     bool isOwner = false,
     int colorIndex = 0,
   });
+  Future<void> updateParticipant({
+    required int participantId,
+    String? name,
+    String? email,
+  });
   Future<void> removeParticipant(int participantId);
 
   // Expenses

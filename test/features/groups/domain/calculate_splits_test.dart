@@ -88,6 +88,22 @@ void main() {
       expect(detailed.errorMessage, contains('remaining'));
     });
 
+    test('Partial exact amounts (40 to A, remaining 60 split equally as 30 each to B and C)', () {
+      final detailed = calculateSplits.calculateDetailed(
+        totalAmount: 100.0,
+        selectedParticipantIds: [1, 2, 3],
+        mode: SplitMode.exact,
+        customAmounts: {1: 40.0},
+      );
+
+      expect(detailed.isValid, true);
+      expect(detailed.totalAllocated, 100.0);
+      expect(detailed.remainingAmount, 0.0);
+      expect(detailed.splits.firstWhere((s) => s.participantId == 1).amount, 40.0);
+      expect(detailed.splits.firstWhere((s) => s.participantId == 2).amount, 30.0);
+      expect(detailed.splits.firstWhere((s) => s.participantId == 3).amount, 30.0);
+    });
+
     test('Percentage split mode validation', () {
       final valid = calculateSplits.calculateDetailed(
         totalAmount: 120.0,

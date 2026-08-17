@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/di/injection.dart';
@@ -44,16 +43,12 @@ class SettleUpSheet extends StatefulWidget {
 }
 
 class _SettleUpSheetState extends State<SettleUpSheet> {
-  late final TextEditingController _amountController;
   late final TextEditingController _noteController;
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _amountController = TextEditingController(
-      text: widget.settlement.amount.toStringAsFixed(2),
-    );
     _noteController = TextEditingController(
       text:
           'Payment: ${widget.settlement.fromParticipant.name} → ${widget.settlement.toParticipant.name}',
@@ -62,13 +57,12 @@ class _SettleUpSheetState extends State<SettleUpSheet> {
 
   @override
   void dispose() {
-    _amountController.dispose();
     _noteController.dispose();
     super.dispose();
   }
 
   Future<void> _handleConfirm() async {
-    final amount = double.tryParse(_amountController.text.trim()) ?? 0.0;
+    final amount = widget.settlement.amount;
     if (amount <= 0) return;
 
     setState(() => _isLoading = true);
@@ -101,30 +95,31 @@ class _SettleUpSheetState extends State<SettleUpSheet> {
       ),
       child: Container(
         decoration: BoxDecoration(
-          color: isLight
-              ? colorScheme.surface.withValues(alpha: 0.95)
-              : colorScheme.surfaceContainerHigh.withValues(alpha: 0.90),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-          border: Border(
-            top: BorderSide(
-              color: isLight
-                  ? Colors.white.withValues(alpha: 0.8)
-                  : customColors.glassStroke,
-              width: 1.2,
-            ),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isLight
+                ? [
+                    colorScheme.surfaceContainerLowest.withValues(alpha: 0.45),
+                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.30),
+                  ]
+                : [
+                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
+                    colorScheme.surfaceContainerLow.withValues(alpha: 0.20),
+                  ],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 20.r,
-              offset: const Offset(0, -4),
-            ),
-          ],
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+          border: Border.all(
+            color: isLight
+                ? Colors.white.withValues(alpha: 0.60)
+                : customColors.glassStroke.withValues(alpha: 0.45),
+            width: 1.0,
+          ),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
             child: SafeArea(
               top: false,
               child: Padding(
@@ -168,10 +163,10 @@ class _SettleUpSheetState extends State<SettleUpSheet> {
                     ),
                     SizedBox(height: 16.h),
 
-                    // Direction Row (Debtor -> Creditor)
+                    // Direction & Amount Card (Single Container)
                     Container(
                       padding: EdgeInsets.symmetric(
-                          horizontal: 16.w, vertical: 12.h),
+                          horizontal: 16.w, vertical: 14.h),
                       decoration: BoxDecoration(
                         color: isLight
                             ? colorScheme.surfaceContainerLowest
@@ -186,132 +181,87 @@ class _SettleUpSheetState extends State<SettleUpSheet> {
                               : customColors.glassStroke.withValues(alpha: 0.4),
                         ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      child: Column(
                         children: [
-                          Column(
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              ParticipantAvatar(
-                                name: widget.settlement.fromParticipant.name,
-                                colorIndex: widget
-                                    .settlement.fromParticipant.colorIndex,
+                              Column(
+                                children: [
+                                  ParticipantAvatar(
+                                    name:
+                                        widget.settlement.fromParticipant.name,
+                                    colorIndex: widget
+                                        .settlement.fromParticipant.colorIndex,
+                                  ),
+                                  SizedBox(height: 4.h),
+                                  Text(
+                                    widget.settlement.fromParticipant.name,
+                                    style:
+                                        context.textTheme.labelMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: colorScheme.onSurface,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Payer',
+                                    style:
+                                        context.textTheme.labelSmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                      fontSize: 10.sp,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                widget.settlement.fromParticipant.name,
-                                style: context.textTheme.labelMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.onSurface,
-                                ),
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                color: greenColor,
+                                size: 22.sp,
                               ),
-                              Text(
-                                'Payer',
-                                style: context.textTheme.labelSmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                  fontSize: 10.sp,
-                                ),
+                              Column(
+                                children: [
+                                  ParticipantAvatar(
+                                    name: widget.settlement.toParticipant.name,
+                                    colorIndex: widget
+                                        .settlement.toParticipant.colorIndex,
+                                  ),
+                                  SizedBox(height: 4.h),
+                                  Text(
+                                    widget.settlement.toParticipant.name,
+                                    style:
+                                        context.textTheme.labelMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: colorScheme.onSurface,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Recipient',
+                                    style:
+                                        context.textTheme.labelSmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                      fontSize: 10.sp,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                          Container(
-                            padding: EdgeInsets.all(8.w),
-                            decoration: BoxDecoration(
-                              color: greenColor.withValues(alpha: 0.12),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.arrow_forward_rounded,
-                              color: greenColor,
-                              size: 20.sp,
-                            ),
+                          SizedBox(height: 12.h),
+                          Divider(
+                            height: 1,
+                            color: isLight
+                                ? colorScheme.outlineVariant
+                                    .withValues(alpha: 0.3)
+                                : customColors.glassStroke
+                                    .withValues(alpha: 0.3),
                           ),
-                          Column(
-                            children: [
-                              ParticipantAvatar(
-                                name: widget.settlement.toParticipant.name,
-                                colorIndex:
-                                    widget.settlement.toParticipant.colorIndex,
-                              ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                widget.settlement.toParticipant.name,
-                                style: context.textTheme.labelMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.onSurface,
-                                ),
-                              ),
-                              Text(
-                                'Recipient',
-                                style: context.textTheme.labelSmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                  fontSize: 10.sp,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 16.h),
-
-                    // Amount Input
-                    Text(
-                      'AMOUNT',
-                      style: customTypography.labelMediumMono.copyWith(
-                        color: colorScheme.outline,
-                        letterSpacing: 1.2,
-                        fontSize: 11.sp,
-                      ),
-                    ),
-                    SizedBox(height: 6.h),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16.w, vertical: 10.h),
-                      decoration: BoxDecoration(
-                        color: isLight
-                            ? colorScheme.surfaceContainerLowest
-                            : colorScheme.surfaceContainerLow
-                                .withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(14.r),
-                        border: Border.all(
-                          color: isLight
-                              ? colorScheme.outlineVariant
-                                  .withValues(alpha: 0.4)
-                              : customColors.glassStroke,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
+                          SizedBox(height: 12.h),
                           Text(
-                            '$currencySymbol ',
+                            '$currencySymbol ${widget.settlement.amount.toStringAsFixed(2)}',
                             style: customTypography.headlineMediumMonoBold
                                 .copyWith(
                               color: colorScheme.primary,
-                              fontSize: 22.sp,
-                            ),
-                          ),
-                          Expanded(
-                            child: TextField(
-                              controller: _amountController,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                decimal: true,
-                              ),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}'),
-                                ),
-                              ],
-                              style: customTypography.headlineMediumMonoBold
-                                  .copyWith(
-                                color: colorScheme.onSurface,
-                                fontSize: 22.sp,
-                              ),
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                isDense: true,
-                                contentPadding: EdgeInsets.zero,
-                              ),
+                              fontSize: 24.sp,
                             ),
                           ),
                         ],

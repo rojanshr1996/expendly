@@ -123,7 +123,11 @@ class AppButton extends StatelessWidget {
 
     if (variant == AppButtonVariant.glass) {
       button = GlassContainer(
+        width: width,
+        height: effectiveHeight,
         borderRadius: effectiveRadius,
+        padding:
+            padding ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         backgroundColor: isEnabled
             ? effectiveBgColor
             : context.colorScheme.surfaceContainerLow

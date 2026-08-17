@@ -9,6 +9,7 @@ import '../../../../core/widgets/animated_entrance_item.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
+import '../../../groups/domain/entities/sharing_event.dart';
 import '../../../groups/presentation/cubit/groups_cubit.dart';
 import '../../../groups/presentation/cubit/groups_state.dart';
 import '../../../groups/presentation/widgets/participant_avatar_row.dart';
@@ -122,7 +123,11 @@ class DashboardRecentGroups extends StatelessWidget {
 
     return BlocBuilder<GroupsCubit, GroupsState>(
       builder: (context, state) {
-        final events = state is GroupsLoaded ? state.events : [];
+        final allEvents =
+            state is GroupsLoaded ? state.events : const <SharingEvent>[];
+        final events = allEvents
+            .where((e) => e.status.toLowerCase() != 'settled')
+            .toList();
         final displayEvents = events.take(2).toList();
         final totalItems = displayEvents.length + (events.isNotEmpty ? 1 : 0);
 

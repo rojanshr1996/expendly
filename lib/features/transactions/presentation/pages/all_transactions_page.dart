@@ -1538,7 +1538,6 @@ class _ViewModeTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final customTypography = context.customTypography;
-    final isLight = Theme.of(context).brightness == Brightness.light;
 
     final modes = [
       {'id': 'daily', 'label': 'Daily'},

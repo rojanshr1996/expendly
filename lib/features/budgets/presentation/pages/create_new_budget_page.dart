@@ -105,7 +105,6 @@ class _CreateNewBudgetPageState extends State<CreateNewBudgetPage> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textTheme = context.textTheme;
     final customTypography = context.customTypography;
     final currencySymbol = getIt<PreferenceService>().currencySymbol;
 

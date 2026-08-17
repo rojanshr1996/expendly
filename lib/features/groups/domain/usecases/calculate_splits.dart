@@ -102,53 +102,138 @@ class CalculateSplits {
         );
 
       case SplitMode.exact:
-        double totalAllocated = 0.0;
-        List<SplitResult> splits = [];
+        double sumCustom = 0.0;
+        int remainingCount = 0;
+        List<int> unassignedIds = [];
 
         for (var id in selectedParticipantIds) {
-          double amt = customAmounts[id] ?? 0.0;
-          totalAllocated += amt;
-          double pct = totalAmount > 0 ? (amt / totalAmount) * 100 : 0.0;
-          splits.add(SplitResult(
-            participantId: id,
-            amount: (amt * 100).round() / 100.0,
-            percentage: pct,
-          ));
+          if (customAmounts.containsKey(id) && customAmounts[id] != null) {
+            sumCustom += customAmounts[id]!;
+          } else {
+            remainingCount++;
+            unassignedIds.add(id);
+          }
         }
 
+        sumCustom = (sumCustom * 100).round() / 100.0;
         double remainingAmount =
-            ((totalAmount - totalAllocated) * 100).round() / 100.0;
-        bool isValid = remainingAmount.abs() < 0.01 && totalAllocated > 0;
+            ((totalAmount - sumCustom) * 100).round() / 100.0;
 
-        String? error;
-        if (remainingAmount > 0.005) {
-          error = '${remainingAmount.toStringAsFixed(2)} remaining';
-        } else if (remainingAmount < -0.005) {
-          error = '${(-remainingAmount).toStringAsFixed(2)} over total';
+        List<SplitResult> splits = [];
+
+        if (remainingCount > 0) {
+          if (remainingAmount >= 0) {
+            int remainingCents = (remainingAmount * 100).round();
+            int baseCents = remainingCents ~/ remainingCount;
+            int remainderCents = remainingCents % remainingCount;
+
+            int unassignedIndex = 0;
+            for (var id in selectedParticipantIds) {
+              if (customAmounts.containsKey(id) && customAmounts[id] != null) {
+                double amt = customAmounts[id]!;
+                double pct = totalAmount > 0 ? (amt / totalAmount) * 100 : 0.0;
+                splits.add(SplitResult(
+                  participantId: id,
+                  amount: (amt * 100).round() / 100.0,
+                  percentage: pct,
+                ));
+              } else {
+                int cents =
+                    baseCents + (unassignedIndex < remainderCents ? 1 : 0);
+                unassignedIndex++;
+                double amt = cents / 100.0;
+                double pct = totalAmount > 0 ? (amt / totalAmount) * 100 : 0.0;
+                splits.add(SplitResult(
+                  participantId: id,
+                  amount: amt,
+                  percentage: pct,
+                ));
+              }
+            }
+
+            return SplitCalculationResult(
+              splits: splits,
+              totalAllocated: totalAmount,
+              remainingAmount: 0.0,
+              totalPercentageAllocated: 100.0,
+              isValid: totalAmount > 0,
+            );
+          } else {
+            // Custom amount exceeds total amount
+            for (var id in selectedParticipantIds) {
+              if (customAmounts.containsKey(id) && customAmounts[id] != null) {
+                double amt = customAmounts[id]!;
+                double pct = totalAmount > 0 ? (amt / totalAmount) * 100 : 0.0;
+                splits.add(SplitResult(
+                  participantId: id,
+                  amount: (amt * 100).round() / 100.0,
+                  percentage: pct,
+                ));
+              } else {
+                splits.add(SplitResult(
+                  participantId: id,
+                  amount: 0.0,
+                  percentage: 0.0,
+                ));
+              }
+            }
+
+            return SplitCalculationResult(
+              splits: splits,
+              totalAllocated: sumCustom,
+              remainingAmount: remainingAmount,
+              totalPercentageAllocated:
+                  totalAmount > 0 ? (sumCustom / totalAmount) * 100 : 0.0,
+              isValid: false,
+              errorMessage:
+                  '${(-remainingAmount).toStringAsFixed(2)} over total',
+            );
+          }
+        } else {
+          // All participants have explicitly set custom amounts
+          for (var id in selectedParticipantIds) {
+            double amt = customAmounts[id] ?? 0.0;
+            double pct = totalAmount > 0 ? (amt / totalAmount) * 100 : 0.0;
+            splits.add(SplitResult(
+              participantId: id,
+              amount: (amt * 100).round() / 100.0,
+              percentage: pct,
+            ));
+          }
+
+          bool isValid = remainingAmount.abs() < 0.01 && totalAmount > 0;
+          String? error;
+          if (remainingAmount > 0.005) {
+            error = '${remainingAmount.toStringAsFixed(2)} remaining';
+          } else if (remainingAmount < -0.005) {
+            error = '${(-remainingAmount).toStringAsFixed(2)} over total';
+          }
+
+          return SplitCalculationResult(
+            splits: splits,
+            totalAllocated: sumCustom,
+            remainingAmount: remainingAmount,
+            totalPercentageAllocated:
+                totalAmount > 0 ? (sumCustom / totalAmount) * 100 : 0.0,
+            isValid: isValid,
+            errorMessage: error,
+          );
         }
-
-        return SplitCalculationResult(
-          splits: splits,
-          totalAllocated: (totalAllocated * 100).round() / 100.0,
-          remainingAmount: remainingAmount,
-          totalPercentageAllocated:
-              totalAmount > 0 ? (totalAllocated / totalAmount) * 100 : 0,
-          isValid: isValid,
-          errorMessage: error,
-        );
 
       case SplitMode.percentage:
         double sumCustom = 0;
         int remainingCount = 0;
 
         for (var id in selectedParticipantIds) {
-          if (customPercentages.containsKey(id)) {
+          if (customPercentages.containsKey(id) &&
+              customPercentages[id] != null) {
             sumCustom += customPercentages[id]!;
           } else {
             remainingCount++;
           }
         }
 
+        sumCustom = (sumCustom * 100).round() / 100.0;
         double remainingPercentage = 100.0 - sumCustom;
         if (remainingPercentage < 0) remainingPercentage = 0;
         double defaultPercentage =
@@ -159,7 +244,8 @@ class CalculateSplits {
         Map<int, int> centsPerPerson = {};
 
         for (var id in selectedParticipantIds) {
-          double pct = customPercentages.containsKey(id)
+          double pct = (customPercentages.containsKey(id) &&
+                  customPercentages[id] != null)
               ? customPercentages[id]!
               : defaultPercentage;
           int cents = (totalCents * pct / 100).floor();
@@ -176,7 +262,8 @@ class CalculateSplits {
             cents += 1;
             remainder -= 1;
           }
-          double pct = customPercentages.containsKey(id)
+          double pct = (customPercentages.containsKey(id) &&
+                  customPercentages[id] != null)
               ? customPercentages[id]!
               : defaultPercentage;
           splits.add(SplitResult(
@@ -186,19 +273,22 @@ class CalculateSplits {
           ));
         }
 
-        double totalPct = customPercentages.values.fold(0.0, (a, b) => a + b);
+        double totalPct = sumCustom;
         if (remainingCount > 0 && remainingPercentage > 0) {
           totalPct += remainingPercentage;
         }
 
         double diffPct = 100.0 - totalPct;
-        bool isValid = diffPct.abs() < 0.01;
+        bool isValid = diffPct.abs() < 0.01 && (sumCustom <= 100.01);
 
         String? error;
-        if (diffPct > 0.01) {
+        if (sumCustom > 100.01) {
+          double over = sumCustom - 100.0;
+          error = '${over.toStringAsFixed(1)}% over 100%';
+          isValid = false;
+        } else if (remainingCount == 0 && diffPct > 0.01) {
           error = '${diffPct.toStringAsFixed(1)}% remaining';
-        } else if (diffPct < -0.01) {
-          error = '${(-diffPct).toStringAsFixed(1)}% over 100%';
+          isValid = false;
         }
 
         return SplitCalculationResult(

@@ -82,6 +82,20 @@ void main() {
       expect(cubit.state.splitCalculationResult?.isValid, true);
     });
 
+    test('Single participant exact amount auto-fills remaining participants equally', () {
+      cubit.setAmount(100.0);
+      cubit.setSplitMode(SplitMode.exact);
+      
+      // Set only participant 1 to 40.0, participant 2 should auto-fill to 60.0
+      cubit.setCustomAmount(1, 40.0);
+
+      final splits = cubit.state.calculatedSplits;
+      expect(splits.length, 2);
+      expect(splits.firstWhere((s) => s.participantId == 1).amount, 40.0);
+      expect(splits.firstWhere((s) => s.participantId == 2).amount, 60.0);
+      expect(cubit.state.splitCalculationResult?.isValid, true);
+    });
+
     test('Saving valid expense calls repository and emits isSaved', () async {
       cubit.setAmount(100.0);
       cubit.setDescription('Dinner');

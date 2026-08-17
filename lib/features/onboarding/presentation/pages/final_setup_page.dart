@@ -320,7 +320,7 @@ class _FinalSetupPageState extends State<FinalSetupPage>
                           builder: (context, enableBiometrics, _) {
                             return Switch.adaptive(
                               value: enableBiometrics,
-                              activeColor: colorScheme.primary,
+                              activeTrackColor: colorScheme.primary,
                               onChanged: (val) async {
                                 if (val) {
                                   if (!context.mounted) return;

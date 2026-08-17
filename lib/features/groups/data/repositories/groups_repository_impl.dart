@@ -90,6 +90,19 @@ class GroupsRepositoryImpl implements GroupsRepository {
   }
 
   @override
+  Future<void> updateParticipant({
+    required int participantId,
+    String? name,
+    String? email,
+  }) {
+    return _localDataSource.updateParticipant(
+      participantId: participantId,
+      name: name,
+      email: email,
+    );
+  }
+
+  @override
   Future<void> removeParticipant(int participantId) {
     return _localDataSource.removeParticipant(participantId);
   }

@@ -88,23 +88,10 @@ class AddExpenseCubit extends Cubit<AddExpenseState> {
   void setSplitMode(SplitMode mode) {
     if (isClosed) return;
 
-    Map<int, double?> initialAmounts = {};
-    Map<int, double?> initialPercentages = {};
-
-    if (mode == SplitMode.exact) {
-      for (final split in state.calculatedSplits) {
-        initialAmounts[split.participantId] = split.amount;
-      }
-    } else if (mode == SplitMode.percentage) {
-      for (final split in state.calculatedSplits) {
-        initialPercentages[split.participantId] = split.percentage;
-      }
-    }
-
     emit(state.copyWith(
       splitMode: mode,
-      customAmounts: mode == SplitMode.exact ? initialAmounts : {},
-      customPercentages: mode == SplitMode.percentage ? initialPercentages : {},
+      customAmounts: {},
+      customPercentages: {},
       clearValidationMessage: true,
     ));
     _recalculateSplits();

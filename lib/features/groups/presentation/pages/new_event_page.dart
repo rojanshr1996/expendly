@@ -3,8 +3,11 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/ads/ad_helper.dart';
+import '../../../../core/ads/widgets/banner_ad_widget.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/widgets/animated_entrance_item.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
@@ -15,17 +18,35 @@ import '../cubit/groups_cubit.dart';
 import '../widgets/participant_avatar.dart';
 
 class _ParticipantItem {
+  final int? id;
   final String name;
   final String? email;
   final bool isOwner;
   final int colorIndex;
 
   const _ParticipantItem({
+    this.id,
     required this.name,
     this.email,
     this.isOwner = false,
     required this.colorIndex,
   });
+
+  _ParticipantItem copyWith({
+    int? id,
+    String? name,
+    String? email,
+    bool? isOwner,
+    int? colorIndex,
+  }) {
+    return _ParticipantItem(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email != null ? (email.isEmpty ? null : email) : this.email,
+      isOwner: isOwner ?? this.isOwner,
+      colorIndex: colorIndex ?? this.colorIndex,
+    );
+  }
 }
 
 @RoutePage()
@@ -78,6 +99,7 @@ class _NewEventPageState extends State<NewEventPage> {
     if (widget.event != null) {
       _participants = widget.event!.participants
           .map((p) => _ParticipantItem(
+                id: p.id,
                 name: p.name,
                 email: p.email,
                 isOwner: p.isOwner,
@@ -170,6 +192,7 @@ class _NewEventPageState extends State<NewEventPage> {
   void _showCategoryPickerBottomSheet() {
     final colorScheme = context.colorScheme;
     final customColors = context.customColors;
+    final isLight = Theme.of(context).brightness == Brightness.light;
 
     showModalBottomSheet<void>(
       context: context,
@@ -181,127 +204,353 @@ class _NewEventPageState extends State<NewEventPage> {
             maxHeight: MediaQuery.of(modalContext).size.height * 0.7,
           ),
           decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-            border: Border(
-              top: BorderSide(color: customColors.glassStroke, width: 1.2),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isLight
+                  ? [
+                      colorScheme.surfaceContainerLowest
+                          .withValues(alpha: 0.45),
+                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.30),
+                    ]
+                  : [
+                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
+                      colorScheme.surfaceContainerLow.withValues(alpha: 0.20),
+                    ],
+            ),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+            border: Border.all(
+              color: isLight
+                  ? Colors.white.withValues(alpha: 0.60)
+                  : customColors.glassStroke.withValues(alpha: 0.45),
+              width: 1.0,
             ),
           ),
-          child: SafeArea(
-            top: false,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Drag handle
-                Center(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 12.h),
-                    width: 40.w,
-                    height: 4.h,
-                    decoration: BoxDecoration(
-                      color:
-                          colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(2.r),
+          child: ClipRRect(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Drag handle
+                    Center(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 12.h),
+                        width: 40.w,
+                        height: 4.h,
+                        decoration: BoxDecoration(
+                          color:
+                              colorScheme.outlineVariant.withValues(alpha: 0.7),
+                          borderRadius: BorderRadius.circular(2.r),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Select Category',
+                            style: context.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.close,
+                                color: colorScheme.onSurfaceVariant),
+                            onPressed: () => Navigator.pop(modalContext),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(color: customColors.glassStroke, height: 1),
+                    Flexible(
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 12.h),
+                        itemCount: _categories.length,
+                        separatorBuilder: (_, __) => SizedBox(height: 4.h),
+                        itemBuilder: (context, index) {
+                          final cat = _categories[index];
+                          final isSelected = _selectedCategory == cat;
+                          return InkWell(
+                            onTap: () {
+                              setState(() => _selectedCategory = cat);
+                              Navigator.pop(modalContext);
+                            },
+                            borderRadius: BorderRadius.circular(12.r),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 12.h),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? colorScheme.primary
+                                        .withValues(alpha: 0.12)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(12.r),
+                                border: isSelected
+                                    ? Border.all(
+                                        color: colorScheme.primary
+                                            .withValues(alpha: 0.4))
+                                    : null,
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 38.w,
+                                    height: 38.w,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? colorScheme.primary
+                                          : colorScheme.surfaceContainerHigh,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Text(
+                                      _getCategoryIcon(cat),
+                                      style: TextStyle(fontSize: 18.sp),
+                                    ),
+                                  ),
+                                  SizedBox(width: 14.w),
+                                  Expanded(
+                                    child: Text(
+                                      _getCategoryLabel(cat),
+                                      style:
+                                          context.textTheme.bodyLarge?.copyWith(
+                                        color: isSelected
+                                            ? colorScheme.primary
+                                            : colorScheme.onSurface,
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  if (isSelected)
+                                    Icon(
+                                      Icons.check_circle_rounded,
+                                      color: colorScheme.primary,
+                                      size: 22.w,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showAddEditEmailBottomSheet(int index) {
+    final participant = _participants[index];
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final emailCtrl = TextEditingController(text: participant.email ?? '');
+    final formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(modalContext).viewInsets.bottom,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isLight
+                    ? [
+                        colorScheme.surfaceContainerLowest
+                            .withValues(alpha: 0.45),
+                        colorScheme.surfaceContainerHigh
+                            .withValues(alpha: 0.30),
+                      ]
+                    : [
+                        colorScheme.surfaceContainerHigh
+                            .withValues(alpha: 0.35),
+                        colorScheme.surfaceContainerLow.withValues(alpha: 0.20),
+                      ],
+              ),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+              border: Border.all(
+                color: isLight
+                    ? Colors.white.withValues(alpha: 0.60)
+                    : customColors.glassStroke.withValues(alpha: 0.45),
+                width: 1.0,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 20.h),
+                    child: Form(
+                      key: formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Handle
+                          Center(
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: 16.h),
+                              width: 40.w,
+                              height: 4.h,
+                              decoration: BoxDecoration(
+                                color: colorScheme.outlineVariant
+                                    .withValues(alpha: 0.7),
+                                borderRadius: BorderRadius.circular(2.r),
+                              ),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      participant.email != null &&
+                                              participant.email!.isNotEmpty
+                                          ? 'Edit Email Address'
+                                          : 'Add Email Address',
+                                      style: context.textTheme.titleMedium
+                                          ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: colorScheme.onSurface,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2.h),
+                                    Text(
+                                      'For ${participant.name}',
+                                      style:
+                                          context.textTheme.bodySmall?.copyWith(
+                                        color: colorScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.close,
+                                    color: colorScheme.onSurfaceVariant),
+                                onPressed: () => Navigator.pop(modalContext),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 12.h),
+                          Text(
+                            'Adding an email allows you to send settlement reminders directly from the balances tab.',
+                            style: context.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          SizedBox(height: 16.h),
+                          AppTextField(
+                            controller: emailCtrl,
+                            labelText: 'Email Address',
+                            hintText:
+                                'e.g. ${participant.name.toLowerCase().replaceAll(' ', '')}@example.com',
+                            keyboardType: TextInputType.emailAddress,
+                            prefixIcon: const Icon(Icons.mail_outline_rounded),
+                            validator: (val) {
+                              final trimmed = val?.trim() ?? '';
+                              if (trimmed.isNotEmpty &&
+                                  !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                      .hasMatch(trimmed)) {
+                                return 'Please enter a valid email address';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 20.h),
+                          Row(
+                            children: [
+                              if (participant.email != null &&
+                                  participant.email!.isNotEmpty) ...[
+                                Expanded(
+                                  flex: 1,
+                                  child: AppButton(
+                                    text: 'Clear',
+                                    height: 44.h,
+                                    onPressed: () {
+                                      setState(() {
+                                        _participants[index] =
+                                            participant.copyWith(email: '');
+                                      });
+                                      Navigator.pop(modalContext);
+                                      StatusComponents.showToast(
+                                        context,
+                                        message:
+                                            'Email removed for ${participant.name}',
+                                      );
+                                    },
+                                    variant: AppButtonVariant.outlined,
+                                  ),
+                                ),
+                                SizedBox(width: 12.w),
+                              ],
+                              Expanded(
+                                flex: 2,
+                                child: AppButton(
+                                  text: 'Save Email',
+                                  height: 44.h,
+                                  onPressed: () {
+                                    if (!formKey.currentState!.validate())
+                                      return;
+                                    final newEmail = emailCtrl.text.trim();
+                                    setState(() {
+                                      _participants[index] =
+                                          participant.copyWith(
+                                        email:
+                                            newEmail.isNotEmpty ? newEmail : '',
+                                      );
+                                    });
+                                    Navigator.pop(modalContext);
+                                    StatusComponents.showToast(
+                                      context,
+                                      message: newEmail.isNotEmpty
+                                          ? 'Email updated for ${participant.name}'
+                                          : 'Email cleared for ${participant.name}',
+                                    );
+                                  },
+                                  variant: AppButtonVariant.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8.h),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Select Category',
-                        style: context.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.close,
-                            color: colorScheme.onSurfaceVariant),
-                        onPressed: () => Navigator.pop(modalContext),
-                      ),
-                    ],
-                  ),
-                ),
-                Divider(color: customColors.glassStroke, height: 1),
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                    itemCount: _categories.length,
-                    separatorBuilder: (_, __) => SizedBox(height: 4.h),
-                    itemBuilder: (context, index) {
-                      final cat = _categories[index];
-                      final isSelected = _selectedCategory == cat;
-                      return InkWell(
-                        onTap: () {
-                          setState(() => _selectedCategory = cat);
-                          Navigator.pop(modalContext);
-                        },
-                        borderRadius: BorderRadius.circular(12.r),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 12.h),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? colorScheme.primary.withValues(alpha: 0.12)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: isSelected
-                                ? Border.all(
-                                    color: colorScheme.primary
-                                        .withValues(alpha: 0.4))
-                                : null,
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 38.w,
-                                height: 38.w,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? colorScheme.primary
-                                      : colorScheme.surfaceContainerHigh,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Text(
-                                  _getCategoryIcon(cat),
-                                  style: TextStyle(fontSize: 18.sp),
-                                ),
-                              ),
-                              SizedBox(width: 14.w),
-                              Expanded(
-                                child: Text(
-                                  _getCategoryLabel(cat),
-                                  style: context.textTheme.bodyLarge?.copyWith(
-                                    color: isSelected
-                                        ? colorScheme.primary
-                                        : colorScheme.onSurface,
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              if (isSelected)
-                                Icon(
-                                  Icons.check_circle_rounded,
-                                  color: colorScheme.primary,
-                                  size: 22.w,
-                                ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         );
@@ -406,6 +655,24 @@ class _NewEventPageState extends State<NewEventPage> {
           description: _descriptionController.text.trim(),
           category: _selectedCategory,
         );
+
+        for (final p in _participants) {
+          if (p.id != null) {
+            await repo.updateParticipant(
+              participantId: p.id!,
+              name: p.name,
+              email: p.email,
+            );
+          } else {
+            await repo.addParticipant(
+              eventId: widget.event!.id,
+              name: p.name,
+              email: p.email,
+              isOwner: p.isOwner,
+              colorIndex: p.colorIndex,
+            );
+          }
+        }
       } else {
         final eventId = await repo.createEvent(
           name: name,
@@ -630,48 +897,47 @@ class _NewEventPageState extends State<NewEventPage> {
                   SizedBox(height: 16.h),
 
                   // Add participant inputs (2 distinct rows)
-                  if (!isEdit) ...[
-                    AppTextField(
-                      controller: _participantNameController,
-                      labelText: "Friend's Name",
-                      hintText: 'e.g. Sarah',
+                  AppTextField(
+                    controller: _participantNameController,
+                    labelText: "Friend's Name",
+                    hintText: 'e.g. Sarah',
+                  ),
+                  SizedBox(height: 12.h),
+                  AppTextField(
+                    controller: _participantEmailController,
+                    labelText: 'Email (Optional)',
+                    hintText: 'e.g. sarah@example.com',
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  SizedBox(height: 12.h),
+                  AppButton(
+                    text: '+ Add Participant',
+                    height: 44.h,
+                    textStyle: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(height: 12.h),
-                    AppTextField(
-                      controller: _participantEmailController,
-                      labelText: 'Email (Optional)',
-                      hintText: 'e.g. sarah@example.com',
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    SizedBox(height: 12.h),
-                    AppButton(
-                      text: '+ Add Participant',
-                      height: 44.h,
-                      textStyle: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      onPressed: _addParticipant,
-                      variant: AppButtonVariant.secondary,
-                    ),
-                    SizedBox(height: 12.h),
-                    Divider(
-                      color: customColors.glassStroke.withValues(alpha: 0.5),
-                      height: 1.h,
-                    ),
-                    SizedBox(height: 10.h),
-                  ],
+                    onPressed: _addParticipant,
+                    variant: AppButtonVariant.secondary,
+                  ),
+                  SizedBox(height: 12.h),
+                  Divider(
+                    color: customColors.glassStroke.withValues(alpha: 0.5),
+                    height: 1.h,
+                  ),
+                  SizedBox(height: 10.h),
 
                   // Participants list
                   ..._participants.asMap().entries.map((entry) {
                     final index = entry.key;
                     final p = entry.value;
                     final isLast = index == _participants.length - 1;
+                    final hasEmail = p.email != null && p.email!.isNotEmpty;
 
                     return Column(
                       children: [
                         Padding(
-                          padding: EdgeInsets.symmetric(vertical: 4.h),
+                          padding: EdgeInsets.symmetric(vertical: 6.h),
                           child: Row(
                             children: [
                               ParticipantAvatar(
@@ -691,6 +957,7 @@ class _NewEventPageState extends State<NewEventPage> {
                                               .customTypography.bodyLarge
                                               .copyWith(
                                             color: colorScheme.onSurface,
+                                            fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                         if (p.isOwner) ...[
@@ -699,8 +966,8 @@ class _NewEventPageState extends State<NewEventPage> {
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 6.w, vertical: 1.h),
                                             decoration: BoxDecoration(
-                                              color: colorScheme
-                                                  .surfaceContainerHigh,
+                                              color: colorScheme.primary
+                                                  .withValues(alpha: 0.15),
                                               borderRadius:
                                                   BorderRadius.circular(4.r),
                                             ),
@@ -710,26 +977,99 @@ class _NewEventPageState extends State<NewEventPage> {
                                                   .textTheme.labelSmall
                                                   ?.copyWith(
                                                 fontSize: 10.sp,
-                                                color: colorScheme
-                                                    .onSurfaceVariant,
+                                                fontWeight: FontWeight.bold,
+                                                color: colorScheme.primary,
                                               ),
                                             ),
                                           ),
                                         ],
                                       ],
                                     ),
-                                    if (p.email != null)
-                                      Text(
-                                        p.email!,
-                                        style: context.textTheme.labelSmall
-                                            ?.copyWith(
-                                          color: colorScheme.onSurfaceVariant,
+                                    SizedBox(height: 2.h),
+                                    if (hasEmail) ...[
+                                      GestureDetector(
+                                        onTap: () =>
+                                            _showAddEditEmailBottomSheet(index),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.mail_outline_rounded,
+                                              size: 13.sp,
+                                              color:
+                                                  colorScheme.onSurfaceVariant,
+                                            ),
+                                            SizedBox(width: 4.w),
+                                            Flexible(
+                                              child: Text(
+                                                p.email!,
+                                                style: context
+                                                    .textTheme.labelSmall
+                                                    ?.copyWith(
+                                                  color: colorScheme
+                                                      .onSurfaceVariant,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            SizedBox(width: 4.w),
+                                            Icon(
+                                              Icons.edit_outlined,
+                                              size: 12.sp,
+                                              color: colorScheme.primary,
+                                            ),
+                                          ],
                                         ),
                                       ),
+                                    ] else if (isEdit) ...[
+                                      GestureDetector(
+                                        onTap: () =>
+                                            _showAddEditEmailBottomSheet(index),
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 2.h),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons
+                                                    .add_circle_outline_rounded,
+                                                size: 13.sp,
+                                                color: colorScheme.primary,
+                                              ),
+                                              SizedBox(width: 4.w),
+                                              Text(
+                                                'Add email for reminders',
+                                                style: context
+                                                    .textTheme.labelSmall
+                                                    ?.copyWith(
+                                                  color: colorScheme.primary,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ],
                                 ),
                               ),
-                              if (!p.isOwner && !isEdit)
+                              if (isEdit)
+                                IconButton(
+                                  icon: Icon(
+                                    hasEmail
+                                        ? Icons.edit_outlined
+                                        : Icons.mail_outline_rounded,
+                                    size: 18.w,
+                                    color: colorScheme.primary,
+                                  ),
+                                  tooltip:
+                                      hasEmail ? 'Edit email' : 'Add email',
+                                  onPressed: () =>
+                                      _showAddEditEmailBottomSheet(index),
+                                )
+                              else if (!p.isOwner)
                                 IconButton(
                                   icon: Icon(Icons.close,
                                       size: 18.w,
@@ -749,6 +1089,17 @@ class _NewEventPageState extends State<NewEventPage> {
                     );
                   }),
                 ],
+              ),
+            ),
+
+            SizedBox(height: 20.h),
+
+            // Banner Ad (Initial build entrance animation)
+            AnimatedEntranceItem(
+              index: 2,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 16.h),
+                child: BannerAdWidget(adUnitId: AdHelper.bannerAdUnitId),
               ),
             ),
 

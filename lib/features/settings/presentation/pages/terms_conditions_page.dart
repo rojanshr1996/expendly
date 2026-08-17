@@ -16,7 +16,6 @@ class TermsConditionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textTheme = context.textTheme;
     final customTypography = context.customTypography;
     final l10n = context.l10n;
 

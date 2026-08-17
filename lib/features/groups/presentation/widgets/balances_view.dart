@@ -47,7 +47,7 @@ class BalancesView extends StatelessWidget {
       final subject =
           Uri.encodeComponent('Reminder: Settle up for ${event.name}');
       final body = Uri.encodeComponent(
-        'Hi ${settlement.fromParticipant.name},\n\nJust a quick reminder to settle up $currencySymbol${settlement.amount.toStringAsFixed(2)} for ${event.name}.\n\nThanks!',
+        'Hi ${settlement.fromParticipant.name},\n\nJust a quick reminder that you owe $currencySymbol${settlement.amount.toStringAsFixed(2)} to ${settlement.toParticipant.name} for "${event.name}".\n\nPlease settle up when you get a chance.\n\nThanks!',
       );
       final url = Uri.parse('mailto:$to?subject=$subject&body=$body');
       if (await canLaunchUrl(url)) {
@@ -104,7 +104,8 @@ class BalancesView extends StatelessWidget {
       return Align(
         alignment: Alignment.topCenter,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          padding:
+              EdgeInsets.only(left: 20.w, right: 20.w, top: 68.h, bottom: 24.h),
           child: GlassContainer(
             padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 28.h),
             child: Column(
@@ -185,7 +186,7 @@ class BalancesView extends StatelessWidget {
         }
 
         return ListView(
-          padding: EdgeInsets.fromLTRB(0, 16.h, 0, 32.h),
+          padding: EdgeInsets.fromLTRB(0, 60.h, 0, 96.h),
           children: [
             // User selector
             SizedBox(
@@ -410,8 +411,11 @@ class BalancesView extends StatelessWidget {
                         settlement: s,
                         selectedParticipant: selectedParticipant,
                         onAction: () {
-                          final isUserDebtor =
-                              s.fromParticipant.id == selectedId;
+                          final owner = participants.firstWhere(
+                            (p) => p.isOwner,
+                            orElse: () => participants.first,
+                          );
+                          final isUserDebtor = s.fromParticipant.id == owner.id;
                           if (isUserDebtor) {
                             _settleUp(context, s);
                           } else {

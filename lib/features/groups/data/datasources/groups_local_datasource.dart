@@ -38,6 +38,11 @@ abstract class GroupsLocalDataSource {
     bool isOwner = false,
     int colorIndex = 0,
   });
+  Future<void> updateParticipant({
+    required int participantId,
+    String? name,
+    String? email,
+  });
   Future<void> removeParticipant(int participantId);
 
   Future<List<GroupExpense>> getExpensesByEventId(int eventId);
@@ -274,6 +279,22 @@ class GroupsLocalDataSourceImpl implements GroupsLocalDataSource {
           isOwner: Value(isOwner),
           colorIndex: Value(colorIndex),
         ));
+  }
+
+  @override
+  Future<void> updateParticipant({
+    required int participantId,
+    String? name,
+    String? email,
+  }) async {
+    final updateStmt = _db.update(_db.eventParticipants)
+      ..where((tbl) => tbl.id.equals(participantId));
+    await updateStmt.write(EventParticipantsCompanion(
+      name: name != null ? Value(name) : const Value.absent(),
+      email: email != null
+          ? Value(email.trim().isEmpty ? null : email.trim())
+          : const Value.absent(),
+    ));
   }
 
   @override

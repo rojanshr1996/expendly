@@ -67,7 +67,7 @@ void main() {
       expect(find.text('1'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
       expect(find.text('3'), findsOneWidget);
-      expect(find.text('Clear'), findsOneWidget);
+      expect(find.byIcon(Icons.backspace_outlined), findsOneWidget);
     });
 
     testWidgets('Allows entering new PIN and confirming PIN successfully', (tester) async {

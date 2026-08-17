@@ -38,7 +38,8 @@ class ExpensesTabView extends StatelessWidget {
       return Align(
         alignment: Alignment.topCenter,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          padding:
+              EdgeInsets.only(left: 20.w, right: 20.w, top: 68.h, bottom: 24.h),
           child: GlassContainer(
             padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 28.h),
             child: Column(
@@ -109,7 +110,7 @@ class ExpensesTabView extends StatelessWidget {
     final br = BorderRadius.circular(18.r);
 
     return ListView.builder(
-      padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 96.h),
+      padding: EdgeInsets.fromLTRB(20.w, 60.h, 20.w, 96.h),
       itemCount: grouped.keys.length,
       itemBuilder: (context, groupIndex) {
         final header = grouped.keys.elementAt(groupIndex);

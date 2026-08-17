@@ -342,102 +342,119 @@ class _EventDetailPageState extends State<EventDetailPage>
                       ),
                     ),
 
-                    // Pinned Liquid Glass Tab Bar (identical to RefinedReportsPage)
-                    AnimatedBuilder(
-                      animation: _tabController,
-                      builder: (context, _) {
-                        final tabs = [
-                          {'index': 0, 'label': context.l10n.expenses},
-                          {'index': 1, 'label': context.l10n.balances},
-                        ];
-
-                        return _ReportsLiquidGlassCard(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 6.h),
-                          borderRadius: BorderRadius.circular(14.r),
-                          padding: EdgeInsets.all(4.w),
-                          child: Row(
-                            children: tabs.map((t) {
-                              final tabIndex = t['index'] as int;
-                              final tabLabel = t['label'] as String;
-                              final isSelected =
-                                  _tabController.index == tabIndex;
-
-                              return Expanded(
-                                child: Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 2.w),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      _tabController.animateTo(tabIndex);
-                                    },
-                                    child: AnimatedContainer(
-                                      duration:
-                                          const Duration(milliseconds: 250),
-                                      curve: Curves.easeInOut,
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 8.h),
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? colorScheme.primary
-                                            : Colors.transparent,
-                                        borderRadius:
-                                            BorderRadius.circular(10.r),
-                                        boxShadow: isSelected
-                                            ? [
-                                                BoxShadow(
-                                                  color: colorScheme.primary
-                                                      .withValues(alpha: 0.3),
-                                                  blurRadius: 8.r,
-                                                  offset: const Offset(0, 2),
-                                                )
-                                              ]
-                                            : null,
-                                      ),
-                                      child: Text(
-                                        tabLabel,
-                                        textAlign: TextAlign.center,
-                                        style: context
-                                            .customTypography.labelMediumMono
-                                            .copyWith(
-                                          color: isSelected
-                                              ? colorScheme.onPrimary
-                                              : colorScheme.onSurface,
-                                          fontWeight: isSelected
-                                              ? FontWeight.bold
-                                              : FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        );
-                      },
-                    ),
-
-                    // Tab Views
+                    // Tab Content and Floating Liquid Glass Tab Bar in Stack
                     Expanded(
-                      child: TabBarView(
-                        controller: _tabController,
+                      child: Stack(
+                        fit: StackFit.expand,
                         children: [
-                          // Expenses Tab
-                          ExpensesTabView(
-                            expenses: state.expenses,
-                            event: event,
-                            onExpenseAdded: () =>
-                                _cubit.loadEventDetail(widget.eventId),
-                            onDeleteExpense: (expenseId) =>
-                                _confirmDeleteExpense(context, expenseId),
+                          // 1. Scrollable Tab Views (scrolls UNDER the floating liquid glass tab bar)
+                          Positioned.fill(
+                            child: TabBarView(
+                              controller: _tabController,
+                              children: [
+                                // Expenses Tab
+                                ExpensesTabView(
+                                  expenses: state.expenses,
+                                  event: event,
+                                  onExpenseAdded: () =>
+                                      _cubit.loadEventDetail(widget.eventId),
+                                  onDeleteExpense: (expenseId) =>
+                                      _confirmDeleteExpense(context, expenseId),
+                                ),
+
+                                // Balances Tab
+                                BalancesTabView(
+                                  settlements: state.settlements,
+                                  participants: event.participants,
+                                  event: event,
+                                ),
+                              ],
+                            ),
                           ),
 
-                          // Balances Tab
-                          BalancesTabView(
-                            settlements: state.settlements,
-                            participants: event.participants,
-                            event: event,
+                          // 2. Pinned Floating Liquid Glass Tab Bar
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: AnimatedBuilder(
+                              animation: _tabController,
+                              builder: (context, _) {
+                                final tabs = [
+                                  {'index': 0, 'label': context.l10n.expenses},
+                                  {'index': 1, 'label': context.l10n.balances},
+                                ];
+
+                                return _ReportsLiquidGlassCard(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 16.w, vertical: 6.h),
+                                  borderRadius: BorderRadius.circular(14.r),
+                                  padding: EdgeInsets.all(4.w),
+                                  child: Row(
+                                    children: tabs.map((t) {
+                                      final tabIndex = t['index'] as int;
+                                      final tabLabel = t['label'] as String;
+                                      final isSelected =
+                                          _tabController.index == tabIndex;
+
+                                      return Expanded(
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 2.w),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              _tabController
+                                                  .animateTo(tabIndex);
+                                            },
+                                            child: AnimatedContainer(
+                                              duration: const Duration(
+                                                  milliseconds: 250),
+                                              curve: Curves.easeInOut,
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 8.h),
+                                              decoration: BoxDecoration(
+                                                color: isSelected
+                                                    ? colorScheme.primary
+                                                    : Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(10.r),
+                                                boxShadow: isSelected
+                                                    ? [
+                                                        BoxShadow(
+                                                          color: colorScheme
+                                                              .primary
+                                                              .withValues(
+                                                                  alpha: 0.3),
+                                                          blurRadius: 8.r,
+                                                          offset: const Offset(
+                                                              0, 2),
+                                                        )
+                                                      ]
+                                                    : null,
+                                              ),
+                                              child: Text(
+                                                tabLabel,
+                                                textAlign: TextAlign.center,
+                                                style: context.customTypography
+                                                    .labelMediumMono
+                                                    .copyWith(
+                                                  color: isSelected
+                                                      ? colorScheme.onPrimary
+                                                      : colorScheme.onSurface,
+                                                  fontWeight: isSelected
+                                                      ? FontWeight.bold
+                                                      : FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ],
                       ),

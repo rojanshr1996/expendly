@@ -45,7 +45,6 @@ class TransactionDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textTheme = context.textTheme;
     final l10n = context.l10n;
 
     return BlocProvider.value(
