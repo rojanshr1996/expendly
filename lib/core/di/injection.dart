@@ -24,17 +24,31 @@ import '../../features/transactions/data/datasources/transaction_local_datasourc
 import '../../features/transactions/data/repositories/transaction_repository_impl.dart';
 import '../../features/transactions/domain/repositories/transaction_repository.dart';
 import '../../features/transactions/presentation/cubit/transaction_cubit.dart';
+import '../../features/currency/data/datasources/exchange_rate_local_datasource.dart';
+import '../../features/currency/data/datasources/exchange_rate_remote_datasource.dart';
+import '../../features/currency/data/repositories/exchange_rate_repository_impl.dart';
+import '../../features/currency/domain/repositories/exchange_rate_repository.dart';
 import '../config/app_config.dart';
 import '../database/app_database.dart';
+import '../network/dio_client.dart';
 import '../services/biometric_auth_service.dart';
 import '../services/backup_service.dart';
 import '../services/data_export_import_service.dart';
 import '../services/notification_service.dart';
+import '../services/pdf_report_service.dart';
 import '../services/preference_service.dart';
 import '../services/remote_config_service.dart';
 import '../services/secure_storage_service.dart';
 import '../utils/app_logger.dart';
 import 'injection.config.dart';
+
+import '../../features/groups/data/datasources/groups_local_datasource.dart';
+import '../../features/groups/data/repositories/groups_repository_impl.dart';
+import '../../features/groups/domain/repositories/groups_repository.dart';
+import '../../features/groups/domain/usecases/calculate_splits.dart';
+import '../../features/groups/domain/usecases/calculate_settlements.dart';
+import '../../features/groups/presentation/cubit/groups_cubit.dart';
+import '../../features/groups/presentation/cubit/event_detail_cubit.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -84,6 +98,10 @@ Future<void> configureDependencies([String? environment]) async {
     await getIt<PreferenceService>().init();
   }
 
+  if (!getIt.isRegistered<PdfReportService>()) {
+    getIt.registerLazySingleton<PdfReportService>(() => PdfReportService());
+  }
+
   if (!getIt.isRegistered<AppLogger>()) {
     getIt.registerLazySingleton<AppLogger>(() => AppLogger());
   }
@@ -103,6 +121,27 @@ Future<void> configureDependencies([String? environment]) async {
           getIt<PreferenceService>(),
           getIt<NotificationService>(),
         ));
+  }
+
+  // Network & Exchange Rates Services Registration
+  if (!getIt.isRegistered<DioClient>()) {
+    getIt.registerLazySingleton<DioClient>(() => DioClient());
+  }
+  if (!getIt.isRegistered<ExchangeRateRemoteDataSource>()) {
+    getIt.registerLazySingleton<ExchangeRateRemoteDataSource>(
+        () => ExchangeRateRemoteDataSourceImpl(getIt<DioClient>()));
+  }
+  if (!getIt.isRegistered<ExchangeRateLocalDataSource>()) {
+    getIt.registerLazySingleton<ExchangeRateLocalDataSource>(
+        () => ExchangeRateLocalDataSourceImpl());
+  }
+  if (!getIt.isRegistered<ExchangeRateRepository>()) {
+    getIt.registerLazySingleton<ExchangeRateRepository>(
+        () => ExchangeRateRepositoryImpl(
+              getIt<ExchangeRateRemoteDataSource>(),
+              getIt<ExchangeRateLocalDataSource>(),
+              getIt<AppDatabase>(),
+            ));
   }
 
   // Feature Datasources & Repositories Registration
@@ -176,5 +215,34 @@ Future<void> configureDependencies([String? environment]) async {
   if (!getIt.isRegistered<DashboardCubit>()) {
     getIt.registerFactory<DashboardCubit>(
         () => DashboardCubit(getIt<GetFinancialSummary>()));
+  }
+
+  // Groups Feature — Datasource & Repository
+  if (!getIt.isRegistered<GroupsLocalDataSource>()) {
+    getIt.registerLazySingleton<GroupsLocalDataSource>(
+        () => GroupsLocalDataSourceImpl(getIt<AppDatabase>()));
+  }
+  if (!getIt.isRegistered<GroupsRepository>()) {
+    getIt.registerLazySingleton<GroupsRepository>(
+        () => GroupsRepositoryImpl(getIt<GroupsLocalDataSource>()));
+  }
+
+  // Groups Feature — Use Cases
+  if (!getIt.isRegistered<CalculateSplits>()) {
+    getIt.registerLazySingleton<CalculateSplits>(() => CalculateSplits());
+  }
+  if (!getIt.isRegistered<CalculateSettlements>()) {
+    getIt.registerLazySingleton<CalculateSettlements>(
+        () => CalculateSettlements());
+  }
+
+  // Groups Feature — Cubits
+  if (!getIt.isRegistered<GroupsCubit>()) {
+    getIt.registerLazySingleton<GroupsCubit>(
+        () => GroupsCubit(getIt<GroupsRepository>()));
+  }
+  if (!getIt.isRegistered<EventDetailCubit>()) {
+    getIt.registerFactory<EventDetailCubit>(() => EventDetailCubit(
+        getIt<GroupsRepository>(), getIt<CalculateSettlements>()));
   }
 }

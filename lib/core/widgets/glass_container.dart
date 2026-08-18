@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../extensions/context_extensions.dart';
 import '../theme/app_radius.dart';
 
-/// Reusable Glassmorphic Container with blur, semi-transparent background, and 1px stroke border.
+/// Reusable Glassmorphic Container with rich blur, semi-transparent liquid gradient background, and specular stroke border.
 class GlassContainer extends StatelessWidget {
   final Widget child;
   final double blur;
@@ -21,7 +21,7 @@ class GlassContainer extends StatelessWidget {
   const GlassContainer({
     super.key,
     required this.child,
-    this.blur = 16.0,
+    this.blur = 24.0,
     this.backgroundColor,
     this.borderStrokeColor,
     this.borderRadius,
@@ -34,27 +34,37 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final colorScheme = context.colorScheme;
     final customColors = context.customColors;
     final effectiveRadius = borderRadius ?? AppRadius.borderLg;
-    final effectiveBg =
-        backgroundColor ?? customColors.surfaceLow.withValues(alpha: 0.7);
-    final effectiveStroke = borderStrokeColor ?? customColors.glassStroke;
+    final effectiveBg = backgroundColor ??
+        (isLight
+            ? colorScheme.surfaceContainerLowest.withValues(alpha: 0.45)
+            : colorScheme.surfaceContainerHigh.withValues(alpha: 0.35));
+    final effectiveStroke = borderStrokeColor ??
+        (isLight
+            ? Colors.white.withValues(alpha: 0.60)
+            : customColors.glassStroke.withValues(alpha: 0.45));
+    final effectiveBlur = blur == 24.0 ? 18.0 : blur;
 
     Widget container = Container(
       width: width,
       height: height,
       margin: margin,
       decoration: BoxDecoration(
+        color: effectiveBg,
         borderRadius: effectiveRadius,
         border: Border.all(color: effectiveStroke, width: 1.0),
       ),
       child: ClipRRect(
         borderRadius: effectiveRadius,
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+          filter:
+              ImageFilter.blur(sigmaX: effectiveBlur, sigmaY: effectiveBlur),
           child: Container(
             padding: padding ?? EdgeInsets.all(16.w),
-            color: effectiveBg,
+            color: Colors.transparent,
             child: child,
           ),
         ),

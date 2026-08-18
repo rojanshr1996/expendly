@@ -1,30 +1,32 @@
 # 💰 Expendly
 
-**Expendly** is a personal finance management mobile application built with Flutter, featuring an offline-first architecture, clean layered code structure, and a modern fiscal design system.
+**Expendly** is a personal finance management and shared expense splitting mobile application built with Flutter, featuring an offline-first architecture, clean layered code structure, and a modern fiscal design system.
 
 ---
 
 ## 📖 About
 
-**Expendly** is a privacy-first, offline personal finance tracker built for people who want full control over their financial data — without ever sending it to the cloud.
+**Expendly** is a privacy-first, offline personal finance tracker and group bill splitter built for people who want full control over their financial data — without ever sending it to the cloud.
 
-Designed around the principle of **Fiscal Calm**, Expendly gives you a clear, distraction-free view of your income, expenses, and financial health — entirely on your device. There is no account required, no cloud sync, and no telemetry. Your data stays yours.
+Designed around the principle of **Fiscal Calm**, Expendly gives you a clear, distraction-free view of your income, expenses, budgets, and shared group costs — entirely on your device. Whether managing daily personal finances or splitting trip expenses with friends, there is no account required, no cloud sync, and no telemetry. Your data stays yours.
 
 ### Core Philosophy
 
 | Pillar | Description |
 | :--- | :--- |
 | 🔒 **100% Offline & Private** | All financial data is stored strictly on-device. No cloud sync, no tracking, zero telemetry. |
-| 📱 **Local-First Storage** | Transactions and settings are persisted securely via Drift SQLite on Android & iOS. |
+| 📱 **Local-First Storage** | Transactions, group events, splits, and settings are persisted securely via Drift SQLite on Android & iOS. |
+| 👥 **Smart Bill Splitting** | Effortlessly organize group events, split expenses (equal, exact, percentage with auto-balancing), and calculate simplified debt settlements. |
 | 🏗️ **Modern Fiscal Architecture** | Built with Flutter Clean Architecture, `flutter_bloc` Cubits, and a custom fiscal design system. |
 | 🎨 **Premium Design System** | Custom HSL color palettes, HankenGrotesk typography, and a responsive layout powered by `flutter_screenutil`. |
 
 ### Who is it for?
 
 Expendly is ideal for individuals who:
-- Want a **simple, fast, and beautiful** expense tracker without signing up for an account.
+- Want a **simple, fast, and beautiful** expense tracker and group bill splitter without signing up for an account.
+- Split trips, dinners, household bills, and group events with friends, roommates, or family.
 - Value **privacy** and don't want financial data sent to third-party servers.
-- Prefer a **native mobile experience** over web-based budgeting tools.
+- Prefer a **native mobile experience** over web-based budgeting and bill-splitting tools.
 
 > *"Expendly • Designed for Fiscal Calm"*
 
@@ -32,7 +34,15 @@ Expendly is ideal for individuals who:
 
 ## 🌟 Key Features
 
-- 📱 **Modern Fiscal Core Design**: Custom theme extensions, tailored HSL color palettes, and responsive typography scaling using `flutter_screenutil`.
+- 👥 **Smart Bill Splitting & Group Expenses**:
+  - Create and manage events, trips, and shared group activities with custom categories and participant avatars.
+  - Split expenses flexibly: **Equal split**, **Exact amounts** with intelligent auto-balancing of remainders, or **Percentage splits**.
+  - Automated debt simplification engine minimizing the number of transactions needed to settle up.
+  - Direct email reminders with personalized settlement details and creditor context.
+  - Settle up debts with partial or full payments and export clean settlement reports.
+- 📊 **Personal Finance & Analytics**: Track income and expenses with interactive charts, categorized spending breakdowns, and weekly/monthly summaries.
+- 🎯 **Budget Planning**: Set category-specific budgets with visual progress indicators and overspend alerts.
+- 📱 **Modern Fiscal Core Design**: Custom theme extensions, tailored HSL color palettes, liquid glass UI elements, and responsive typography scaling using `flutter_screenutil`.
 - ⚡ **Offline-First Architecture**: High performance with zero runtime network dependencies for essential assets and font rendering.
 - 🔀 **Multi-Flavor Support**: Built-in support for `dev`, `qa`, and `prod` environment configurations with flavor-specific app icons and branding banners.
 - 🏗️ **Clean Architecture & BLoC**: Decoupled presentation, domain, and data layers powered by `flutter_bloc`.
@@ -46,6 +56,7 @@ Expendly is ideal for individuals who:
 | Component | Library / Framework |
 | :--- | :--- |
 | **Framework** | [Flutter](https://flutter.dev/) (SDK `>=3.0.0 <4.0.0`) |
+| **Database** | [Drift](https://drift.simonbinder.eu/) (SQLite offline-first persistence) |
 | **State Management** | [flutter_bloc](https://pub.dev/packages/flutter_bloc) |
 | **Dependency Injection** | [get_it](https://pub.dev/packages/get_it) & [injectable](https://pub.dev/packages/injectable) |
 | **Navigation & Routing** | [auto_route](https://pub.dev/packages/auto_route) |
@@ -61,16 +72,24 @@ Expendly is ideal for individuals who:
 ```text
 lib/
 ├── core/
+│   ├── ads/             # AdMob helpers, banners, and interstitial managers
 │   ├── config/          # Environment flavor configuration (dev, qa, prod)
+│   ├── database/        # Drift SQLite database, DAOs, and migrations
 │   ├── di/              # Dependency injection setup (GetIt & Injectable)
 │   ├── error/           # Core failures & exception handling
 │   ├── extensions/      # BuildContext extensions (l10n, theme, colors)
 │   ├── router/          # AutoRoute configuration & generated routes
+│   ├── services/        # Local notification, backup, and preference services
 │   ├── theme/           # Design tokens (Colors, Typography, Spacing, Radius)
-│   └── usecase/         # Abstract UseCase contracts
+│   └── widgets/         # Reusable liquid glass UI components & animated elements
 ├── features/
 │   ├── splash/          # Animated splash screen & initial route guard
-│   └── dashboard/       # Financial summary, metric tiles, & transaction list
+│   ├── dashboard/       # Financial summary, metric tiles, & transaction list
+│   ├── transactions/    # Income/expense tracking & categorized ledger
+│   ├── budgets/         # Budget planning, limits, and progress tracking
+│   ├── analytics/       # Cashflow analysis, reports, and charts
+│   ├── groups/          # Bill splitting, group events, debt calculation, & settlements
+│   └── settings/        # Preferences, currency selection, security, & backup
 ├── l10n/                # Internationalization & localization delegates
 ├── main_dev.dart        # Development flavor entrypoint
 ├── main_qa.dart         # QA flavor entrypoint

@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 /// Abstract UseCase interface for domain logic operations.
-abstract class UseCase<Type, Params> {
-  Future<Type> call(Params params);
+abstract class UseCase<T, Params> {
+  Future<T> call(Params params);
 }
 
 /// NoParams placeholder for usecases that require no arguments.

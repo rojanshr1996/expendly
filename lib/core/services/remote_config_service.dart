@@ -60,8 +60,8 @@ class RemoteConfigService {
 
     // 1. Set In-App Defaults
     await _remoteConfig.setDefaults(const {
-      keyMinRequiredVersion: '1.0.0',
-      keyLatestVersion: '1.0.0',
+      keyMinRequiredVersion: '1.1.0',
+      keyLatestVersion: '1.1.0',
       keyIsMaintenanceMode: false,
       keyIsAdsEnabled: true,
       keyForceUpdateTitle: 'Update Required',

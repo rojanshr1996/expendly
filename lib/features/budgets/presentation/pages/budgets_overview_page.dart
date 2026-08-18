@@ -15,6 +15,7 @@ import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
+import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../data/datasources/budget_local_datasource.dart';
 import '../../data/repositories/budget_repository_impl.dart';
@@ -78,7 +79,6 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textTheme = context.textTheme;
     final customTypography = context.customTypography;
 
     return BlocProvider.value(
@@ -98,19 +98,15 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
       }(),
       child: Builder(
         builder: (context) {
+          final topInset = MediaQuery.of(context).padding.top;
+          final headerPaddingTop = topInset + kToolbarHeight;
+
           return Scaffold(
             backgroundColor: colorScheme.surface,
-            appBar: AppBar(
-              backgroundColor: colorScheme.surfaceContainerLow,
-              elevation: 0,
-              automaticallyImplyLeading: false,
-              title: Text(
-                context.l10n.budgets,
-                style: (textTheme.headlineSmall ?? const TextStyle()).copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            extendBodyBehindAppBar: true,
+            appBar: LiquidGlassAppBar(
+              showLeading: false,
+              titleText: context.l10n.budgets,
             ),
             body: BlocBuilder<BudgetCubit, BudgetState>(
               buildWhen: (previous, current) {
@@ -137,8 +133,8 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
                       ),
                     );
                   },
-                  child: _buildStateContent(
-                      context, state, colorScheme, customTypography),
+                  child: _buildStateContent(context, state, colorScheme,
+                      customTypography, headerPaddingTop),
                 );
               },
             ),
@@ -153,66 +149,73 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
     BudgetState state,
     ColorScheme colorScheme,
     dynamic customTypography,
+    double headerPaddingTop,
   ) {
     if (state is BudgetLoading) {
-      return const BudgetsOverviewShimmer(key: ValueKey('loading'));
+      return Padding(
+        padding: EdgeInsets.only(top: headerPaddingTop),
+        child: const BudgetsOverviewShimmer(key: ValueKey('loading')),
+      );
     }
 
     if (state is BudgetLoaded) {
       final budgets = state.budgets;
       if (budgets.isEmpty) {
-        return Center(
-          key: const ValueKey('empty'),
-          child: Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(20.w),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary.withValues(alpha: 0.12),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.account_balance_wallet_outlined,
-                    size: 56.sp,
-                    color: colorScheme.primary,
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                Text(
-                  context.l10n.noBudgetsSet,
-                  style: customTypography.bodyLargeBold.copyWith(
-                    color: colorScheme.onSurface,
-                    fontSize: 20.sp,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  context.l10n.noBudgetsDesc,
-                  textAlign: TextAlign.center,
-                  style: customTypography.bodyMedium.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                SizedBox(height: 28.h),
-                ElevatedButton.icon(
-                  onPressed: () => _openCreateBudgetScreen(context),
-                  icon: const Icon(Icons.add_rounded),
-                  label: Text(context.l10n.setFirstBudget),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: colorScheme.onPrimary,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.r),
+        return Padding(
+          padding: EdgeInsets.only(top: headerPaddingTop),
+          child: Center(
+            key: const ValueKey('empty'),
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(20.w),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
                     ),
-                    elevation: 0,
+                    child: Icon(
+                      Icons.account_balance_wallet_outlined,
+                      size: 56.sp,
+                      color: colorScheme.primary,
+                    ),
                   ),
-                ),
-              ],
+                  SizedBox(height: 20.h),
+                  Text(
+                    context.l10n.noBudgetsSet,
+                    style: customTypography.bodyLargeBold.copyWith(
+                      color: colorScheme.onSurface,
+                      fontSize: 20.sp,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    context.l10n.noBudgetsDesc,
+                    textAlign: TextAlign.center,
+                    style: customTypography.bodyMedium.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  SizedBox(height: 28.h),
+                  ElevatedButton.icon(
+                    onPressed: () => _openCreateBudgetScreen(context),
+                    icon: const Icon(Icons.add_rounded),
+                    label: Text(context.l10n.setFirstBudget),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 24.w, vertical: 14.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
+                      elevation: 0,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -231,19 +234,21 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
       }
 
       return Stack(
+        fit: StackFit.expand,
         children: [
           // 1. Scrollable Content (Banner Ad, Category Header, Budget Cards scroll UNDER pinned Total Budget Health section)
           Positioned.fill(
             child: RefreshIndicator(
               key: const ValueKey('loaded_content'),
               color: AppColors.primary,
+              edgeOffset: headerPaddingTop,
               onRefresh: () => context.read<BudgetCubit>().loadBudgets(),
               child: ListView(
                 physics: const BouncingScrollPhysics(),
                 padding: EdgeInsets.only(
                   left: 20.w,
                   right: 20.w,
-                  top: 215.h,
+                  top: headerPaddingTop + 215.h,
                   bottom: 120.h,
                 ),
                 children: [
@@ -314,7 +319,7 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
 
           // 2. Fixed Non-Scrollable Pinned Total Budget Health Component at Top
           Positioned(
-            top: 12.h,
+            top: headerPaddingTop + 12.h,
             left: 20.w,
             right: 20.w,
             child: _StaggeredEntrance(
@@ -842,32 +847,41 @@ class _BudgetsLiquidGlassCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: isLight
               ? [
-                  colorScheme.surfaceContainerLowest.withValues(alpha: 0.35),
-                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.20),
+                  colorScheme.surfaceContainerLowest.withValues(alpha: 0.85),
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.60),
                 ]
               : [
-                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.25),
-                  colorScheme.surfaceContainerLow.withValues(alpha: 0.15),
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.58),
+                  colorScheme.surfaceContainerLow.withValues(alpha: 0.35),
                 ],
         ),
         border: customBorder ??
             Border.all(
               color: isLight
-                  ? Colors.white.withValues(alpha: 0.50)
-                  : customColors.glassStroke.withValues(alpha: 0.40),
-              width: 1.0,
+                  ? Colors.white.withValues(alpha: 0.85)
+                  : customColors.glassStroke.withValues(alpha: 0.60),
+              width: 1.2,
             ),
         boxShadow: [
+          // Specular top rim reflection
           BoxShadow(
-            color: Colors.white.withValues(alpha: isLight ? 0.5 : 0.0),
-            blurRadius: 6.r,
+            color: Colors.white.withValues(alpha: isLight ? 0.75 : 0.08),
+            blurRadius: 8.r,
             spreadRadius: -1.r,
             offset: const Offset(0, -1),
           ),
+          // Faint, soft ambient shadow around the container perimeter
           BoxShadow(
-            color: Colors.black.withValues(alpha: isLight ? 0.06 : 0.18),
-            blurRadius: 12.r,
+            color: Colors.black.withValues(alpha: isLight ? 0.07 : 0.28),
+            blurRadius: 22.r,
             spreadRadius: 0,
+            offset: const Offset(0, 8),
+          ),
+          // Subtle primary glow
+          BoxShadow(
+            color: colorScheme.primary.withValues(alpha: isLight ? 0.03 : 0.08),
+            blurRadius: 26.r,
+            spreadRadius: -2.r,
             offset: const Offset(0, 4),
           ),
         ],
@@ -875,7 +889,7 @@ class _BudgetsLiquidGlassCard extends StatelessWidget {
       child: ClipRRect(
         borderRadius: br,
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Padding(
             padding: padding ?? EdgeInsets.zero,
             child: child,

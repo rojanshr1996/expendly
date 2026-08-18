@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -5,8 +7,6 @@ import '../../features/transactions/domain/entities/category_item.dart';
 import '../database/enums/database_enums.dart';
 import '../extensions/context_extensions.dart';
 import '../theme/font_weights.dart';
-import 'app_text_field.dart';
-import 'glass_container.dart';
 
 /// Reusable modal sheet for picking a category from a responsive grid.
 /// Solves category pill scrolling issues by offering search, icons, and clean grid views.
@@ -126,225 +126,397 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
     final colorScheme = context.colorScheme;
     final textTheme = context.textTheme;
     final customTypography = context.customTypography;
+    final customColors = context.customColors;
     final l10n = context.l10n;
+    final isLight = Theme.of(context).brightness == Brightness.light;
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Container(
         height: MediaQuery.of(context).size.height * 0.75,
         decoration: BoxDecoration(
-          color: colorScheme.surface,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isLight
+                ? [
+                    Colors.white.withValues(alpha: 0.45),
+                    colorScheme.surfaceContainerLowest.withValues(alpha: 0.30),
+                  ]
+                : [
+                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
+                    colorScheme.surfaceContainerLow.withValues(alpha: 0.20),
+                  ],
+          ),
           borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-          border: Border.all(color: colorScheme.outlineVariant, width: 1.0),
+          border: Border.all(
+            color: isLight
+                ? Colors.white.withValues(alpha: 0.60)
+                : customColors.glassStroke.withValues(alpha: 0.45),
+            width: 1.0,
+          ),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-        child: Column(
-          children: [
-            // Sheet Handle & Drag Bar
-            Center(
-              child: Container(
-                width: 40.w,
-                height: 4.h,
-                decoration: BoxDecoration(
-                  color: colorScheme.outline.withAlpha((0.4 * 255).round()),
-                  borderRadius: BorderRadius.circular(2.r),
-                ),
-              ),
-            ),
-            SizedBox(height: 16.h),
-
-            // Header Title
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.categoryLabel,
-                  style: (textTheme.titleMedium ?? const TextStyle()).copyWith(
-                    fontWeight: FontWeights.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.close_rounded,
-                      color: colorScheme.onSurfaceVariant),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-            SizedBox(height: 12.h),
-
-            // Search Bar Component using AppTextField
-            AppTextField(
-              controller: _searchController,
-              hintText: l10n.searchCategoryHint,
-              prefixIcon:
-                  Icon(Icons.search_rounded, color: colorScheme.outline),
-              fillColor: colorScheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(16.r),
-              onChanged: (query) => _searchQueryNotifier.value = query,
-            ),
-            SizedBox(height: 16.h),
-
-            // Category Grid
-            Expanded(
-              child: ValueListenableBuilder<String>(
-                valueListenable: _searchQueryNotifier,
-                builder: (context, query, _) {
-                  // The parent passes a pre-filtered list (expense or income
-                  // categories), so we only need to apply the search query here.
-                  final filtered = widget.categories.where((cat) {
-                    return query.isEmpty ||
-                        cat.name.toLowerCase().contains(query.toLowerCase());
-                  }).toList();
-
-                  if (filtered.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.category_outlined,
-                              size: 48.sp, color: colorScheme.outline),
-                          SizedBox(height: 12.h),
-                          Text(
-                            l10n.noCategoriesFound,
-                            style: customTypography.bodyMedium
-                                .copyWith(color: colorScheme.outline),
-                          ),
-                        ],
+        child: ClipRRect(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+              child: Column(
+                children: [
+                  // Sheet Handle & Drag Bar
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color:
+                            colorScheme.outlineVariant.withValues(alpha: 0.7),
+                        borderRadius: BorderRadius.circular(2.r),
                       ),
-                    );
-                  }
-
-                  return GridView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 10.w,
-                      mainAxisSpacing: 10.h,
-                      childAspectRatio: 1.05,
                     ),
-                    itemCount: filtered.length +
-                        (widget.allowOverallLimitOption ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      // "Overall" option always appears first when enabled
-                      if (widget.allowOverallLimitOption && index == 0) {
-                        final isOverallSelected =
-                            widget.selectedCategory == null;
-                        return GestureDetector(
-                          onTap: () => Navigator.pop(context, null),
-                          child: GlassContainer(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 6.w, vertical: 8.h),
-                            borderStrokeColor: isOverallSelected
-                                ? colorScheme.primary
-                                : context.customColors.glassStroke,
-                            backgroundColor: isOverallSelected
-                                ? colorScheme.primary
-                                    .withAlpha((0.15 * 255).round())
-                                : colorScheme.surfaceContainerLow,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(6.w),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: colorScheme.primary
-                                        .withAlpha((0.2 * 255).round()),
-                                  ),
-                                  child: Icon(
-                                    Icons.all_inclusive_rounded,
-                                    color: colorScheme.primary,
-                                    size: 20.sp,
-                                  ),
-                                ),
-                                SizedBox(height: 4.h),
-                                Text(
-                                  l10n.overallMonthlyLimit,
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style:
-                                      (textTheme.bodySmall ?? const TextStyle())
-                                          .copyWith(
-                                    fontSize: 11.sp,
-                                    height: 1.2,
-                                    fontWeight: FontWeights.bold,
-                                    color: isOverallSelected
-                                        ? colorScheme.primary
-                                        : colorScheme.onSurface,
-                                  ),
-                                ),
-                              ],
-                            ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Header Title
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.categoryLabel,
+                        style: (textTheme.titleMedium ?? const TextStyle())
+                            .copyWith(
+                          fontWeight: FontWeights.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.close_rounded,
+                            color: colorScheme.onSurfaceVariant),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 12.h),
+
+                  // Search Bar Component with Liquid Glass effect
+                  ValueListenableBuilder<String>(
+                    valueListenable: _searchQueryNotifier,
+                    builder: (context, query, _) {
+                      final br = BorderRadius.circular(16.r);
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: isLight
+                                ? [
+                                    Colors.white.withValues(alpha: 0.55),
+                                    colorScheme.surfaceContainerLowest
+                                        .withValues(alpha: 0.25),
+                                  ]
+                                : [
+                                    colorScheme.surfaceContainerHigh
+                                        .withValues(alpha: 0.30),
+                                    colorScheme.surfaceContainerLow
+                                        .withValues(alpha: 0.15),
+                                  ],
                           ),
-                        );
-                      }
-
-                      final cat = filtered[
-                          index - (widget.allowOverallLimitOption ? 1 : 0)];
-                      final isSelected = widget.selectedCategory?.id == cat.id;
-                      final color = _parseColor(context, cat.colorHex);
-                      final icon = _parseIcon(cat.icon);
-
-                      return GestureDetector(
-                        onTap: () => Navigator.pop(context, cat),
-                        child: GlassContainer(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 6.w, vertical: 8.h),
-                          borderStrokeColor: isSelected
-                              ? colorScheme.primary
-                              : context.customColors.glassStroke,
-                          backgroundColor: isSelected
-                              ? colorScheme.primary
-                                  .withAlpha((0.15 * 255).round())
-                              : colorScheme.surfaceContainerLow,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(6.w),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: color.withAlpha((0.25 * 255).round()),
+                          borderRadius: br,
+                          border: Border.all(
+                            color: isLight
+                                ? Colors.white.withValues(alpha: 0.65)
+                                : customColors.glassStroke
+                                    .withValues(alpha: 0.45),
+                            width: 1.0,
+                          ),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: br,
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                            child: TextField(
+                              controller: _searchController,
+                              onChanged: (val) =>
+                                  _searchQueryNotifier.value = val,
+                              style: (textTheme.bodyLarge ?? const TextStyle())
+                                  .copyWith(
+                                color: colorScheme.onSurface,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: l10n.searchCategoryHint,
+                                hintStyle:
+                                    (textTheme.bodyMedium ?? const TextStyle())
+                                        .copyWith(
+                                  color: colorScheme.onSurfaceVariant
+                                      .withValues(alpha: 0.7),
                                 ),
-                                child: Icon(
-                                  icon,
-                                  color: color,
+                                prefixIcon: Icon(
+                                  Icons.search_rounded,
+                                  color: colorScheme.onSurfaceVariant,
                                   size: 20.sp,
                                 ),
+                                suffixIcon: query.isNotEmpty
+                                    ? IconButton(
+                                        icon: Icon(
+                                          Icons.close_rounded,
+                                          size: 18.sp,
+                                          color: colorScheme.outline,
+                                        ),
+                                        onPressed: () {
+                                          _searchController.clear();
+                                          _searchQueryNotifier.value = '';
+                                        },
+                                      )
+                                    : null,
+                                filled: true,
+                                fillColor: Colors.transparent,
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 16.w, vertical: 12.h),
+                                border: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                focusedBorder: InputBorder.none,
                               ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                cat.name,
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style:
-                                    (textTheme.bodySmall ?? const TextStyle())
-                                        .copyWith(
-                                  fontSize: 11.sp,
-                                  height: 1.2,
-                                  fontWeight: isSelected
-                                      ? FontWeights.bold
-                                      : FontWeights.medium,
-                                  color: isSelected
-                                      ? colorScheme.primary
-                                      : colorScheme.onSurface,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       );
                     },
-                  );
-                },
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Category Grid
+                  Expanded(
+                    child: ValueListenableBuilder<String>(
+                      valueListenable: _searchQueryNotifier,
+                      builder: (context, query, _) {
+                        // The parent passes a pre-filtered list (expense or income
+                        // categories), so we only need to apply the search query here.
+                        final filtered = widget.categories.where((cat) {
+                          return query.isEmpty ||
+                              cat.name
+                                  .toLowerCase()
+                                  .contains(query.toLowerCase());
+                        }).toList();
+
+                        if (filtered.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.category_outlined,
+                                    size: 48.sp, color: colorScheme.outline),
+                                SizedBox(height: 12.h),
+                                Text(
+                                  l10n.noCategoriesFound,
+                                  style: customTypography.bodyMedium
+                                      .copyWith(color: colorScheme.outline),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        return GridView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 10.w,
+                            mainAxisSpacing: 10.h,
+                            childAspectRatio: 1.05,
+                          ),
+                          itemCount: filtered.length +
+                              (widget.allowOverallLimitOption ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            // "Overall" option always appears first when enabled
+                            if (widget.allowOverallLimitOption && index == 0) {
+                              final isOverallSelected =
+                                  widget.selectedCategory == null;
+                              return _buildGridItem(
+                                context: context,
+                                isSelected: isOverallSelected,
+                                icon: Icons.all_inclusive_rounded,
+                                iconColor: colorScheme.primary,
+                                label: l10n.overallMonthlyLimit,
+                                onTap: () => Navigator.pop(context, null),
+                              );
+                            }
+
+                            final cat = filtered[index -
+                                (widget.allowOverallLimitOption ? 1 : 0)];
+                            final isSelected =
+                                widget.selectedCategory?.id == cat.id;
+                            final color = _parseColor(context, cat.colorHex);
+                            final icon = _parseIcon(cat.icon);
+
+                            return _buildGridItem(
+                              context: context,
+                              isSelected: isSelected,
+                              icon: icon,
+                              iconColor: color,
+                              label: cat.name,
+                              onTap: () => Navigator.pop(context, cat),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGridItem({
+    required BuildContext context,
+    required bool isSelected,
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final textTheme = context.textTheme;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final isDark = !isLight;
+    final br = BorderRadius.circular(16.r);
+
+    final selectedBgColor = isLight
+        ? Color.lerp(Colors.white, colorScheme.primary, 0.12)!
+        : Color.lerp(
+            colorScheme.surfaceContainerHighest, colorScheme.primary, 0.20)!;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: br,
+          color: isSelected ? selectedBgColor : null,
+          gradient: isSelected
+              ? null
+              : LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isLight
+                      ? [
+                          Colors.white.withValues(alpha: 0.50),
+                          colorScheme.surfaceContainerLowest
+                              .withValues(alpha: 0.25),
+                        ]
+                      : [
+                          colorScheme.surfaceContainerHigh
+                              .withValues(alpha: 0.28),
+                          colorScheme.surfaceContainerLow
+                              .withValues(alpha: 0.14),
+                        ],
+                ),
+          border: Border.all(
+            color: isSelected
+                ? colorScheme.primary.withValues(alpha: isLight ? 0.75 : 0.85)
+                : (isLight
+                    ? Colors.white.withValues(alpha: 0.65)
+                    : customColors.glassStroke.withValues(alpha: 0.45)),
+            width: isSelected ? 1.5 : 1.0,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: colorScheme.primary
+                        .withValues(alpha: isDark ? 0.25 : 0.15),
+                    blurRadius: 8.r,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: ClipRRect(
+          borderRadius: br,
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 8.h),
+              child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(7.w),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isSelected
+                              ? colorScheme.primary
+                                  .withValues(alpha: isLight ? 0.14 : 0.20)
+                              : iconColor.withValues(
+                                  alpha: isLight ? 0.12 : 0.18),
+                          border: isSelected
+                              ? Border.all(
+                                  color: colorScheme.primary
+                                      .withValues(alpha: isLight ? 0.30 : 0.40),
+                                  width: 1.0,
+                                )
+                              : Border.all(
+                                  color: iconColor.withValues(
+                                      alpha: isLight ? 0.25 : 0.35),
+                                  width: 1.0,
+                                ),
+                        ),
+                        child: Icon(
+                          icon,
+                          color: isSelected ? colorScheme.primary : iconColor,
+                          size: 22.sp,
+                        ),
+                      ),
+                      SizedBox(height: 6.h),
+                      Text(
+                        label,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style:
+                            (textTheme.bodySmall ?? const TextStyle()).copyWith(
+                          fontSize: 11.sp,
+                          height: 1.2,
+                          fontWeight: isSelected
+                              ? FontWeights.bold
+                              : FontWeights.medium,
+                          color: isSelected
+                              ? colorScheme.primary
+                              : colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (isSelected)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        padding: EdgeInsets.all(2.r),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.check_rounded,
+                          size: 11.sp,
+                          color: isLight ? Colors.white : colorScheme.onPrimary,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

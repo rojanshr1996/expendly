@@ -25,6 +25,7 @@ class DashboardTransactionItem extends Equatable {
   final int categoryId;
   final String title;
   final String categoryName;
+  final String? note;
   final String iconName;
   final String colorHex;
   final double amount;
@@ -37,6 +38,7 @@ class DashboardTransactionItem extends Equatable {
     this.categoryId = 1,
     required this.title,
     required this.categoryName,
+    this.note,
     required this.iconName,
     required this.colorHex,
     required this.amount,
@@ -51,6 +53,7 @@ class DashboardTransactionItem extends Equatable {
         categoryId,
         title,
         categoryName,
+        note,
         iconName,
         colorHex,
         amount,

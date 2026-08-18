@@ -33,7 +33,7 @@ void main() {
       expect(preferenceService.isOnboardingCompleted, isFalse);
       expect(preferenceService.currencyCode, equals('USD'));
       expect(preferenceService.currencySymbol, equals('\$'));
-      expect(preferenceService.themeMode, equals('dark'));
+      expect(preferenceService.themeMode, equals('light'));
       expect(preferenceService.isSecurityPinSet, isFalse);
       expect(preferenceService.securityPin, isNull);
     });
@@ -44,12 +44,12 @@ void main() {
 
       await preferenceService.setOnboardingCompleted(true);
       await preferenceService.setCurrency(code: 'NPR', symbol: 'Rs.');
-      await preferenceService.setThemeMode('light');
+      await preferenceService.setThemeMode('dark');
 
       expect(preferenceService.isOnboardingCompleted, isTrue);
       expect(preferenceService.currencyCode, equals('NPR'));
       expect(preferenceService.currencySymbol, equals('Rs.'));
-      expect(preferenceService.themeMode, equals('light'));
+      expect(preferenceService.themeMode, equals('dark'));
     });
 
     test('Should persist security PIN in SecureStorageService', () async {

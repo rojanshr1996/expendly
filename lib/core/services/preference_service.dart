@@ -32,7 +32,8 @@ class PreferenceService {
       ValueNotifier<String>('USD');
   final ValueNotifier<String> currencySymbolNotifier =
       ValueNotifier<String>('\$');
-  final ValueNotifier<String> themeModeNotifier = ValueNotifier<String>('dark');
+  final ValueNotifier<String> themeModeNotifier =
+      ValueNotifier<String>('light');
 
   // In-memory cache for fast sync access
   bool _onboardingCompleted = false;
@@ -40,7 +41,7 @@ class PreferenceService {
   String _currencySymbol = '\$';
   String? _securityPin;
   bool _biometricsEnabled = false;
-  String _themeMode = 'dark';
+  String _themeMode = 'light';
   String _activityViewMode = 'calendar';
   String? _lastSnapshotAt;
   int _lastSnapshotCount = 0;
@@ -72,7 +73,7 @@ class PreferenceService {
     currencyCodeNotifier.value = _currencyCode;
     currencySymbolNotifier.value = _currencySymbol;
     _biometricsEnabled = _prefs?.getBool(keyBiometricsEnabled) ?? false;
-    _themeMode = _prefs?.getString(keyThemeMode) ?? 'dark';
+    _themeMode = _prefs?.getString(keyThemeMode) ?? 'light';
     themeModeNotifier.value = _themeMode;
     _activityViewMode = _prefs?.getString(keyActivityViewMode) ?? 'calendar';
     _lastSnapshotAt = _prefs?.getString(keyLastSnapshotAt);

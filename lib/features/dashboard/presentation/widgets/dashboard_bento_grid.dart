@@ -236,46 +236,64 @@ class _DashboardLiquidGlassCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: br,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isLight
-              ? [
-                  colorScheme.surfaceContainerLowest.withValues(alpha: 0.35),
-                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.20),
-                ]
-              : [
-                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.25),
-                  colorScheme.surfaceContainerLow.withValues(alpha: 0.15),
-                ],
-        ),
-        border: Border.all(
-          color: isLight
-              ? Colors.white.withValues(alpha: 0.50)
-              : customColors.glassStroke.withValues(alpha: 0.40),
-          width: 1.0,
-        ),
         boxShadow: [
+          // Top specular highlight
           BoxShadow(
-            color: Colors.white.withValues(alpha: isLight ? 0.5 : 0.0),
-            blurRadius: 6.r,
+            color: Colors.white.withValues(alpha: isLight ? 0.85 : 0.0),
+            blurRadius: 8.r,
             spreadRadius: -1.r,
             offset: const Offset(0, -1),
           ),
+          // Deep elevation shadow for crisp separation from light background
           BoxShadow(
-            color: Colors.black.withValues(alpha: isLight ? 0.06 : 0.18),
-            blurRadius: 12.r,
+            color: isLight
+                ? const Color(0xFF0F172A).withValues(alpha: 0.08)
+                : Colors.black.withValues(alpha: 0.22),
+            blurRadius: 16.r,
             spreadRadius: 0,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 5),
           ),
+          // Ambient soft diffusion in light theme
+          if (isLight)
+            BoxShadow(
+              color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+              blurRadius: 24.r,
+              spreadRadius: 2.r,
+              offset: const Offset(0, 10),
+            ),
         ],
       ),
       child: ClipRRect(
         borderRadius: br,
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-          child: Padding(
+          child: Container(
             padding: padding ?? EdgeInsets.zero,
+            decoration: BoxDecoration(
+              borderRadius: br,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isLight
+                    ? [
+                        colorScheme.surfaceContainerLowest
+                            .withValues(alpha: 0.75),
+                        colorScheme.surfaceContainerHigh
+                            .withValues(alpha: 0.50),
+                      ]
+                    : [
+                        colorScheme.surfaceContainerHigh
+                            .withValues(alpha: 0.25),
+                        colorScheme.surfaceContainerLow.withValues(alpha: 0.15),
+                      ],
+              ),
+              border: Border.all(
+                color: isLight
+                    ? Colors.white.withValues(alpha: 0.85)
+                    : customColors.glassStroke.withValues(alpha: 0.40),
+                width: 1.0,
+              ),
+            ),
             child: child,
           ),
         ),

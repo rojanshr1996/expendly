@@ -11,27 +11,24 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
-import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/usecase/usecase.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../../analytics/presentation/pages/refined_reports_page.dart';
 import '../../../budgets/presentation/cubit/budget_cubit.dart';
 import '../../../budgets/presentation/cubit/budget_state.dart';
 import '../../../budgets/presentation/pages/budgets_overview_page.dart';
-import '../../../settings/presentation/pages/settings_page.dart';
 import '../../../transactions/presentation/pages/all_transactions_page.dart';
-import '../../domain/entities/financial_summary.dart';
-import '../../domain/repositories/dashboard_repository.dart';
-import '../../domain/usecases/get_financial_summary.dart';
 import '../cubit/dashboard_cubit.dart';
 import '../cubit/dashboard_state.dart';
 import '../widgets/dashboard_bento_grid.dart';
 import '../widgets/dashboard_cash_flow_chart.dart';
 import '../widgets/dashboard_header.dart';
 import '../widgets/dashboard_recent_activity.dart';
+import '../widgets/dashboard_recent_groups.dart';
 import '../widgets/dashboard_shimmer.dart';
 import '../widgets/empty_dashboard_view.dart';
+import '../../../groups/presentation/cubit/groups_cubit.dart';
+import '../../../groups/presentation/pages/groups_list_page.dart';
 
 @RoutePage()
 class DashboardPage extends StatefulWidget {
@@ -54,7 +51,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void _openAddTransaction(BuildContext context) async {
     final result = await context.router.push(ModernAddTransactionRoute());
-    if (result == true && mounted) {
+    if (result == true && context.mounted) {
       context.read<DashboardCubit>().loadDashboardData();
     }
   }
@@ -107,6 +104,19 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<GroupsCubit>.value(
+          value: () {
+            try {
+              final cubit = getIt<GroupsCubit>();
+              if (!cubit.isClosed) {
+                cubit.loadEvents(isSilent: true);
+              }
+              return cubit;
+            } catch (_) {
+              return getIt<GroupsCubit>();
+            }
+          }(),
+        ),
         BlocProvider<DashboardCubit>(
           create: (_) => getIt<DashboardCubit>()..loadDashboardData(),
         ),
@@ -163,13 +173,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         currentTab: currentTab,
                         onTabSelected: (index) {
                           if (index == 3) {
-                            HapticFeedback.selectionClick();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (_) => const SettingsPage(),
-                              ),
-                            );
+                            context.router.push(const SettingsRoute());
                           } else {
                             _currentTabNotifier.value = index;
                           }
@@ -193,6 +197,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final headerPaddingTop = topInset + 64.h;
 
     return Stack(
+      fit: StackFit.expand,
       children: [
         // 1. Scrollable Dashboard Body (Scrolls UNDER the glass header)
         Positioned.fill(
@@ -288,8 +293,8 @@ class _DashboardPageState extends State<DashboardPage> {
         displacement: 30.h,
         onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
           ),
           padding: EdgeInsets.only(
             top: headerPaddingTop + 8.h,
@@ -318,9 +323,25 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   verticalMarginMedium,
 
-                  // Recent Activity Section (Stagger Delay 200ms)
+                  // Shared Groups / Split Bill Section (Stagger Delay 200ms)
                   _StaggeredEntrance(
                     delayMs: 200,
+                    child: DashboardRecentGroups(
+                      onSeeAllPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (_) => const GroupsListPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  verticalMarginMedium,
+
+                  // Recent Activity Section (Stagger Delay 300ms)
+                  _StaggeredEntrance(
+                    delayMs: 300,
                     child: DashboardRecentActivity(
                       transactions: summary.recentTransactions,
                       currencySymbol: summary.currencySymbol,
@@ -365,27 +386,6 @@ class _StaggeredEntrance extends StatelessWidget {
   }
 }
 
-class _FallbackGetFinancialSummary implements GetFinancialSummary {
-  @override
-  DashboardRepository get repository => throw UnimplementedError();
-
-  @override
-  Future<FinancialSummary> call(NoParams params) async {
-    final now = DateTime.now();
-    return FinancialSummary(
-      totalBalance: 0.0,
-      totalIncome: 0.0,
-      totalExpense: 0.0,
-      monthlyBudgetLimit: 5000.00,
-      currencySymbol: getIt<PreferenceService>().currencySymbol,
-      periodStart: DateTime(now.year, now.month, 1),
-      periodEnd: now,
-      recentTransactions: const [],
-      categoryBreakdowns: const [],
-    );
-  }
-}
-
 class _FloatingBottomNavBar extends StatelessWidget {
   final int currentTab;
   final ValueChanged<int> onTabSelected;
@@ -409,68 +409,67 @@ class _FloatingBottomNavBar extends StatelessWidget {
     final double bottomMargin =
         16.h + MediaQuery.of(context).viewPadding.bottom * 0.4;
 
+    final borderRadius = BorderRadius.circular(32.r);
+
     return Stack(
       clipBehavior: Clip.none,
       alignment: Alignment.bottomCenter,
       children: [
-        // 1. Liquid Glass Floating Bar Container
+        // 1. Liquid Glass Floating Bar Container (Matching LiquidGlassAppBar)
         Container(
           margin: EdgeInsets.only(
-            left: 16.w,
-            right: 16.w,
+            left: 12.w,
+            right: 12.w,
             bottom: bottomMargin,
           ),
           height: barHeight,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(32.r),
+            borderRadius: borderRadius,
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: isLight
                   ? [
                       colorScheme.surfaceContainerLowest
-                          .withValues(alpha: 0.25),
-                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.15),
+                          .withValues(alpha: 0.15),
+                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.08),
                     ]
                   : [
-                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.22),
-                      colorScheme.surfaceContainerLow.withValues(alpha: 0.12),
+                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.12),
+                      colorScheme.surfaceContainerLow.withValues(alpha: 0.05),
                     ],
             ),
             border: Border.all(
               color: isLight
-                  ? Colors.white.withValues(alpha: 0.45)
-                  : customColors.glassStroke.withValues(alpha: 0.5),
-              width: 1.2,
+                  ? Colors.white.withValues(alpha: 0.35)
+                  : customColors.glassStroke.withValues(alpha: 0.25),
+              width: 1.0,
             ),
             boxShadow: [
-              // Liquid Ambient Highlight Glow
+              // Specular Top Highlight Glow
               BoxShadow(
-                color: isLight
-                    ? Colors.white.withValues(alpha: 0.3)
-                    : colorScheme.primary.withValues(alpha: 0.05),
-                blurRadius: 10.r,
-                spreadRadius: -2.r,
-                offset: const Offset(0, -2),
+                color: Colors.white.withValues(alpha: isLight ? 0.40 : 0.05),
+                blurRadius: 4.r,
+                spreadRadius: -1.r,
+                offset: const Offset(0, -1),
               ),
-              // Soft Liquid Glass Drop Shadow
+              // Soft Ambient Elevation Shadow
               BoxShadow(
-                color: Colors.black.withValues(alpha: isLight ? 0.08 : 0.20),
-                blurRadius: 30.r,
-                spreadRadius: 2.r,
-                offset: const Offset(0, 10),
+                color: Colors.black.withValues(alpha: isLight ? 0.03 : 0.10),
+                blurRadius: 12.r,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(32.r),
+            borderRadius: borderRadius,
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                padding: EdgeInsets.symmetric(horizontal: 4.w),
                 child: Row(
                   children: [
-                    // Tab 0: Overview
+                    // Tab 0: Overview (Left 1)
                     Expanded(
                       child: _NavBarItem(
                         icon: Icons.dashboard_outlined,
@@ -481,7 +480,7 @@ class _FloatingBottomNavBar extends StatelessWidget {
                       ),
                     ),
 
-                    // Tab 1: Activity
+                    // Tab 1: Activity (Left 2)
                     Expanded(
                       child: _NavBarItem(
                         icon: Icons.receipt_long_outlined,
@@ -492,10 +491,10 @@ class _FloatingBottomNavBar extends StatelessWidget {
                       ),
                     ),
 
-                    // Gap space for docked center FAB
-                    SizedBox(width: fabSize + 8.w),
+                    // Symmetrical gap space for docked center FAB
+                    SizedBox(width: 46.w),
 
-                    // Tab 2: Budgets
+                    // Tab 2: Budgets (Right 1)
                     Expanded(
                       child: _NavBarItem(
                         icon: Icons.account_balance_wallet_outlined,
@@ -506,7 +505,7 @@ class _FloatingBottomNavBar extends StatelessWidget {
                       ),
                     ),
 
-                    // Tab 3: Settings
+                    // Tab 3: Settings (Right 2)
                     Expanded(
                       child: _NavBarItem(
                         icon: Icons.settings_outlined,
@@ -523,49 +522,15 @@ class _FloatingBottomNavBar extends StatelessWidget {
           ),
         ),
 
-        // 2. Clean Liquid FAB (Expanded Touch Target for Effortless Taps)
+        // 2. Clean Liquid FAB with Animated Press Feedback
         Positioned(
           bottom: bottomMargin + barHeight - (fabSize / 2) - 10.h,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
+          child: _LiquidCenterFab(
+            fabSize: fabSize,
+            onPressed: () {
               HapticFeedback.heavyImpact();
               onCenterFabPressed();
             },
-            child: Container(
-              width: fabSize + 20.w,
-              height: fabSize + 20.h,
-              alignment: Alignment.center,
-              color: Colors.transparent,
-              child: Container(
-                width: fabSize,
-                height: fabSize,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      colorScheme.primary,
-                      colorScheme.primary.withValues(alpha: 0.85),
-                    ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.primary.withValues(alpha: 0.25),
-                      blurRadius: 10.r,
-                      spreadRadius: 0.r,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  Icons.add_rounded,
-                  color: colorScheme.onPrimary,
-                  size: 32.sp,
-                ),
-              ),
-            ),
           ),
         ),
       ],
@@ -573,7 +538,87 @@ class _FloatingBottomNavBar extends StatelessWidget {
   }
 }
 
-class _NavBarItem extends StatelessWidget {
+class _LiquidCenterFab extends StatefulWidget {
+  final double fabSize;
+  final VoidCallback onPressed;
+
+  const _LiquidCenterFab({
+    required this.fabSize,
+    required this.onPressed,
+  });
+
+  @override
+  State<_LiquidCenterFab> createState() => _LiquidCenterFabState();
+}
+
+class _LiquidCenterFabState extends State<_LiquidCenterFab> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) {
+        setState(() => _isPressed = false);
+        widget.onPressed();
+      },
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedScale(
+        scale: _isPressed ? 0.90 : 1.0,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeInOut,
+        child: Container(
+          width: widget.fabSize + 20.w,
+          height: widget.fabSize + 20.h,
+          alignment: Alignment.center,
+          color: Colors.transparent,
+          child: Container(
+            width: widget.fabSize,
+            height: widget.fabSize,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  colorScheme.primary,
+                  colorScheme.primary.withValues(alpha: 0.85),
+                ],
+              ),
+              boxShadow: [
+                // Top inner/specular highlight
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: isLight ? 0.5 : 0.20),
+                  blurRadius: 4.r,
+                  spreadRadius: -1.r,
+                  offset: const Offset(0, -1),
+                ),
+                // Soft glowing drop shadow
+                BoxShadow(
+                  color: colorScheme.primary.withValues(alpha: 0.20),
+                  blurRadius: 10.r,
+                  spreadRadius: 0.r,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.add_rounded,
+              color: colorScheme.onPrimary,
+              size: 32.sp,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavBarItem extends StatefulWidget {
   final IconData icon;
   final IconData activeIcon;
   final String label;
@@ -589,38 +634,81 @@ class _NavBarItem extends StatelessWidget {
   });
 
   @override
+  State<_NavBarItem> createState() => _NavBarItemState();
+}
+
+class _NavBarItemState extends State<_NavBarItem> {
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final customTypography = context.customTypography;
+    final textTheme = context.textTheme;
+    final isLight = Theme.of(context).brightness == Brightness.light;
 
-    final color =
-        isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant;
+    final primaryColor = colorScheme.primary;
+    final activeColor = primaryColor;
+    final inactiveColor = colorScheme.onSurfaceVariant;
 
-    return InkWell(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        onTap();
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) {
+        setState(() => _isPressed = false);
+        HapticFeedback.selectionClick();
+        widget.onTap();
       },
-      borderRadius: BorderRadius.circular(20.r),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            isSelected ? activeIcon : icon,
-            color: color,
-            size: 22.sp,
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedScale(
+        scale: _isPressed ? 0.86 : 1.0,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeInOut,
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 4.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedScale(
+                scale: widget.isSelected ? 1.08 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOutBack,
+                child: Icon(
+                  widget.isSelected ? widget.activeIcon : widget.icon,
+                  color: widget.isSelected ? activeColor : inactiveColor,
+                  size: 22.sp,
+                  shadows: widget.isSelected
+                      ? [
+                          Shadow(
+                            color: primaryColor.withValues(
+                              alpha: isLight ? 0.25 : 0.35,
+                            ),
+                            blurRadius: 8.r,
+                            offset: const Offset(0, 1),
+                          ),
+                        ]
+                      : null,
+                ),
+              ),
+              SizedBox(height: 3.h),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 200),
+                  style: (textTheme.labelSmall ?? const TextStyle()).copyWith(
+                    color: widget.isSelected ? activeColor : inactiveColor,
+                    fontSize: 10.5.sp,
+                    fontWeight:
+                        widget.isSelected ? FontWeight.bold : FontWeight.w500,
+                  ),
+                  child: Text(
+                    widget.label,
+                  ),
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 2.h),
-          Text(
-            label,
-            style: customTypography.labelMediumMono.copyWith(
-              color: color,
-              fontSize: 10.sp,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

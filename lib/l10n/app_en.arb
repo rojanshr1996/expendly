@@ -46,7 +46,7 @@
   },
   "expenses": "Expenses",
   "@expenses": {
-    "description": "Label for financial expenses"
+    "description": "Expenses tab label"
   },
   "expense": "Expense",
   "@expense": {
@@ -62,7 +62,7 @@
   },
   "addExpense": "Add Expense",
   "@addExpense": {
-    "description": "FAB text to log a quick expense"
+    "description": "Title for adding an expense"
   },
   "analytics": "Analytics",
   "@analytics": {
@@ -120,7 +120,7 @@
   "@offlineEncryption": {
     "description": "Footer label on splash screen"
   },
-  "appVersion": "VER 1.0.0",
+  "appVersion": "VER 1.1.0",
   "@appVersion": {
     "description": "App version label on splash screen"
   },
@@ -453,13 +453,13 @@
   "@amountLabel": {
     "description": "Label for amount display"
   },
-  "categoryLabel": "CATEGORY",
+  "categoryLabel": "Category",
   "@categoryLabel": {
-    "description": "Label for category selector"
+    "description": "Label for category field"
   },
-  "paymentMethodLabel": "PAYMENT METHOD",
+  "paymentMethodLabel": "Payment Method",
   "@paymentMethodLabel": {
-    "description": "Label for payment method selector"
+    "description": "Label for payment method field"
   },
   "paymentCard": "Card",
   "@paymentCard": {
@@ -474,7 +474,6 @@
     "description": "Account payment method"
   },
   "saveTransaction": "Save Transaction",
-
   "@saveTransaction": {
     "description": "Button to save transaction"
   },
@@ -610,7 +609,7 @@
   "@goProDesc": {
     "description": "Description for pro upgrade card"
   },
-  "upgradeNow": "Upgrade Now — $9.99/mo",
+  "upgradeNow": "Upgrade Now \u2014 $9.99/mo",
   "@upgradeNow": {
     "description": "Button text for upgrading to premium"
   },
@@ -630,7 +629,7 @@
   "@subscriptionPlan": {
     "description": "Label for subscription plan tile"
   },
-  "subscriptionPlanDesc": "Free Tier • Manage Billing",
+  "subscriptionPlanDesc": "Free Tier \u2022 Manage Billing",
   "@subscriptionPlanDesc": {
     "description": "Subtitle for subscription plan tile"
   },
@@ -1043,17 +1042,9 @@
   "@transactionType": {
     "description": "Label for transaction type field"
   },
-  "categoryLabel": "Category",
-  "@categoryLabel": {
-    "description": "Label for category field"
-  },
   "dateAndTimeLabel": "Date & Time",
   "@dateAndTimeLabel": {
     "description": "Label for date and time field"
-  },
-  "paymentMethodLabel": "Payment Method",
-  "@paymentMethodLabel": {
-    "description": "Label for payment method field"
   },
   "noteLabel": "Note",
   "@noteLabel": {
@@ -1097,7 +1088,7 @@
   },
   "cancel": "Cancel",
   "@cancel": {
-    "description": "Generic cancel button text"
+    "description": "Cancel button label"
   },
   "changeSecurityPinTitle": "Change Security PIN",
   "@changeSecurityPinTitle": {
@@ -1135,7 +1126,7 @@
   "@aboutExpendly": {
     "description": "Menu title for About page"
   },
-  "aboutExpendlySubtitle": "Version 1.0.0 • Modern Fiscal Core",
+  "aboutExpendlySubtitle": "Version 1.1.0",
   "@aboutExpendlySubtitle": {
     "description": "Subtitle for About page menu item"
   },
@@ -1258,10 +1249,6 @@
   "logoutConfirmMessage": "Are you sure you want to log out? Your session will be locked and will require your Security PIN or Biometrics to unlock.",
   "@logoutConfirmMessage": {
     "description": "Message for logout confirmation dialog"
-  },
-  "cancel": "Cancel",
-  "@cancel": {
-    "description": "Cancel button label"
   },
   "noSecurityPinForLogout": "Security PIN is not set up. Please create a PIN in settings first.",
   "@noSecurityPinForLogout": {
@@ -1395,7 +1382,6 @@
   "@notificationHeader": {
     "description": "Header label for general notifications"
   },
-
   "notificationAlert": "Notification Alert",
   "@notificationAlert": {
     "description": "Default title when notification title is missing"
@@ -1415,6 +1401,305 @@
   "ok": "OK",
   "@ok": {
     "description": "Confirmation button label"
+  },
+  "groups": "Groups",
+  "@groups": {
+    "description": "Groups tab navigation label"
+  },
+  "sharedEvents": "Shared Events",
+  "@sharedEvents": {
+    "description": "Title for shared events page"
+  },
+  "newEvent": "New Event",
+  "@newEvent": {
+    "description": "Button to create a new event"
+  },
+  "createNewEvent": "Create a new event",
+  "@createNewEvent": {
+    "description": "Title for event creation page"
+  },
+  "eventName": "Event Name",
+  "@eventName": {
+    "description": "Label for event name input"
+  },
+  "category": "Category",
+  "@category": {
+    "description": "Label for category selector"
+  },
+  "participants": "Participants",
+  "@participants": {
+    "description": "Label for participants section"
+  },
+  "createEvent": "Create Event",
+  "@createEvent": {
+    "description": "Button to create event"
+  },
+  "editEvent": "Edit Event",
+  "@editEvent": {
+    "description": "Title for editing event"
+  },
+  "trip": "Trip",
+  "@trip": {
+    "description": "Trip category"
+  },
+  "dinner": "Dinner",
+  "@dinner": {
+    "description": "Dinner category"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home category"
+  },
+  "party": "Party",
+  "@party": {
+    "description": "Party category"
+  },
+  "participantAdded": "Participant Added",
+  "@participantAdded": {
+    "description": "Message when participant is added"
+  },
+  "owner": "Owner",
+  "@owner": {
+    "description": "Label for event owner"
+  },
+  "addParticipant": "Add Participant",
+  "@addParticipant": {
+    "description": "Button to add participant"
+  },
+  "removeParticipant": "Remove Participant",
+  "@removeParticipant": {
+    "description": "Button to remove participant"
+  },
+  "nAdded": "{count} Added",
+  "@nAdded": {
+    "description": "Badge showing number of participants added",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "totalSpend": "Total Spend",
+  "@totalSpend": {
+    "description": "Label for total event spend"
+  },
+  "balances": "Balances",
+  "@balances": {
+    "description": "Balances tab label"
+  },
+  "paidBy": "Paid by {name}",
+  "@paidBy": {
+    "description": "Label showing who paid an expense",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "nShares": "{count} shares",
+  "@nShares": {
+    "description": "Label showing number of split shares",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "amount": "Amount",
+  "@amount": {
+    "description": "Label for expense amount"
+  },
+  "description": "Description",
+  "@description": {
+    "description": "Label for expense description"
+  },
+  "splitAmong": "SPLIT AMONG",
+  "@splitAmong": {
+    "description": "Header for splitting expense"
+  },
+  "equally": "Equally",
+  "@equally": {
+    "description": "Toggle for splitting equally"
+  },
+  "saveExpense": "Save Expense",
+  "@saveExpense": {
+    "description": "Button to save expense"
+  },
+  "netPosition": "Net Position",
+  "@netPosition": {
+    "description": "Label for net balances position"
+  },
+  "youAreOwed": "You are owed {amount}",
+  "@youAreOwed": {
+    "description": "Label showing amount owed to user",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "youOwe": "You owe {amount}",
+  "@youOwe": {
+    "description": "Label showing amount user owes",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "owesYou": "{name} owes you",
+  "@owesYou": {
+    "description": "Label showing someone owes user",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "youOweText": "You owe {name}",
+  "@youOweText": {
+    "description": "Label showing user owes someone",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "settleUp": "Settle Up",
+  "@settleUp": {
+    "description": "Button to mark settlement as paid"
+  },
+  "remind": "Remind",
+  "@remind": {
+    "description": "Button to send reminder"
+  },
+  "exportAndSettle": "Export & Settle",
+  "@exportAndSettle": {
+    "description": "Title for export page"
+  },
+  "settlementSummary": "SETTLEMENT SUMMARY",
+  "@settlementSummary": {
+    "description": "Header for settlement summary"
+  },
+  "totalExpense": "TOTAL EXPENSE",
+  "@totalExpense": {
+    "description": "Label for total expense in summary"
+  },
+  "yourShare": "YOUR SHARE",
+  "@yourShare": {
+    "description": "Label for user share in summary"
+  },
+  "debtsToCleared": "DEBTS TO BE CLEARED",
+  "@debtsToCleared": {
+    "description": "Header for debts list"
+  },
+  "exportToCsv": "Export to CSV",
+  "@exportToCsv": {
+    "description": "Button to export CSV"
+  },
+  "sendViaEmail": "Send via Email",
+  "@sendViaEmail": {
+    "description": "Button to send email"
+  },
+  "nPending": "{count} pending",
+  "@nPending": {
+    "description": "Badge for pending settlements",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "active": "ACTIVE",
+  "@active": {
+    "description": "Active status badge"
+  },
+  "settled": "SETTLED",
+  "@settled": {
+    "description": "Settled status badge"
+  },
+  "recurring": "RECURRING",
+  "@recurring": {
+    "description": "Recurring status badge"
+  },
+  "eventCreatedSuccess": "Event created successfully",
+  "@eventCreatedSuccess": {
+    "description": "Toast for event creation"
+  },
+  "eventUpdatedSuccess": "Event updated successfully",
+  "@eventUpdatedSuccess": {
+    "description": "Toast for event update"
+  },
+  "eventDeletedSuccess": "Event deleted successfully",
+  "@eventDeletedSuccess": {
+    "description": "Toast for event deletion"
+  },
+  "eventSettledSuccess": "Event marked as settled",
+  "@eventSettledSuccess": {
+    "description": "Toast for event settlement"
+  },
+  "expenseAddedSuccess": "Expense added successfully",
+  "@expenseAddedSuccess": {
+    "description": "Toast for expense added"
+  },
+  "expenseDeletedSuccess": "Expense deleted successfully",
+  "@expenseDeletedSuccess": {
+    "description": "Toast for expense deletion"
+  },
+  "operationFailed": "Operation failed",
+  "@operationFailed": {
+    "description": "Toast for failed operation"
+  },
+  "deleteEventConfirmTitle": "Delete Event?",
+  "@deleteEventConfirmTitle": {
+    "description": "Title for delete event confirmation"
+  },
+  "deleteEventConfirmMessage": "Are you sure you want to delete this event? This action cannot be undone.",
+  "@deleteEventConfirmMessage": {
+    "description": "Message for delete event confirmation"
+  },
+  "deleteExpenseConfirmTitle": "Delete Expense?",
+  "@deleteExpenseConfirmTitle": {
+    "description": "Title for delete expense confirmation"
+  },
+  "deleteExpenseConfirmMessage": "Are you sure you want to delete this expense?",
+  "@deleteExpenseConfirmMessage": {
+    "description": "Message for delete expense confirmation"
+  },
+  "members": "Members",
+  "@members": {
+    "description": "Label for members count"
+  },
+  "noEventsYet": "No events yet",
+  "@noEventsYet": {
+    "description": "Title for empty events list"
+  },
+  "noExpensesYet": "No expenses yet",
+  "@noExpensesYet": {
+    "description": "Title for empty expenses list"
+  },
+  "createFirstEvent": "Create First Event",
+  "@createFirstEvent": {
+    "description": "Button for empty events list"
+  },
+  "splitBill": "Split Bill",
+  "@splitBill": {
+    "description": "Header or label for splitting bill"
+  },
+  "viewBalancesFor": "View balances for",
+  "@viewBalancesFor": {
+    "description": "Header for balances view selector"
+  },
+  "expenseDetails": "Expense Details",
+  "@expenseDetails": {
+    "description": "Title for group expense details screen"
+  },
+  "splitBreakdown": "SPLIT BREAKDOWN",
+  "@splitBreakdown": {
+    "description": "Header for split breakdown section"
+  },
+  "deleteExpense": "Delete Expense",
+  "@deleteExpense": {
+    "description": "Button to delete an expense"
   }
 }
-

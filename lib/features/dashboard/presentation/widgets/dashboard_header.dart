@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,11 +9,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../profile/presentation/cubit/profile_cubit.dart';
 import '../../../profile/presentation/cubit/profile_state.dart';
 import '../../../profile/presentation/widgets/user_avatar.dart';
-import '../../../settings/presentation/pages/settings_page.dart';
 
 /// Top App Bar matching the Modern Fiscal Core glass header specs.
 /// Includes user profile avatar ring, app title, privacy mode toggle (hides balance with •••••), and reports.
@@ -85,12 +86,7 @@ class DashboardHeader extends StatelessWidget {
                           GestureDetector(
                             onTap: () {
                               HapticFeedback.selectionClick();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<void>(
-                                  builder: (_) => const SettingsPage(),
-                                ),
-                              );
+                              context.router.push(const SettingsRoute());
                             },
                             child: UserAvatar(
                               imagePath: profile?.imagePath,

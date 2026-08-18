@@ -13,6 +13,7 @@ import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
+import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../../../core/ads/ad_helper.dart';
 import '../../../../core/ads/widgets/banner_ad_widget.dart';
@@ -44,7 +45,6 @@ class TransactionDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    final textTheme = context.textTheme;
     final l10n = context.l10n;
 
     return BlocProvider.value(
@@ -65,26 +65,15 @@ class TransactionDetailsPage extends StatelessWidget {
         },
         child: Builder(
           builder: (context) {
+            final topInset = MediaQuery.of(context).padding.top;
+            final headerPaddingTop = topInset + kToolbarHeight;
+
             return Scaffold(
               backgroundColor: colorScheme.surface,
-              appBar: AppBar(
-                backgroundColor: colorScheme.surfaceContainerLow,
-                elevation: 0,
-                leading: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_rounded,
-                    color: colorScheme.onSurface,
-                  ),
-                  onPressed: () => context.router.maybePop(),
-                ),
-                title: Text(
-                  l10n.transactionDetails,
-                  style: (textTheme.titleLarge ?? const TextStyle()).copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeights.bold,
-                  ),
-                ),
-                centerTitle: true,
+              extendBodyBehindAppBar: true,
+              appBar: LiquidGlassAppBar(
+                titleText: l10n.transactionDetails,
+                onLeadingPressed: () => context.router.maybePop(),
                 actions: [
                   IconButton(
                     icon: Icon(
@@ -97,6 +86,7 @@ class TransactionDetailsPage extends StatelessWidget {
                 ],
               ),
               body: SingleChildScrollView(
+                padding: EdgeInsets.only(top: headerPaddingTop),
                 physics: const BouncingScrollPhysics(),
                 child: Center(
                   child: ConstrainedBox(

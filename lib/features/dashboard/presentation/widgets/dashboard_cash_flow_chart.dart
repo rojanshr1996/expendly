@@ -311,6 +311,9 @@ class _SmoothLineChartPage extends StatelessWidget {
         final val = p.income > 0 ? p.income : p.expense;
         spots.add(FlSpot((i + 1).toDouble(), val));
       }
+      if (spots.length == 1) {
+        spots.add(FlSpot(2, spots.first.y));
+      }
     } else {
       // Fallback display spots
       spots.addAll(const [
@@ -395,7 +398,7 @@ class _SmoothLineChartPage extends StatelessWidget {
                 return LineChart(
                   LineChartData(
                     minX: 1,
-                    maxX: spots.length.toDouble(),
+                    maxX: spots.length > 1 ? spots.length.toDouble() : 2.0,
                     minY: 0,
                     maxY: topY,
                     clipData: const FlClipData.none(),
@@ -568,7 +571,7 @@ class _SmoothLineChartPage extends StatelessWidget {
                         gradient: LinearGradient(
                           colors: [primaryLineColor, secondaryLineColor],
                         ),
-                        barWidth: 3.5,
+                        barWidth: 2.2,
                         isStrokeCapRound: true,
                         dotData: const FlDotData(show: false),
                         belowBarData: BarAreaData(

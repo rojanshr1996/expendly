@@ -18,6 +18,7 @@ import '../di/injection.dart';
 import '../events/transaction_events.dart';
 import '../models/backup_result.dart';
 import '../utils/app_logger.dart';
+import 'pdf_report_service.dart';
 import 'preference_service.dart';
 
 /// Backup file name — single file, always overwritten.
@@ -38,6 +39,7 @@ const String _sUserProfiles = 'USER_PROFILES';
 ///
 /// Features:
 ///  - [exportAnalyticsReportToCsv] — export financial reports to Downloads/Expendly
+///  - [exportAnalyticsReportToPdf] — export visual PDF financial reports with charts & insights
 ///  - [exportBackupCsv]            — full app backup using BackupStorageProvider
 ///  - [importBackupCsv]            — restore from a [kBackupFileName] file
 ///  - [findBackupFile]             — locate the current backup file
@@ -53,6 +55,53 @@ class DataExportImportService {
     BackupStorageProvider? storageProvider,
   ]) : _storageProvider =
             storageProvider ?? BackupStorageProviderFactory.create();
+
+  // ── Analytics PDF ─────────────────────────────────────────────────────────
+
+  /// Exports a detailed Financial Analytics Report in PDF format with visual charts
+  /// and explanatory narratives into Downloads/Expendly.
+  Future<String> exportAnalyticsReportToPdf({
+    required AnalyticsReport report,
+    String periodName = 'Monthly',
+    bool openAfterExport = true,
+  }) async {
+    try {
+      final currency = _preferenceService.currencySymbol;
+      final categoriesList = await _db.select(_db.categories).get();
+      final transactionsList = await _db.select(_db.transactions).get();
+      final categoryMap = {for (var c in categoriesList) c.id: c.name};
+
+      final formattedTransactions = transactionsList.map((t) {
+        return {
+          'id': t.id,
+          'date': t.timestamp.toIso8601String().replaceAll('T', ' '),
+          'type': t.type.name,
+          'category': categoryMap[t.categoryId] ?? 'Uncategorized',
+          'amount': t.amount / 100.0,
+          'paymentMethod': t.paymentMethod?.name ?? '',
+          'note': t.note ?? '',
+        };
+      }).toList();
+
+      final pdfService = PdfReportService();
+      final filePath = await pdfService.generateAnalyticsReportPdf(
+        report: report,
+        currencySymbol: currency,
+        transactions: formattedTransactions,
+        periodName: report.periodName,
+      );
+
+      if (openAfterExport) {
+        await OpenFile.open(filePath, type: 'application/pdf');
+      }
+
+      return filePath;
+    } catch (e, stack) {
+      AppLogger.e(
+          'DataExportImportService: Analytics PDF Export failed', e, stack);
+      rethrow;
+    }
+  }
 
   // ── Analytics CSV ─────────────────────────────────────────────────────────
 
@@ -284,13 +333,15 @@ class DataExportImportService {
       if (Platform.isAndroid) {
         try {
           final external = await getExternalStorageDirectory();
-          if (external != null)
+          if (external != null) {
             candidateDirs.add(Directory(p.join(external.path, 'Expendly')));
+          }
         } catch (_) {}
         try {
           final downloads = await getDownloadsDirectory();
-          if (downloads != null)
+          if (downloads != null) {
             candidateDirs.add(Directory(p.join(downloads.path, 'Expendly')));
+          }
         } catch (_) {}
         candidateDirs.add(Directory('/storage/emulated/0/Download/Expendly'));
       }
@@ -400,10 +451,12 @@ class DataExportImportService {
         final metaData = metaRows[1];
         final codeIdx = metaHeader.indexOf('currencyCode');
         final symIdx = metaHeader.indexOf('currencySymbol');
-        if (codeIdx >= 0 && codeIdx < metaData.length)
+        if (codeIdx >= 0 && codeIdx < metaData.length) {
           currencyCode = metaData[codeIdx];
-        if (symIdx >= 0 && symIdx < metaData.length)
+        }
+        if (symIdx >= 0 && symIdx < metaData.length) {
           currencySymbol = metaData[symIdx];
+        }
       }
 
       int txImported = 0;
@@ -873,10 +926,12 @@ class DataExportImportService {
   /// present. Returns `null` if valid, or an error message string.
   String? _validateSections(Map<String, List<List<String>>> sections) {
     if (!sections.containsKey(_sMeta)) return 'Missing [META] section';
-    if (!sections.containsKey(_sTransactions))
+    if (!sections.containsKey(_sTransactions)) {
       return 'Missing [TRANSACTIONS] section';
-    if (!sections.containsKey(_sCategories))
+    }
+    if (!sections.containsKey(_sCategories)) {
       return 'Missing [CATEGORIES] section';
+    }
 
     // Validate required columns per section
     final checks = <String, List<String>>{
@@ -909,15 +964,17 @@ class DataExportImportService {
       // Primary on Android: app-owned external storage (always writable, survives reinstall ownership).
       try {
         final external = await getExternalStorageDirectory();
-        if (external != null)
+        if (external != null) {
           candidatePaths.add(p.join(external.path, 'Expendly'));
+        }
       } catch (_) {}
       // Secondary: public Downloads — only usable if any existing backup there is owned by this app.
       candidatePaths.add('/storage/emulated/0/Download/Expendly');
       try {
         final downloads = await getDownloadsDirectory();
-        if (downloads != null)
+        if (downloads != null) {
           candidatePaths.add(p.join(downloads.path, 'Expendly'));
+        }
       } catch (_) {}
     } else if (Platform.isIOS) {
       // iOS: Documents directory (accessible via Files app).
@@ -929,8 +986,9 @@ class DataExportImportService {
       // Desktop / other: Downloads folder.
       try {
         final downloads = await getDownloadsDirectory();
-        if (downloads != null)
+        if (downloads != null) {
           candidatePaths.add(p.join(downloads.path, 'Expendly'));
+        }
       } catch (_) {}
     }
 

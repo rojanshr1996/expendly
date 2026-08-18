@@ -22,3 +22,7 @@ enum PaymentMethod {
   cash,
   account,
 }
+
+enum EventStatus { active, settled, recurring }
+
+enum EventCategory { trip, dinner, home, party }

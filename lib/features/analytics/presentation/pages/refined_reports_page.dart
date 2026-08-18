@@ -19,6 +19,7 @@ import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
+import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../data/datasources/analytics_local_datasource.dart';
 import '../../data/repositories/analytics_repository_impl.dart';
@@ -66,25 +67,15 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
       value: _cubit,
       child: Builder(
         builder: (context) {
+          final topInset = MediaQuery.of(context).padding.top;
+          final headerPaddingTop = topInset + kToolbarHeight;
+
           return Scaffold(
             backgroundColor: colorScheme.surface,
-            appBar: AppBar(
-              leading: ModalRoute.of(context)?.canPop == true
-                  ? IconButton(
-                      icon: Icon(
-                        Icons.arrow_back_rounded,
-                        color: colorScheme.onSurface,
-                      ),
-                      onPressed: () => Navigator.of(context).pop(),
-                    )
-                  : null,
-              title: Text(
-                l10n.reports,
-                style: textTheme.headlineSmall?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeights.bold,
-                ),
-              ),
+            extendBodyBehindAppBar: true,
+            appBar: LiquidGlassAppBar(
+              showLeading: ModalRoute.of(context)?.canPop == true,
+              titleText: l10n.reports,
               actions: [
                 BlocBuilder<AnalyticsCubit, AnalyticsState>(
                   builder: (context, state) {
@@ -98,44 +89,339 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
                         color: colorScheme.primary,
                         size: 24.sp,
                       ),
-                      onPressed: () => _exportReport(context, state.report),
+                      onPressed: () =>
+                          _showExportOptionsSheet(context, state.report),
                     );
                   },
                 ),
               ],
             ),
-            body: BlocBuilder<AnalyticsCubit, AnalyticsState>(
-              builder: (context, state) {
-                return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 350),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0, 0.03),
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: _buildStateContent(
-                    context: context,
-                    state: state,
-                    colorScheme: colorScheme,
-                    textTheme: textTheme,
-                    customTypography: customTypography,
-                    l10n: l10n,
-                  ),
-                );
-              },
+            body: Padding(
+              padding: EdgeInsets.only(top: headerPaddingTop),
+              child: BlocBuilder<AnalyticsCubit, AnalyticsState>(
+                builder: (context, state) {
+                  return AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 350),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    transitionBuilder: (child, animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 0.03),
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: _buildStateContent(
+                      context: context,
+                      state: state,
+                      colorScheme: colorScheme,
+                      textTheme: textTheme,
+                      customTypography: customTypography,
+                      l10n: l10n,
+                    ),
+                  );
+                },
+              ),
             ),
           );
         },
       ),
+    );
+  }
+
+  void _showExportOptionsSheet(BuildContext context, AnalyticsReport report) {
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final textTheme = context.textTheme;
+    final customTypography = context.customTypography;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isLight
+                  ? [
+                      colorScheme.surfaceContainerLowest
+                          .withValues(alpha: 0.45),
+                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.30),
+                    ]
+                  : [
+                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
+                      colorScheme.surfaceContainerLow.withValues(alpha: 0.20),
+                    ],
+            ),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+            border: Border.all(
+              color: isLight
+                  ? Colors.white.withValues(alpha: 0.60)
+                  : customColors.glassStroke.withValues(alpha: 0.45),
+              width: 1.0,
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+              child: SafeArea(
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Drag handle
+                      Center(
+                        child: Container(
+                          width: 40.w,
+                          height: 4.h,
+                          decoration: BoxDecoration(
+                            color: colorScheme.outlineVariant
+                                .withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(2.r),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+
+                      // Title
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Download Financial Report',
+                            style: (textTheme.titleMedium ?? const TextStyle())
+                                .copyWith(
+                              fontWeight: FontWeights.bold,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.close_rounded,
+                                color: colorScheme.onSurfaceVariant),
+                            onPressed: () => Navigator.pop(ctx),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        'Choose your preferred format for the ${report.periodName} analysis report.',
+                        style: customTypography.bodyMedium.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                      SizedBox(height: 20.h),
+
+                      // PDF Option (Visual Charts & Insights)
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _exportReport(context, report, isPdf: true);
+                        },
+                        borderRadius: BorderRadius.circular(16.r),
+                        child: Container(
+                          padding: EdgeInsets.all(14.r),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerLow,
+                            borderRadius: BorderRadius.circular(16.r),
+                            border: Border.all(
+                                color: context.customColors.glassStroke),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 46.w,
+                                height: 46.h,
+                                decoration: BoxDecoration(
+                                  color:
+                                      Colors.redAccent.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                child: Icon(
+                                  Icons.picture_as_pdf_rounded,
+                                  color: Colors.redAccent,
+                                  size: 26.sp,
+                                ),
+                              ),
+                              SizedBox(width: 14.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'PDF Visual Report',
+                                          style: customTypography.bodyLargeBold
+                                              .copyWith(
+                                            color: colorScheme.onSurface,
+                                            fontSize: 14.sp,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 6.w, vertical: 2.h),
+                                          decoration: BoxDecoration(
+                                            color: colorScheme.primary
+                                                .withValues(alpha: 0.15),
+                                            borderRadius:
+                                                BorderRadius.circular(6.r),
+                                          ),
+                                          child: Text(
+                                            'With Charts',
+                                            style: customTypography
+                                                .labelMediumMono
+                                                .copyWith(
+                                              fontSize: 9.sp,
+                                              color: colorScheme.primary,
+                                              fontWeight: FontWeights.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 4.h),
+                                    Text(
+                                      'Includes vector charts, category breakdown bars, and financial analysis narratives.',
+                                      style:
+                                          customTypography.bodyMedium.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                        fontSize: 11.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(Icons.chevron_right_rounded,
+                                  color: colorScheme.onSurfaceVariant),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 12.h),
+
+                      // CSV Option
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _exportReport(context, report, isPdf: false);
+                        },
+                        borderRadius: BorderRadius.circular(16.r),
+                        child: Container(
+                          padding: EdgeInsets.all(14.r),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerLow,
+                            borderRadius: BorderRadius.circular(16.r),
+                            border: Border.all(
+                                color: context.customColors.glassStroke),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 46.w,
+                                height: 46.h,
+                                decoration: BoxDecoration(
+                                  color: Colors.green.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                child: Icon(
+                                  Icons.table_chart_rounded,
+                                  color: Colors.green,
+                                  size: 26.sp,
+                                ),
+                              ),
+                              SizedBox(width: 14.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'CSV Data Spreadsheet',
+                                      style: customTypography.bodyLargeBold
+                                          .copyWith(
+                                        color: colorScheme.onSurface,
+                                        fontSize: 14.sp,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4.h),
+                                    Text(
+                                      'Raw itemized transaction ledger for Excel, Google Sheets, or Numbers.',
+                                      style:
+                                          customTypography.bodyMedium.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                        fontSize: 11.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(Icons.chevron_right_rounded,
+                                  color: colorScheme.onSurfaceVariant),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _exportReport(
+    BuildContext context,
+    AnalyticsReport report, {
+    bool isPdf = true,
+  }) async {
+    InterstitialAdHelper.showAd(
+      onAdDismissed: () async {
+        if (!context.mounted) return;
+        try {
+          final exportService = getIt<DataExportImportService>();
+          final filePath = isPdf
+              ? await exportService.exportAnalyticsReportToPdf(
+                  report: report, openAfterExport: true)
+              : await exportService.exportAnalyticsReportToCsv(
+                  report: report, openAfterExport: true);
+
+          if (context.mounted) {
+            final formatName = isPdf ? 'PDF Report' : 'CSV Report';
+            StatusComponents.showToast(
+              context,
+              message:
+                  '$formatName saved to Downloads/Expendly/${p.basename(filePath)}',
+              isSuccess: true,
+            );
+          }
+          await OpenFile.open(filePath,
+              type: isPdf ? 'application/pdf' : 'text/csv');
+        } catch (e) {
+          if (context.mounted) {
+            StatusComponents.showToast(
+              context,
+              message: 'Report export failed: ${e.toString()}',
+              isError: true,
+            );
+          }
+        }
+      },
     );
   }
 
@@ -160,6 +446,7 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
               report.categoryBreakdowns.isEmpty;
 
           return Stack(
+            fit: StackFit.expand,
             children: [
               // 1. Scrollable Reports Content (All original report cards scroll UNDER the pinned liquid glass tab bar)
               Positioned.fill(
@@ -402,37 +689,6 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
         }
 
         return const SizedBox.shrink(key: ValueKey('none'));
-      },
-    );
-  }
-
-  Future<void> _exportReport(
-      BuildContext context, AnalyticsReport report) async {
-    InterstitialAdHelper.showAd(
-      onAdDismissed: () async {
-        if (!context.mounted) return;
-        try {
-          final filePath = await getIt<DataExportImportService>()
-              .exportAnalyticsReportToCsv(
-                  report: report, openAfterExport: true);
-          if (context.mounted) {
-            StatusComponents.showToast(
-              context,
-              message:
-                  'Report saved to Downloads/Expendly/${p.basename(filePath)}',
-              isSuccess: true,
-            );
-          }
-          await OpenFile.open(filePath);
-        } catch (e) {
-          if (context.mounted) {
-            StatusComponents.showToast(
-              context,
-              message: 'Report export failed: ${e.toString()}',
-              isError: true,
-            );
-          }
-        }
       },
     );
   }

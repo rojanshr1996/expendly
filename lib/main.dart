@@ -22,8 +22,8 @@ import 'core/services/notification_service.dart';
 import 'core/services/preference_service.dart';
 import 'core/services/remote_config_service.dart';
 import 'core/theme/app_theme.dart';
-import 'core/utils/url_utils.dart';
 import 'core/utils/app_logger.dart';
+import 'core/utils/url_utils.dart';
 import 'core/widgets/app_update_guard.dart';
 import 'core/widgets/notification_detail_dialog.dart';
 
@@ -54,18 +54,41 @@ Future<void> bootstrapApp(AppConfig config) async {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       return true;
     };
-
-    // Initialize Notification and Remote Config Services
-    await getIt<NotificationService>().initialize();
-    await getIt<RemoteConfigService>().initialize();
   } catch (e, stackTrace) {
     AppLogger.e('Firebase Initialization Error', e, stackTrace);
   }
 
+  // Launch UI immediately
+  runApp(const ExpendlyApp());
+
+  // Non-blocking asynchronous initialization of background/network services
+  unawaited(_initBackgroundServices(config));
+}
+
+/// Initializes non-critical background services concurrently without blocking UI startup.
+Future<void> _initBackgroundServices(AppConfig config) async {
+  // Initialize Notification Service
+  try {
+    if (getIt.isRegistered<NotificationService>()) {
+      await getIt<NotificationService>().initialize();
+    }
+  } catch (e, stackTrace) {
+    AppLogger.e('NotificationService Initialization Error', e, stackTrace);
+  }
+
+  // Initialize Remote Config Service
+  try {
+    if (getIt.isRegistered<RemoteConfigService>()) {
+      await getIt<RemoteConfigService>().initialize();
+    }
+  } catch (e, stackTrace) {
+    AppLogger.e('RemoteConfigService Initialization Error', e, stackTrace);
+  }
+
   // Initialize Google Mobile Ads SDK
   try {
-    // Register test device IDs for non-prod flavors so test ads load correctly.
-    if (!config.isProd) {
+    // Register test device IDs for non-prod flavors or debug builds so test ads load correctly.
+    if (!config.isProd || kDebugMode) {
       MobileAds.instance.updateRequestConfiguration(
         RequestConfiguration(
           tagForChildDirectedTreatment: TagForChildDirectedTreatment.no,
@@ -79,8 +102,6 @@ Future<void> bootstrapApp(AppConfig config) async {
   } catch (e, stackTrace) {
     AppLogger.e('Google Mobile Ads Initialization Error', e, stackTrace);
   }
-
-  runApp(const ExpendlyApp());
 }
 
 void main() async {
@@ -215,11 +236,11 @@ class _ExpendlyAppState extends State<ExpendlyApp> with WidgetsBindingObserver {
         return ValueListenableBuilder<String>(
           valueListenable: prefService.themeModeNotifier,
           builder: (context, themeModeStr, child) {
-            final themeMode = themeModeStr == 'light'
-                ? ThemeMode.light
+            final themeMode = themeModeStr == 'dark'
+                ? ThemeMode.dark
                 : (themeModeStr == 'system'
                     ? ThemeMode.system
-                    : ThemeMode.dark);
+                    : ThemeMode.light);
 
             return MaterialApp.router(
               title: config.appName,

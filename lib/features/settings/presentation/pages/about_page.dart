@@ -6,9 +6,9 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
 import '../../../../core/gen/assets.gen.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/glass_container.dart';
+import '../../../../core/widgets/liquid_glass_app_bar.dart';
 
 @RoutePage()
 class AboutPage extends StatelessWidget {
@@ -23,26 +23,15 @@ class AboutPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: colorScheme.surfaceContainerLow,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_rounded,
-            color: colorScheme.onSurface,
-          ),
-          onPressed: () => context.router.maybePop(),
-        ),
-        title: Text(
-          l10n.aboutExpendly,
-          style: textTheme.titleLarge?.copyWith(
-            color: colorScheme.onSurface,
-            fontWeight: FontWeights.bold,
-          ),
-        ),
-        centerTitle: true,
+      extendBodyBehindAppBar: true,
+      appBar: LiquidGlassAppBar(
+        titleText: l10n.aboutExpendly,
+        onLeadingPressed: () => context.router.maybePop(),
       ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top + kToolbarHeight,
+        ),
         physics: const BouncingScrollPhysics(),
         child: Center(
           child: ConstrainedBox(
@@ -97,28 +86,39 @@ class AboutPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const _HighlightItem(
+                      _HighlightItem(
+                        icon: Icons.account_balance_wallet_rounded,
+                        iconColor: colorScheme.primary,
+                        title: 'Smart Expense & Income Tracking',
+                        description:
+                            'Log daily expenses and income in seconds. Categorize transactions with custom icons and colors, attach payment details and notes, and gain full clarity over your personal spending history.',
+                      ),
+                      Divider(
+                          height: 24, color: context.customColors.glassStroke),
+                      _HighlightItem(
+                        icon: Icons.groups_rounded,
+                        iconColor: colorScheme.secondary,
+                        title: 'Group Bill Split & Share',
+                        description:
+                            'Organize shared events for trips, dinners, and flatmates. Split bills equally or with custom percentages, calculate direct pairwise balances, and settle debts with complete clarity.',
+                      ),
+                      Divider(
+                          height: 24, color: context.customColors.glassStroke),
+                      _HighlightItem(
+                        icon: Icons.donut_large_rounded,
+                        iconColor: context.customColors.semanticBlue,
+                        title: 'Budgets & Visual Analytics',
+                        description:
+                            'Set monthly category budgets, track spending progress in real time, analyze cashflow trends with visual charts, and export financial records to CSV.',
+                      ),
+                      Divider(
+                          height: 24, color: context.customColors.glassStroke),
+                      _HighlightItem(
                         icon: Icons.shield_outlined,
-                        iconColor: AppColors.semanticGreen,
+                        iconColor: context.customColors.semanticGreen,
                         title: '100% Offline & Private',
                         description:
-                            'Your financial data is stored strictly on your device. No cloud sync, no tracking, zero telemetry.',
-                      ),
-                      const Divider(height: 24, color: AppColors.glassStroke),
-                      _HighlightItem(
-                        icon: Icons.lock_outline_rounded,
-                        iconColor: colorScheme.primary,
-                        title: 'Local Storage',
-                        description:
-                            'Stored locally on your device via Android & iOS secure storage.',
-                      ),
-                      const Divider(height: 24, color: AppColors.glassStroke),
-                      _HighlightItem(
-                        icon: Icons.architecture_rounded,
-                        iconColor: colorScheme.tertiary,
-                        title: 'Modern Fiscal Architecture',
-                        description:
-                            'Engineered with Flutter Clean Architecture, Drift SQLite, and flutter_bloc Cubits.',
+                            'All personal ledger records and group shared events are stored strictly on your device using local SQLite. Zero cloud sync, no tracking, zero telemetry.',
                       ),
                     ],
                   ),
