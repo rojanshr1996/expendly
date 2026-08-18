@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:file_picker/file_picker.dart';
@@ -179,12 +178,22 @@ class _SettingsPageState extends State<SettingsPage>
 
   void _showImportSummaryDialog(BuildContext context, CsvImportResult result) {
     final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: colorScheme.surfaceContainerLow,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+        backgroundColor:
+            isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.r),
+          side: BorderSide(
+            color: isLight
+                ? colorScheme.outlineVariant.withValues(alpha: 0.50)
+                : customColors.glassStroke,
+          ),
+        ),
         title: Row(
           children: [
             Icon(Icons.check_circle_rounded,
@@ -237,11 +246,19 @@ class _SettingsPageState extends State<SettingsPage>
         ),
         actions: [
           ElevatedButton(
-            style:
-                ElevatedButton.styleFrom(backgroundColor: colorScheme.primary),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+            ),
             onPressed: () => Navigator.pop(ctx),
-            child: Text(context.l10n.done,
-                style: TextStyle(color: colorScheme.onPrimary)),
+            child: Text(
+              context.l10n.done,
+              style: const TextStyle(fontWeight: FontWeights.bold),
+            ),
           ),
         ],
       ),
@@ -257,14 +274,22 @@ class _SettingsPageState extends State<SettingsPage>
 
   void _showLogoutDialog(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
     final textTheme = context.textTheme;
+    final isLight = Theme.of(context).brightness == Brightness.light;
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: colorScheme.surfaceContainerLow,
+        backgroundColor:
+            isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
+          side: BorderSide(
+            color: isLight
+                ? colorScheme.outlineVariant.withValues(alpha: 0.50)
+                : customColors.glassStroke,
+          ),
         ),
         title: Row(
           children: [
@@ -298,6 +323,8 @@ class _SettingsPageState extends State<SettingsPage>
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: colorScheme.error,
+              foregroundColor: colorScheme.onError,
+              elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.r),
               ),
@@ -938,264 +965,249 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
       child: Container(
         constraints: BoxConstraints(maxHeight: maxHeight),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isLight
-                ? [
-                    colorScheme.surfaceContainerLowest.withValues(alpha: 0.45),
-                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.30),
-                  ]
-                : [
-                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
-                    colorScheme.surfaceContainerLow.withValues(alpha: 0.20),
-                  ],
-          ),
+          color:
+              isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
           border: Border.all(
             color: isLight
-                ? Colors.white.withValues(alpha: 0.60)
+                ? colorScheme.outlineVariant.withValues(alpha: 0.50)
                 : customColors.glassStroke.withValues(alpha: 0.45),
             width: 1.0,
           ),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Drag Handle
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: isLight
+                            ? colorScheme.outline.withValues(alpha: 0.4)
+                            : colorScheme.outlineVariant.withValues(alpha: 0.7),
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 14.h),
+
+                  // ── Header ───────────────────────────────────────────────────
+                  Row(
                     children: [
-                      // Drag Handle
-                      Center(
-                        child: Container(
-                          width: 40.w,
-                          height: 4.h,
-                          decoration: BoxDecoration(
-                            color: colorScheme.outlineVariant
-                                .withValues(alpha: 0.7),
-                            borderRadius: BorderRadius.circular(2.r),
+                      Icon(Icons.restore_rounded,
+                          color: colorScheme.primary, size: 24.sp),
+                      horizontalMarginSmall,
+                      Expanded(
+                        child: Text(
+                          context.l10n.restoreCsvTitle,
+                          style: (textTheme.titleMedium ?? const TextStyle())
+                              .copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeights.bold,
                           ),
                         ),
                       ),
-                      SizedBox(height: 14.h),
+                      IconButton(
+                        icon: Icon(Icons.close_rounded,
+                            color: colorScheme.onSurfaceVariant),
+                        onPressed: () => Navigator.pop(context),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ],
+                  ),
+                  verticalMarginMedium,
 
-                      // ── Header ───────────────────────────────────────────────────
-                      Row(
+                  // ── Backup file card ──────────────────────────────────────────
+                  if (_isLoading)
+                    const Center(child: CircularProgressIndicator.adaptive())
+                  else if (hasSelectedFile) ...[
+                    Container(
+                      padding: EdgeInsets.all(12.r),
+                      decoration: BoxDecoration(
+                        color: isLight
+                            ? colorScheme.surfaceContainerLowest
+                            : colorScheme.surfaceContainerHigh,
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(
+                            color: colorScheme.primary
+                                .withValues(alpha: isLight ? 0.75 : 0.5)),
+                      ),
+                      child: Row(
                         children: [
-                          Icon(Icons.restore_rounded,
-                              color: colorScheme.primary, size: 24.sp),
+                          Icon(Icons.check_circle_rounded,
+                              color: colorScheme.primary, size: 28.sp),
                           horizontalMarginSmall,
                           Expanded(
-                            child: Text(
-                              context.l10n.restoreCsvTitle,
-                              style:
-                                  (textTheme.titleMedium ?? const TextStyle())
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _selectedFileName ?? kBackupFileName,
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeights.bold,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                                Text(
+                                  '${_formatDate(_selectedFileDate)}'
+                                  '${_formatSize(_selectedFileSize).isNotEmpty ? " · ${_formatSize(_selectedFileSize)}" : ""}'
+                                  ' · Selected ✓',
+                                  style: context
+                                      .customTypography.labelMediumMono
                                       .copyWith(
-                                color: colorScheme.onSurface,
-                                fontWeight: FontWeights.bold,
-                              ),
+                                    color: colorScheme.primary,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          IconButton(
-                            icon: Icon(Icons.close_rounded,
-                                color: colorScheme.onSurfaceVariant),
-                            onPressed: () => Navigator.pop(context),
-                            visualDensity: VisualDensity.compact,
+                          TextButton(
+                            onPressed: _pickBackupFile,
+                            child: Text(
+                              'Change',
+                              style: TextStyle(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeights.bold,
+                                fontSize: 13.sp,
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      verticalMarginMedium,
-
-                      // ── Backup file card ──────────────────────────────────────────
-                      if (_isLoading)
-                        const Center(
-                            child: CircularProgressIndicator.adaptive())
-                      else if (hasSelectedFile) ...[
-                        Container(
-                          padding: EdgeInsets.all(12.r),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(
-                                color:
-                                    colorScheme.primary.withValues(alpha: 0.5)),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.check_circle_rounded,
-                                  color: colorScheme.primary, size: 28.sp),
-                              horizontalMarginSmall,
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      _selectedFileName ?? kBackupFileName,
-                                      style: textTheme.bodyMedium?.copyWith(
-                                        fontWeight: FontWeights.bold,
-                                        color: colorScheme.onSurface,
-                                      ),
-                                    ),
-                                    Text(
-                                      '${_formatDate(_selectedFileDate)}'
-                                      '${_formatSize(_selectedFileSize).isNotEmpty ? " · ${_formatSize(_selectedFileSize)}" : ""}'
-                                      ' · Selected ✓',
-                                      style: context
-                                          .customTypography.labelMediumMono
-                                          .copyWith(
-                                        color: colorScheme.primary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: _pickBackupFile,
-                                child: Text(
-                                  'Change',
-                                  style: TextStyle(
-                                    color: colorScheme.primary,
-                                    fontWeight: FontWeights.bold,
-                                    fontSize: 13.sp,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ] else ...[
-                        Container(
-                          padding: EdgeInsets.all(12.r),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(12.r),
-                            border:
-                                Border.all(color: colorScheme.outlineVariant),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(Icons.info_outline_rounded,
-                                  color: colorScheme.primary, size: 20.sp),
-                              horizontalMarginSmall,
-                              Expanded(
-                                child: Text(
-                                  'Tap "Browse & Restore Backup" below to select your expendly_backup file from Downloads → Expendly.',
-                                  style: context.customTypography.bodyMedium
-                                      .copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-
-                      // ── PIN field (shown once file is selected & app has a PIN) ───
-                      if (hasSelectedFile && pref.isSecurityPinSet) ...[
-                        verticalMarginMedium,
-                        Text(
-                          context.l10n.pinRequiredForRestore,
-                          style: context.customTypography.bodyMedium.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        verticalMarginSmall,
-                        TextField(
-                          controller: _pinController,
-                          obscureText: true,
-                          keyboardType: TextInputType.number,
-                          maxLength: 4,
-                          style: context.customTypography.bodyMedium
-                              .copyWith(color: colorScheme.onSurface),
-                          decoration: InputDecoration(
-                            labelText: context.l10n.enterPin,
-                            counterText: '',
-                            filled: true,
-                            fillColor: colorScheme.surfaceContainerHigh,
-                            border: OutlineInputBorder(
-                              borderRadius: AppRadius.borderMd,
-                              borderSide:
-                                  BorderSide(color: colorScheme.outlineVariant),
-                            ),
-                          ),
-                        ),
-                      ],
-
-                      // ── Error banner ─────────────────────────────────────────────
-                      _ImportErrorBanner(messageNotifier: _errorNotifier),
-                      verticalMarginMedium,
-
-                      // ── Single Primary Action Button ─────────────────────────────
-                      ValueListenableBuilder<bool>(
-                        valueListenable: _isBusyNotifier,
-                        builder: (context, isBusy, _) {
-                          return SizedBox(
-                            width: double.infinity,
-                            height: 48.h,
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: colorScheme.primary,
-                                foregroundColor: colorScheme.onPrimary,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: AppRadius.borderMd),
-                                disabledBackgroundColor:
-                                    colorScheme.primary.withValues(alpha: 0.4),
-                              ),
-                              onPressed: isBusy
-                                  ? null
-                                  : (hasSelectedFile
-                                      ? _restore
-                                      : _pickBackupFile),
-                              icon: isBusy
-                                  ? SizedBox(
-                                      width: 18.r,
-                                      height: 18.r,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: colorScheme.onPrimary,
-                                      ),
-                                    )
-                                  : Icon(
-                                      hasSelectedFile
-                                          ? Icons.restore_rounded
-                                          : Icons.folder_open_rounded,
-                                      size: 20.sp,
-                                    ),
-                              label: Text(
-                                hasSelectedFile
-                                    ? context.l10n.restore
-                                    : 'Browse & Restore Backup',
-                                style: textTheme.bodyLarge?.copyWith(
-                                  fontWeight: FontWeights.bold,
-                                  color: colorScheme.onPrimary,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+                    ),
+                  ] else ...[
+                    Container(
+                      padding: EdgeInsets.all(12.r),
+                      decoration: BoxDecoration(
+                        color: isLight
+                            ? colorScheme.surfaceContainerLow
+                            : colorScheme.surfaceContainerHigh,
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: colorScheme.outlineVariant),
                       ),
-                      if (!hasSelectedFile) ...[
-                        verticalMarginSmall,
-                        Text(
-                          'Navigate to Downloads → Expendly in the file browser to find your expendly backup file.',
-                          style: context.customTypography.bodyMedium.copyWith(
-                            color: colorScheme.onSurfaceVariant,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.info_outline_rounded,
+                              color: colorScheme.primary, size: 20.sp),
+                          horizontalMarginSmall,
+                          Expanded(
+                            child: Text(
+                              'Tap "Browse & Restore Backup" below to select your expendly_backup file from Downloads → Expendly.',
+                              style:
+                                  context.customTypography.bodyMedium.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  // ── PIN field (shown once file is selected & app has a PIN) ───
+                  if (hasSelectedFile && pref.isSecurityPinSet) ...[
+                    verticalMarginMedium,
+                    Text(
+                      context.l10n.pinRequiredForRestore,
+                      style: context.customTypography.bodyMedium.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    verticalMarginSmall,
+                    TextField(
+                      controller: _pinController,
+                      obscureText: true,
+                      keyboardType: TextInputType.number,
+                      maxLength: 4,
+                      style: context.customTypography.bodyMedium
+                          .copyWith(color: colorScheme.onSurface),
+                      decoration: InputDecoration(
+                        labelText: context.l10n.enterPin,
+                        counterText: '',
+                        filled: true,
+                        fillColor: isLight
+                            ? colorScheme.surfaceContainerLowest
+                            : colorScheme.surfaceContainerHigh,
+                        border: OutlineInputBorder(
+                          borderRadius: AppRadius.borderMd,
+                          borderSide:
+                              BorderSide(color: colorScheme.outlineVariant),
+                        ),
+                      ),
+                    ),
+                  ],
+
+                  // ── Error banner ─────────────────────────────────────────────
+                  _ImportErrorBanner(messageNotifier: _errorNotifier),
+                  verticalMarginMedium,
+
+                  // ── Single Primary Action Button ─────────────────────────────
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _isBusyNotifier,
+                    builder: (context, isBusy, _) {
+                      return SizedBox(
+                        width: double.infinity,
+                        height: 48.h,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colorScheme.primary,
+                            foregroundColor: colorScheme.onPrimary,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: AppRadius.borderMd),
+                            disabledBackgroundColor:
+                                colorScheme.primary.withValues(alpha: 0.4),
+                          ),
+                          onPressed: isBusy
+                              ? null
+                              : (hasSelectedFile ? _restore : _pickBackupFile),
+                          icon: isBusy
+                              ? SizedBox(
+                                  width: 18.r,
+                                  height: 18.r,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: colorScheme.onPrimary,
+                                  ),
+                                )
+                              : Icon(
+                                  hasSelectedFile
+                                      ? Icons.restore_rounded
+                                      : Icons.folder_open_rounded,
+                                  size: 20.sp,
+                                ),
+                          label: Text(
+                            hasSelectedFile
+                                ? context.l10n.restore
+                                : 'Browse & Restore Backup',
+                            style: textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeights.bold,
+                              color: colorScheme.onPrimary,
+                            ),
                           ),
                         ),
-                      ],
-                    ],
+                      );
+                    },
                   ),
-                ),
+                  if (!hasSelectedFile) ...[
+                    verticalMarginSmall,
+                    Text(
+                      'Navigate to Downloads → Expendly in the file browser to find your expendly backup file.',
+                      style: context.customTypography.bodyMedium.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
           ),

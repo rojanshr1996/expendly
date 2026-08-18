@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lumina - Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#2f3634",
+                        "surface-container": "#1a211f",
+                        "on-tertiary": "#4b2800",
+                        "background": "#0e1513",
+                        "inverse-surface": "#dde4e1",
+                        "tertiary": "#ffd1aa",
+                        "outline-variant": "#3c4a46",
+                        "on-surface": "#dde4e1",
+                        "surface": "#0e1513",
+                        "on-tertiary-fixed": "#2d1600",
+                        "glass-stroke": "rgba(255, 255, 255, 0.05)",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-primary-fixed-variant": "#005047",
+                        "primary-fixed": "#62fae3",
+                        "primary-fixed-dim": "#3cddc7",
+                        "on-secondary-container": "#b0b2ff",
+                        "on-primary-fixed": "#00201c",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "semantic-green": "#34d399",
+                        "secondary-fixed": "#e1e0ff",
+                        "on-error-container": "#ffdad6",
+                        "primary-container": "#2dd4bf",
+                        "surface-container-lowest": "#09100e",
+                        "on-surface-variant": "#bacac5",
+                        "primary": "#57f1db",
+                        "on-background": "#dde4e1",
+                        "tertiary-fixed": "#ffdcc0",
+                        "secondary-container": "#3131c0",
+                        "outline": "#859490",
+                        "secondary": "#c0c1ff",
+                        "surface-dim": "#0e1513",
+                        "error": "#ffb4ab",
+                        "glass-overlay": "rgba(14, 21, 19, 0.7)",
+                        "surface-container-high": "#242b2a",
+                        "on-primary-container": "#00574d",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-primary": "#003731",
+                        "on-secondary-fixed": "#07006c",
+                        "semantic-red": "#fb7185",
+                        "tertiary-container": "#ffac5a",
+                        "on-secondary": "#1000a9",
+                        "surface-bright": "#333b39",
+                        "inverse-on-surface": "#2b3230",
+                        "surface-tint": "#3cddc7",
+                        "on-tertiary-container": "#744000",
+                        "on-error": "#690005",
+                        "inverse-primary": "#006b5f",
+                        "surface-container-low": "#161d1b",
+                        "surface-container-highest": "#2f3634"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "stack-tight": "4px",
+                        "inner-component": "12px",
+                        "gutter-md": "16px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "title-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-md": ["JetBrains Mono"],
+                        "label-sm": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "500" }],
+                        "display-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "label-sm": ["10px", { "lineHeight": "12px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        .bento-card {
+            background-color: theme('colors.surface-container');
+            border: 1px solid theme('colors.glass-stroke');
+            border-radius: theme('borderRadius.xl');
+            padding: theme('spacing.container-padding');
+        }
+        .glow-shadow {
+            box-shadow: 0 0 20px rgba(87, 241, 219, 0.15);
+        }
+        .primary-glow-shadow {
+            box-shadow: 0 0 24px rgba(87, 241, 219, 0.3);
+        }
+        
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.surface-variant');
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline');
+        }
+    </style>
+</head>
+<body class="antialiased h-screen flex flex-col overflow-hidden bg-background text-on-background">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-50 bg-surface/60 dark:bg-surface/60 backdrop-blur-md flex justify-between items-center px-container-padding py-base w-full">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full overflow-hidden hover:opacity-80 transition-opacity scale-95 active:scale-90 transition-transform flex items-center justify-center bg-surface-container-high border border-glass-stroke">
+<span class="material-symbols-outlined text-primary text-xl">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Ledger</h1>
+</div>
+<button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:opacity-80 transition-opacity scale-95 active:scale-90 transition-transform border border-glass-stroke">
+<img class="w-full h-full object-cover rounded-full" data-alt="A futuristic minimalist avatar placeholder featuring a glowing neon teal geometric face on a dark obsidian background, soft lighting, 4k high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDBMTB4dqyG_zKvz6_pBQIlljeOSZZ8azaxV5Hm5o-Hooq8EthB2GK8_ObLEksdd4ODZ2alR82bmOxqEU6WOX5l8ZU87U5AXKtPwC1wF3Rni6kGCF9e9bFM297QHa-OqKGhka1LeuoLJEk84W7oBed9_ZdDS2J2xOdK8UxuZ6kU13_HytboTs-qgOtfcnfz3ni_kFS_nAq5AJZbPtkVWpyOAtPtEqDzPFVxF03Ot1lGY4eOLUFnd1KCA"/>
+</button>
+</header>
+<!-- Main Content - Split View for Tablet/Desktop -->
+<main class="flex-1 flex overflow-hidden p-container-padding gap-gutter-md max-w-7xl mx-auto w-full pb-24 md:pb-container-padding">
+<!-- Left Side: Navigation / Categories -->
+<aside class="hidden md:flex w-64 lg:w-80 flex-col gap-base h-full overflow-y-auto pr-2">
+<div class="mb-6 px-2">
+<h2 class="font-display-lg text-display-lg text-on-surface mb-2">Settings</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Manage your account and preferences.</p>
+</div>
+<nav class="flex flex-col gap-2">
+<!-- Active Item -->
+<button class="w-full flex items-center gap-4 px-4 py-3 rounded-lg bg-surface-container border border-glass-stroke text-primary hover:opacity-80 transition-opacity glow-shadow group text-left">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined font-variation-settings: 'FILL' 1;" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<div class="flex-1">
+<span class="block font-title-lg text-title-lg">Account</span>
+<span class="block font-body-sm text-body-sm text-on-surface-variant">Personal info &amp; tier</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<!-- Inactive Items -->
+<button class="w-full flex items-center gap-4 px-4 py-3 rounded-lg bg-transparent hover:bg-surface-container/50 border border-transparent hover:border-glass-stroke text-on-surface-variant hover:text-on-surface transition-all text-left">
+<div class="w-10 h-10 rounded-full bg-surface-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined">shield</span>
+</div>
+<div class="flex-1">
+<span class="block font-title-lg text-title-lg">Security</span>
+<span class="block font-body-sm text-body-sm">2FA &amp; Devices</span>
+</div>
+</button>
+<button class="w-full flex items-center gap-4 px-4 py-3 rounded-lg bg-transparent hover:bg-surface-container/50 border border-transparent hover:border-glass-stroke text-on-surface-variant hover:text-on-surface transition-all text-left">
+<div class="w-10 h-10 rounded-full bg-surface-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined">palette</span>
+</div>
+<div class="flex-1">
+<span class="block font-title-lg text-title-lg">Appearance</span>
+<span class="block font-body-sm text-body-sm">Theme &amp; Layout</span>
+</div>
+</button>
+<button class="w-full flex items-center gap-4 px-4 py-3 rounded-lg bg-transparent hover:bg-surface-container/50 border border-transparent hover:border-glass-stroke text-on-surface-variant hover:text-on-surface transition-all text-left">
+<div class="w-10 h-10 rounded-full bg-surface-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined">database</span>
+</div>
+<div class="flex-1">
+<span class="block font-title-lg text-title-lg">Data &amp; Privacy</span>
+<span class="block font-body-sm text-body-sm">Export &amp; Management</span>
+</div>
+</button>
+</nav>
+</aside>
+<!-- Right Side: Active Settings Canvas -->
+<section class="flex-1 h-full overflow-y-auto flex flex-col gap-gutter-md pb-12">
+<!-- Mobile Header (Hidden on Desktop) -->
+<div class="md:hidden mb-4">
+<h2 class="font-display-lg text-display-lg text-on-surface mb-2">Account Settings</h2>
+</div>
+<!-- Profile Overview Bento -->
+<div class="bento-card relative overflow-hidden group">
+<!-- Decorative Blur -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-700 pointer-events-none"></div>
+<div class="flex flex-col md:flex-row items-start md:items-center gap-6 relative z-10">
+<div class="relative">
+<div class="w-24 h-24 rounded-full border-2 border-primary p-1 glow-shadow relative">
+<img class="w-full h-full object-cover rounded-full" data-alt="A futuristic minimalist avatar placeholder featuring a glowing neon teal geometric face on a dark obsidian background, soft lighting, 4k high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD87J62lbsNtECBmkN5ZkKMTGlKvBeMCBM6-L3UPDfeAKIbcAhJ12DOTWTL0s4HHTybnvL3khfvWVuQpDo88D0Ddjy9VYMhWouSaxcF8qtFm3GkB0eFjJry1k1EZiqv4CNo2owaIr6rkJY-szJCsIP_bDZYhRGZE3boiknBTeQyNsS2CrSRw822LkVDX2Y9QV9VqdHZmnMVm9BhQAQ3NlyCrwJ7DxZeNQqnYDN72WQ-ZKTOK9irZdLj9A"/>
+<button class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-surface-container border border-glass-stroke flex items-center justify-center hover:bg-surface-variant transition-colors shadow-lg">
+<span class="material-symbols-outlined text-sm text-primary">edit</span>
+</button>
+</div>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-md text-headline-md text-on-surface">Alex Mercer</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-3">alex.mercer@lumina.io</p>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-variant/50 border border-glass-stroke">
+<span class="w-2 h-2 rounded-full bg-primary primary-glow-shadow"></span>
+<span class="font-label-md text-label-md text-on-surface">Pro Tier</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Personal Information Form -->
+<div class="bento-card flex flex-col gap-6">
+<div class="flex items-center justify-between border-b border-glass-stroke pb-4">
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface">Personal Information</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Update your basic details.</p>
+</div>
+</div>
+<form class="flex flex-col gap-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant">FIRST NAME</label>
+<input class="bg-surface-container-high border border-glass-stroke rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder-on-surface-variant/50" type="text" value="Alex"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant">LAST NAME</label>
+<input class="bg-surface-container-high border border-glass-stroke rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder-on-surface-variant/50" type="text" value="Mercer"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant">EMAIL ADDRESS</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">mail</span>
+<input class="w-full bg-surface-container-high border border-glass-stroke rounded-lg pl-12 pr-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder-on-surface-variant/50" type="email" value="alex.mercer@lumina.io"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant">PHONE NUMBER</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">call</span>
+<input class="w-full bg-surface-container-high border border-glass-stroke rounded-lg pl-12 pr-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder-on-surface-variant/50" type="tel" value="+1 (555) 019-2834"/>
+</div>
+</div>
+<div class="flex justify-end mt-4">
+<button class="bg-primary hover:bg-primary/90 text-on-primary font-body-md text-body-md font-semibold py-3 px-6 rounded-lg transition-colors primary-glow-shadow" type="button">
+                            Save Changes
+                        </button>
+</div>
+</form>
+</div>
+<!-- Danger Zone -->
+<div class="bento-card border-error-container/30 bg-surface-container/50">
+<div class="flex flex-col gap-4">
+<div>
+<h3 class="font-title-lg text-title-lg text-error">Danger Zone</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Irreversible actions for your account.</p>
+</div>
+<div class="flex items-center justify-between p-4 rounded-lg bg-error-container/10 border border-error-container/20">
+<div>
+<span class="block font-body-md text-body-md text-on-surface font-medium">Delete Account</span>
+<span class="block font-body-sm text-body-sm text-on-surface-variant mt-1">Permanently remove all your data.</span>
+</div>
+<button class="px-4 py-2 rounded-lg border border-error text-error hover:bg-error/10 transition-colors font-label-md text-label-md">
+                            DELETE
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-surface/60 dark:bg-surface/60 backdrop-blur-md border-t border-glass-stroke">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/80 transition-colors scale-98 active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/80 transition-colors scale-98 active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined mb-1">analytics</span>
+<span class="font-label-md text-label-md">Insights</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/80 transition-colors scale-98 active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined mb-1">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Wallets</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary font-bold hover:text-primary/80 transition-colors scale-98 active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined mb-1 font-variation-settings: 'FILL' 1;" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</button>
+</nav>
+</body></html>

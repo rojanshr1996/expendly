@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Groups &amp; Splits - Lumina Wallet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#1a211f",
+                        "on-background": "#dde4e1",
+                        "surface-bright": "#333b39",
+                        "primary": "#57f1db",
+                        "inverse-on-surface": "#2b3230",
+                        "glass-stroke": "rgba(255, 255, 255, 0.05)",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-tertiary-fixed": "#2d1600",
+                        "secondary-container": "#3131c0",
+                        "surface-container-lowest": "#09100e",
+                        "glass-overlay": "rgba(14, 21, 19, 0.7)",
+                        "surface-dim": "#0e1513",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "on-primary-fixed": "#00201c",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "primary-fixed-dim": "#3cddc7",
+                        "outline": "#859490",
+                        "secondary-fixed": "#e1e0ff",
+                        "inverse-surface": "#dde4e1",
+                        "tertiary": "#ffd1aa",
+                        "on-secondary-container": "#b0b2ff",
+                        "inverse-primary": "#006b5f",
+                        "error-container": "#93000a",
+                        "on-tertiary-container": "#744000",
+                        "on-primary": "#003731",
+                        "surface": "#0e1513",
+                        "on-tertiary": "#4b2800",
+                        "on-primary-fixed-variant": "#005047",
+                        "secondary": "#c0c1ff",
+                        "error": "#ffb4ab",
+                        "outline-variant": "#3c4a46",
+                        "surface-variant": "#2f3634",
+                        "semantic-red": "#fb7185",
+                        "primary-container": "#2dd4bf",
+                        "on-surface-variant": "#bacac5",
+                        "on-secondary": "#1000a9",
+                        "surface-container-highest": "#2f3634",
+                        "semantic-green": "#34d399",
+                        "surface-container-low": "#161d1b",
+                        "on-error": "#690005",
+                        "primary-fixed": "#62fae3",
+                        "tertiary-container": "#ffac5a",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "background": "#0e1513",
+                        "on-surface": "#dde4e1",
+                        "on-secondary-fixed": "#07006c",
+                        "tertiary-fixed": "#ffdcc0",
+                        "on-primary-container": "#00574d",
+                        "surface-container-high": "#242b2a",
+                        "surface-tint": "#3cddc7",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter-md": "16px",
+                        "base": "8px",
+                        "stack-tight": "4px",
+                        "inner-component": "12px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["JetBrains Mono"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "title-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "label-sm": ["JetBrains Mono"],
+                        "body-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "display-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "label-sm": ["10px", { "lineHeight": "12px", "fontWeight": "400" }],
+                        "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        .glow-shadow {
+            box-shadow: 0 0 15px rgba(87, 241, 219, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background h-screen flex overflow-hidden selection:bg-primary/30 selection:text-primary">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-full py-container-padding bg-surface-dim dark:bg-surface-dim border-r border-glass-stroke backdrop-blur-xl shadow-xl h-screen w-72 flex-shrink-0 z-50">
+<div class="px-container-padding mb-8">
+<h1 class="font-display-lg text-display-lg font-bold text-primary dark:text-primary flex items-center gap-2">
+<span class="material-symbols-outlined icon-fill">account_balance</span>
+                Expendly
+            </h1>
+<p class="font-label-md text-label-md text-on-surface-variant mt-2 uppercase tracking-wider">Premium Plan</p>
+</div>
+<div class="flex-1 overflow-y-auto">
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-6 py-4 hover:bg-surface-bright dark:hover:bg-surface-bright transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-title-lg text-title-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-6 py-4 hover:bg-surface-bright dark:hover:bg-surface-bright transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-title-lg text-title-lg">Transactions</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-6 py-4 hover:bg-surface-bright dark:hover:bg-surface-bright transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-title-lg text-title-lg">Budgets</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-6 py-4 hover:bg-surface-bright dark:hover:bg-surface-bright transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-title-lg text-title-lg">Reports</span>
+</a>
+<a class="flex items-center gap-4 bg-primary/10 text-primary font-bold border-r-4 border-primary px-6 py-4 scale-[0.99] transition-transform" href="#">
+<span class="material-symbols-outlined icon-fill" data-icon="group">group</span>
+<span class="font-title-lg text-title-lg">Groups</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-6 py-4 hover:bg-surface-bright dark:hover:bg-surface-bright transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-title-lg text-title-lg">Settings</span>
+</a>
+</div>
+<div class="px-container-padding mt-auto pt-8">
+<button class="w-full bg-primary-container text-on-primary-container font-title-lg text-title-lg py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors glow-shadow">
+<span class="material-symbols-outlined">add</span>
+                New Entry
+            </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+<!-- TopNavBar (Mobile Only) -->
+<header class="md:hidden flex justify-between items-center px-container-padding w-full bg-glass-overlay dark:bg-glass-overlay w-full h-20 sticky top-0 z-40 bg-glass-overlay backdrop-blur-md border-b border-glass-stroke shadow-sm">
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface text-primary dark:text-primary">Expendly</h2>
+<div class="flex gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-glass-stroke object-cover" data-alt="A futuristic minimalist user avatar profile picture, dark theme, subtle glowing teal accents around the border, high contrast, smooth vectors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtlv6mUxHDLw5v6orNOIOLEQY2tDhFXJS0BpQdfz-DHIcBHurf8omLJlXqn_q2YZmdDuSNIEen8cG_fRvfJiFKTmppubWvM6UZ0Aqq4HH66dipYZBqr9vsinvqM8v7FydI4YsUm70WQUHdTU3_PkXKd6QAxC0OcbUTntfQXjVAgy7a32DpmSStRPYVa8K1tKRUDXA4y4r7XqlLimaPpG62vLRUWKVU_ToOY5ATnm2Vr7cv0tjNxphlsA"/>
+</div>
+</header>
+<main class="flex-1 overflow-auto p-container-padding flex flex-col lg:flex-row gap-gutter-md">
+<!-- Groups Sidebar (Inner) -->
+<aside class="w-full lg:w-72 flex-shrink-0 flex flex-col gap-base">
+<div class="bg-surface-container border border-glass-stroke rounded-xl p-container-padding shadow-sm">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-title-lg text-title-lg text-on-background">Active Groups</h3>
+<button class="text-primary hover:bg-primary/10 p-1 rounded-full transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Active Group -->
+<div class="bg-primary/10 border border-primary/20 rounded-lg p-3 cursor-pointer flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-glass-stroke flex-shrink-0 overflow-hidden">
+<span class="material-symbols-outlined text-primary">flight_takeoff</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-body-md text-body-md text-primary font-bold truncate">Trip to Bali</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate">4 members • Updated 2h ago</p>
+</div>
+</div>
+<!-- Inactive Group 1 -->
+<div class="hover:bg-surface-container-highest rounded-lg p-3 cursor-pointer flex items-center gap-3 transition-colors border border-transparent">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-glass-stroke flex-shrink-0 overflow-hidden">
+<span class="material-symbols-outlined text-on-surface-variant">restaurant</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-body-md text-body-md text-on-surface truncate">Dinner Party</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate">6 members • Settled</p>
+</div>
+</div>
+<!-- Inactive Group 2 -->
+<div class="hover:bg-surface-container-highest rounded-lg p-3 cursor-pointer flex items-center gap-3 transition-colors border border-transparent">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-glass-stroke flex-shrink-0 overflow-hidden">
+<span class="material-symbols-outlined text-on-surface-variant">home</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-body-md text-body-md text-on-surface truncate">Apartment Bills</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate">3 members • Ongoing</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Center Dashboard: Expenses List -->
+<section class="flex-1 flex flex-col gap-gutter-md min-w-0">
+<!-- Group Header / Stats Bento -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter-md">
+<div class="bg-surface-container border border-glass-stroke rounded-xl p-container-padding shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-32 h-32 bg-primary/5 rounded-full blur-2xl"></div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Total Group Spend</p>
+<h2 class="font-display-lg text-display-lg text-on-background">$2,450.00</h2>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<div class="flex -space-x-2">
+<img alt="Member 1" class="w-8 h-8 rounded-full border-2 border-surface-container" data-alt="A minimalist digital portrait of a person, dark cyberpunk aesthetic, high contrast teal lighting, smooth digital art." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEp6-PLkDIivtFqfnZKbpqCIp45PTBIghI8_wOlzuYYfwR3SH-3n8DYGj4edDHFRG5nk5xHCWzsO3gmzsT8bxjYaBr0hIhSakYfg1WlO65GUqdC6kpB_C5ZA4DaPtnFldeJ0P45Y1ndiAmxuk_0frh3PnD4M5j1tZlbAyLqPdK7mypWV5k7uVwrVpH-qBaE0lqp9fZrHFf_HAowtPoqL1lCrcvcbxpcfeDe3f_8czkerhnBo5TWVdnjg"/>
+<img alt="Member 2" class="w-8 h-8 rounded-full border-2 border-surface-container" data-alt="A minimalist digital portrait of another person, dark cyberpunk aesthetic, soft purple lighting, smooth digital art." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZGBlUKy52OhVUJl-j6Y6_2OH9gTQkeRBuxHciX2gxKHQ4KnSQLlhKnrsKb1QT3wVwbKvwZGBsfYm5WXlHnQeslftiKIs4x_pvSzrKAScYQfD-3vjfMxq4DIw7LO8ZnqPKpjMKVgQLAVg_6cZoi-SOvGP7igCqihFBq4AyDWc7K4NcLJTgd1b_umD9aLbTqUQZ6-8osjLKmUCbJqGkUjMt4-pmQA4gG3LciXB552wqYfOAmEIqXP2Frw"/>
+<img alt="Member 3" class="w-8 h-8 rounded-full border-2 border-surface-container" data-alt="A futuristic abstract avatar, dark theme with glowing neon accents, 3d render style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2bLXUxf28IV4-oo97aHiOoLhM6oT2KJGE0_aqanpyBlD9wUaDOr1Q4YiyjJW2fnvIIK8GzQa7ctZV1ovh09yZMM0j_Nrl_xy1wt1yMbq9pzIkHh86nCV0ynKE3pfUY6D9H7ox2p6VTIFjbKNIrRmPajt5EbIBuA5xrbcjXi-_74SGpUCwoXFuYONf8oxMIHymG2EXHgD7qPx03v5Te_vrbuVs0oVrqH5_2u3AG5abSYkaGPJ9_Xrdmw"/>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container bg-surface-container-highest flex items-center justify-center text-xs text-on-surface-variant">+1</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container border border-glass-stroke rounded-xl p-container-padding shadow-sm flex flex-col justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Your Share</p>
+<h2 class="font-display-lg text-display-lg text-primary">$612.50</h2>
+</div>
+<div class="mt-4">
+<div class="flex justify-between text-xs text-on-surface-variant mb-2">
+<span>Paid: $400.00</span>
+<span>Owed: $212.50</span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-2 overflow-hidden border border-glass-stroke">
+<div class="bg-primary h-full rounded-full glow-shadow" style="width: 65%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Expenses List -->
+<div class="bg-surface-container border border-glass-stroke rounded-xl p-container-padding shadow-sm flex-1 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-title-lg text-title-lg text-on-background">Expenses</h3>
+<button class="bg-surface-container-highest text-on-surface px-4 py-2 rounded-lg font-body-md text-body-md border border-glass-stroke hover:bg-surface-bright transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                            Filter
+                        </button>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 space-y-3">
+<!-- Expense Item -->
+<div class="bg-surface-container-lowest border border-glass-stroke rounded-lg p-3 flex items-center justify-between group hover:bg-surface-container-highest transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-lg bg-surface-container-highest flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-surface">hotel</span>
+</div>
+<div>
+<h4 class="font-body-md text-body-md text-on-background">Villa Rental</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Paid by Sarah • Today</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-body-md text-body-md text-on-background">$1,200.00</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">You owe $300</p>
+</div>
+</div>
+<!-- Expense Item -->
+<div class="bg-surface-container-lowest border border-glass-stroke rounded-lg p-3 flex items-center justify-between group hover:bg-surface-container-highest transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-lg bg-surface-container-highest flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-surface">directions_car</span>
+</div>
+<div>
+<h4 class="font-body-md text-body-md text-on-background">Car Rental</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Paid by You • Yesterday</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-body-md text-body-md text-on-background">$400.00</p>
+<p class="font-label-sm text-label-sm text-primary">You lent $300</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Panel: Balances & Settlements -->
+<aside class="w-full lg:w-80 flex-shrink-0 flex flex-col gap-gutter-md">
+<!-- Simplified Settlements -->
+<div class="bg-surface-container border border-glass-stroke rounded-xl p-container-padding shadow-sm relative overflow-hidden">
+<!-- Subtle gradient bg -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
+<h3 class="font-title-lg text-title-lg text-on-background mb-4 relative z-10">Settle Up</h3>
+<div class="space-y-4 relative z-10">
+<div class="flex flex-col gap-2 p-3 bg-surface-container-lowest rounded-lg border border-glass-stroke">
+<div class="flex justify-between items-center mb-1">
+<span class="font-body-sm text-body-sm text-on-surface-variant">You owe Sarah</span>
+<span class="font-title-lg text-title-lg text-semantic-red font-bold">$212.50</span>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container font-body-md py-2 rounded-md font-bold hover:bg-primary/90 transition-colors">
+                                Pay Now
+                            </button>
+</div>
+</div>
+</div>
+<!-- Member Balances -->
+<div class="bg-surface-container border border-glass-stroke rounded-xl p-container-padding shadow-sm flex-1">
+<h3 class="font-title-lg text-title-lg text-on-background mb-4">Balances</h3>
+<div class="space-y-4">
+<!-- Member Balance -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img alt="Sarah" class="w-10 h-10 rounded-full border border-glass-stroke" data-alt="Minimalist abstract digital portrait, dark theme, neon highlights, clean geometry." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9RHykfeVkuKxvY3Agjwysuv6IneSo2o88UWw_CN3WyPlAbocH1o9RyWCxqt6CSw45JnnAMkUxqjU1FUCuYRSXx9iAg8qv6xL7M-_ercXSjgg5PIYID6D6jixXEpDXePSXWQTWLZdy7nVcS68FfszAAZ_0TftGOO3DIGH2z1_JEv2s-MWVmQmKs_5VzDPHQ9DfyioYLv_X0yrJY0YF21wb1tNiDZPgvtDvYGChMBZxJmD9kQ7RZ4BDA"/>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Sarah</p>
+<p class="font-label-sm text-label-sm text-semantic-green">Gets back $500</p>
+</div>
+</div>
+</div>
+<!-- Member Balance -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-glass-stroke flex items-center justify-center">
+<span class="font-body-md text-on-surface">Y</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">You</p>
+<p class="font-label-sm text-label-sm text-semantic-red">Owe $212.50</p>
+</div>
+</div>
+</div>
+<!-- Member Balance -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img alt="Mike" class="w-10 h-10 rounded-full border border-glass-stroke" data-alt="Minimalist abstract digital portrait, dark theme, sleek corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5-IYLO-2lrV-w4sZN2h4vISEl4IFbDIMTlrjVCy5ZE_KoC8aqGOGlvzMYFLJR_jHtG0fqx9K31nT8GLdpC18Njrx0NEMpVvOU6Ejsba_DoayeTrHSfBGb6yaoaQWObxMFofSHJaMwutjVHK-wenWnh5giWS9MJnUZAs8uWSSkcaMCt8_PsGcdxD_8tGcHW7CH9na9ZN1QVn42sCEaavPDyTrdz04z7LBI9qhl0Nm-3YQGj9-TY-D3PQ"/>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Mike</p>
+<p class="font-label-sm text-label-sm text-semantic-red">Owes $287.50</p>
+</div>
+</div>
+<button class="text-xs bg-surface-container-highest text-on-surface px-2 py-1 rounded border border-glass-stroke hover:text-primary transition-colors">
+                                Remind
+                            </button>
+</div>
+</div>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

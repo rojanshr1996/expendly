@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -135,238 +133,192 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
       child: Container(
         height: MediaQuery.of(context).size.height * 0.75,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isLight
-                ? [
-                    Colors.white.withValues(alpha: 0.45),
-                    colorScheme.surfaceContainerLowest.withValues(alpha: 0.30),
-                  ]
-                : [
-                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
-                    colorScheme.surfaceContainerLow.withValues(alpha: 0.20),
-                  ],
-          ),
+          color:
+              isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
           border: Border.all(
             color: isLight
-                ? Colors.white.withValues(alpha: 0.60)
+                ? colorScheme.outlineVariant.withValues(alpha: 0.50)
                 : customColors.glassStroke.withValues(alpha: 0.45),
             width: 1.0,
           ),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-              child: Column(
-                children: [
-                  // Sheet Handle & Drag Bar
-                  Center(
-                    child: Container(
-                      width: 40.w,
-                      height: 4.h,
-                      decoration: BoxDecoration(
-                        color:
-                            colorScheme.outlineVariant.withValues(alpha: 0.7),
-                        borderRadius: BorderRadius.circular(2.r),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-
-                  // Header Title
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        l10n.categoryLabel,
-                        style: (textTheme.titleMedium ?? const TextStyle())
-                            .copyWith(
-                          fontWeight: FontWeights.bold,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.close_rounded,
-                            color: colorScheme.onSurfaceVariant),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 12.h),
-
-                  // Search Bar Component with Liquid Glass effect
-                  ValueListenableBuilder<String>(
-                    valueListenable: _searchQueryNotifier,
-                    builder: (context, query, _) {
-                      final br = BorderRadius.circular(16.r);
-                      return Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: isLight
-                                ? [
-                                    Colors.white.withValues(alpha: 0.55),
-                                    colorScheme.surfaceContainerLowest
-                                        .withValues(alpha: 0.25),
-                                  ]
-                                : [
-                                    colorScheme.surfaceContainerHigh
-                                        .withValues(alpha: 0.30),
-                                    colorScheme.surfaceContainerLow
-                                        .withValues(alpha: 0.15),
-                                  ],
-                          ),
-                          borderRadius: br,
-                          border: Border.all(
-                            color: isLight
-                                ? Colors.white.withValues(alpha: 0.65)
-                                : customColors.glassStroke
-                                    .withValues(alpha: 0.45),
-                            width: 1.0,
-                          ),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: br,
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                            child: TextField(
-                              controller: _searchController,
-                              onChanged: (val) =>
-                                  _searchQueryNotifier.value = val,
-                              style: (textTheme.bodyLarge ?? const TextStyle())
-                                  .copyWith(
-                                color: colorScheme.onSurface,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: l10n.searchCategoryHint,
-                                hintStyle:
-                                    (textTheme.bodyMedium ?? const TextStyle())
-                                        .copyWith(
-                                  color: colorScheme.onSurfaceVariant
-                                      .withValues(alpha: 0.7),
-                                ),
-                                prefixIcon: Icon(
-                                  Icons.search_rounded,
-                                  color: colorScheme.onSurfaceVariant,
-                                  size: 20.sp,
-                                ),
-                                suffixIcon: query.isNotEmpty
-                                    ? IconButton(
-                                        icon: Icon(
-                                          Icons.close_rounded,
-                                          size: 18.sp,
-                                          color: colorScheme.outline,
-                                        ),
-                                        onPressed: () {
-                                          _searchController.clear();
-                                          _searchQueryNotifier.value = '';
-                                        },
-                                      )
-                                    : null,
-                                filled: true,
-                                fillColor: Colors.transparent,
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 16.w, vertical: 12.h),
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  SizedBox(height: 16.h),
-
-                  // Category Grid
-                  Expanded(
-                    child: ValueListenableBuilder<String>(
-                      valueListenable: _searchQueryNotifier,
-                      builder: (context, query, _) {
-                        // The parent passes a pre-filtered list (expense or income
-                        // categories), so we only need to apply the search query here.
-                        final filtered = widget.categories.where((cat) {
-                          return query.isEmpty ||
-                              cat.name
-                                  .toLowerCase()
-                                  .contains(query.toLowerCase());
-                        }).toList();
-
-                        if (filtered.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.category_outlined,
-                                    size: 48.sp, color: colorScheme.outline),
-                                SizedBox(height: 12.h),
-                                Text(
-                                  l10n.noCategoriesFound,
-                                  style: customTypography.bodyMedium
-                                      .copyWith(color: colorScheme.outline),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        return GridView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 10.w,
-                            mainAxisSpacing: 10.h,
-                            childAspectRatio: 1.05,
-                          ),
-                          itemCount: filtered.length +
-                              (widget.allowOverallLimitOption ? 1 : 0),
-                          itemBuilder: (context, index) {
-                            // "Overall" option always appears first when enabled
-                            if (widget.allowOverallLimitOption && index == 0) {
-                              final isOverallSelected =
-                                  widget.selectedCategory == null;
-                              return _buildGridItem(
-                                context: context,
-                                isSelected: isOverallSelected,
-                                icon: Icons.all_inclusive_rounded,
-                                iconColor: colorScheme.primary,
-                                label: l10n.overallMonthlyLimit,
-                                onTap: () => Navigator.pop(context, null),
-                              );
-                            }
-
-                            final cat = filtered[index -
-                                (widget.allowOverallLimitOption ? 1 : 0)];
-                            final isSelected =
-                                widget.selectedCategory?.id == cat.id;
-                            final color = _parseColor(context, cat.colorHex);
-                            final icon = _parseIcon(cat.icon);
-
-                            return _buildGridItem(
-                              context: context,
-                              isSelected: isSelected,
-                              icon: icon,
-                              iconColor: color,
-                              label: cat.name,
-                              onTap: () => Navigator.pop(context, cat),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+        child: Column(
+          children: [
+            // Sheet Handle & Drag Bar
+            Center(
+              child: Container(
+                width: 40.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: isLight
+                      ? colorScheme.outline.withValues(alpha: 0.4)
+                      : colorScheme.outlineVariant.withValues(alpha: 0.7),
+                  borderRadius: BorderRadius.circular(2.r),
+                ),
               ),
             ),
-          ),
+            SizedBox(height: 16.h),
+
+            // Header Title
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.categoryLabel,
+                  style: (textTheme.titleMedium ?? const TextStyle()).copyWith(
+                    fontWeight: FontWeights.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close_rounded,
+                      color: colorScheme.onSurfaceVariant),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+
+            // Search Bar Component
+            ValueListenableBuilder<String>(
+              valueListenable: _searchQueryNotifier,
+              builder: (context, query, _) {
+                final br = BorderRadius.circular(16.r);
+                return Container(
+                  decoration: BoxDecoration(
+                    color: isLight
+                        ? colorScheme.surfaceContainerLow
+                        : colorScheme.surfaceContainerHigh,
+                    borderRadius: br,
+                    border: Border.all(
+                      color: isLight
+                          ? colorScheme.outlineVariant.withValues(alpha: 0.50)
+                          : customColors.glassStroke.withValues(alpha: 0.45),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (val) => _searchQueryNotifier.value = val,
+                    style: (textTheme.bodyLarge ?? const TextStyle()).copyWith(
+                      color: colorScheme.onSurface,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: l10n.searchCategoryHint,
+                      hintStyle:
+                          (textTheme.bodyMedium ?? const TextStyle()).copyWith(
+                        color:
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search_rounded,
+                        color: colorScheme.onSurfaceVariant,
+                        size: 20.sp,
+                      ),
+                      suffixIcon: query.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(
+                                Icons.close_rounded,
+                                size: 18.sp,
+                                color: colorScheme.outline,
+                              ),
+                              onPressed: () {
+                                _searchController.clear();
+                                _searchQueryNotifier.value = '';
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 12.h),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                    ),
+                  ),
+                );
+              },
+            ),
+            SizedBox(height: 16.h),
+
+            // Category Grid
+            Expanded(
+              child: ValueListenableBuilder<String>(
+                valueListenable: _searchQueryNotifier,
+                builder: (context, query, _) {
+                  // The parent passes a pre-filtered list (expense or income
+                  // categories), so we only need to apply the search query here.
+                  final filtered = widget.categories.where((cat) {
+                    return query.isEmpty ||
+                        cat.name.toLowerCase().contains(query.toLowerCase());
+                  }).toList();
+
+                  if (filtered.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.category_outlined,
+                              size: 48.sp, color: colorScheme.outline),
+                          SizedBox(height: 12.h),
+                          Text(
+                            l10n.noCategoriesFound,
+                            style: customTypography.bodyMedium
+                                .copyWith(color: colorScheme.outline),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return GridView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 10.w,
+                      mainAxisSpacing: 10.h,
+                      childAspectRatio: 1.05,
+                    ),
+                    itemCount: filtered.length +
+                        (widget.allowOverallLimitOption ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      // "Overall" option always appears first when enabled
+                      if (widget.allowOverallLimitOption && index == 0) {
+                        final isOverallSelected =
+                            widget.selectedCategory == null;
+                        return _buildGridItem(
+                          context: context,
+                          isSelected: isOverallSelected,
+                          icon: Icons.all_inclusive_rounded,
+                          iconColor: colorScheme.primary,
+                          label: l10n.overallMonthlyLimit,
+                          onTap: () => Navigator.pop(context, null),
+                        );
+                      }
+
+                      final cat = filtered[
+                          index - (widget.allowOverallLimitOption ? 1 : 0)];
+                      final isSelected = widget.selectedCategory?.id == cat.id;
+                      final color = _parseColor(context, cat.colorHex);
+                      final icon = _parseIcon(cat.icon);
+
+                      return _buildGridItem(
+                        context: context,
+                        isSelected: isSelected,
+                        icon: icon,
+                        iconColor: color,
+                        label: cat.name,
+                        onTap: () => Navigator.pop(context, cat),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -386,41 +338,24 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
     final isLight = Theme.of(context).brightness == Brightness.light;
     final isDark = !isLight;
     final br = BorderRadius.circular(16.r);
-
-    final selectedBgColor = isLight
-        ? Color.lerp(Colors.white, colorScheme.primary, 0.12)!
-        : Color.lerp(
-            colorScheme.surfaceContainerHighest, colorScheme.primary, 0.20)!;
+    final selectedBg = colorScheme.primary;
+    final selectedFg = isLight ? Colors.white : colorScheme.onPrimary;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: br,
-          color: isSelected ? selectedBgColor : null,
-          gradient: isSelected
-              ? null
-              : LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isLight
-                      ? [
-                          Colors.white.withValues(alpha: 0.50),
-                          colorScheme.surfaceContainerLowest
-                              .withValues(alpha: 0.25),
-                        ]
-                      : [
-                          colorScheme.surfaceContainerHigh
-                              .withValues(alpha: 0.28),
-                          colorScheme.surfaceContainerLow
-                              .withValues(alpha: 0.14),
-                        ],
-                ),
+          color: isSelected
+              ? selectedBg
+              : (isLight
+                  ? colorScheme.surfaceContainerLowest
+                  : colorScheme.surfaceContainerLow),
           border: Border.all(
             color: isSelected
-                ? colorScheme.primary.withValues(alpha: isLight ? 0.75 : 0.85)
+                ? colorScheme.primary
                 : (isLight
-                    ? Colors.white.withValues(alpha: 0.65)
+                    ? colorScheme.outlineVariant.withValues(alpha: 0.50)
                     : customColors.glassStroke.withValues(alpha: 0.45)),
             width: isSelected ? 1.5 : 1.0,
           ),
@@ -428,94 +363,89 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
               ? [
                   BoxShadow(
                     color: colorScheme.primary
-                        .withValues(alpha: isDark ? 0.25 : 0.15),
+                        .withValues(alpha: isDark ? 0.35 : 0.25),
                     blurRadius: 8.r,
                     offset: const Offset(0, 2),
                   ),
                 ]
-              : null,
+              : (isLight
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
+                      ),
+                    ]
+                  : null),
         ),
-        child: ClipRRect(
-          borderRadius: br,
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 8.h),
-              child: Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.center,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 8.h),
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(7.w),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isSelected
-                              ? colorScheme.primary
-                                  .withValues(alpha: isLight ? 0.14 : 0.20)
-                              : iconColor.withValues(
-                                  alpha: isLight ? 0.12 : 0.18),
-                          border: isSelected
-                              ? Border.all(
-                                  color: colorScheme.primary
-                                      .withValues(alpha: isLight ? 0.30 : 0.40),
-                                  width: 1.0,
-                                )
-                              : Border.all(
-                                  color: iconColor.withValues(
-                                      alpha: isLight ? 0.25 : 0.35),
-                                  width: 1.0,
-                                ),
-                        ),
-                        child: Icon(
-                          icon,
-                          color: isSelected ? colorScheme.primary : iconColor,
-                          size: 22.sp,
-                        ),
-                      ),
-                      SizedBox(height: 6.h),
-                      Text(
-                        label,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style:
-                            (textTheme.bodySmall ?? const TextStyle()).copyWith(
-                          fontSize: 11.sp,
-                          height: 1.2,
-                          fontWeight: isSelected
-                              ? FontWeights.bold
-                              : FontWeights.medium,
-                          color: isSelected
-                              ? colorScheme.primary
-                              : colorScheme.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (isSelected)
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                        padding: EdgeInsets.all(2.r),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.check_rounded,
-                          size: 11.sp,
-                          color: isLight ? Colors.white : colorScheme.onPrimary,
-                        ),
-                      ),
+                  Container(
+                    padding: EdgeInsets.all(7.w),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isSelected
+                          ? Colors.white.withValues(alpha: 0.22)
+                          : iconColor.withValues(alpha: isLight ? 0.14 : 0.20),
+                      border: isSelected
+                          ? Border.all(
+                              color: Colors.white.withValues(alpha: 0.40),
+                              width: 1.0,
+                            )
+                          : Border.all(
+                              color: iconColor.withValues(
+                                  alpha: isLight ? 0.30 : 0.40),
+                              width: 1.0,
+                            ),
                     ),
+                    child: Icon(
+                      icon,
+                      color: isSelected ? selectedFg : iconColor,
+                      size: 22.sp,
+                    ),
+                  ),
+                  SizedBox(height: 6.h),
+                  Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: (textTheme.bodySmall ?? const TextStyle()).copyWith(
+                      fontSize: 11.sp,
+                      height: 1.2,
+                      fontWeight:
+                          isSelected ? FontWeights.bold : FontWeights.medium,
+                      color: isSelected ? selectedFg : colorScheme.onSurface,
+                    ),
+                  ),
                 ],
               ),
-            ),
+              if (isSelected)
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Container(
+                    padding: EdgeInsets.all(2.r),
+                    decoration: BoxDecoration(
+                      color: isLight ? Colors.white : colorScheme.onPrimary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.check_rounded,
+                      size: 11.sp,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),

@@ -275,13 +275,54 @@ class _DashboardPageState extends State<DashboardPage> {
           summary.totalExpense == 0;
 
       if (isEmptyState) {
-        return Padding(
-          padding: EdgeInsets.only(top: headerPaddingTop),
-          child: EmptyDashboardView(
-            key: const ValueKey('empty'),
-            onAddTransaction: () {
-              _openAddTransaction(context);
-            },
+        return RefreshIndicator(
+          key: const ValueKey('empty_content'),
+          color: AppColors.primary,
+          edgeOffset: headerPaddingTop,
+          displacement: 30.h,
+          onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            padding: EdgeInsets.only(
+              top: headerPaddingTop + 8.h,
+              bottom: 120.h,
+            ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Empty Dashboard Hero & CTA
+                    EmptyDashboardView(
+                      key: const ValueKey('empty'),
+                      onAddTransaction: () {
+                        _openAddTransaction(context);
+                      },
+                    ),
+                    verticalMarginMedium,
+
+                    // Shared Groups / Split Bill Section (Always accessible)
+                    _StaggeredEntrance(
+                      delayMs: 150,
+                      child: DashboardRecentGroups(
+                        onSeeAllPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (_) => const GroupsListPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    verticalMarginLarge,
+                  ],
+                ).defaultCanvasPadding(),
+              ),
+            ),
           ),
         );
       }

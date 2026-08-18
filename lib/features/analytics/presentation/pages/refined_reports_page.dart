@@ -17,6 +17,7 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/services/data_export_import_service.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/font_weights.dart';
+import '../../../../core/widgets/animated_empty_state_hero.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
@@ -147,236 +148,227 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
       builder: (ctx) {
         return Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isLight
-                  ? [
-                      colorScheme.surfaceContainerLowest
-                          .withValues(alpha: 0.45),
-                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.30),
-                    ]
-                  : [
-                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
-                      colorScheme.surfaceContainerLow.withValues(alpha: 0.20),
-                    ],
-            ),
+            color: isLight
+                ? colorScheme.surface
+                : colorScheme.surfaceContainerHigh,
             borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
             border: Border.all(
               color: isLight
-                  ? Colors.white.withValues(alpha: 0.60)
+                  ? colorScheme.outlineVariant.withValues(alpha: 0.50)
                   : customColors.glassStroke.withValues(alpha: 0.45),
               width: 1.0,
             ),
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-              child: SafeArea(
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: isLight
+                            ? colorScheme.outline.withValues(alpha: 0.4)
+                            : colorScheme.outlineVariant.withValues(alpha: 0.7),
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Title
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Drag handle
-                      Center(
-                        child: Container(
-                          width: 40.w,
-                          height: 4.h,
-                          decoration: BoxDecoration(
-                            color: colorScheme.outlineVariant
-                                .withValues(alpha: 0.7),
-                            borderRadius: BorderRadius.circular(2.r),
-                          ),
+                      Text(
+                        'Download Financial Report',
+                        style: (textTheme.titleMedium ?? const TextStyle())
+                            .copyWith(
+                          fontWeight: FontWeights.bold,
+                          color: colorScheme.onSurface,
                         ),
                       ),
-                      SizedBox(height: 16.h),
+                      IconButton(
+                        icon: Icon(Icons.close_rounded,
+                            color: colorScheme.onSurfaceVariant),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    'Choose your preferred format for the ${report.periodName} analysis report.',
+                    style: customTypography.bodyMedium.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 12.sp,
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
 
-                      // Title
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // PDF Option (Visual Charts & Insights)
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _exportReport(context, report, isPdf: true);
+                    },
+                    borderRadius: BorderRadius.circular(16.r),
+                    child: Container(
+                      padding: EdgeInsets.all(14.r),
+                      decoration: BoxDecoration(
+                        color: isLight
+                            ? colorScheme.surfaceContainerLowest
+                            : colorScheme.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(
+                          color: isLight
+                              ? colorScheme.outlineVariant
+                                  .withValues(alpha: 0.50)
+                              : context.customColors.glassStroke,
+                        ),
+                      ),
+                      child: Row(
                         children: [
-                          Text(
-                            'Download Financial Report',
-                            style: (textTheme.titleMedium ?? const TextStyle())
-                                .copyWith(
-                              fontWeight: FontWeights.bold,
-                              color: colorScheme.onSurface,
+                          Container(
+                            width: 46.w,
+                            height: 46.h,
+                            decoration: BoxDecoration(
+                              color: Colors.redAccent.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            child: Icon(
+                              Icons.picture_as_pdf_rounded,
+                              color: Colors.redAccent,
+                              size: 26.sp,
                             ),
                           ),
-                          IconButton(
-                            icon: Icon(Icons.close_rounded,
-                                color: colorScheme.onSurfaceVariant),
-                            onPressed: () => Navigator.pop(ctx),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        'Choose your preferred format for the ${report.periodName} analysis report.',
-                        style: customTypography.bodyMedium.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          fontSize: 12.sp,
-                        ),
-                      ),
-                      SizedBox(height: 20.h),
-
-                      // PDF Option (Visual Charts & Insights)
-                      InkWell(
-                        onTap: () {
-                          Navigator.pop(ctx);
-                          _exportReport(context, report, isPdf: true);
-                        },
-                        borderRadius: BorderRadius.circular(16.r),
-                        child: Container(
-                          padding: EdgeInsets.all(14.r),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerLow,
-                            borderRadius: BorderRadius.circular(16.r),
-                            border: Border.all(
-                                color: context.customColors.glassStroke),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 46.w,
-                                height: 46.h,
-                                decoration: BoxDecoration(
-                                  color:
-                                      Colors.redAccent.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                                child: Icon(
-                                  Icons.picture_as_pdf_rounded,
-                                  color: Colors.redAccent,
-                                  size: 26.sp,
-                                ),
-                              ),
-                              SizedBox(width: 14.w),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'PDF Visual Report',
-                                          style: customTypography.bodyLargeBold
-                                              .copyWith(
-                                            color: colorScheme.onSurface,
-                                            fontSize: 14.sp,
-                                          ),
-                                        ),
-                                        SizedBox(width: 8.w),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 6.w, vertical: 2.h),
-                                          decoration: BoxDecoration(
-                                            color: colorScheme.primary
-                                                .withValues(alpha: 0.15),
-                                            borderRadius:
-                                                BorderRadius.circular(6.r),
-                                          ),
-                                          child: Text(
-                                            'With Charts',
-                                            style: customTypography
-                                                .labelMediumMono
-                                                .copyWith(
-                                              fontSize: 9.sp,
-                                              color: colorScheme.primary,
-                                              fontWeight: FontWeights.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 4.h),
-                                    Text(
-                                      'Includes vector charts, category breakdown bars, and financial analysis narratives.',
-                                      style:
-                                          customTypography.bodyMedium.copyWith(
-                                        color: colorScheme.onSurfaceVariant,
-                                        fontSize: 11.sp,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Icon(Icons.chevron_right_rounded,
-                                  color: colorScheme.onSurfaceVariant),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 12.h),
-
-                      // CSV Option
-                      InkWell(
-                        onTap: () {
-                          Navigator.pop(ctx);
-                          _exportReport(context, report, isPdf: false);
-                        },
-                        borderRadius: BorderRadius.circular(16.r),
-                        child: Container(
-                          padding: EdgeInsets.all(14.r),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerLow,
-                            borderRadius: BorderRadius.circular(16.r),
-                            border: Border.all(
-                                color: context.customColors.glassStroke),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 46.w,
-                                height: 46.h,
-                                decoration: BoxDecoration(
-                                  color: Colors.green.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                                child: Icon(
-                                  Icons.table_chart_rounded,
-                                  color: Colors.green,
-                                  size: 26.sp,
-                                ),
-                              ),
-                              SizedBox(width: 14.w),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                          SizedBox(width: 14.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
                                     Text(
-                                      'CSV Data Spreadsheet',
+                                      'PDF Visual Report',
                                       style: customTypography.bodyLargeBold
                                           .copyWith(
                                         color: colorScheme.onSurface,
                                         fontSize: 14.sp,
                                       ),
                                     ),
-                                    SizedBox(height: 4.h),
-                                    Text(
-                                      'Raw itemized transaction ledger for Excel, Google Sheets, or Numbers.',
-                                      style:
-                                          customTypography.bodyMedium.copyWith(
-                                        color: colorScheme.onSurfaceVariant,
-                                        fontSize: 11.sp,
+                                    SizedBox(width: 8.w),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 6.w, vertical: 2.h),
+                                      decoration: BoxDecoration(
+                                        color: colorScheme.primary
+                                            .withValues(alpha: 0.15),
+                                        borderRadius:
+                                            BorderRadius.circular(6.r),
+                                      ),
+                                      child: Text(
+                                        'With Charts',
+                                        style: customTypography.labelMediumMono
+                                            .copyWith(
+                                          fontSize: 9.sp,
+                                          color: colorScheme.primary,
+                                          fontWeight: FontWeights.bold,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                              Icon(Icons.chevron_right_rounded,
-                                  color: colorScheme.onSurfaceVariant),
-                            ],
+                                SizedBox(height: 4.h),
+                                Text(
+                                  'Includes vector charts, category breakdown bars, and financial analysis narratives.',
+                                  style: customTypography.bodyMedium.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                    fontSize: 11.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
+                          Icon(Icons.chevron_right_rounded,
+                              color: colorScheme.onSurfaceVariant),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+
+                  // CSV Option
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _exportReport(context, report, isPdf: false);
+                    },
+                    borderRadius: BorderRadius.circular(16.r),
+                    child: Container(
+                      padding: EdgeInsets.all(14.r),
+                      decoration: BoxDecoration(
+                        color: isLight
+                            ? colorScheme.surfaceContainerLowest
+                            : colorScheme.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(
+                          color: isLight
+                              ? colorScheme.outlineVariant
+                                  .withValues(alpha: 0.50)
+                              : context.customColors.glassStroke,
                         ),
                       ),
-                      SizedBox(height: 8.h),
-                    ],
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 46.w,
+                            height: 46.h,
+                            decoration: BoxDecoration(
+                              color: Colors.green.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            child: Icon(
+                              Icons.table_chart_rounded,
+                              color: Colors.green,
+                              size: 26.sp,
+                            ),
+                          ),
+                          SizedBox(width: 14.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'CSV Data Spreadsheet',
+                                  style:
+                                      customTypography.bodyLargeBold.copyWith(
+                                    color: colorScheme.onSurface,
+                                    fontSize: 14.sp,
+                                  ),
+                                ),
+                                SizedBox(height: 4.h),
+                                Text(
+                                  'Raw itemized transaction ledger for Excel, Google Sheets, or Numbers.',
+                                  style: customTypography.bodyMedium.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                    fontSize: 11.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(Icons.chevron_right_rounded,
+                              color: colorScheme.onSurfaceVariant),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                  SizedBox(height: 8.h),
+                ],
               ),
             ),
           ),
@@ -440,6 +432,7 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
           return const ReportsShimmer(key: ValueKey('loading'));
         }
         if (state is AnalyticsLoaded) {
+          final isLight = Theme.of(context).brightness == Brightness.light;
           final report = state.report;
           final isEmpty = report.totalIncome == 0 &&
               report.totalExpense == 0 &&
@@ -476,18 +469,41 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
                               padding: EdgeInsets.all(24.w),
                               margin: EdgeInsets.only(top: 20.h),
                               decoration: BoxDecoration(
-                                color: colorScheme.surfaceContainerLow,
+                                color: isLight
+                                    ? colorScheme.surfaceContainerLowest
+                                    : colorScheme.surfaceContainerLow,
                                 borderRadius: BorderRadius.circular(20.r),
                                 border: Border.all(
-                                    color: colorScheme.outlineVariant),
+                                  color: isLight
+                                      ? colorScheme.outlineVariant
+                                          .withValues(alpha: 0.50)
+                                      : colorScheme.outlineVariant,
+                                ),
+                                boxShadow: isLight
+                                    ? [
+                                        BoxShadow(
+                                          color: Colors.black
+                                              .withValues(alpha: 0.03),
+                                          blurRadius: 10.r,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ]
+                                    : null,
                               ),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    Icons.bar_chart_outlined,
-                                    size: 56.sp,
-                                    color: colorScheme.outline,
+                                  AnimatedEmptyStateHero(
+                                    primaryIcon: Icons.bar_chart_rounded,
+                                    primaryColor: colorScheme.primary,
+                                    secondaryBadgeTop:
+                                        Icons.trending_up_rounded,
+                                    secondaryColorTop: colorScheme.primary,
+                                    secondaryBadgeBottom:
+                                        Icons.pie_chart_outline_rounded,
+                                    secondaryColorBottom: colorScheme.secondary,
+                                    containerSize: 100.w,
+                                    heroSize: 150.w,
                                   ),
                                   verticalMarginMedium,
                                   Text(
@@ -515,6 +531,7 @@ class _RefinedReportsPageState extends State<RefinedReportsPage> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: colorScheme.primary,
                                       foregroundColor: colorScheme.onPrimary,
+                                      elevation: 0,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(12.r),

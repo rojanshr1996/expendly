@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -248,625 +247,582 @@ class _ResetPinModalState extends State<ResetPinModal> {
       child: Container(
         constraints: BoxConstraints(maxHeight: maxHeight),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isLight
-                ? [
-                    colorScheme.surfaceContainerLowest.withValues(alpha: 0.45),
-                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.30),
-                  ]
-                : [
-                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
-                    colorScheme.surfaceContainerLow.withValues(alpha: 0.20),
-                  ],
-          ),
+          color:
+              isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
           border: Border.all(
             color: isLight
-                ? Colors.white.withValues(alpha: 0.60)
+                ? colorScheme.outlineVariant.withValues(alpha: 0.50)
                 : customColors.glassStroke.withValues(alpha: 0.45),
             width: 1.0,
           ),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Drag Handle
-                    Center(
-                      child: Container(
-                        width: 40.w,
-                        height: 4.h,
-                        decoration: BoxDecoration(
-                          color:
-                              colorScheme.outlineVariant.withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(2.r),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Drag Handle
+                Center(
+                  child: Container(
+                    width: 40.w,
+                    height: 4.h,
+                    decoration: BoxDecoration(
+                      color: isLight
+                          ? colorScheme.outline.withValues(alpha: 0.4)
+                          : colorScheme.outlineVariant.withValues(alpha: 0.7),
+                      borderRadius: BorderRadius.circular(2.r),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12.h),
+
+                // Header Row: Back (if not first step), Title, Close
+                ValueListenableBuilder<ResetPinStep>(
+                  valueListenable: _currentStepNotifier,
+                  builder: (context, step, _) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (step != ResetPinStep.chooseMethod)
+                          IconButton(
+                            icon: Icon(Icons.arrow_back_rounded,
+                                color: colorScheme.onSurface),
+                            onPressed: () {
+                              _errorMessageNotifier.value = null;
+                              if (step == ResetPinStep.confirmNewPin) {
+                                _currentStepNotifier.value =
+                                    ResetPinStep.enterNewPin;
+                              } else {
+                                _currentStepNotifier.value =
+                                    ResetPinStep.chooseMethod;
+                              }
+                            },
+                            visualDensity: VisualDensity.compact,
+                          )
+                        else
+                          const SizedBox(width: 40),
+                        Text(
+                          l10n.resetPinTitle,
+                          style: context.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 12.h),
+                        IconButton(
+                          icon: Icon(Icons.close_rounded,
+                              color: colorScheme.onSurfaceVariant),
+                          onPressed: () => Navigator.pop(context),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                SizedBox(height: 10.h),
 
-                    // Header Row: Back (if not first step), Title, Close
-                    ValueListenableBuilder<ResetPinStep>(
-                      valueListenable: _currentStepNotifier,
-                      builder: (context, step, _) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            if (step != ResetPinStep.chooseMethod)
-                              IconButton(
-                                icon: Icon(Icons.arrow_back_rounded,
-                                    color: colorScheme.onSurface),
-                                onPressed: () {
-                                  _errorMessageNotifier.value = null;
-                                  if (step == ResetPinStep.confirmNewPin) {
-                                    _currentStepNotifier.value =
-                                        ResetPinStep.enterNewPin;
-                                  } else {
-                                    _currentStepNotifier.value =
-                                        ResetPinStep.chooseMethod;
-                                  }
-                                },
-                                visualDensity: VisualDensity.compact,
-                              )
-                            else
-                              const SizedBox(width: 40),
-                            Text(
-                              l10n.resetPinTitle,
-                              style: context.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme.onSurface,
+                // Flexible Scrollable Content
+                Flexible(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Header Subtitle Description
+                        ValueListenableBuilder<ResetPinStep>(
+                          valueListenable: _currentStepNotifier,
+                          builder: (context, step, _) {
+                            if (step == ResetPinStep.chooseMethod) {
+                              return Padding(
+                                padding: EdgeInsets.only(bottom: 16.h),
+                                child: Text(
+                                  l10n.resetPinDesc,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
+
+                        // Modal Scoped Error Banner
+                        ValueListenableBuilder<String?>(
+                          valueListenable: _errorMessageNotifier,
+                          builder: (context, errorMsg, _) {
+                            if (errorMsg == null) {
+                              return const SizedBox.shrink();
+                            }
+                            final redColor = isLight
+                                ? const Color(0xFFDC2626)
+                                : customColors.semanticRed;
+                            return Container(
+                              width: double.infinity,
+                              margin: EdgeInsets.only(bottom: 14.h),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 14.w, vertical: 10.h),
+                              decoration: BoxDecoration(
+                                color: redColor.withValues(
+                                    alpha: isLight ? 0.12 : 0.18),
+                                borderRadius: BorderRadius.circular(12.r),
+                                border: Border.all(
+                                  color: redColor.withValues(
+                                      alpha: isLight ? 0.35 : 0.40),
+                                ),
                               ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.close_rounded,
-                                  color: colorScheme.onSurfaceVariant),
-                              onPressed: () => Navigator.pop(context),
-                              visualDensity: VisualDensity.compact,
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    SizedBox(height: 10.h),
-
-                    // Flexible Scrollable Content
-                    Flexible(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Header Subtitle Description
-                            ValueListenableBuilder<ResetPinStep>(
-                              valueListenable: _currentStepNotifier,
-                              builder: (context, step, _) {
-                                if (step == ResetPinStep.chooseMethod) {
-                                  return Padding(
-                                    padding: EdgeInsets.only(bottom: 16.h),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.error_outline_rounded,
+                                      color: redColor, size: 20.sp),
+                                  SizedBox(width: 10.w),
+                                  Expanded(
                                     child: Text(
-                                      l10n.resetPinDesc,
-                                      style: textTheme.bodySmall?.copyWith(
-                                        color: colorScheme.onSurfaceVariant,
+                                      errorMsg,
+                                      style: (textTheme.bodySmall ??
+                                              const TextStyle())
+                                          .copyWith(
+                                        color: redColor,
+                                        fontWeight: FontWeights.bold,
                                       ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  );
-                                }
-                                return const SizedBox.shrink();
-                              },
-                            ),
-
-                            // Modal Scoped Error Banner
-                            ValueListenableBuilder<String?>(
-                              valueListenable: _errorMessageNotifier,
-                              builder: (context, errorMsg, _) {
-                                if (errorMsg == null)
-                                  return const SizedBox.shrink();
-                                final redColor = isLight
-                                    ? const Color(0xFFDC2626)
-                                    : customColors.semanticRed;
-                                return Container(
-                                  width: double.infinity,
-                                  margin: EdgeInsets.only(bottom: 14.h),
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 14.w, vertical: 10.h),
-                                  decoration: BoxDecoration(
-                                    color: redColor.withValues(
-                                        alpha: isLight ? 0.12 : 0.18),
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    border: Border.all(
-                                      color: redColor.withValues(
-                                          alpha: isLight ? 0.35 : 0.40),
                                     ),
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.error_outline_rounded,
-                                          color: redColor, size: 20.sp),
-                                      SizedBox(width: 10.w),
-                                      Expanded(
-                                        child: Text(
-                                          errorMsg,
-                                          style: (textTheme.bodySmall ??
-                                                  const TextStyle())
-                                              .copyWith(
-                                            color: redColor,
-                                            fontWeight: FontWeights.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
 
-                            ValueListenableBuilder<ResetPinStep>(
-                              valueListenable: _currentStepNotifier,
-                              builder: (context, currentStep, _) {
-                                if (currentStep == ResetPinStep.chooseMethod) {
-                                  return Column(
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: isLight
-                                              ? colorScheme
-                                                  .surfaceContainerLowest
-                                                  .withValues(alpha: 0.7)
-                                              : colorScheme.surfaceContainerLow
-                                                  .withValues(alpha: 0.4),
-                                          borderRadius:
-                                              BorderRadius.circular(16.r),
-                                          border: Border.all(
-                                            color: isLight
-                                                ? colorScheme.outlineVariant
-                                                    .withValues(alpha: 0.3)
-                                                : customColors.glassStroke
-                                                    .withValues(alpha: 0.4),
-                                          ),
-                                        ),
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: InkWell(
-                                            borderRadius:
-                                                BorderRadius.circular(16.r),
-                                            onTap: _resetViaBiometrics,
-                                            child: Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 16.w,
-                                                  vertical: 14.h),
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    padding:
-                                                        EdgeInsets.all(10.w),
-                                                    decoration: BoxDecoration(
-                                                      color: colorScheme.primary
-                                                          .withValues(
-                                                              alpha: isLight
-                                                                  ? 0.14
-                                                                  : 0.18),
-                                                      shape: BoxShape.circle,
-                                                      border: Border.all(
-                                                        color: colorScheme
-                                                            .primary
-                                                            .withValues(
-                                                                alpha: isLight
-                                                                    ? 0.35
-                                                                    : 0.30),
-                                                        width: 1,
-                                                      ),
-                                                    ),
-                                                    child: Icon(
-                                                      Icons.fingerprint_rounded,
-                                                      color:
-                                                          colorScheme.primary,
-                                                      size: 22.sp,
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 14.w),
-                                                  Expanded(
-                                                    child: Text(
-                                                      l10n.resetViaBiometrics,
-                                                      style: (textTheme
-                                                                  .bodyLarge ??
-                                                              const TextStyle())
-                                                          .copyWith(
-                                                        fontWeight:
-                                                            FontWeights.bold,
-                                                        color: colorScheme
-                                                            .onSurface,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Icon(
-                                                    Icons.chevron_right_rounded,
-                                                    color: colorScheme
-                                                        .onSurfaceVariant,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+                        ValueListenableBuilder<ResetPinStep>(
+                          valueListenable: _currentStepNotifier,
+                          builder: (context, currentStep, _) {
+                            if (currentStep == ResetPinStep.chooseMethod) {
+                              return Column(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: isLight
+                                          ? colorScheme.surfaceContainerLowest
+                                              .withValues(alpha: 0.7)
+                                          : colorScheme.surfaceContainerLow
+                                              .withValues(alpha: 0.4),
+                                      borderRadius: BorderRadius.circular(16.r),
+                                      border: Border.all(
+                                        color: isLight
+                                            ? colorScheme.outlineVariant
+                                                .withValues(alpha: 0.3)
+                                            : customColors.glassStroke
+                                                .withValues(alpha: 0.4),
                                       ),
-                                      SizedBox(height: 12.h),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: isLight
-                                              ? colorScheme
-                                                  .surfaceContainerLowest
-                                                  .withValues(alpha: 0.7)
-                                              : colorScheme.surfaceContainerLow
-                                                  .withValues(alpha: 0.4),
-                                          borderRadius:
-                                              BorderRadius.circular(16.r),
-                                          border: Border.all(
-                                            color: isLight
-                                                ? colorScheme.outlineVariant
-                                                    .withValues(alpha: 0.3)
-                                                : customColors.glassStroke
-                                                    .withValues(alpha: 0.4),
-                                          ),
-                                        ),
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: InkWell(
-                                            borderRadius:
-                                                BorderRadius.circular(16.r),
-                                            onTap: () {
-                                              _errorMessageNotifier.value =
-                                                  null;
-                                              _currentStepNotifier.value =
-                                                  ResetPinStep.verifyAnswer;
-                                            },
-                                            child: Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 16.w,
-                                                  vertical: 14.h),
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    padding:
-                                                        EdgeInsets.all(10.w),
-                                                    decoration: BoxDecoration(
-                                                      color: colorScheme.primary
-                                                          .withValues(
-                                                              alpha: isLight
-                                                                  ? 0.14
-                                                                  : 0.18),
-                                                      shape: BoxShape.circle,
-                                                      border: Border.all(
-                                                        color: colorScheme
-                                                            .primary
-                                                            .withValues(
-                                                                alpha: isLight
-                                                                    ? 0.35
-                                                                    : 0.30),
-                                                        width: 1,
-                                                      ),
-                                                    ),
-                                                    child: Icon(
-                                                      Icons.quiz_rounded,
-                                                      color:
-                                                          colorScheme.primary,
-                                                      size: 22.sp,
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 14.w),
-                                                  Expanded(
-                                                    child: Text(
-                                                      l10n.resetViaSecurityAnswer,
-                                                      style: (textTheme
-                                                                  .bodyLarge ??
-                                                              const TextStyle())
-                                                          .copyWith(
-                                                        fontWeight:
-                                                            FontWeights.bold,
-                                                        color: colorScheme
-                                                            .onSurface,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Icon(
-                                                    Icons.chevron_right_rounded,
-                                                    color: colorScheme
-                                                        .onSurfaceVariant,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                }
-
-                                if (currentStep == ResetPinStep.verifyAnswer) {
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        l10n.securityQuestionLabel
-                                            .toUpperCase(),
-                                        style: customTypography.labelMediumMono
-                                            .copyWith(
-                                          color: colorScheme.outline,
-                                          letterSpacing: 1.2,
-                                          fontSize: 11.sp,
-                                        ),
-                                      ),
-                                      SizedBox(height: 8.h),
-                                      ValueListenableBuilder<String?>(
-                                        valueListenable:
-                                            _randomQuestionNotifier,
-                                        builder: (context, questionText, _) {
-                                          return Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 16.w,
-                                                vertical: 14.h),
-                                            decoration: BoxDecoration(
-                                              color: isLight
-                                                  ? colorScheme
-                                                      .surfaceContainerLowest
-                                                      .withValues(alpha: 0.7)
-                                                  : colorScheme
-                                                      .surfaceContainerLow
-                                                      .withValues(alpha: 0.4),
-                                              borderRadius:
-                                                  BorderRadius.circular(16.r),
-                                              border: Border.all(
-                                                color: isLight
-                                                    ? colorScheme.outlineVariant
-                                                        .withValues(alpha: 0.3)
-                                                    : customColors.glassStroke
-                                                        .withValues(alpha: 0.4),
-                                              ),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  padding: EdgeInsets.all(8.w),
-                                                  decoration: BoxDecoration(
+                                    ),
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        borderRadius:
+                                            BorderRadius.circular(16.r),
+                                        onTap: _resetViaBiometrics,
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16.w, vertical: 14.h),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.all(10.w),
+                                                decoration: BoxDecoration(
+                                                  color: colorScheme.primary
+                                                      .withValues(
+                                                          alpha: isLight
+                                                              ? 0.14
+                                                              : 0.18),
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
                                                     color: colorScheme.primary
                                                         .withValues(
                                                             alpha: isLight
-                                                                ? 0.14
-                                                                : 0.18),
-                                                    shape: BoxShape.circle,
-                                                    border: Border.all(
+                                                                ? 0.35
+                                                                : 0.30),
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Icon(
+                                                  Icons.fingerprint_rounded,
+                                                  color: colorScheme.primary,
+                                                  size: 22.sp,
+                                                ),
+                                              ),
+                                              SizedBox(width: 14.w),
+                                              Expanded(
+                                                child: Text(
+                                                  l10n.resetViaBiometrics,
+                                                  style: (textTheme.bodyLarge ??
+                                                          const TextStyle())
+                                                      .copyWith(
+                                                    fontWeight:
+                                                        FontWeights.bold,
+                                                    color:
+                                                        colorScheme.onSurface,
+                                                  ),
+                                                ),
+                                              ),
+                                              Icon(
+                                                Icons.chevron_right_rounded,
+                                                color: colorScheme
+                                                    .onSurfaceVariant,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 12.h),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: isLight
+                                          ? colorScheme.surfaceContainerLowest
+                                              .withValues(alpha: 0.7)
+                                          : colorScheme.surfaceContainerLow
+                                              .withValues(alpha: 0.4),
+                                      borderRadius: BorderRadius.circular(16.r),
+                                      border: Border.all(
+                                        color: isLight
+                                            ? colorScheme.outlineVariant
+                                                .withValues(alpha: 0.3)
+                                            : customColors.glassStroke
+                                                .withValues(alpha: 0.4),
+                                      ),
+                                    ),
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        borderRadius:
+                                            BorderRadius.circular(16.r),
+                                        onTap: () {
+                                          _errorMessageNotifier.value = null;
+                                          _currentStepNotifier.value =
+                                              ResetPinStep.verifyAnswer;
+                                        },
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16.w, vertical: 14.h),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.all(10.w),
+                                                decoration: BoxDecoration(
+                                                  color: colorScheme.primary
+                                                      .withValues(
+                                                          alpha: isLight
+                                                              ? 0.14
+                                                              : 0.18),
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: colorScheme.primary
+                                                        .withValues(
+                                                            alpha: isLight
+                                                                ? 0.35
+                                                                : 0.30),
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Icon(
+                                                  Icons.quiz_rounded,
+                                                  color: colorScheme.primary,
+                                                  size: 22.sp,
+                                                ),
+                                              ),
+                                              SizedBox(width: 14.w),
+                                              Expanded(
+                                                child: Text(
+                                                  l10n.resetViaSecurityAnswer,
+                                                  style: (textTheme.bodyLarge ??
+                                                          const TextStyle())
+                                                      .copyWith(
+                                                    fontWeight:
+                                                        FontWeights.bold,
+                                                    color:
+                                                        colorScheme.onSurface,
+                                                  ),
+                                                ),
+                                              ),
+                                              Icon(
+                                                Icons.chevron_right_rounded,
+                                                color: colorScheme
+                                                    .onSurfaceVariant,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+
+                            if (currentStep == ResetPinStep.verifyAnswer) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    l10n.securityQuestionLabel.toUpperCase(),
+                                    style: customTypography.labelMediumMono
+                                        .copyWith(
+                                      color: colorScheme.outline,
+                                      letterSpacing: 1.2,
+                                      fontSize: 11.sp,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8.h),
+                                  ValueListenableBuilder<String?>(
+                                    valueListenable: _randomQuestionNotifier,
+                                    builder: (context, questionText, _) {
+                                      return Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16.w, vertical: 14.h),
+                                        decoration: BoxDecoration(
+                                          color: isLight
+                                              ? colorScheme
+                                                  .surfaceContainerLowest
+                                                  .withValues(alpha: 0.7)
+                                              : colorScheme.surfaceContainerLow
+                                                  .withValues(alpha: 0.4),
+                                          borderRadius:
+                                              BorderRadius.circular(16.r),
+                                          border: Border.all(
+                                            color: isLight
+                                                ? colorScheme.outlineVariant
+                                                    .withValues(alpha: 0.3)
+                                                : customColors.glassStroke
+                                                    .withValues(alpha: 0.4),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              padding: EdgeInsets.all(8.w),
+                                              decoration: BoxDecoration(
+                                                color: colorScheme.primary
+                                                    .withValues(
+                                                        alpha: isLight
+                                                            ? 0.14
+                                                            : 0.18),
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: colorScheme.primary
+                                                      .withValues(
+                                                          alpha: isLight
+                                                              ? 0.35
+                                                              : 0.30),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Icon(
+                                                Icons.help_outline_rounded,
+                                                color: colorScheme.primary,
+                                                size: 18.sp,
+                                              ),
+                                            ),
+                                            SizedBox(width: 12.w),
+                                            Expanded(
+                                              child: Text(
+                                                questionText ??
+                                                    l10n.defaultSecurityQuestion,
+                                                style: (textTheme.bodyMedium ??
+                                                        const TextStyle())
+                                                    .copyWith(
+                                                  fontWeight:
+                                                      FontWeights.semiBold,
+                                                  color: colorScheme.onSurface,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  SizedBox(height: 16.h),
+                                  Text(
+                                    'YOUR ANSWER',
+                                    style: customTypography.labelMediumMono
+                                        .copyWith(
+                                      color: colorScheme.outline,
+                                      letterSpacing: 1.2,
+                                      fontSize: 11.sp,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8.h),
+                                  AppTextField(
+                                    controller: _answerController,
+                                    hintText: l10n.yourAnswerHint,
+                                    prefixIcon: Icon(Icons.lock_reset_rounded,
+                                        color: colorScheme.primary),
+                                    onChanged: (_) {
+                                      if (_errorMessageNotifier.value != null) {
+                                        _errorMessageNotifier.value = null;
+                                      }
+                                    },
+                                  ),
+                                  SizedBox(height: 20.h),
+                                  ValueListenableBuilder<bool>(
+                                    valueListenable: _isVerifyingNotifier,
+                                    builder: (context, isVerifying, _) {
+                                      return AppButton(
+                                        text: l10n.verifyAnswer,
+                                        isLoading: isVerifying,
+                                        onPressed: isVerifying
+                                            ? null
+                                            : _verifySecretAnswer,
+                                        variant: AppButtonVariant.primary,
+                                      );
+                                    },
+                                  ),
+                                ],
+                              );
+                            }
+
+                            // Enter New PIN & Confirm New PIN
+                            final pinNotifier =
+                                currentStep == ResetPinStep.enterNewPin
+                                    ? _newPinNotifier
+                                    : _confirmPinNotifier;
+                            return Column(
+                              children: [
+                                Container(
+                                  width: 52.w,
+                                  height: 52.w,
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.primary.withValues(
+                                        alpha: isLight ? 0.12 : 0.18),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: colorScheme.primary.withValues(
+                                          alpha: isLight ? 0.35 : 0.30),
+                                      width: 1.2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: colorScheme.primary.withValues(
+                                            alpha: isLight ? 0.15 : 0.25),
+                                        blurRadius: 12.r,
+                                        spreadRadius: -2.r,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    currentStep == ResetPinStep.enterNewPin
+                                        ? Icons.lock_outline_rounded
+                                        : Icons.lock_rounded,
+                                    color: colorScheme.primary,
+                                    size: 24.sp,
+                                  ),
+                                ),
+                                SizedBox(height: 12.h),
+                                Text(
+                                  currentStep == ResetPinStep.enterNewPin
+                                      ? l10n.newPinHeader
+                                      : l10n.confirmPinHeader,
+                                  style: (textTheme.titleMedium ??
+                                          const TextStyle())
+                                      .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                                SizedBox(height: 16.h),
+                                ValueListenableBuilder<String>(
+                                  valueListenable: pinNotifier,
+                                  builder: (context, pin, _) {
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: List.generate(4, (index) {
+                                        final isFilled = index < pin.length;
+                                        return AnimatedContainer(
+                                          duration:
+                                              const Duration(milliseconds: 180),
+                                          curve: Curves.easeOutCubic,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 8.w),
+                                          width: 16.w,
+                                          height: 16.w,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: isFilled
+                                                ? colorScheme.primary
+                                                : (isLight
+                                                    ? colorScheme
+                                                        .surfaceContainerLowest
+                                                    : colorScheme
+                                                        .surfaceContainerHigh
+                                                        .withValues(
+                                                            alpha: 0.4)),
+                                            border: Border.all(
+                                              color: isFilled
+                                                  ? colorScheme.primary
+                                                  : (isLight
+                                                      ? colorScheme
+                                                          .outlineVariant
+                                                          .withValues(
+                                                              alpha: 0.70)
+                                                      : colorScheme
+                                                          .outlineVariant
+                                                          .withValues(
+                                                              alpha: 0.6)),
+                                              width: 1.8,
+                                            ),
+                                            boxShadow: isFilled
+                                                ? [
+                                                    BoxShadow(
                                                       color: colorScheme.primary
                                                           .withValues(
                                                               alpha: isLight
                                                                   ? 0.35
-                                                                  : 0.30),
-                                                      width: 1,
+                                                                  : 0.5),
+                                                      blurRadius: 8.r,
+                                                      spreadRadius: 0,
                                                     ),
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.help_outline_rounded,
-                                                    color: colorScheme.primary,
-                                                    size: 18.sp,
-                                                  ),
-                                                ),
-                                                SizedBox(width: 12.w),
-                                                Expanded(
-                                                  child: Text(
-                                                    questionText ??
-                                                        l10n.defaultSecurityQuestion,
-                                                    style: (textTheme
-                                                                .bodyMedium ??
-                                                            const TextStyle())
-                                                        .copyWith(
-                                                      fontWeight:
-                                                          FontWeights.semiBold,
-                                                      color:
-                                                          colorScheme.onSurface,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      SizedBox(height: 16.h),
-                                      Text(
-                                        'YOUR ANSWER',
-                                        style: customTypography.labelMediumMono
-                                            .copyWith(
-                                          color: colorScheme.outline,
-                                          letterSpacing: 1.2,
-                                          fontSize: 11.sp,
-                                        ),
-                                      ),
-                                      SizedBox(height: 8.h),
-                                      AppTextField(
-                                        controller: _answerController,
-                                        hintText: l10n.yourAnswerHint,
-                                        prefixIcon: Icon(
-                                            Icons.lock_reset_rounded,
-                                            color: colorScheme.primary),
-                                        onChanged: (_) {
-                                          if (_errorMessageNotifier.value !=
-                                              null) {
-                                            _errorMessageNotifier.value = null;
-                                          }
-                                        },
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      ValueListenableBuilder<bool>(
-                                        valueListenable: _isVerifyingNotifier,
-                                        builder: (context, isVerifying, _) {
-                                          return AppButton(
-                                            text: l10n.verifyAnswer,
-                                            isLoading: isVerifying,
-                                            onPressed: isVerifying
-                                                ? null
-                                                : _verifySecretAnswer,
-                                            variant: AppButtonVariant.primary,
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                }
-
-                                // Enter New PIN & Confirm New PIN
-                                final pinNotifier =
-                                    currentStep == ResetPinStep.enterNewPin
-                                        ? _newPinNotifier
-                                        : _confirmPinNotifier;
-                                return Column(
-                                  children: [
-                                    Container(
-                                      width: 52.w,
-                                      height: 52.w,
-                                      decoration: BoxDecoration(
-                                        color: colorScheme.primary.withValues(
-                                            alpha: isLight ? 0.12 : 0.18),
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: colorScheme.primary.withValues(
-                                              alpha: isLight ? 0.35 : 0.30),
-                                          width: 1.2,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: colorScheme.primary
-                                                .withValues(
-                                                    alpha:
-                                                        isLight ? 0.15 : 0.25),
-                                            blurRadius: 12.r,
-                                            spreadRadius: -2.r,
+                                                  ]
+                                                : null,
                                           ),
-                                        ],
-                                      ),
-                                      child: Icon(
-                                        currentStep == ResetPinStep.enterNewPin
-                                            ? Icons.lock_outline_rounded
-                                            : Icons.lock_rounded,
-                                        color: colorScheme.primary,
-                                        size: 24.sp,
-                                      ),
-                                    ),
-                                    SizedBox(height: 12.h),
-                                    Text(
-                                      currentStep == ResetPinStep.enterNewPin
-                                          ? l10n.newPinHeader
-                                          : l10n.confirmPinHeader,
-                                      style: (textTheme.titleMedium ??
-                                              const TextStyle())
-                                          .copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: colorScheme.onSurface,
-                                      ),
-                                    ),
-                                    SizedBox(height: 16.h),
-                                    ValueListenableBuilder<String>(
-                                      valueListenable: pinNotifier,
-                                      builder: (context, pin, _) {
-                                        return Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: List.generate(4, (index) {
-                                            final isFilled = index < pin.length;
-                                            return AnimatedContainer(
-                                              duration: const Duration(
-                                                  milliseconds: 180),
-                                              curve: Curves.easeOutCubic,
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 8.w),
-                                              width: 16.w,
-                                              height: 16.w,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: isFilled
-                                                    ? colorScheme.primary
-                                                    : isLight
-                                                        ? colorScheme
-                                                            .surfaceContainerHighest
-                                                            .withValues(
-                                                                alpha: 0.6)
-                                                        : colorScheme
-                                                            .surfaceContainerHigh
-                                                            .withValues(
-                                                                alpha: 0.4),
-                                                border: Border.all(
-                                                  color: isFilled
-                                                      ? colorScheme.primary
-                                                      : isLight
-                                                          ? const Color(
-                                                              0xFF94A3B8)
-                                                          : colorScheme
-                                                              .outlineVariant
-                                                              .withValues(
-                                                                  alpha: 0.6),
-                                                  width: 1.8,
-                                                ),
-                                                boxShadow: isFilled
-                                                    ? [
-                                                        BoxShadow(
-                                                          color: colorScheme
-                                                              .primary
-                                                              .withValues(
-                                                                  alpha: isLight
-                                                                      ? 0.35
-                                                                      : 0.5),
-                                                          blurRadius: 8.r,
-                                                          spreadRadius: 0,
-                                                        ),
-                                                      ]
-                                                    : null,
-                                              ),
-                                              child: isFilled
-                                                  ? Center(
-                                                      child: Container(
-                                                        width: 6.w,
-                                                        height: 6.w,
-                                                        decoration:
-                                                            const BoxDecoration(
-                                                          color: Colors.white,
-                                                          shape:
-                                                              BoxShape.circle,
-                                                        ),
-                                                      ),
-                                                    )
-                                                  : null,
-                                            );
-                                          }),
+                                          child: isFilled
+                                              ? Center(
+                                                  child: Container(
+                                                    width: 6.w,
+                                                    height: 6.w,
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      color: Colors.white,
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                  ),
+                                                )
+                                              : null,
                                         );
-                                      },
-                                    ),
-                                    SizedBox(height: 16.h),
-                                    CustomKeypad(
-                                      showDecimal: false,
-                                      onKeyPress: _onKeyPress,
-                                      onDeletePress: _onDeletePress,
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                          ],
+                                      }),
+                                    );
+                                  },
+                                ),
+                                SizedBox(height: 16.h),
+                                CustomKeypad(
+                                  showDecimal: false,
+                                  onKeyPress: _onKeyPress,
+                                  onDeletePress: _onDeletePress,
+                                ),
+                              ],
+                            );
+                          },
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),

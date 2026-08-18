@@ -69,173 +69,156 @@ class _AddExpensePageState extends State<AddExpensePage> {
             maxHeight: MediaQuery.of(modalContext).size.height * 0.7,
           ),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isLight
-                  ? [
-                      colorScheme.surfaceContainerLowest
-                          .withValues(alpha: 0.45),
-                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.30),
-                    ]
-                  : [
-                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
-                      colorScheme.surfaceContainerLow.withValues(alpha: 0.20),
-                    ],
-            ),
+            color: isLight
+                ? colorScheme.surface
+                : colorScheme.surfaceContainerHigh,
             borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
             border: Border.all(
               color: isLight
-                  ? Colors.white.withValues(alpha: 0.60)
+                  ? colorScheme.outlineVariant.withValues(alpha: 0.50)
                   : customColors.glassStroke.withValues(alpha: 0.45),
               width: 1.0,
             ),
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-              child: SafeArea(
-                top: false,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Drag handle
-                    Center(
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 12.h),
-                        width: 40.w,
-                        height: 4.h,
-                        decoration: BoxDecoration(
-                          color:
-                              colorScheme.outlineVariant.withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(2.r),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Drag handle
+                Center(
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 12.h),
+                    width: 40.w,
+                    height: 4.h,
+                    decoration: BoxDecoration(
+                      color: isLight
+                          ? colorScheme.outline.withValues(alpha: 0.4)
+                          : colorScheme.outlineVariant.withValues(alpha: 0.7),
+                      borderRadius: BorderRadius.circular(2.r),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Select Who Paid',
+                        style: context.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Select Who Paid',
-                            style: context.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.onSurface,
+                      IconButton(
+                        icon: Icon(Icons.close_rounded,
+                            color: colorScheme.onSurfaceVariant),
+                        onPressed: () => Navigator.pop(modalContext),
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(
+                  height: 1,
+                  color: isLight
+                      ? colorScheme.outlineVariant.withValues(alpha: 0.5)
+                      : customColors.glassStroke,
+                ),
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    itemCount: widget.participants.length,
+                    separatorBuilder: (_, __) => SizedBox(height: 8.h),
+                    itemBuilder: (ctx, index) {
+                      final p = widget.participants[index];
+                      final isSelected = state.paidByParticipantId == p.id;
+
+                      return InkWell(
+                        onTap: () {
+                          cubit.setPaidBy(p.id);
+                          Navigator.pop(modalContext);
+                        },
+                        borderRadius: BorderRadius.circular(16.r),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16.w, vertical: 12.h),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? (isLight
+                                    ? colorScheme.primary
+                                        .withValues(alpha: 0.15)
+                                    : colorScheme.primary
+                                        .withValues(alpha: 0.20))
+                                : (isLight
+                                    ? colorScheme.surfaceContainerLowest
+                                    : colorScheme.surfaceContainerLow
+                                        .withValues(alpha: 0.50)),
+                            borderRadius: BorderRadius.circular(16.r),
+                            border: Border.all(
+                              color: isSelected
+                                  ? colorScheme.primary
+                                  : isLight
+                                      ? colorScheme.outlineVariant
+                                          .withValues(alpha: 0.50)
+                                      : customColors.glassStroke,
+                              width: isSelected ? 1.5 : 1,
                             ),
                           ),
-                          IconButton(
-                            icon: Icon(Icons.close_rounded,
-                                color: colorScheme.onSurfaceVariant),
-                            onPressed: () => Navigator.pop(modalContext),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Divider(
-                      height: 1,
-                      color: isLight
-                          ? colorScheme.outlineVariant.withValues(alpha: 0.4)
-                          : customColors.glassStroke,
-                    ),
-                    Flexible(
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.w, vertical: 12.h),
-                        itemCount: widget.participants.length,
-                        separatorBuilder: (_, __) => SizedBox(height: 8.h),
-                        itemBuilder: (ctx, index) {
-                          final p = widget.participants[index];
-                          final isSelected = state.paidByParticipantId == p.id;
-
-                          return InkWell(
-                            onTap: () {
-                              cubit.setPaidBy(p.id);
-                              Navigator.pop(modalContext);
-                            },
-                            borderRadius: BorderRadius.circular(16.r),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 16.w, vertical: 12.h),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? colorScheme.primary.withValues(
-                                        alpha: isLight ? 0.12 : 0.18)
-                                    : isLight
-                                        ? Colors.white.withValues(alpha: 0.70)
-                                        : colorScheme.surfaceContainerHigh
-                                            .withValues(alpha: 0.4),
-                                borderRadius: BorderRadius.circular(16.r),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? colorScheme.primary
-                                      : isLight
-                                          ? colorScheme.outlineVariant
-                                              .withValues(alpha: 0.4)
-                                          : customColors.glassStroke,
-                                  width: isSelected ? 1.5 : 1,
-                                ),
+                          child: Row(
+                            children: [
+                              ParticipantAvatar(
+                                name: p.name,
+                                colorIndex: p.colorIndex,
                               ),
-                              child: Row(
-                                children: [
-                                  ParticipantAvatar(
-                                    name: p.name,
-                                    colorIndex: p.colorIndex,
-                                  ),
-                                  SizedBox(width: 14.w),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          p.name,
-                                          style: context
-                                              .customTypography.bodyLargeBold
-                                              .copyWith(
-                                            color: isSelected
-                                                ? colorScheme.primary
-                                                : colorScheme.onSurface,
+                              SizedBox(width: 14.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      p.name,
+                                      style: context
+                                          .customTypography.bodyLargeBold
+                                          .copyWith(
+                                        color: isSelected
+                                            ? colorScheme.primary
+                                            : colorScheme.onSurface,
+                                      ),
+                                    ),
+                                    if (p.email != null && p.email!.isNotEmpty)
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 2.h),
+                                        child: Text(
+                                          p.email!,
+                                          style: context.textTheme.labelSmall
+                                              ?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                            fontSize: 11.sp,
                                           ),
                                         ),
-                                        if (p.email != null &&
-                                            p.email!.isNotEmpty)
-                                          Padding(
-                                            padding: EdgeInsets.only(top: 2.h),
-                                            child: Text(
-                                              p.email!,
-                                              style: context
-                                                  .textTheme.labelSmall
-                                                  ?.copyWith(
-                                                color: colorScheme
-                                                    .onSurfaceVariant,
-                                                fontSize: 11.sp,
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                  if (isSelected)
-                                    Icon(
-                                      Icons.check_circle_rounded,
-                                      color: colorScheme.primary,
-                                      size: 22.sp,
-                                    ),
-                                ],
+                                      ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 12.h),
-                  ],
+                              if (isSelected)
+                                Icon(
+                                  Icons.check_circle_rounded,
+                                  color: colorScheme.primary,
+                                  size: 22.sp,
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
+                SizedBox(height: 12.h),
+              ],
             ),
           ),
         );

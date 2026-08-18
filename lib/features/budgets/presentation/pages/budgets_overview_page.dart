@@ -14,6 +14,7 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/animated_empty_state_hero.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/status_components.dart';
@@ -170,19 +171,17 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: EdgeInsets.all(20.w),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.account_balance_wallet_outlined,
-                      size: 56.sp,
-                      color: colorScheme.primary,
-                    ),
+                  AnimatedEmptyStateHero(
+                    primaryIcon: Icons.account_balance_wallet_rounded,
+                    primaryColor: colorScheme.primary,
+                    secondaryBadgeTop: Icons.pie_chart_rounded,
+                    secondaryColorTop: colorScheme.primary,
+                    secondaryBadgeBottom: Icons.savings_outlined,
+                    secondaryColorBottom: colorScheme.secondary,
+                    containerSize: 110.w,
+                    heroSize: 160.w,
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 24.h),
                   Text(
                     context.l10n.noBudgetsSet,
                     style: customTypography.bodyLargeBold.copyWith(

@@ -12,6 +12,7 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/font_weights.dart';
+import '../../../../core/widgets/animated_empty_state_hero.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
@@ -573,24 +574,11 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                                           totalExpense,
                                                     ),
                                                     if (sortedDays.isEmpty)
-                                                      Padding(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                          vertical: 40.h,
-                                                        ),
-                                                        child: Center(
-                                                          child: Text(
-                                                            context.l10n
-                                                                .noTransactionsFound,
-                                                            style:
-                                                                customTypography
-                                                                    .bodyMedium
-                                                                    .copyWith(
-                                                              color: colorScheme
-                                                                  .outline,
-                                                            ),
-                                                          ),
-                                                        ),
+                                                      _EmptyStateView(
+                                                        title: context.l10n
+                                                            .noTransactionsFound,
+                                                        subtitle: context.l10n
+                                                            .noTransactionsDesc,
                                                       )
                                                     else
                                                       ...sortedDays
@@ -741,24 +729,11 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                                           totalExpense,
                                                     ),
                                                     if (sortedMonths.isEmpty)
-                                                      Padding(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                          vertical: 40.h,
-                                                        ),
-                                                        child: Center(
-                                                          child: Text(
-                                                            context.l10n
-                                                                .noTransactionsFound,
-                                                            style:
-                                                                customTypography
-                                                                    .bodyMedium
-                                                                    .copyWith(
-                                                              color: colorScheme
-                                                                  .outline,
-                                                            ),
-                                                          ),
-                                                        ),
+                                                      _EmptyStateView(
+                                                        title: context.l10n
+                                                            .noTransactionsFound,
+                                                        subtitle: context.l10n
+                                                            .noTransactionsDesc,
                                                       )
                                                     else
                                                       ...sortedMonths
@@ -864,19 +839,13 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                                 final formattedDate =
                                                     DateFormat.yMMMd(locale)
                                                         .format(selectedDate);
-                                                return Center(
-                                                  child: Text(
-                                                    context.l10n
-                                                        .noTransactionsOnDate(
-                                                      formattedDate,
-                                                    ),
-                                                    style: customTypography
-                                                        .bodyMedium
-                                                        .copyWith(
-                                                      color:
-                                                          colorScheme.outline,
-                                                    ),
+                                                return _EmptyStateView(
+                                                  title: context.l10n
+                                                      .noTransactionsOnDate(
+                                                    formattedDate,
                                                   ),
+                                                  subtitle: context
+                                                      .l10n.noTransactionsDesc,
                                                 );
                                               }
                                             }
@@ -895,6 +864,15 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                                     () => [],
                                                   )
                                                   .add(item);
+                                            }
+
+                                            if (grouped.isEmpty) {
+                                              return _EmptyStateView(
+                                                title: context
+                                                    .l10n.noTransactionsFound,
+                                                subtitle: context
+                                                    .l10n.noTransactionsDesc,
+                                              );
                                             }
 
                                             return RefreshIndicator(
@@ -1216,29 +1194,40 @@ class _EmptyStateView extends StatelessWidget {
     final customTypography = context.customTypography;
 
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.receipt_long_outlined,
-            size: 64.r,
-            color: colorScheme.outline,
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            title,
-            style: customTypography.bodyLargeBold.copyWith(
-              color: colorScheme.onSurface,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedEmptyStateHero(
+              primaryIcon: Icons.receipt_long_rounded,
+              primaryColor: colorScheme.primary,
+              secondaryBadgeTop: Icons.payments_outlined,
+              secondaryColorTop: colorScheme.secondary,
+              secondaryBadgeBottom: Icons.calendar_today_rounded,
+              secondaryColorBottom: colorScheme.primary,
+              containerSize: 104.w,
+              heroSize: 154.w,
             ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            subtitle,
-            style: customTypography.bodyMedium.copyWith(
-              color: colorScheme.outline,
+            SizedBox(height: 20.h),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: customTypography.bodyLargeBold.copyWith(
+                color: colorScheme.onSurface,
+                fontSize: 18.sp,
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 8.h),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: customTypography.bodyMedium.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

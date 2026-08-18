@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -316,558 +314,511 @@ class _CurrencySelectionModalState extends State<CurrencySelectionModal> {
       minChildSize: 0.45,
       maxChildSize: 0.92,
       builder: (context, scrollController) {
-        return ClipRRect(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isLight
-                      ? [
-                          colorScheme.surfaceContainerLowest
-                              .withValues(alpha: 0.45),
-                          colorScheme.surfaceContainerHigh
-                              .withValues(alpha: 0.30),
-                        ]
-                      : [
-                          colorScheme.surfaceContainerHigh
-                              .withValues(alpha: 0.35),
-                          colorScheme.surfaceContainerLow
-                              .withValues(alpha: 0.20),
-                        ],
-                ),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-                border: Border.all(
-                  color: isLight
-                      ? Colors.white.withValues(alpha: 0.60)
-                      : customColors.glassStroke.withValues(alpha: 0.45),
-                  width: 1.0,
-                ),
-              ),
-              padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 16.h),
-              child: Stack(
+        return Container(
+          decoration: BoxDecoration(
+            color: isLight
+                ? colorScheme.surface
+                : colorScheme.surfaceContainerHigh,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+            border: Border.all(
+              color: isLight
+                  ? colorScheme.outlineVariant.withValues(alpha: 0.50)
+                  : customColors.glassStroke.withValues(alpha: 0.45),
+              width: 1.0,
+            ),
+          ),
+          padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 16.h),
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  // 1. Drag Handle Bar
+                  Center(
+                    child: Container(
+                      width: 42.w,
+                      height: 4.5.h,
+                      decoration: BoxDecoration(
+                        color: isLight
+                            ? colorScheme.outline.withValues(alpha: 0.4)
+                            : colorScheme.outline.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(3.r),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 14.h),
+
+                  // 2. Header Row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // 1. Drag Handle Bar
-                      Center(
-                        child: Container(
-                          width: 42.w,
-                          height: 4.5.h,
-                          decoration: BoxDecoration(
-                            color: colorScheme.outline.withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(3.r),
-                          ),
+                      Container(
+                        width: 40.w,
+                        height: 40.w,
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.currency_exchange_rounded,
+                          color: colorScheme.primary,
+                          size: 20.sp,
                         ),
                       ),
-                      SizedBox(height: 14.h),
-
-                      // 2. Header Row
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 40.w,
-                            height: 40.w,
-                            decoration: BoxDecoration(
-                              color:
-                                  colorScheme.primary.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(12.r),
-                            ),
-                            alignment: Alignment.center,
-                            child: Icon(
-                              Icons.currency_exchange_rounded,
-                              color: colorScheme.primary,
-                              size: 20.sp,
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  context.l10n.selectPrimaryCurrency,
-                                  style: textTheme.titleMedium?.copyWith(
-                                    color: colorScheme.onSurface,
-                                    fontWeight: FontWeights.bold,
-                                    fontSize: 16.5.sp,
-                                  ),
-                                ),
-                                SizedBox(height: 2.h),
-                                Text(
-                                  'Live rates via Open Exchange Rates API',
-                                  style: customTypography.bodyMedium.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                    fontSize: 11.5.sp,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.close_rounded,
-                              color: colorScheme.onSurfaceVariant,
-                              size: 22.sp,
-                            ),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 14.h),
-
-                      // 3. Search Bar
-                      ValueListenableBuilder<String>(
-                        valueListenable: _searchQueryNotifier,
-                        builder: (context, query, _) {
-                          return AppTextField(
-                            controller: _searchController,
-                            onChanged: (val) =>
-                                _searchQueryNotifier.value = val,
-                            hintText: context.l10n.searchCurrencyHint,
-                            prefixIcon: Icon(
-                              Icons.search_rounded,
-                              color: colorScheme.onSurfaceVariant,
-                              size: 20.sp,
-                            ),
-                            suffixIcon: query.isNotEmpty
-                                ? IconButton(
-                                    icon: Icon(
-                                      Icons.close_rounded,
-                                      size: 18.sp,
-                                      color: colorScheme.outline,
-                                    ),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      _searchQueryNotifier.value = '';
-                                    },
-                                  )
-                                : null,
-                            fillColor: isLight
-                                ? colorScheme.surfaceContainerHighest
-                                    .withValues(alpha: 0.45)
-                                : colorScheme.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(16.r),
-                          );
-                        },
-                      ),
-                      SizedBox(height: 14.h),
-
-                      // 4. Currency Options List
+                      SizedBox(width: 12.w),
                       Expanded(
-                        child: ValueListenableBuilder<Map<String, double>>(
-                          valueListenable: _exchangeRatesNotifier,
-                          builder: (context, ratesMap, _) {
-                            return ValueListenableBuilder<String>(
-                              valueListenable: _searchQueryNotifier,
-                              builder: (context, query, _) {
-                                final filtered = query.isEmpty
-                                    ? defaultCurrencies
-                                    : defaultCurrencies.where((c) {
-                                        final q = query.toLowerCase();
-                                        return c.code
-                                                .toLowerCase()
-                                                .contains(q) ||
-                                            c.name.toLowerCase().contains(q) ||
-                                            c.symbol.toLowerCase().contains(q);
-                                      }).toList();
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              context.l10n.selectPrimaryCurrency,
+                              style: textTheme.titleMedium?.copyWith(
+                                color: colorScheme.onSurface,
+                                fontWeight: FontWeights.bold,
+                                fontSize: 16.5.sp,
+                              ),
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              'Live rates via Open Exchange Rates API',
+                              style: customTypography.bodyMedium.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                                fontSize: 11.5.sp,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: colorScheme.onSurfaceVariant,
+                          size: 22.sp,
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 14.h),
 
-                                if (filtered.isEmpty) {
-                                  return Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 56.w,
-                                          height: 56.w,
-                                          decoration: BoxDecoration(
-                                            color: colorScheme
-                                                .surfaceContainerHigh,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            Icons.search_off_rounded,
-                                            size: 28.sp,
-                                            color: colorScheme.outline,
-                                          ),
-                                        ),
-                                        SizedBox(height: 12.h),
-                                        Text(
-                                          'No currencies found',
-                                          style: (textTheme.titleSmall ??
-                                                  const TextStyle())
-                                              .copyWith(
-                                            fontWeight: FontWeights.bold,
-                                            color: colorScheme.onSurface,
-                                          ),
-                                        ),
-                                        SizedBox(height: 4.h),
-                                        Text(
-                                          'Try searching by code, symbol, or currency name.',
-                                          style: customTypography.bodyMedium
-                                              .copyWith(
-                                            color: colorScheme.onSurfaceVariant,
-                                            fontSize: 12.sp,
-                                          ),
-                                        ),
-                                      ],
+                  // 3. Search Bar
+                  ValueListenableBuilder<String>(
+                    valueListenable: _searchQueryNotifier,
+                    builder: (context, query, _) {
+                      return AppTextField(
+                        controller: _searchController,
+                        onChanged: (val) => _searchQueryNotifier.value = val,
+                        hintText: context.l10n.searchCurrencyHint,
+                        prefixIcon: Icon(
+                          Icons.search_rounded,
+                          color: colorScheme.onSurfaceVariant,
+                          size: 20.sp,
+                        ),
+                        suffixIcon: query.isNotEmpty
+                            ? IconButton(
+                                icon: Icon(
+                                  Icons.close_rounded,
+                                  size: 18.sp,
+                                  color: colorScheme.outline,
+                                ),
+                                onPressed: () {
+                                  _searchController.clear();
+                                  _searchQueryNotifier.value = '';
+                                },
+                              )
+                            : null,
+                        fillColor: isLight
+                            ? colorScheme.surfaceContainerLow
+                            : colorScheme.surfaceContainerHigh,
+                        borderRadius: BorderRadius.circular(16.r),
+                      );
+                    },
+                  ),
+                  SizedBox(height: 14.h),
+
+                  // 4. Currency Options List
+                  Expanded(
+                    child: ValueListenableBuilder<Map<String, double>>(
+                      valueListenable: _exchangeRatesNotifier,
+                      builder: (context, ratesMap, _) {
+                        return ValueListenableBuilder<String>(
+                          valueListenable: _searchQueryNotifier,
+                          builder: (context, query, _) {
+                            final filtered = query.isEmpty
+                                ? defaultCurrencies
+                                : defaultCurrencies.where((c) {
+                                    final q = query.toLowerCase();
+                                    return c.code.toLowerCase().contains(q) ||
+                                        c.name.toLowerCase().contains(q) ||
+                                        c.symbol.toLowerCase().contains(q);
+                                  }).toList();
+
+                            if (filtered.isEmpty) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 56.w,
+                                      height: 56.w,
+                                      decoration: BoxDecoration(
+                                        color: colorScheme.surfaceContainerHigh,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.search_off_rounded,
+                                        size: 28.sp,
+                                        color: colorScheme.outline,
+                                      ),
                                     ),
-                                  );
-                                }
+                                    SizedBox(height: 12.h),
+                                    Text(
+                                      'No currencies found',
+                                      style: (textTheme.titleSmall ??
+                                              const TextStyle())
+                                          .copyWith(
+                                        fontWeight: FontWeights.bold,
+                                        color: colorScheme.onSurface,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4.h),
+                                    Text(
+                                      'Try searching by code, symbol, or currency name.',
+                                      style:
+                                          customTypography.bodyMedium.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                        fontSize: 12.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
 
-                                return ListView.separated(
-                                  controller: scrollController,
-                                  physics: const BouncingScrollPhysics(),
-                                  itemCount: filtered.length,
-                                  separatorBuilder: (_, __) =>
-                                      SizedBox(height: 8.h),
-                                  itemBuilder: (context, index) {
-                                    final item = filtered[index];
-                                    final isSelected = item.code == currentCode;
-                                    final rate = ratesMap[item.code];
+                            return ListView.separated(
+                              controller: scrollController,
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: filtered.length,
+                              separatorBuilder: (_, __) =>
+                                  SizedBox(height: 8.h),
+                              itemBuilder: (context, index) {
+                                final item = filtered[index];
+                                final isSelected = item.code == currentCode;
+                                final rate = ratesMap[item.code];
 
-                                    return Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        onTap: () => _selectCurrency(item),
+                                return Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: () => _selectCurrency(item),
+                                    borderRadius: BorderRadius.circular(16.r),
+                                    child: AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 14.w,
+                                        vertical: 12.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? (isLight
+                                                ? colorScheme.primary
+                                                    .withValues(alpha: 0.15)
+                                                : colorScheme.primary
+                                                    .withValues(alpha: 0.22))
+                                            : (isLight
+                                                ? colorScheme
+                                                    .surfaceContainerLowest
+                                                : colorScheme
+                                                    .surfaceContainerLow
+                                                    .withValues(alpha: 0.50)),
                                         borderRadius:
                                             BorderRadius.circular(16.r),
-                                        child: AnimatedContainer(
-                                          duration:
-                                              const Duration(milliseconds: 200),
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 14.w,
-                                            vertical: 12.h,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: isSelected
-                                                ? (isLight
-                                                    ? colorScheme.primary
-                                                        .withValues(alpha: 0.12)
-                                                    : colorScheme.primary
-                                                        .withValues(
-                                                            alpha: 0.22))
-                                                : (isLight
-                                                    ? Colors.white
-                                                        .withValues(alpha: 0.70)
-                                                    : colorScheme
-                                                        .surfaceContainerLow
-                                                        .withValues(
-                                                            alpha: 0.45)),
-                                            borderRadius:
-                                                BorderRadius.circular(16.r),
-                                            border: Border.all(
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? colorScheme.primary
+                                              : (isLight
+                                                  ? colorScheme.outlineVariant
+                                                      .withValues(alpha: 0.50)
+                                                  : customColors.glassStroke
+                                                      .withValues(alpha: 0.45)),
+                                          width: isSelected ? 1.5 : 1.0,
+                                        ),
+                                        boxShadow: isSelected
+                                            ? [
+                                                BoxShadow(
+                                                  color: colorScheme.primary
+                                                      .withValues(alpha: 0.15),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
+                                                )
+                                              ]
+                                            : (isLight
+                                                ? [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withValues(
+                                                              alpha: 0.03),
+                                                      blurRadius: 4,
+                                                      offset:
+                                                          const Offset(0, 1),
+                                                    )
+                                                  ]
+                                                : null),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          // Currency Symbol Avatar Badge
+                                          Container(
+                                            width: 44.w,
+                                            height: 44.w,
+                                            decoration: BoxDecoration(
                                               color: isSelected
                                                   ? colorScheme.primary
                                                   : (isLight
                                                       ? colorScheme
-                                                          .outlineVariant
-                                                          .withValues(
-                                                              alpha: 0.45)
-                                                      : customColors.glassStroke
-                                                          .withValues(
-                                                              alpha: 0.45)),
-                                              width: isSelected ? 1.5 : 1.0,
+                                                          .surfaceContainerLow
+                                                      : colorScheme
+                                                          .surfaceContainerHighest),
+                                              borderRadius:
+                                                  BorderRadius.circular(12.r),
                                             ),
-                                            boxShadow: isSelected
-                                                ? [
-                                                    BoxShadow(
-                                                      color: colorScheme.primary
-                                                          .withValues(
-                                                              alpha: 0.12),
-                                                      blurRadius: 8,
-                                                      offset:
-                                                          const Offset(0, 2),
-                                                    )
-                                                  ]
-                                                : (isLight
-                                                    ? [
-                                                        BoxShadow(
-                                                          color: Colors.black
-                                                              .withValues(
-                                                                  alpha: 0.02),
-                                                          blurRadius: 4,
-                                                          offset: const Offset(
-                                                              0, 1),
-                                                        )
-                                                      ]
-                                                    : null),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              item.symbol,
+                                              style: (textTheme.titleMedium ??
+                                                      const TextStyle())
+                                                  .copyWith(
+                                                fontWeight: FontWeights.bold,
+                                                color: isSelected
+                                                    ? colorScheme.onPrimary
+                                                    : colorScheme.onSurface,
+                                                fontSize: 15.sp,
+                                              ),
+                                            ),
                                           ),
-                                          child: Row(
-                                            children: [
-                                              // Currency Symbol Avatar Badge
-                                              Container(
-                                                width: 44.w,
-                                                height: 44.w,
-                                                decoration: BoxDecoration(
-                                                  color: isSelected
-                                                      ? colorScheme.primary
-                                                      : (isLight
-                                                          ? colorScheme
-                                                              .surfaceContainerHigh
-                                                          : colorScheme
-                                                              .surfaceContainerHighest),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          12.r),
-                                                ),
-                                                alignment: Alignment.center,
-                                                child: Text(
-                                                  item.symbol,
-                                                  style:
-                                                      (textTheme.titleMedium ??
+                                          SizedBox(width: 14.w),
+
+                                          // Code, Name, and Live Exchange Rate
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      item.code,
+                                                      style: (textTheme
+                                                                  .bodyLarge ??
                                                               const TextStyle())
                                                           .copyWith(
-                                                    fontWeight:
-                                                        FontWeights.bold,
-                                                    color: isSelected
-                                                        ? colorScheme.onPrimary
-                                                        : colorScheme.onSurface,
-                                                    fontSize: 15.sp,
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(width: 14.w),
-
-                                              // Code, Name, and Live Exchange Rate
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          item.code,
-                                                          style: (textTheme
-                                                                      .bodyLarge ??
-                                                                  const TextStyle())
-                                                              .copyWith(
-                                                            fontWeight:
-                                                                FontWeights
-                                                                    .bold,
-                                                            color: colorScheme
-                                                                .onSurface,
-                                                            fontSize: 14.5.sp,
-                                                          ),
-                                                        ),
-                                                        if (isSelected) ...[
-                                                          SizedBox(width: 8.w),
-                                                          Container(
-                                                            padding: EdgeInsets
-                                                                .symmetric(
-                                                              horizontal: 6.w,
-                                                              vertical: 1.5.h,
-                                                            ),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: colorScheme
-                                                                  .primary
-                                                                  .withValues(
-                                                                      alpha:
-                                                                          0.15),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          6.r),
-                                                            ),
-                                                            child: Text(
-                                                              'ACTIVE',
-                                                              style: customTypography
-                                                                  .labelMediumMono
-                                                                  .copyWith(
-                                                                fontSize:
-                                                                    8.5.sp,
-                                                                color:
-                                                                    colorScheme
-                                                                        .primary,
-                                                                fontWeight:
-                                                                    FontWeights
-                                                                        .bold,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ],
-                                                    ),
-                                                    SizedBox(height: 2.h),
-                                                    Text(
-                                                      item.name,
-                                                      style: customTypography
-                                                          .bodyMedium
-                                                          .copyWith(
+                                                        fontWeight:
+                                                            FontWeights.bold,
                                                         color: colorScheme
-                                                            .onSurfaceVariant,
-                                                        fontSize: 12.sp,
+                                                            .onSurface,
+                                                        fontSize: 14.5.sp,
                                                       ),
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
                                                     ),
-                                                    if (!isSelected &&
-                                                        rate != null &&
-                                                        rate > 0) ...[
-                                                      SizedBox(height: 2.h),
-                                                      Text(
-                                                        '1 $currentCode ≈ ${rate >= 1 ? rate.toStringAsFixed(2) : rate.toStringAsPrecision(3)} ${item.code}',
-                                                        style: (textTheme
-                                                                    .bodySmall ??
-                                                                const TextStyle())
-                                                            .copyWith(
+                                                    if (isSelected) ...[
+                                                      SizedBox(width: 8.w),
+                                                      Container(
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                          horizontal: 6.w,
+                                                          vertical: 1.5.h,
+                                                        ),
+                                                        decoration:
+                                                            BoxDecoration(
                                                           color: colorScheme
                                                               .primary
                                                               .withValues(
-                                                                  alpha: 0.85),
-                                                          fontSize: 10.5.sp,
-                                                          fontWeight:
-                                                              FontWeights
-                                                                  .medium,
+                                                                  alpha: 0.15),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      6.r),
+                                                        ),
+                                                        child: Text(
+                                                          'ACTIVE',
+                                                          style: customTypography
+                                                              .labelMediumMono
+                                                              .copyWith(
+                                                            fontSize: 8.5.sp,
+                                                            color: colorScheme
+                                                                .primary,
+                                                            fontWeight:
+                                                                FontWeights
+                                                                    .bold,
+                                                          ),
                                                         ),
                                                       ),
                                                     ],
                                                   ],
                                                 ),
-                                              ),
+                                                SizedBox(height: 2.h),
+                                                Text(
+                                                  item.name,
+                                                  style: customTypography
+                                                      .bodyMedium
+                                                      .copyWith(
+                                                    color: colorScheme
+                                                        .onSurfaceVariant,
+                                                    fontSize: 12.sp,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                if (!isSelected &&
+                                                    rate != null &&
+                                                    rate > 0) ...[
+                                                  SizedBox(height: 2.h),
+                                                  Text(
+                                                    '1 $currentCode ≈ ${rate >= 1 ? rate.toStringAsFixed(2) : rate.toStringAsPrecision(3)} ${item.code}',
+                                                    style: (textTheme
+                                                                .bodySmall ??
+                                                            const TextStyle())
+                                                        .copyWith(
+                                                      color: colorScheme.primary
+                                                          .withValues(
+                                                              alpha: 0.85),
+                                                      fontSize: 10.5.sp,
+                                                      fontWeight:
+                                                          FontWeights.medium,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ],
+                                            ),
+                                          ),
 
-                                              // Selection / Progress Indicator
-                                              ValueListenableBuilder<bool>(
+                                          // Selection / Progress Indicator
+                                          ValueListenableBuilder<bool>(
+                                            valueListenable:
+                                                _isConvertingNotifier,
+                                            builder:
+                                                (context, isConverting, _) {
+                                              return ValueListenableBuilder<
+                                                  String?>(
                                                 valueListenable:
-                                                    _isConvertingNotifier,
-                                                builder:
-                                                    (context, isConverting, _) {
-                                                  return ValueListenableBuilder<
-                                                      String?>(
-                                                    valueListenable:
-                                                        _convertingCurrencyCodeNotifier,
-                                                    builder: (context,
-                                                        convertingCode, _) {
-                                                      if (isConverting &&
-                                                          convertingCode ==
-                                                              item.code) {
-                                                        return SizedBox(
-                                                          width: 20.w,
-                                                          height: 20.w,
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                            strokeWidth: 2.2,
-                                                            valueColor:
-                                                                AlwaysStoppedAnimation<
-                                                                    Color>(
-                                                              colorScheme
-                                                                  .primary,
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }
+                                                    _convertingCurrencyCodeNotifier,
+                                                builder: (context,
+                                                    convertingCode, _) {
+                                                  if (isConverting &&
+                                                      convertingCode ==
+                                                          item.code) {
+                                                    return SizedBox(
+                                                      width: 20.w,
+                                                      height: 20.w,
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        strokeWidth: 2.2,
+                                                        valueColor:
+                                                            AlwaysStoppedAnimation<
+                                                                Color>(
+                                                          colorScheme.primary,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }
 
-                                                      if (isSelected) {
-                                                        return Container(
-                                                          width: 26.w,
-                                                          height: 26.w,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: colorScheme
-                                                                .primary,
-                                                            shape:
-                                                                BoxShape.circle,
-                                                          ),
-                                                          child: Icon(
-                                                            Icons.check_rounded,
-                                                            color: colorScheme
-                                                                .onPrimary,
-                                                            size: 16.sp,
-                                                          ),
-                                                        );
-                                                      }
-
-                                                      return Icon(
-                                                        Icons
-                                                            .chevron_right_rounded,
+                                                  if (isSelected) {
+                                                    return Container(
+                                                      width: 26.w,
+                                                      height: 26.w,
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            colorScheme.primary,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: Icon(
+                                                        Icons.check_rounded,
                                                         color: colorScheme
-                                                            .onSurfaceVariant
-                                                            .withValues(
-                                                                alpha: 0.4),
-                                                        size: 20.sp,
-                                                      );
-                                                    },
+                                                            .onPrimary,
+                                                        size: 16.sp,
+                                                      ),
+                                                    );
+                                                  }
+
+                                                  return Icon(
+                                                    Icons.chevron_right_rounded,
+                                                    color: colorScheme
+                                                        .onSurfaceVariant
+                                                        .withValues(alpha: 0.4),
+                                                    size: 20.sp,
                                                   );
                                                 },
-                                              ),
-                                            ],
+                                              );
+                                            },
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    );
-                                  },
+                                    ),
+                                  ),
                                 );
                               },
                             );
                           },
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Full overlay blocker when converting database currency
-                  ValueListenableBuilder<bool>(
-                    valueListenable: _isConvertingNotifier,
-                    builder: (context, isConverting, _) {
-                      if (!isConverting) return const SizedBox.shrink();
-                      return Container(
-                        color: colorScheme.surface.withValues(alpha: 0.7),
-                        child: Center(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 24.w, vertical: 18.h),
-                            decoration: BoxDecoration(
-                              color: colorScheme.surfaceContainerHigh,
-                              borderRadius: BorderRadius.circular(16.r),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.15),
-                                  blurRadius: 16,
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  width: 24.w,
-                                  height: 24.w,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      colorScheme.primary,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 16.w),
-                                Text(
-                                  'Converting amounts...',
-                                  style: textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeights.semiBold,
-                                    color: colorScheme.onSurface,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
-            ),
+
+              // Full overlay blocker when converting database currency
+              ValueListenableBuilder<bool>(
+                valueListenable: _isConvertingNotifier,
+                builder: (context, isConverting, _) {
+                  if (!isConverting) return const SizedBox.shrink();
+                  return Container(
+                    color: colorScheme.surface.withValues(alpha: 0.7),
+                    child: Center(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 24.w, vertical: 18.h),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHigh,
+                          borderRadius: BorderRadius.circular(16.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.15),
+                              blurRadius: 16,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 24.w,
+                              height: 24.w,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 16.w),
+                            Text(
+                              'Converting amounts...',
+                              style: textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeights.semiBold,
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         );
       },

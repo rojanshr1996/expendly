@@ -113,6 +113,7 @@ class _KeypadButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
     final colorScheme = context.colorScheme;
+    final isLight = Theme.of(context).brightness == Brightness.light;
     final isPressedNotifier = ValueNotifier<bool>(false);
 
     if (keyLabel == '' && icon == null) {
@@ -139,11 +140,19 @@ class _KeypadButton extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: 4.w),
                 decoration: BoxDecoration(
                   color: isPressed
-                      ? colorScheme.surfaceContainerHigh
-                      : colorScheme.surfaceContainerLow,
+                      ? (isLight
+                          ? colorScheme.surfaceContainer
+                          : colorScheme.surfaceContainerHigh)
+                      : (isLight
+                          ? colorScheme.surfaceContainerLowest
+                          : colorScheme.surfaceContainerLow),
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
-                      color: context.customColors.glassStroke, width: 1.0),
+                    color: isLight
+                        ? colorScheme.outlineVariant.withValues(alpha: 0.50)
+                        : context.customColors.glassStroke,
+                    width: 1.0,
+                  ),
                 ),
                 alignment: Alignment.center,
                 child: icon != null

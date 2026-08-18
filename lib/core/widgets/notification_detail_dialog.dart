@@ -7,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../extensions/context_extensions.dart';
 import '../models/notification_payload.dart';
 import '../theme/font_weights.dart';
-import 'glass_container.dart';
 import 'status_components.dart';
 
 /// Modal dialog displayed when a user taps an in-app notification
@@ -51,15 +50,31 @@ class NotificationDetailDialog extends StatelessWidget {
     final customColors = context.customColors;
     final textTheme = context.textTheme;
     final l10n = context.l10n;
+    final isLight = Theme.of(context).brightness == Brightness.light;
 
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
-      child: GlassContainer(
-        borderRadius: BorderRadius.circular(20.r),
-        backgroundColor: const Color(0xFF141C19).withValues(alpha: 0.95),
-        borderStrokeColor: customColors.glassStroke,
+      child: Container(
         padding: EdgeInsets.all(20.w),
+        decoration: BoxDecoration(
+          color:
+              isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(
+            color: isLight
+                ? colorScheme.outlineVariant.withValues(alpha: 0.50)
+                : customColors.glassStroke,
+            width: 1.0,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isLight ? 0.08 : 0.35),
+              blurRadius: 24.r,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,15 +87,19 @@ class NotificationDetailDialog extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: (isBackup
                             ? colorScheme.primary
-                            : colorScheme.onSurfaceVariant)
-                        .withValues(alpha: 0.15),
+                            : (isLight
+                                ? colorScheme.primary
+                                : colorScheme.onSurfaceVariant))
+                        .withValues(alpha: isLight ? 0.12 : 0.18),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     isBackup
                         ? Icons.cloud_done_rounded
                         : Icons.notifications_active_rounded,
-                    color: isBackup ? colorScheme.primary : Colors.white,
+                    color: isBackup
+                        ? colorScheme.primary
+                        : (isLight ? colorScheme.primary : Colors.white),
                     size: 24.sp,
                   ),
                 ),
@@ -96,7 +115,9 @@ class NotificationDetailDialog extends StatelessWidget {
                         style: textTheme.labelSmall?.copyWith(
                           color: isBackup
                               ? colorScheme.primary
-                              : colorScheme.outline,
+                              : (isLight
+                                  ? colorScheme.primary
+                                  : colorScheme.outline),
                           fontWeight: FontWeights.semiBold,
                           letterSpacing: 1.2,
                         ),
@@ -116,7 +137,8 @@ class NotificationDetailDialog extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: Icon(Icons.close_rounded, color: colorScheme.outline),
+                  icon: Icon(Icons.close_rounded,
+                      color: colorScheme.onSurfaceVariant),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                 ),
@@ -138,14 +160,20 @@ class NotificationDetailDialog extends StatelessWidget {
               width: double.infinity,
               padding: EdgeInsets.all(14.w),
               decoration: BoxDecoration(
-                color: customColors.surfaceLow.withValues(alpha: 0.5),
+                color: isLight
+                    ? colorScheme.surfaceContainerLow
+                    : customColors.surfaceLow.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: customColors.glassStroke),
+                border: Border.all(
+                  color: isLight
+                      ? colorScheme.outlineVariant.withValues(alpha: 0.40)
+                      : customColors.glassStroke,
+                ),
               ),
               child: SelectableText(
                 body.isNotEmpty ? body : l10n.noNotificationBody,
                 style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+                  color: colorScheme.onSurface,
                   height: 1.45,
                 ),
               ),
@@ -173,12 +201,15 @@ class NotificationDetailDialog extends StatelessWidget {
                     icon: Icon(
                       Icons.copy_rounded,
                       size: 16.sp,
-                      color: colorScheme.outline,
+                      color:
+                          isLight ? colorScheme.primary : colorScheme.outline,
                     ),
                     label: Text(
                       l10n.copyText,
                       style: textTheme.labelMedium?.copyWith(
-                        color: colorScheme.outline,
+                        color:
+                            isLight ? colorScheme.primary : colorScheme.outline,
+                        fontWeight: FontWeights.semiBold,
                       ),
                     ),
                   ),
@@ -194,12 +225,9 @@ class NotificationDetailDialog extends StatelessWidget {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isBackup
-                        ? colorScheme.primaryContainer
-                        : colorScheme.surfaceContainerHigh,
-                    foregroundColor: isBackup
-                        ? colorScheme.onPrimaryContainer
-                        : colorScheme.onSurface,
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                    elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.r),
                     ),
