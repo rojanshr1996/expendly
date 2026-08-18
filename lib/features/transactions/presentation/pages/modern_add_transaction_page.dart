@@ -15,6 +15,7 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/category_picker_sheet.dart';
+import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../domain/entities/category_item.dart';
 import '../../domain/entities/transaction_item.dart';
@@ -171,12 +172,15 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
   PaymentMethod _matchPaymentMethod(String str,
       {required PaymentMethod fallback}) {
     final lower = str.toLowerCase();
-    if (lower.contains('card') || lower.contains('credit'))
+    if (lower.contains('card') || lower.contains('credit')) {
       return PaymentMethod.card;
-    if (lower.contains('cash') || lower.contains('wallet'))
+    }
+    if (lower.contains('cash') || lower.contains('wallet')) {
       return PaymentMethod.cash;
-    if (lower.contains('account') || lower.contains('bank'))
+    }
+    if (lower.contains('account') || lower.contains('bank')) {
       return PaymentMethod.account;
+    }
     return fallback;
   }
 
@@ -241,25 +245,20 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
           child: Scaffold(
             backgroundColor: colorScheme.surface,
             resizeToAvoidBottomInset: true,
-            appBar: AppBar(
-              backgroundColor: colorScheme.surfaceContainerLow,
-              elevation: 0,
+            extendBodyBehindAppBar: true,
+            appBar: LiquidGlassAppBar(
               leading: IconButton(
                 icon: Icon(Icons.close_rounded, color: colorScheme.onSurface),
                 onPressed: () => context.router.maybePop(),
               ),
-              title: Text(
-                widget.initialTransaction != null
-                    ? 'Edit Transaction'
-                    : context.l10n.logTransaction,
-                style: (textTheme.titleLarge ?? const TextStyle()).copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              centerTitle: true,
+              titleText: widget.initialTransaction != null
+                  ? 'Edit Transaction'
+                  : context.l10n.logTransaction,
             ),
             body: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + kToolbarHeight,
+              ),
               physics: const AlwaysScrollableScrollPhysics(
                 parent: BouncingScrollPhysics(),
               ),

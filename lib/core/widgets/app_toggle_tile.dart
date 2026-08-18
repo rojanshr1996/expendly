@@ -76,7 +76,7 @@ class AppToggleTile extends StatelessWidget {
           ),
           Switch.adaptive(
             value: value,
-            activeColor: colorScheme.primary,
+            activeTrackColor: colorScheme.primary,
             onChanged: onChanged,
           ),
         ],

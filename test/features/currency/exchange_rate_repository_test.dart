@@ -190,5 +190,51 @@ void main() {
           .getSingle();
       expect(updatedRec.amount, equals(269000)); // 2000 * 134.50
     });
+
+    test('Should NOT convert split bills data (sharing events & group expenses) during currency migration',
+        () async {
+      // 1. Create a sharing event
+      final eventId = await db.into(db.sharingEvents).insert(
+            SharingEventsCompanion.insert(
+              name: 'Trip to Tokyo',
+              category: const drift.Value('Trip'),
+              startDate: DateTime.now(),
+              createdAt: drift.Value(DateTime.now()),
+            ),
+          );
+
+      // 2. Add an event participant
+      final participantId = await db.into(db.eventParticipants).insert(
+            EventParticipantsCompanion.insert(
+              eventId: eventId,
+              name: 'Alice',
+              isOwner: const drift.Value(true),
+            ),
+          );
+
+      // 3. Add a group expense of $50.00 (5000 minor units)
+      final expenseId = await db.into(db.groupExpenses).insert(
+            GroupExpensesCompanion.insert(
+              eventId: eventId,
+              title: 'Dinner',
+              amountInCents: 5000,
+              paidByParticipantId: participantId,
+              date: DateTime.now(),
+            ),
+          );
+
+      // 4. Convert primary currency from USD to NPR (Rate: 134.50)
+      final rate = await repository.convertAllDataToNewCurrency(
+        fromCurrency: 'USD',
+        toCurrency: 'NPR',
+      );
+      expect(rate, equals(134.50));
+
+      // 5. Verify the group expense amount remains exactly 5000 (NOT multiplied by 134.50)
+      final expense = await (db.select(db.groupExpenses)
+            ..where((g) => g.id.equals(expenseId)))
+          .getSingle();
+      expect(expense.amountInCents, equals(5000));
+    });
   });
 }

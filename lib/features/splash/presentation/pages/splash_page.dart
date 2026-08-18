@@ -13,7 +13,6 @@ import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_logger.dart';
-import '../../../../core/widgets/glass_container.dart';
 
 @RoutePage()
 class SplashPage extends StatefulWidget {
@@ -36,27 +35,35 @@ class _SplashPageState extends State<SplashPage>
 
     _animController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 600),
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animController,
-        curve: const Interval(0.0, 0.65, curve: Curves.easeOut),
+        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
       ),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
+    _scaleAnimation = Tween<double>(begin: 0.88, end: 1.0).animate(
       CurvedAnimation(
         parent: _animController,
-        curve: const Interval(0.0, 0.85, curve: Curves.easeOutCubic),
+        curve: const Interval(0.0, 0.7, curve: Curves.easeOutCubic),
       ),
     );
 
     _animController.forward();
 
-    // 2.5 second splash delay to evaluate entry flow
-    _timer = Timer(const Duration(milliseconds: 2500), _navigateToNextScreen);
+    // 1.8 second splash delay for a responsive, polished entry flow
+    _timer = Timer(const Duration(milliseconds: 1800), _navigateToNextScreen);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Precache both dark and light logo images in Flutter's ImageCache for instantaneous rendering
+    precacheImage(Assets.images.expendlyLogo.provider(), context);
+    precacheImage(Assets.images.expendlyLogoLight.provider(), context);
   }
 
   void _navigateToNextScreen() {
@@ -142,21 +149,38 @@ class _SplashPageState extends State<SplashPage>
                         scale: _scaleAnimation,
                         child: Column(
                           children: [
-                            GlassContainer(
+                            Container(
                               width: 130.w,
                               height: 130.w,
-                              borderRadius: BorderRadius.circular(28.r),
                               padding: EdgeInsets.all(20.w),
-                              backgroundColor: colorScheme.surfaceContainerLow,
-                              borderStrokeColor: colorScheme.primary
-                                  .withAlpha((0.3 * 255).round()),
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceContainerLow,
+                                borderRadius: BorderRadius.circular(28.r),
+                                border: Border.all(
+                                  color: colorScheme.primary
+                                      .withAlpha((0.3 * 255).round()),
+                                  width: 1.0,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: colorScheme.primary
+                                        .withAlpha((0.08 * 255).round()),
+                                    blurRadius: 24,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
                               child: (Theme.of(context).brightness ==
                                       Brightness.light
                                   ? Assets.images.expendlyLogoLight.image(
                                       fit: BoxFit.contain,
+                                      gaplessPlayback: true,
+                                      filterQuality: FilterQuality.medium,
                                     )
                                   : Assets.images.expendlyLogo.image(
                                       fit: BoxFit.contain,
+                                      gaplessPlayback: true,
+                                      filterQuality: FilterQuality.medium,
                                     )),
                             ),
                             verticalMarginLarge,

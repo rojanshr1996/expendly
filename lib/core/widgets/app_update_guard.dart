@@ -81,43 +81,43 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
       children: [
         widget.child,
 
-        // ValueListenableBuilder for reactive overlays
-        ValueListenableBuilder<bool>(
-          valueListenable: _isMaintenanceNotifier,
-          builder: (context, isMaintenance, _) {
-            if (isMaintenance) {
-              return Positioned.fill(
-                child: _buildMaintenanceScreen(context),
-              );
-            }
+        // ValueListenableBuilder for reactive overlays inside a constant Positioned.fill
+        Positioned.fill(
+          child: ValueListenableBuilder<bool>(
+            valueListenable: _isMaintenanceNotifier,
+            builder: (context, isMaintenance, _) {
+              if (isMaintenance) {
+                return _buildMaintenanceScreen(context);
+              }
 
-            return ValueListenableBuilder<AppUpdateStatus>(
-              valueListenable: _updateStatusNotifier,
-              builder: (context, updateStatus, _) {
-                if (updateStatus == AppUpdateStatus.forceUpdate) {
-                  return Positioned.fill(
-                    child: _buildForceUpdateScreen(context),
-                  );
-                }
+              return ValueListenableBuilder<AppUpdateStatus>(
+                valueListenable: _updateStatusNotifier,
+                builder: (context, updateStatus, _) {
+                  if (updateStatus == AppUpdateStatus.forceUpdate) {
+                    return _buildForceUpdateScreen(context);
+                  }
 
-                if (updateStatus == AppUpdateStatus.optionalUpdate) {
-                  return ValueListenableBuilder<bool>(
-                    valueListenable: _optionalUpdateDismissedNotifier,
-                    builder: (context, dismissed, _) {
-                      if (!dismissed) {
-                        return Positioned.fill(
-                          child: _buildOptionalUpdateDialog(context),
+                  if (updateStatus == AppUpdateStatus.optionalUpdate) {
+                    return ValueListenableBuilder<bool>(
+                      valueListenable: _optionalUpdateDismissedNotifier,
+                      builder: (context, dismissed, _) {
+                        if (!dismissed) {
+                          return _buildOptionalUpdateDialog(context);
+                        }
+                        return const IgnorePointer(
+                          child: SizedBox.shrink(),
                         );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  );
-                }
+                      },
+                    );
+                  }
 
-                return const SizedBox.shrink();
-              },
-            );
-          },
+                  return const IgnorePointer(
+                    child: SizedBox.shrink(),
+                  );
+                },
+              );
+            },
+          ),
         ),
       ],
     );

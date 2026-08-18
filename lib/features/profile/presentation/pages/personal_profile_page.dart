@@ -6,8 +6,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../domain/entities/user_profile.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/profile_state.dart';
@@ -190,25 +190,19 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
 
         return Scaffold(
           backgroundColor: colorScheme.surface,
-          appBar: AppBar(
-            backgroundColor: colorScheme.surfaceContainerLow,
-            elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_rounded, color: colorScheme.primary),
-              onPressed: () => context.router.maybePop(),
-            ),
-            title: Text(
-              l10n.personalProfile,
-              style: (textTheme.titleLarge ?? const TextStyle()).copyWith(
-                color: colorScheme.primary,
-                fontWeight: FontWeights.bold,
-              ),
-            ),
-            centerTitle: false,
+          extendBodyBehindAppBar: true,
+          appBar: LiquidGlassAppBar(
+            titleText: l10n.personalProfile,
+            onLeadingPressed: () => context.router.maybePop(),
           ),
           body: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+            padding: EdgeInsets.only(
+              left: 24.w,
+              right: 24.w,
+              top: MediaQuery.of(context).padding.top + kToolbarHeight + 16.h,
+              bottom: 20.h,
+            ),
             child: Form(
               key: _formKey,
               child: Column(

@@ -119,68 +119,54 @@ class AppButton extends StatelessWidget {
       }
     }
 
+    Widget button;
+
     if (variant == AppButtonVariant.glass) {
-      return SizedBox(
+      button = GlassContainer(
         width: width,
         height: effectiveHeight,
-        child: GlassContainer(
-          borderRadius: effectiveRadius,
-          backgroundColor: isEnabled
-              ? effectiveBgColor
-              : context.colorScheme.surfaceContainerLow
-                  .withAlpha((0.3 * 255).round()),
-          borderStrokeColor:
-              effectiveBorderColor ?? context.customColors.glassStroke,
-          onTap: isEnabled ? onPressed : null,
-          child: Center(child: content),
-        ),
+        borderRadius: effectiveRadius,
+        padding:
+            padding ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+        backgroundColor: isEnabled
+            ? effectiveBgColor
+            : context.colorScheme.surfaceContainerLow
+                .withAlpha((0.3 * 255).round()),
+        borderStrokeColor:
+            effectiveBorderColor ?? context.customColors.glassStroke,
+        onTap: isEnabled ? onPressed : null,
+        child: Center(child: content),
       );
-    }
-
-    if (variant == AppButtonVariant.outlined) {
-      return SizedBox(
-        width: width,
-        height: effectiveHeight,
-        child: OutlinedButton(
-          onPressed: isEnabled ? onPressed : null,
-          style: OutlinedButton.styleFrom(
-            foregroundColor: effectiveFgColor,
-            side: BorderSide(
-              color: isEnabled
-                  ? (effectiveBorderColor ?? colorScheme.outline)
-                  : colorScheme.outline.withAlpha((0.3 * 255).round()),
-              width: 1.5,
-            ),
-            shape: RoundedRectangleBorder(borderRadius: effectiveRadius),
-            padding: padding ??
-                EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+    } else if (variant == AppButtonVariant.outlined) {
+      button = OutlinedButton(
+        onPressed: isEnabled ? onPressed : null,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: effectiveFgColor,
+          side: BorderSide(
+            color: isEnabled
+                ? (effectiveBorderColor ?? colorScheme.outline)
+                : colorScheme.outline.withAlpha((0.3 * 255).round()),
+            width: 1.5,
           ),
-          child: content,
+          shape: RoundedRectangleBorder(borderRadius: effectiveRadius),
+          padding:
+              padding ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         ),
+        child: content,
       );
-    }
-
-    if (variant == AppButtonVariant.text) {
-      return SizedBox(
-        width: width,
-        height: effectiveHeight,
-        child: TextButton(
-          onPressed: isEnabled ? onPressed : null,
-          style: TextButton.styleFrom(
-            foregroundColor: effectiveFgColor,
-            shape: RoundedRectangleBorder(borderRadius: effectiveRadius),
-            padding: padding ??
-                EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-          ),
-          child: content,
+    } else if (variant == AppButtonVariant.text) {
+      button = TextButton(
+        onPressed: isEnabled ? onPressed : null,
+        style: TextButton.styleFrom(
+          foregroundColor: effectiveFgColor,
+          shape: RoundedRectangleBorder(borderRadius: effectiveRadius),
+          padding:
+              padding ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         ),
+        child: content,
       );
-    }
-
-    return SizedBox(
-      width: width,
-      height: effectiveHeight,
-      child: ElevatedButton(
+    } else {
+      button = ElevatedButton(
         onPressed: isEnabled ? onPressed : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: effectiveBgColor,
@@ -197,7 +183,20 @@ class AppButton extends StatelessWidget {
               padding ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         ),
         child: content,
-      ),
+      );
+    }
+
+    if (width != null) {
+      return SizedBox(
+        width: width,
+        height: effectiveHeight,
+        child: button,
+      );
+    }
+
+    return SizedBox(
+      height: effectiveHeight,
+      child: button,
     );
   }
 

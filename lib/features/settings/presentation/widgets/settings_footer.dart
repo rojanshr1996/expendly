@@ -18,7 +18,7 @@ class SettingsFooter extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              '${context.l10n.appName} v1.0.0',
+              '${context.l10n.appName} v1.1.0',
               style: customTypography.labelMediumMono.copyWith(
                 color: colorScheme.outline,
                 fontWeight: FontWeight.bold,

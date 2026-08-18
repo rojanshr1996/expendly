@@ -349,8 +349,8 @@ class PdfReportService {
 
     // ── Key Metrics Cards (4 Columns) ────────────────────────────────────────
     final cardW = (pageWidth - 72 - 18) / 4;
-    final cardY = 685.0;
-    final cardH = 58.0;
+    const cardY = 685.0;
+    const cardH = 58.0;
 
     // Income Card
     p1.drawRoundedRect(36, cardY, cardW, cardH, 6,
@@ -405,7 +405,7 @@ class PdfReportService {
         color: PdfColor.darkText);
 
     // ── Section 1: Cash Flow Trends (Vector Bar Chart) ──────────────────────
-    final chart1Y = 490.0;
+    const chart1Y = 490.0;
     p1.drawText('1. CASH FLOW & DAILY SPENDING TREND CHART', 36, 665,
         fontSize: 10, bold: true, color: PdfColor.darkText);
 
@@ -431,7 +431,7 @@ class PdfReportService {
     if (flows.isNotEmpty) {
       final availableWidth = (pageWidth - 112);
       final barStep = availableWidth / flows.length;
-      final maxBarH = 80.0;
+      const maxBarH = 80.0;
 
       for (int i = 0; i < flows.length; i++) {
         final item = flows[i];
@@ -476,7 +476,7 @@ class PdfReportService {
         color: PdfColor.darkText);
 
     // ── Section 2: Category Breakdown (Visual Distribution Bars) ────────────
-    final chart2Y = 240.0;
+    const chart2Y = 240.0;
     p1.drawText('2. CATEGORY EXPENSE BREAKDOWN & DISTRIBUTION', 36, 430,
         fontSize: 10, bold: true, color: PdfColor.darkText);
 
@@ -532,7 +532,7 @@ class PdfReportService {
         color: PdfColor.darkText);
 
     // ── Section 3: Budget Health & Financial Stability Scorecard ────────────
-    final chart3Y = 80.0;
+    const chart3Y = 80.0;
     p1.drawText('3. BUDGET HEALTH & SAVINGS EFFICIENCY SCORECARD', 36, 180,
         fontSize: 10, bold: true, color: PdfColor.darkText);
 
@@ -595,7 +595,7 @@ class PdfReportService {
         color: PdfColor.mutedText);
 
     // Table Column Header
-    final thY = 740.0;
+    const thY = 740.0;
     p2.drawRect(36, thY, p2Width - 72, 20, fillColor: PdfColor.primary);
     p2.drawText('DATE & TIME', 44, thY + 6,
         fontSize: 8, bold: true, color: PdfColor.white);
@@ -610,8 +610,8 @@ class PdfReportService {
 
     // Table Rows
     var rowY = thY - 18.0;
-    final rowH = 17.0;
-    final maxRows = 38;
+    const rowH = 17.0;
+    const maxRows = 38;
     final displayTx = transactions.take(maxRows).toList();
 
     for (int i = 0; i < displayTx.length; i++) {

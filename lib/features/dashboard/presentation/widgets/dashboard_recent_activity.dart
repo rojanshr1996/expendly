@@ -8,7 +8,6 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
-import '../../../../core/widgets/glass_container.dart';
 import '../../../transactions/domain/entities/transaction_item.dart';
 import '../../domain/entities/financial_summary.dart';
 

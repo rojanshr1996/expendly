@@ -3228,6 +3228,1525 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
   }
 }
 
+class $SharingEventsTable extends SharingEvents
+    with TableInfo<$SharingEventsTable, SharingEventData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SharingEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 100),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _startDateMeta =
+      const VerificationMeta('startDate');
+  @override
+  late final GeneratedColumn<DateTime> startDate = GeneratedColumn<DateTime>(
+      'start_date', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _endDateMeta =
+      const VerificationMeta('endDate');
+  @override
+  late final GeneratedColumn<DateTime> endDate = GeneratedColumn<DateTime>(
+      'end_date', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _categoryMeta =
+      const VerificationMeta('category');
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+      'category', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('trip'));
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('active'));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, description, startDate, endDate, category, status, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sharing_events';
+  @override
+  VerificationContext validateIntegrity(Insertable<SharingEventData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('start_date')) {
+      context.handle(_startDateMeta,
+          startDate.isAcceptableOrUnknown(data['start_date']!, _startDateMeta));
+    } else if (isInserting) {
+      context.missing(_startDateMeta);
+    }
+    if (data.containsKey('end_date')) {
+      context.handle(_endDateMeta,
+          endDate.isAcceptableOrUnknown(data['end_date']!, _endDateMeta));
+    }
+    if (data.containsKey('category')) {
+      context.handle(_categoryMeta,
+          category.isAcceptableOrUnknown(data['category']!, _categoryMeta));
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SharingEventData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SharingEventData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
+      startDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}start_date'])!,
+      endDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}end_date']),
+      category: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category'])!,
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $SharingEventsTable createAlias(String alias) {
+    return $SharingEventsTable(attachedDatabase, alias);
+  }
+}
+
+class SharingEventData extends DataClass
+    implements Insertable<SharingEventData> {
+  final int id;
+  final String name;
+  final String description;
+  final DateTime startDate;
+  final DateTime? endDate;
+  final String category;
+  final String status;
+  final DateTime createdAt;
+  const SharingEventData(
+      {required this.id,
+      required this.name,
+      required this.description,
+      required this.startDate,
+      this.endDate,
+      required this.category,
+      required this.status,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['description'] = Variable<String>(description);
+    map['start_date'] = Variable<DateTime>(startDate);
+    if (!nullToAbsent || endDate != null) {
+      map['end_date'] = Variable<DateTime>(endDate);
+    }
+    map['category'] = Variable<String>(category);
+    map['status'] = Variable<String>(status);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  SharingEventsCompanion toCompanion(bool nullToAbsent) {
+    return SharingEventsCompanion(
+      id: Value(id),
+      name: Value(name),
+      description: Value(description),
+      startDate: Value(startDate),
+      endDate: endDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endDate),
+      category: Value(category),
+      status: Value(status),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory SharingEventData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SharingEventData(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String>(json['description']),
+      startDate: serializer.fromJson<DateTime>(json['startDate']),
+      endDate: serializer.fromJson<DateTime?>(json['endDate']),
+      category: serializer.fromJson<String>(json['category']),
+      status: serializer.fromJson<String>(json['status']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String>(description),
+      'startDate': serializer.toJson<DateTime>(startDate),
+      'endDate': serializer.toJson<DateTime?>(endDate),
+      'category': serializer.toJson<String>(category),
+      'status': serializer.toJson<String>(status),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  SharingEventData copyWith(
+          {int? id,
+          String? name,
+          String? description,
+          DateTime? startDate,
+          Value<DateTime?> endDate = const Value.absent(),
+          String? category,
+          String? status,
+          DateTime? createdAt}) =>
+      SharingEventData(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        description: description ?? this.description,
+        startDate: startDate ?? this.startDate,
+        endDate: endDate.present ? endDate.value : this.endDate,
+        category: category ?? this.category,
+        status: status ?? this.status,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  SharingEventData copyWithCompanion(SharingEventsCompanion data) {
+    return SharingEventData(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      description:
+          data.description.present ? data.description.value : this.description,
+      startDate: data.startDate.present ? data.startDate.value : this.startDate,
+      endDate: data.endDate.present ? data.endDate.value : this.endDate,
+      category: data.category.present ? data.category.value : this.category,
+      status: data.status.present ? data.status.value : this.status,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SharingEventData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('startDate: $startDate, ')
+          ..write('endDate: $endDate, ')
+          ..write('category: $category, ')
+          ..write('status: $status, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id, name, description, startDate, endDate, category, status, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SharingEventData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.startDate == this.startDate &&
+          other.endDate == this.endDate &&
+          other.category == this.category &&
+          other.status == this.status &&
+          other.createdAt == this.createdAt);
+}
+
+class SharingEventsCompanion extends UpdateCompanion<SharingEventData> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String> description;
+  final Value<DateTime> startDate;
+  final Value<DateTime?> endDate;
+  final Value<String> category;
+  final Value<String> status;
+  final Value<DateTime> createdAt;
+  const SharingEventsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.endDate = const Value.absent(),
+    this.category = const Value.absent(),
+    this.status = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  SharingEventsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.description = const Value.absent(),
+    required DateTime startDate,
+    this.endDate = const Value.absent(),
+    this.category = const Value.absent(),
+    this.status = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  })  : name = Value(name),
+        startDate = Value(startDate);
+  static Insertable<SharingEventData> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<DateTime>? startDate,
+    Expression<DateTime>? endDate,
+    Expression<String>? category,
+    Expression<String>? status,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (startDate != null) 'start_date': startDate,
+      if (endDate != null) 'end_date': endDate,
+      if (category != null) 'category': category,
+      if (status != null) 'status': status,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  SharingEventsCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? name,
+      Value<String>? description,
+      Value<DateTime>? startDate,
+      Value<DateTime?>? endDate,
+      Value<String>? category,
+      Value<String>? status,
+      Value<DateTime>? createdAt}) {
+    return SharingEventsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      category: category ?? this.category,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (startDate.present) {
+      map['start_date'] = Variable<DateTime>(startDate.value);
+    }
+    if (endDate.present) {
+      map['end_date'] = Variable<DateTime>(endDate.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SharingEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('startDate: $startDate, ')
+          ..write('endDate: $endDate, ')
+          ..write('category: $category, ')
+          ..write('status: $status, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $EventParticipantsTable extends EventParticipants
+    with TableInfo<$EventParticipantsTable, EventParticipantData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EventParticipantsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _eventIdMeta =
+      const VerificationMeta('eventId');
+  @override
+  late final GeneratedColumn<int> eventId = GeneratedColumn<int>(
+      'event_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES sharing_events (id)'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 100),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+      'email', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _isOwnerMeta =
+      const VerificationMeta('isOwner');
+  @override
+  late final GeneratedColumn<bool> isOwner = GeneratedColumn<bool>(
+      'is_owner', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_owner" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _colorIndexMeta =
+      const VerificationMeta('colorIndex');
+  @override
+  late final GeneratedColumn<int> colorIndex = GeneratedColumn<int>(
+      'color_index', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, eventId, name, email, isOwner, colorIndex];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'event_participants';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<EventParticipantData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('event_id')) {
+      context.handle(_eventIdMeta,
+          eventId.isAcceptableOrUnknown(data['event_id']!, _eventIdMeta));
+    } else if (isInserting) {
+      context.missing(_eventIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+          _emailMeta, email.isAcceptableOrUnknown(data['email']!, _emailMeta));
+    }
+    if (data.containsKey('is_owner')) {
+      context.handle(_isOwnerMeta,
+          isOwner.isAcceptableOrUnknown(data['is_owner']!, _isOwnerMeta));
+    }
+    if (data.containsKey('color_index')) {
+      context.handle(
+          _colorIndexMeta,
+          colorIndex.isAcceptableOrUnknown(
+              data['color_index']!, _colorIndexMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  EventParticipantData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EventParticipantData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      eventId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}event_id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      email: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}email']),
+      isOwner: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_owner'])!,
+      colorIndex: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}color_index'])!,
+    );
+  }
+
+  @override
+  $EventParticipantsTable createAlias(String alias) {
+    return $EventParticipantsTable(attachedDatabase, alias);
+  }
+}
+
+class EventParticipantData extends DataClass
+    implements Insertable<EventParticipantData> {
+  final int id;
+  final int eventId;
+  final String name;
+  final String? email;
+  final bool isOwner;
+  final int colorIndex;
+  const EventParticipantData(
+      {required this.id,
+      required this.eventId,
+      required this.name,
+      this.email,
+      required this.isOwner,
+      required this.colorIndex});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['event_id'] = Variable<int>(eventId);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || email != null) {
+      map['email'] = Variable<String>(email);
+    }
+    map['is_owner'] = Variable<bool>(isOwner);
+    map['color_index'] = Variable<int>(colorIndex);
+    return map;
+  }
+
+  EventParticipantsCompanion toCompanion(bool nullToAbsent) {
+    return EventParticipantsCompanion(
+      id: Value(id),
+      eventId: Value(eventId),
+      name: Value(name),
+      email:
+          email == null && nullToAbsent ? const Value.absent() : Value(email),
+      isOwner: Value(isOwner),
+      colorIndex: Value(colorIndex),
+    );
+  }
+
+  factory EventParticipantData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EventParticipantData(
+      id: serializer.fromJson<int>(json['id']),
+      eventId: serializer.fromJson<int>(json['eventId']),
+      name: serializer.fromJson<String>(json['name']),
+      email: serializer.fromJson<String?>(json['email']),
+      isOwner: serializer.fromJson<bool>(json['isOwner']),
+      colorIndex: serializer.fromJson<int>(json['colorIndex']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'eventId': serializer.toJson<int>(eventId),
+      'name': serializer.toJson<String>(name),
+      'email': serializer.toJson<String?>(email),
+      'isOwner': serializer.toJson<bool>(isOwner),
+      'colorIndex': serializer.toJson<int>(colorIndex),
+    };
+  }
+
+  EventParticipantData copyWith(
+          {int? id,
+          int? eventId,
+          String? name,
+          Value<String?> email = const Value.absent(),
+          bool? isOwner,
+          int? colorIndex}) =>
+      EventParticipantData(
+        id: id ?? this.id,
+        eventId: eventId ?? this.eventId,
+        name: name ?? this.name,
+        email: email.present ? email.value : this.email,
+        isOwner: isOwner ?? this.isOwner,
+        colorIndex: colorIndex ?? this.colorIndex,
+      );
+  EventParticipantData copyWithCompanion(EventParticipantsCompanion data) {
+    return EventParticipantData(
+      id: data.id.present ? data.id.value : this.id,
+      eventId: data.eventId.present ? data.eventId.value : this.eventId,
+      name: data.name.present ? data.name.value : this.name,
+      email: data.email.present ? data.email.value : this.email,
+      isOwner: data.isOwner.present ? data.isOwner.value : this.isOwner,
+      colorIndex:
+          data.colorIndex.present ? data.colorIndex.value : this.colorIndex,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventParticipantData(')
+          ..write('id: $id, ')
+          ..write('eventId: $eventId, ')
+          ..write('name: $name, ')
+          ..write('email: $email, ')
+          ..write('isOwner: $isOwner, ')
+          ..write('colorIndex: $colorIndex')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, eventId, name, email, isOwner, colorIndex);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EventParticipantData &&
+          other.id == this.id &&
+          other.eventId == this.eventId &&
+          other.name == this.name &&
+          other.email == this.email &&
+          other.isOwner == this.isOwner &&
+          other.colorIndex == this.colorIndex);
+}
+
+class EventParticipantsCompanion extends UpdateCompanion<EventParticipantData> {
+  final Value<int> id;
+  final Value<int> eventId;
+  final Value<String> name;
+  final Value<String?> email;
+  final Value<bool> isOwner;
+  final Value<int> colorIndex;
+  const EventParticipantsCompanion({
+    this.id = const Value.absent(),
+    this.eventId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.email = const Value.absent(),
+    this.isOwner = const Value.absent(),
+    this.colorIndex = const Value.absent(),
+  });
+  EventParticipantsCompanion.insert({
+    this.id = const Value.absent(),
+    required int eventId,
+    required String name,
+    this.email = const Value.absent(),
+    this.isOwner = const Value.absent(),
+    this.colorIndex = const Value.absent(),
+  })  : eventId = Value(eventId),
+        name = Value(name);
+  static Insertable<EventParticipantData> custom({
+    Expression<int>? id,
+    Expression<int>? eventId,
+    Expression<String>? name,
+    Expression<String>? email,
+    Expression<bool>? isOwner,
+    Expression<int>? colorIndex,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (eventId != null) 'event_id': eventId,
+      if (name != null) 'name': name,
+      if (email != null) 'email': email,
+      if (isOwner != null) 'is_owner': isOwner,
+      if (colorIndex != null) 'color_index': colorIndex,
+    });
+  }
+
+  EventParticipantsCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? eventId,
+      Value<String>? name,
+      Value<String?>? email,
+      Value<bool>? isOwner,
+      Value<int>? colorIndex}) {
+    return EventParticipantsCompanion(
+      id: id ?? this.id,
+      eventId: eventId ?? this.eventId,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      isOwner: isOwner ?? this.isOwner,
+      colorIndex: colorIndex ?? this.colorIndex,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (eventId.present) {
+      map['event_id'] = Variable<int>(eventId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (isOwner.present) {
+      map['is_owner'] = Variable<bool>(isOwner.value);
+    }
+    if (colorIndex.present) {
+      map['color_index'] = Variable<int>(colorIndex.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventParticipantsCompanion(')
+          ..write('id: $id, ')
+          ..write('eventId: $eventId, ')
+          ..write('name: $name, ')
+          ..write('email: $email, ')
+          ..write('isOwner: $isOwner, ')
+          ..write('colorIndex: $colorIndex')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GroupExpensesTable extends GroupExpenses
+    with TableInfo<$GroupExpensesTable, GroupExpenseData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GroupExpensesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _eventIdMeta =
+      const VerificationMeta('eventId');
+  @override
+  late final GeneratedColumn<int> eventId = GeneratedColumn<int>(
+      'event_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES sharing_events (id)'));
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 200),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _amountInCentsMeta =
+      const VerificationMeta('amountInCents');
+  @override
+  late final GeneratedColumn<int> amountInCents = GeneratedColumn<int>(
+      'amount_in_cents', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _paidByParticipantIdMeta =
+      const VerificationMeta('paidByParticipantId');
+  @override
+  late final GeneratedColumn<int> paidByParticipantId = GeneratedColumn<int>(
+      'paid_by_participant_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES event_participants (id)'));
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+      'date', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, eventId, title, amountInCents, paidByParticipantId, date, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'group_expenses';
+  @override
+  VerificationContext validateIntegrity(Insertable<GroupExpenseData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('event_id')) {
+      context.handle(_eventIdMeta,
+          eventId.isAcceptableOrUnknown(data['event_id']!, _eventIdMeta));
+    } else if (isInserting) {
+      context.missing(_eventIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('amount_in_cents')) {
+      context.handle(
+          _amountInCentsMeta,
+          amountInCents.isAcceptableOrUnknown(
+              data['amount_in_cents']!, _amountInCentsMeta));
+    } else if (isInserting) {
+      context.missing(_amountInCentsMeta);
+    }
+    if (data.containsKey('paid_by_participant_id')) {
+      context.handle(
+          _paidByParticipantIdMeta,
+          paidByParticipantId.isAcceptableOrUnknown(
+              data['paid_by_participant_id']!, _paidByParticipantIdMeta));
+    } else if (isInserting) {
+      context.missing(_paidByParticipantIdMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GroupExpenseData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GroupExpenseData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      eventId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}event_id'])!,
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      amountInCents: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}amount_in_cents'])!,
+      paidByParticipantId: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}paid_by_participant_id'])!,
+      date: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $GroupExpensesTable createAlias(String alias) {
+    return $GroupExpensesTable(attachedDatabase, alias);
+  }
+}
+
+class GroupExpenseData extends DataClass
+    implements Insertable<GroupExpenseData> {
+  final int id;
+  final int eventId;
+  final String title;
+  final int amountInCents;
+  final int paidByParticipantId;
+  final DateTime date;
+  final DateTime createdAt;
+  const GroupExpenseData(
+      {required this.id,
+      required this.eventId,
+      required this.title,
+      required this.amountInCents,
+      required this.paidByParticipantId,
+      required this.date,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['event_id'] = Variable<int>(eventId);
+    map['title'] = Variable<String>(title);
+    map['amount_in_cents'] = Variable<int>(amountInCents);
+    map['paid_by_participant_id'] = Variable<int>(paidByParticipantId);
+    map['date'] = Variable<DateTime>(date);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  GroupExpensesCompanion toCompanion(bool nullToAbsent) {
+    return GroupExpensesCompanion(
+      id: Value(id),
+      eventId: Value(eventId),
+      title: Value(title),
+      amountInCents: Value(amountInCents),
+      paidByParticipantId: Value(paidByParticipantId),
+      date: Value(date),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory GroupExpenseData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GroupExpenseData(
+      id: serializer.fromJson<int>(json['id']),
+      eventId: serializer.fromJson<int>(json['eventId']),
+      title: serializer.fromJson<String>(json['title']),
+      amountInCents: serializer.fromJson<int>(json['amountInCents']),
+      paidByParticipantId:
+          serializer.fromJson<int>(json['paidByParticipantId']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'eventId': serializer.toJson<int>(eventId),
+      'title': serializer.toJson<String>(title),
+      'amountInCents': serializer.toJson<int>(amountInCents),
+      'paidByParticipantId': serializer.toJson<int>(paidByParticipantId),
+      'date': serializer.toJson<DateTime>(date),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  GroupExpenseData copyWith(
+          {int? id,
+          int? eventId,
+          String? title,
+          int? amountInCents,
+          int? paidByParticipantId,
+          DateTime? date,
+          DateTime? createdAt}) =>
+      GroupExpenseData(
+        id: id ?? this.id,
+        eventId: eventId ?? this.eventId,
+        title: title ?? this.title,
+        amountInCents: amountInCents ?? this.amountInCents,
+        paidByParticipantId: paidByParticipantId ?? this.paidByParticipantId,
+        date: date ?? this.date,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  GroupExpenseData copyWithCompanion(GroupExpensesCompanion data) {
+    return GroupExpenseData(
+      id: data.id.present ? data.id.value : this.id,
+      eventId: data.eventId.present ? data.eventId.value : this.eventId,
+      title: data.title.present ? data.title.value : this.title,
+      amountInCents: data.amountInCents.present
+          ? data.amountInCents.value
+          : this.amountInCents,
+      paidByParticipantId: data.paidByParticipantId.present
+          ? data.paidByParticipantId.value
+          : this.paidByParticipantId,
+      date: data.date.present ? data.date.value : this.date,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GroupExpenseData(')
+          ..write('id: $id, ')
+          ..write('eventId: $eventId, ')
+          ..write('title: $title, ')
+          ..write('amountInCents: $amountInCents, ')
+          ..write('paidByParticipantId: $paidByParticipantId, ')
+          ..write('date: $date, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id, eventId, title, amountInCents, paidByParticipantId, date, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GroupExpenseData &&
+          other.id == this.id &&
+          other.eventId == this.eventId &&
+          other.title == this.title &&
+          other.amountInCents == this.amountInCents &&
+          other.paidByParticipantId == this.paidByParticipantId &&
+          other.date == this.date &&
+          other.createdAt == this.createdAt);
+}
+
+class GroupExpensesCompanion extends UpdateCompanion<GroupExpenseData> {
+  final Value<int> id;
+  final Value<int> eventId;
+  final Value<String> title;
+  final Value<int> amountInCents;
+  final Value<int> paidByParticipantId;
+  final Value<DateTime> date;
+  final Value<DateTime> createdAt;
+  const GroupExpensesCompanion({
+    this.id = const Value.absent(),
+    this.eventId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.amountInCents = const Value.absent(),
+    this.paidByParticipantId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  GroupExpensesCompanion.insert({
+    this.id = const Value.absent(),
+    required int eventId,
+    required String title,
+    required int amountInCents,
+    required int paidByParticipantId,
+    required DateTime date,
+    this.createdAt = const Value.absent(),
+  })  : eventId = Value(eventId),
+        title = Value(title),
+        amountInCents = Value(amountInCents),
+        paidByParticipantId = Value(paidByParticipantId),
+        date = Value(date);
+  static Insertable<GroupExpenseData> custom({
+    Expression<int>? id,
+    Expression<int>? eventId,
+    Expression<String>? title,
+    Expression<int>? amountInCents,
+    Expression<int>? paidByParticipantId,
+    Expression<DateTime>? date,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (eventId != null) 'event_id': eventId,
+      if (title != null) 'title': title,
+      if (amountInCents != null) 'amount_in_cents': amountInCents,
+      if (paidByParticipantId != null)
+        'paid_by_participant_id': paidByParticipantId,
+      if (date != null) 'date': date,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  GroupExpensesCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? eventId,
+      Value<String>? title,
+      Value<int>? amountInCents,
+      Value<int>? paidByParticipantId,
+      Value<DateTime>? date,
+      Value<DateTime>? createdAt}) {
+    return GroupExpensesCompanion(
+      id: id ?? this.id,
+      eventId: eventId ?? this.eventId,
+      title: title ?? this.title,
+      amountInCents: amountInCents ?? this.amountInCents,
+      paidByParticipantId: paidByParticipantId ?? this.paidByParticipantId,
+      date: date ?? this.date,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (eventId.present) {
+      map['event_id'] = Variable<int>(eventId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (amountInCents.present) {
+      map['amount_in_cents'] = Variable<int>(amountInCents.value);
+    }
+    if (paidByParticipantId.present) {
+      map['paid_by_participant_id'] = Variable<int>(paidByParticipantId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GroupExpensesCompanion(')
+          ..write('id: $id, ')
+          ..write('eventId: $eventId, ')
+          ..write('title: $title, ')
+          ..write('amountInCents: $amountInCents, ')
+          ..write('paidByParticipantId: $paidByParticipantId, ')
+          ..write('date: $date, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ExpenseSplitsTable extends ExpenseSplits
+    with TableInfo<$ExpenseSplitsTable, ExpenseSplitData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExpenseSplitsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _expenseIdMeta =
+      const VerificationMeta('expenseId');
+  @override
+  late final GeneratedColumn<int> expenseId = GeneratedColumn<int>(
+      'expense_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES group_expenses (id)'));
+  static const VerificationMeta _participantIdMeta =
+      const VerificationMeta('participantId');
+  @override
+  late final GeneratedColumn<int> participantId = GeneratedColumn<int>(
+      'participant_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES event_participants (id)'));
+  static const VerificationMeta _isSelectedMeta =
+      const VerificationMeta('isSelected');
+  @override
+  late final GeneratedColumn<bool> isSelected = GeneratedColumn<bool>(
+      'is_selected', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_selected" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _customPercentageMeta =
+      const VerificationMeta('customPercentage');
+  @override
+  late final GeneratedColumn<double> customPercentage = GeneratedColumn<double>(
+      'custom_percentage', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _splitAmountInCentsMeta =
+      const VerificationMeta('splitAmountInCents');
+  @override
+  late final GeneratedColumn<int> splitAmountInCents = GeneratedColumn<int>(
+      'split_amount_in_cents', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        expenseId,
+        participantId,
+        isSelected,
+        customPercentage,
+        splitAmountInCents
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'expense_splits';
+  @override
+  VerificationContext validateIntegrity(Insertable<ExpenseSplitData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('expense_id')) {
+      context.handle(_expenseIdMeta,
+          expenseId.isAcceptableOrUnknown(data['expense_id']!, _expenseIdMeta));
+    } else if (isInserting) {
+      context.missing(_expenseIdMeta);
+    }
+    if (data.containsKey('participant_id')) {
+      context.handle(
+          _participantIdMeta,
+          participantId.isAcceptableOrUnknown(
+              data['participant_id']!, _participantIdMeta));
+    } else if (isInserting) {
+      context.missing(_participantIdMeta);
+    }
+    if (data.containsKey('is_selected')) {
+      context.handle(
+          _isSelectedMeta,
+          isSelected.isAcceptableOrUnknown(
+              data['is_selected']!, _isSelectedMeta));
+    }
+    if (data.containsKey('custom_percentage')) {
+      context.handle(
+          _customPercentageMeta,
+          customPercentage.isAcceptableOrUnknown(
+              data['custom_percentage']!, _customPercentageMeta));
+    }
+    if (data.containsKey('split_amount_in_cents')) {
+      context.handle(
+          _splitAmountInCentsMeta,
+          splitAmountInCents.isAcceptableOrUnknown(
+              data['split_amount_in_cents']!, _splitAmountInCentsMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExpenseSplitData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExpenseSplitData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      expenseId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}expense_id'])!,
+      participantId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}participant_id'])!,
+      isSelected: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_selected'])!,
+      customPercentage: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}custom_percentage']),
+      splitAmountInCents: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}split_amount_in_cents'])!,
+    );
+  }
+
+  @override
+  $ExpenseSplitsTable createAlias(String alias) {
+    return $ExpenseSplitsTable(attachedDatabase, alias);
+  }
+}
+
+class ExpenseSplitData extends DataClass
+    implements Insertable<ExpenseSplitData> {
+  final int id;
+  final int expenseId;
+  final int participantId;
+  final bool isSelected;
+  final double? customPercentage;
+  final int splitAmountInCents;
+  const ExpenseSplitData(
+      {required this.id,
+      required this.expenseId,
+      required this.participantId,
+      required this.isSelected,
+      this.customPercentage,
+      required this.splitAmountInCents});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['expense_id'] = Variable<int>(expenseId);
+    map['participant_id'] = Variable<int>(participantId);
+    map['is_selected'] = Variable<bool>(isSelected);
+    if (!nullToAbsent || customPercentage != null) {
+      map['custom_percentage'] = Variable<double>(customPercentage);
+    }
+    map['split_amount_in_cents'] = Variable<int>(splitAmountInCents);
+    return map;
+  }
+
+  ExpenseSplitsCompanion toCompanion(bool nullToAbsent) {
+    return ExpenseSplitsCompanion(
+      id: Value(id),
+      expenseId: Value(expenseId),
+      participantId: Value(participantId),
+      isSelected: Value(isSelected),
+      customPercentage: customPercentage == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customPercentage),
+      splitAmountInCents: Value(splitAmountInCents),
+    );
+  }
+
+  factory ExpenseSplitData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExpenseSplitData(
+      id: serializer.fromJson<int>(json['id']),
+      expenseId: serializer.fromJson<int>(json['expenseId']),
+      participantId: serializer.fromJson<int>(json['participantId']),
+      isSelected: serializer.fromJson<bool>(json['isSelected']),
+      customPercentage: serializer.fromJson<double?>(json['customPercentage']),
+      splitAmountInCents: serializer.fromJson<int>(json['splitAmountInCents']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'expenseId': serializer.toJson<int>(expenseId),
+      'participantId': serializer.toJson<int>(participantId),
+      'isSelected': serializer.toJson<bool>(isSelected),
+      'customPercentage': serializer.toJson<double?>(customPercentage),
+      'splitAmountInCents': serializer.toJson<int>(splitAmountInCents),
+    };
+  }
+
+  ExpenseSplitData copyWith(
+          {int? id,
+          int? expenseId,
+          int? participantId,
+          bool? isSelected,
+          Value<double?> customPercentage = const Value.absent(),
+          int? splitAmountInCents}) =>
+      ExpenseSplitData(
+        id: id ?? this.id,
+        expenseId: expenseId ?? this.expenseId,
+        participantId: participantId ?? this.participantId,
+        isSelected: isSelected ?? this.isSelected,
+        customPercentage: customPercentage.present
+            ? customPercentage.value
+            : this.customPercentage,
+        splitAmountInCents: splitAmountInCents ?? this.splitAmountInCents,
+      );
+  ExpenseSplitData copyWithCompanion(ExpenseSplitsCompanion data) {
+    return ExpenseSplitData(
+      id: data.id.present ? data.id.value : this.id,
+      expenseId: data.expenseId.present ? data.expenseId.value : this.expenseId,
+      participantId: data.participantId.present
+          ? data.participantId.value
+          : this.participantId,
+      isSelected:
+          data.isSelected.present ? data.isSelected.value : this.isSelected,
+      customPercentage: data.customPercentage.present
+          ? data.customPercentage.value
+          : this.customPercentage,
+      splitAmountInCents: data.splitAmountInCents.present
+          ? data.splitAmountInCents.value
+          : this.splitAmountInCents,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseSplitData(')
+          ..write('id: $id, ')
+          ..write('expenseId: $expenseId, ')
+          ..write('participantId: $participantId, ')
+          ..write('isSelected: $isSelected, ')
+          ..write('customPercentage: $customPercentage, ')
+          ..write('splitAmountInCents: $splitAmountInCents')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, expenseId, participantId, isSelected,
+      customPercentage, splitAmountInCents);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExpenseSplitData &&
+          other.id == this.id &&
+          other.expenseId == this.expenseId &&
+          other.participantId == this.participantId &&
+          other.isSelected == this.isSelected &&
+          other.customPercentage == this.customPercentage &&
+          other.splitAmountInCents == this.splitAmountInCents);
+}
+
+class ExpenseSplitsCompanion extends UpdateCompanion<ExpenseSplitData> {
+  final Value<int> id;
+  final Value<int> expenseId;
+  final Value<int> participantId;
+  final Value<bool> isSelected;
+  final Value<double?> customPercentage;
+  final Value<int> splitAmountInCents;
+  const ExpenseSplitsCompanion({
+    this.id = const Value.absent(),
+    this.expenseId = const Value.absent(),
+    this.participantId = const Value.absent(),
+    this.isSelected = const Value.absent(),
+    this.customPercentage = const Value.absent(),
+    this.splitAmountInCents = const Value.absent(),
+  });
+  ExpenseSplitsCompanion.insert({
+    this.id = const Value.absent(),
+    required int expenseId,
+    required int participantId,
+    this.isSelected = const Value.absent(),
+    this.customPercentage = const Value.absent(),
+    this.splitAmountInCents = const Value.absent(),
+  })  : expenseId = Value(expenseId),
+        participantId = Value(participantId);
+  static Insertable<ExpenseSplitData> custom({
+    Expression<int>? id,
+    Expression<int>? expenseId,
+    Expression<int>? participantId,
+    Expression<bool>? isSelected,
+    Expression<double>? customPercentage,
+    Expression<int>? splitAmountInCents,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (expenseId != null) 'expense_id': expenseId,
+      if (participantId != null) 'participant_id': participantId,
+      if (isSelected != null) 'is_selected': isSelected,
+      if (customPercentage != null) 'custom_percentage': customPercentage,
+      if (splitAmountInCents != null)
+        'split_amount_in_cents': splitAmountInCents,
+    });
+  }
+
+  ExpenseSplitsCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? expenseId,
+      Value<int>? participantId,
+      Value<bool>? isSelected,
+      Value<double?>? customPercentage,
+      Value<int>? splitAmountInCents}) {
+    return ExpenseSplitsCompanion(
+      id: id ?? this.id,
+      expenseId: expenseId ?? this.expenseId,
+      participantId: participantId ?? this.participantId,
+      isSelected: isSelected ?? this.isSelected,
+      customPercentage: customPercentage ?? this.customPercentage,
+      splitAmountInCents: splitAmountInCents ?? this.splitAmountInCents,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (expenseId.present) {
+      map['expense_id'] = Variable<int>(expenseId.value);
+    }
+    if (participantId.present) {
+      map['participant_id'] = Variable<int>(participantId.value);
+    }
+    if (isSelected.present) {
+      map['is_selected'] = Variable<bool>(isSelected.value);
+    }
+    if (customPercentage.present) {
+      map['custom_percentage'] = Variable<double>(customPercentage.value);
+    }
+    if (splitAmountInCents.present) {
+      map['split_amount_in_cents'] = Variable<int>(splitAmountInCents.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseSplitsCompanion(')
+          ..write('id: $id, ')
+          ..write('expenseId: $expenseId, ')
+          ..write('participantId: $participantId, ')
+          ..write('isSelected: $isSelected, ')
+          ..write('customPercentage: $customPercentage, ')
+          ..write('splitAmountInCents: $splitAmountInCents')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3242,6 +4761,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $AttachmentsTable attachments = $AttachmentsTable(this);
   late final $BudgetsTable budgets = $BudgetsTable(this);
   late final $UserProfilesTable userProfiles = $UserProfilesTable(this);
+  late final $SharingEventsTable sharingEvents = $SharingEventsTable(this);
+  late final $EventParticipantsTable eventParticipants =
+      $EventParticipantsTable(this);
+  late final $GroupExpensesTable groupExpenses = $GroupExpensesTable(this);
+  late final $ExpenseSplitsTable expenseSplits = $ExpenseSplitsTable(this);
   late final Index idxTransactionsTimestamp = Index(
       'idx_transactions_timestamp',
       'CREATE INDEX idx_transactions_timestamp ON transactions (timestamp)');
@@ -3264,6 +4788,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         attachments,
         budgets,
         userProfiles,
+        sharingEvents,
+        eventParticipants,
+        groupExpenses,
+        expenseSplits,
         idxTransactionsTimestamp,
         idxTransactionsCategoryId,
         idxTagsName
@@ -6721,6 +8249,1633 @@ typedef $$UserProfilesTableProcessedTableManager = ProcessedTableManager<
     ),
     UserProfileData,
     PrefetchHooks Function()>;
+typedef $$SharingEventsTableCreateCompanionBuilder = SharingEventsCompanion
+    Function({
+  Value<int> id,
+  required String name,
+  Value<String> description,
+  required DateTime startDate,
+  Value<DateTime?> endDate,
+  Value<String> category,
+  Value<String> status,
+  Value<DateTime> createdAt,
+});
+typedef $$SharingEventsTableUpdateCompanionBuilder = SharingEventsCompanion
+    Function({
+  Value<int> id,
+  Value<String> name,
+  Value<String> description,
+  Value<DateTime> startDate,
+  Value<DateTime?> endDate,
+  Value<String> category,
+  Value<String> status,
+  Value<DateTime> createdAt,
+});
+
+final class $$SharingEventsTableReferences extends BaseReferences<_$AppDatabase,
+    $SharingEventsTable, SharingEventData> {
+  $$SharingEventsTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$EventParticipantsTable,
+      List<EventParticipantData>> _eventParticipantsRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.eventParticipants,
+          aliasName: $_aliasNameGenerator(
+              db.sharingEvents.id, db.eventParticipants.eventId));
+
+  $$EventParticipantsTableProcessedTableManager get eventParticipantsRefs {
+    final manager =
+        $$EventParticipantsTableTableManager($_db, $_db.eventParticipants)
+            .filter((f) => f.eventId.id($_item.id));
+
+    final cache =
+        $_typedResult.readTableOrNull(_eventParticipantsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$GroupExpensesTable, List<GroupExpenseData>>
+      _groupExpensesRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.groupExpenses,
+              aliasName: $_aliasNameGenerator(
+                  db.sharingEvents.id, db.groupExpenses.eventId));
+
+  $$GroupExpensesTableProcessedTableManager get groupExpensesRefs {
+    final manager = $$GroupExpensesTableTableManager($_db, $_db.groupExpenses)
+        .filter((f) => f.eventId.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_groupExpensesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$SharingEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $SharingEventsTable> {
+  $$SharingEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get startDate => $composableBuilder(
+      column: $table.startDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get endDate => $composableBuilder(
+      column: $table.endDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> eventParticipantsRefs(
+      Expression<bool> Function($$EventParticipantsTableFilterComposer f) f) {
+    final $$EventParticipantsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.eventParticipants,
+        getReferencedColumn: (t) => t.eventId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$EventParticipantsTableFilterComposer(
+              $db: $db,
+              $table: $db.eventParticipants,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> groupExpensesRefs(
+      Expression<bool> Function($$GroupExpensesTableFilterComposer f) f) {
+    final $$GroupExpensesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.groupExpenses,
+        getReferencedColumn: (t) => t.eventId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GroupExpensesTableFilterComposer(
+              $db: $db,
+              $table: $db.groupExpenses,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$SharingEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SharingEventsTable> {
+  $$SharingEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get startDate => $composableBuilder(
+      column: $table.startDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get endDate => $composableBuilder(
+      column: $table.endDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$SharingEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SharingEventsTable> {
+  $$SharingEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endDate =>
+      $composableBuilder(column: $table.endDate, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  Expression<T> eventParticipantsRefs<T extends Object>(
+      Expression<T> Function($$EventParticipantsTableAnnotationComposer a) f) {
+    final $$EventParticipantsTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.eventParticipants,
+            getReferencedColumn: (t) => t.eventId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$EventParticipantsTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.eventParticipants,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+
+  Expression<T> groupExpensesRefs<T extends Object>(
+      Expression<T> Function($$GroupExpensesTableAnnotationComposer a) f) {
+    final $$GroupExpensesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.groupExpenses,
+        getReferencedColumn: (t) => t.eventId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GroupExpensesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.groupExpenses,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$SharingEventsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $SharingEventsTable,
+    SharingEventData,
+    $$SharingEventsTableFilterComposer,
+    $$SharingEventsTableOrderingComposer,
+    $$SharingEventsTableAnnotationComposer,
+    $$SharingEventsTableCreateCompanionBuilder,
+    $$SharingEventsTableUpdateCompanionBuilder,
+    (SharingEventData, $$SharingEventsTableReferences),
+    SharingEventData,
+    PrefetchHooks Function(
+        {bool eventParticipantsRefs, bool groupExpensesRefs})> {
+  $$SharingEventsTableTableManager(_$AppDatabase db, $SharingEventsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SharingEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SharingEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SharingEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> description = const Value.absent(),
+            Value<DateTime> startDate = const Value.absent(),
+            Value<DateTime?> endDate = const Value.absent(),
+            Value<String> category = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+          }) =>
+              SharingEventsCompanion(
+            id: id,
+            name: name,
+            description: description,
+            startDate: startDate,
+            endDate: endDate,
+            category: category,
+            status: status,
+            createdAt: createdAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String name,
+            Value<String> description = const Value.absent(),
+            required DateTime startDate,
+            Value<DateTime?> endDate = const Value.absent(),
+            Value<String> category = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+          }) =>
+              SharingEventsCompanion.insert(
+            id: id,
+            name: name,
+            description: description,
+            startDate: startDate,
+            endDate: endDate,
+            category: category,
+            status: status,
+            createdAt: createdAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$SharingEventsTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: (
+              {eventParticipantsRefs = false, groupExpensesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (eventParticipantsRefs) db.eventParticipants,
+                if (groupExpensesRefs) db.groupExpenses
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (eventParticipantsRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable: $$SharingEventsTableReferences
+                            ._eventParticipantsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$SharingEventsTableReferences(db, table, p0)
+                                .eventParticipantsRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.eventId == item.id),
+                        typedResults: items),
+                  if (groupExpensesRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable: $$SharingEventsTableReferences
+                            ._groupExpensesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$SharingEventsTableReferences(db, table, p0)
+                                .groupExpensesRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.eventId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$SharingEventsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $SharingEventsTable,
+    SharingEventData,
+    $$SharingEventsTableFilterComposer,
+    $$SharingEventsTableOrderingComposer,
+    $$SharingEventsTableAnnotationComposer,
+    $$SharingEventsTableCreateCompanionBuilder,
+    $$SharingEventsTableUpdateCompanionBuilder,
+    (SharingEventData, $$SharingEventsTableReferences),
+    SharingEventData,
+    PrefetchHooks Function(
+        {bool eventParticipantsRefs, bool groupExpensesRefs})>;
+typedef $$EventParticipantsTableCreateCompanionBuilder
+    = EventParticipantsCompanion Function({
+  Value<int> id,
+  required int eventId,
+  required String name,
+  Value<String?> email,
+  Value<bool> isOwner,
+  Value<int> colorIndex,
+});
+typedef $$EventParticipantsTableUpdateCompanionBuilder
+    = EventParticipantsCompanion Function({
+  Value<int> id,
+  Value<int> eventId,
+  Value<String> name,
+  Value<String?> email,
+  Value<bool> isOwner,
+  Value<int> colorIndex,
+});
+
+final class $$EventParticipantsTableReferences extends BaseReferences<
+    _$AppDatabase, $EventParticipantsTable, EventParticipantData> {
+  $$EventParticipantsTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $SharingEventsTable _eventIdTable(_$AppDatabase db) =>
+      db.sharingEvents.createAlias($_aliasNameGenerator(
+          db.eventParticipants.eventId, db.sharingEvents.id));
+
+  $$SharingEventsTableProcessedTableManager? get eventId {
+    if ($_item.eventId == null) return null;
+    final manager = $$SharingEventsTableTableManager($_db, $_db.sharingEvents)
+        .filter((f) => f.id($_item.eventId!));
+    final item = $_typedResult.readTableOrNull(_eventIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$GroupExpensesTable, List<GroupExpenseData>>
+      _groupExpensesRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.groupExpenses,
+              aliasName: $_aliasNameGenerator(db.eventParticipants.id,
+                  db.groupExpenses.paidByParticipantId));
+
+  $$GroupExpensesTableProcessedTableManager get groupExpensesRefs {
+    final manager = $$GroupExpensesTableTableManager($_db, $_db.groupExpenses)
+        .filter((f) => f.paidByParticipantId.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_groupExpensesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$ExpenseSplitsTable, List<ExpenseSplitData>>
+      _expenseSplitsRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.expenseSplits,
+              aliasName: $_aliasNameGenerator(
+                  db.eventParticipants.id, db.expenseSplits.participantId));
+
+  $$ExpenseSplitsTableProcessedTableManager get expenseSplitsRefs {
+    final manager = $$ExpenseSplitsTableTableManager($_db, $_db.expenseSplits)
+        .filter((f) => f.participantId.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_expenseSplitsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$EventParticipantsTableFilterComposer
+    extends Composer<_$AppDatabase, $EventParticipantsTable> {
+  $$EventParticipantsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get email => $composableBuilder(
+      column: $table.email, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isOwner => $composableBuilder(
+      column: $table.isOwner, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get colorIndex => $composableBuilder(
+      column: $table.colorIndex, builder: (column) => ColumnFilters(column));
+
+  $$SharingEventsTableFilterComposer get eventId {
+    final $$SharingEventsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.eventId,
+        referencedTable: $db.sharingEvents,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SharingEventsTableFilterComposer(
+              $db: $db,
+              $table: $db.sharingEvents,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> groupExpensesRefs(
+      Expression<bool> Function($$GroupExpensesTableFilterComposer f) f) {
+    final $$GroupExpensesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.groupExpenses,
+        getReferencedColumn: (t) => t.paidByParticipantId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GroupExpensesTableFilterComposer(
+              $db: $db,
+              $table: $db.groupExpenses,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> expenseSplitsRefs(
+      Expression<bool> Function($$ExpenseSplitsTableFilterComposer f) f) {
+    final $$ExpenseSplitsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.expenseSplits,
+        getReferencedColumn: (t) => t.participantId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ExpenseSplitsTableFilterComposer(
+              $db: $db,
+              $table: $db.expenseSplits,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$EventParticipantsTableOrderingComposer
+    extends Composer<_$AppDatabase, $EventParticipantsTable> {
+  $$EventParticipantsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get email => $composableBuilder(
+      column: $table.email, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isOwner => $composableBuilder(
+      column: $table.isOwner, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get colorIndex => $composableBuilder(
+      column: $table.colorIndex, builder: (column) => ColumnOrderings(column));
+
+  $$SharingEventsTableOrderingComposer get eventId {
+    final $$SharingEventsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.eventId,
+        referencedTable: $db.sharingEvents,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SharingEventsTableOrderingComposer(
+              $db: $db,
+              $table: $db.sharingEvents,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$EventParticipantsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $EventParticipantsTable> {
+  $$EventParticipantsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<bool> get isOwner =>
+      $composableBuilder(column: $table.isOwner, builder: (column) => column);
+
+  GeneratedColumn<int> get colorIndex => $composableBuilder(
+      column: $table.colorIndex, builder: (column) => column);
+
+  $$SharingEventsTableAnnotationComposer get eventId {
+    final $$SharingEventsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.eventId,
+        referencedTable: $db.sharingEvents,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SharingEventsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.sharingEvents,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<T> groupExpensesRefs<T extends Object>(
+      Expression<T> Function($$GroupExpensesTableAnnotationComposer a) f) {
+    final $$GroupExpensesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.groupExpenses,
+        getReferencedColumn: (t) => t.paidByParticipantId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GroupExpensesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.groupExpenses,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<T> expenseSplitsRefs<T extends Object>(
+      Expression<T> Function($$ExpenseSplitsTableAnnotationComposer a) f) {
+    final $$ExpenseSplitsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.expenseSplits,
+        getReferencedColumn: (t) => t.participantId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ExpenseSplitsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.expenseSplits,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$EventParticipantsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $EventParticipantsTable,
+    EventParticipantData,
+    $$EventParticipantsTableFilterComposer,
+    $$EventParticipantsTableOrderingComposer,
+    $$EventParticipantsTableAnnotationComposer,
+    $$EventParticipantsTableCreateCompanionBuilder,
+    $$EventParticipantsTableUpdateCompanionBuilder,
+    (EventParticipantData, $$EventParticipantsTableReferences),
+    EventParticipantData,
+    PrefetchHooks Function(
+        {bool eventId, bool groupExpensesRefs, bool expenseSplitsRefs})> {
+  $$EventParticipantsTableTableManager(
+      _$AppDatabase db, $EventParticipantsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EventParticipantsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EventParticipantsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EventParticipantsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> eventId = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String?> email = const Value.absent(),
+            Value<bool> isOwner = const Value.absent(),
+            Value<int> colorIndex = const Value.absent(),
+          }) =>
+              EventParticipantsCompanion(
+            id: id,
+            eventId: eventId,
+            name: name,
+            email: email,
+            isOwner: isOwner,
+            colorIndex: colorIndex,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int eventId,
+            required String name,
+            Value<String?> email = const Value.absent(),
+            Value<bool> isOwner = const Value.absent(),
+            Value<int> colorIndex = const Value.absent(),
+          }) =>
+              EventParticipantsCompanion.insert(
+            id: id,
+            eventId: eventId,
+            name: name,
+            email: email,
+            isOwner: isOwner,
+            colorIndex: colorIndex,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$EventParticipantsTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: (
+              {eventId = false,
+              groupExpensesRefs = false,
+              expenseSplitsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (groupExpensesRefs) db.groupExpenses,
+                if (expenseSplitsRefs) db.expenseSplits
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (eventId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.eventId,
+                    referencedTable:
+                        $$EventParticipantsTableReferences._eventIdTable(db),
+                    referencedColumn:
+                        $$EventParticipantsTableReferences._eventIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (groupExpensesRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable: $$EventParticipantsTableReferences
+                            ._groupExpensesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$EventParticipantsTableReferences(db, table, p0)
+                                .groupExpensesRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.paidByParticipantId == item.id),
+                        typedResults: items),
+                  if (expenseSplitsRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable: $$EventParticipantsTableReferences
+                            ._expenseSplitsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$EventParticipantsTableReferences(db, table, p0)
+                                .expenseSplitsRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.participantId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$EventParticipantsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $EventParticipantsTable,
+    EventParticipantData,
+    $$EventParticipantsTableFilterComposer,
+    $$EventParticipantsTableOrderingComposer,
+    $$EventParticipantsTableAnnotationComposer,
+    $$EventParticipantsTableCreateCompanionBuilder,
+    $$EventParticipantsTableUpdateCompanionBuilder,
+    (EventParticipantData, $$EventParticipantsTableReferences),
+    EventParticipantData,
+    PrefetchHooks Function(
+        {bool eventId, bool groupExpensesRefs, bool expenseSplitsRefs})>;
+typedef $$GroupExpensesTableCreateCompanionBuilder = GroupExpensesCompanion
+    Function({
+  Value<int> id,
+  required int eventId,
+  required String title,
+  required int amountInCents,
+  required int paidByParticipantId,
+  required DateTime date,
+  Value<DateTime> createdAt,
+});
+typedef $$GroupExpensesTableUpdateCompanionBuilder = GroupExpensesCompanion
+    Function({
+  Value<int> id,
+  Value<int> eventId,
+  Value<String> title,
+  Value<int> amountInCents,
+  Value<int> paidByParticipantId,
+  Value<DateTime> date,
+  Value<DateTime> createdAt,
+});
+
+final class $$GroupExpensesTableReferences extends BaseReferences<_$AppDatabase,
+    $GroupExpensesTable, GroupExpenseData> {
+  $$GroupExpensesTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $SharingEventsTable _eventIdTable(_$AppDatabase db) =>
+      db.sharingEvents.createAlias(
+          $_aliasNameGenerator(db.groupExpenses.eventId, db.sharingEvents.id));
+
+  $$SharingEventsTableProcessedTableManager? get eventId {
+    if ($_item.eventId == null) return null;
+    final manager = $$SharingEventsTableTableManager($_db, $_db.sharingEvents)
+        .filter((f) => f.id($_item.eventId!));
+    final item = $_typedResult.readTableOrNull(_eventIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $EventParticipantsTable _paidByParticipantIdTable(_$AppDatabase db) =>
+      db.eventParticipants.createAlias($_aliasNameGenerator(
+          db.groupExpenses.paidByParticipantId, db.eventParticipants.id));
+
+  $$EventParticipantsTableProcessedTableManager? get paidByParticipantId {
+    if ($_item.paidByParticipantId == null) return null;
+    final manager =
+        $$EventParticipantsTableTableManager($_db, $_db.eventParticipants)
+            .filter((f) => f.id($_item.paidByParticipantId!));
+    final item = $_typedResult.readTableOrNull(_paidByParticipantIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$ExpenseSplitsTable, List<ExpenseSplitData>>
+      _expenseSplitsRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.expenseSplits,
+              aliasName: $_aliasNameGenerator(
+                  db.groupExpenses.id, db.expenseSplits.expenseId));
+
+  $$ExpenseSplitsTableProcessedTableManager get expenseSplitsRefs {
+    final manager = $$ExpenseSplitsTableTableManager($_db, $_db.expenseSplits)
+        .filter((f) => f.expenseId.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_expenseSplitsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$GroupExpensesTableFilterComposer
+    extends Composer<_$AppDatabase, $GroupExpensesTable> {
+  $$GroupExpensesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get amountInCents => $composableBuilder(
+      column: $table.amountInCents, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+      column: $table.date, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  $$SharingEventsTableFilterComposer get eventId {
+    final $$SharingEventsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.eventId,
+        referencedTable: $db.sharingEvents,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SharingEventsTableFilterComposer(
+              $db: $db,
+              $table: $db.sharingEvents,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$EventParticipantsTableFilterComposer get paidByParticipantId {
+    final $$EventParticipantsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.paidByParticipantId,
+        referencedTable: $db.eventParticipants,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$EventParticipantsTableFilterComposer(
+              $db: $db,
+              $table: $db.eventParticipants,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> expenseSplitsRefs(
+      Expression<bool> Function($$ExpenseSplitsTableFilterComposer f) f) {
+    final $$ExpenseSplitsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.expenseSplits,
+        getReferencedColumn: (t) => t.expenseId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ExpenseSplitsTableFilterComposer(
+              $db: $db,
+              $table: $db.expenseSplits,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$GroupExpensesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GroupExpensesTable> {
+  $$GroupExpensesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get amountInCents => $composableBuilder(
+      column: $table.amountInCents,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+      column: $table.date, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  $$SharingEventsTableOrderingComposer get eventId {
+    final $$SharingEventsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.eventId,
+        referencedTable: $db.sharingEvents,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SharingEventsTableOrderingComposer(
+              $db: $db,
+              $table: $db.sharingEvents,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$EventParticipantsTableOrderingComposer get paidByParticipantId {
+    final $$EventParticipantsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.paidByParticipantId,
+        referencedTable: $db.eventParticipants,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$EventParticipantsTableOrderingComposer(
+              $db: $db,
+              $table: $db.eventParticipants,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$GroupExpensesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GroupExpensesTable> {
+  $$GroupExpensesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<int> get amountInCents => $composableBuilder(
+      column: $table.amountInCents, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$SharingEventsTableAnnotationComposer get eventId {
+    final $$SharingEventsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.eventId,
+        referencedTable: $db.sharingEvents,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SharingEventsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.sharingEvents,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$EventParticipantsTableAnnotationComposer get paidByParticipantId {
+    final $$EventParticipantsTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.paidByParticipantId,
+            referencedTable: $db.eventParticipants,
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$EventParticipantsTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.eventParticipants,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+
+  Expression<T> expenseSplitsRefs<T extends Object>(
+      Expression<T> Function($$ExpenseSplitsTableAnnotationComposer a) f) {
+    final $$ExpenseSplitsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.expenseSplits,
+        getReferencedColumn: (t) => t.expenseId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ExpenseSplitsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.expenseSplits,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$GroupExpensesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $GroupExpensesTable,
+    GroupExpenseData,
+    $$GroupExpensesTableFilterComposer,
+    $$GroupExpensesTableOrderingComposer,
+    $$GroupExpensesTableAnnotationComposer,
+    $$GroupExpensesTableCreateCompanionBuilder,
+    $$GroupExpensesTableUpdateCompanionBuilder,
+    (GroupExpenseData, $$GroupExpensesTableReferences),
+    GroupExpenseData,
+    PrefetchHooks Function(
+        {bool eventId, bool paidByParticipantId, bool expenseSplitsRefs})> {
+  $$GroupExpensesTableTableManager(_$AppDatabase db, $GroupExpensesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GroupExpensesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GroupExpensesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GroupExpensesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> eventId = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<int> amountInCents = const Value.absent(),
+            Value<int> paidByParticipantId = const Value.absent(),
+            Value<DateTime> date = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+          }) =>
+              GroupExpensesCompanion(
+            id: id,
+            eventId: eventId,
+            title: title,
+            amountInCents: amountInCents,
+            paidByParticipantId: paidByParticipantId,
+            date: date,
+            createdAt: createdAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int eventId,
+            required String title,
+            required int amountInCents,
+            required int paidByParticipantId,
+            required DateTime date,
+            Value<DateTime> createdAt = const Value.absent(),
+          }) =>
+              GroupExpensesCompanion.insert(
+            id: id,
+            eventId: eventId,
+            title: title,
+            amountInCents: amountInCents,
+            paidByParticipantId: paidByParticipantId,
+            date: date,
+            createdAt: createdAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$GroupExpensesTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: (
+              {eventId = false,
+              paidByParticipantId = false,
+              expenseSplitsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (expenseSplitsRefs) db.expenseSplits
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (eventId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.eventId,
+                    referencedTable:
+                        $$GroupExpensesTableReferences._eventIdTable(db),
+                    referencedColumn:
+                        $$GroupExpensesTableReferences._eventIdTable(db).id,
+                  ) as T;
+                }
+                if (paidByParticipantId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.paidByParticipantId,
+                    referencedTable: $$GroupExpensesTableReferences
+                        ._paidByParticipantIdTable(db),
+                    referencedColumn: $$GroupExpensesTableReferences
+                        ._paidByParticipantIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (expenseSplitsRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable: $$GroupExpensesTableReferences
+                            ._expenseSplitsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$GroupExpensesTableReferences(db, table, p0)
+                                .expenseSplitsRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.expenseId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$GroupExpensesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $GroupExpensesTable,
+    GroupExpenseData,
+    $$GroupExpensesTableFilterComposer,
+    $$GroupExpensesTableOrderingComposer,
+    $$GroupExpensesTableAnnotationComposer,
+    $$GroupExpensesTableCreateCompanionBuilder,
+    $$GroupExpensesTableUpdateCompanionBuilder,
+    (GroupExpenseData, $$GroupExpensesTableReferences),
+    GroupExpenseData,
+    PrefetchHooks Function(
+        {bool eventId, bool paidByParticipantId, bool expenseSplitsRefs})>;
+typedef $$ExpenseSplitsTableCreateCompanionBuilder = ExpenseSplitsCompanion
+    Function({
+  Value<int> id,
+  required int expenseId,
+  required int participantId,
+  Value<bool> isSelected,
+  Value<double?> customPercentage,
+  Value<int> splitAmountInCents,
+});
+typedef $$ExpenseSplitsTableUpdateCompanionBuilder = ExpenseSplitsCompanion
+    Function({
+  Value<int> id,
+  Value<int> expenseId,
+  Value<int> participantId,
+  Value<bool> isSelected,
+  Value<double?> customPercentage,
+  Value<int> splitAmountInCents,
+});
+
+final class $$ExpenseSplitsTableReferences extends BaseReferences<_$AppDatabase,
+    $ExpenseSplitsTable, ExpenseSplitData> {
+  $$ExpenseSplitsTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $GroupExpensesTable _expenseIdTable(_$AppDatabase db) =>
+      db.groupExpenses.createAlias($_aliasNameGenerator(
+          db.expenseSplits.expenseId, db.groupExpenses.id));
+
+  $$GroupExpensesTableProcessedTableManager? get expenseId {
+    if ($_item.expenseId == null) return null;
+    final manager = $$GroupExpensesTableTableManager($_db, $_db.groupExpenses)
+        .filter((f) => f.id($_item.expenseId!));
+    final item = $_typedResult.readTableOrNull(_expenseIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $EventParticipantsTable _participantIdTable(_$AppDatabase db) =>
+      db.eventParticipants.createAlias($_aliasNameGenerator(
+          db.expenseSplits.participantId, db.eventParticipants.id));
+
+  $$EventParticipantsTableProcessedTableManager? get participantId {
+    if ($_item.participantId == null) return null;
+    final manager =
+        $$EventParticipantsTableTableManager($_db, $_db.eventParticipants)
+            .filter((f) => f.id($_item.participantId!));
+    final item = $_typedResult.readTableOrNull(_participantIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$ExpenseSplitsTableFilterComposer
+    extends Composer<_$AppDatabase, $ExpenseSplitsTable> {
+  $$ExpenseSplitsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSelected => $composableBuilder(
+      column: $table.isSelected, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get customPercentage => $composableBuilder(
+      column: $table.customPercentage,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get splitAmountInCents => $composableBuilder(
+      column: $table.splitAmountInCents,
+      builder: (column) => ColumnFilters(column));
+
+  $$GroupExpensesTableFilterComposer get expenseId {
+    final $$GroupExpensesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.expenseId,
+        referencedTable: $db.groupExpenses,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GroupExpensesTableFilterComposer(
+              $db: $db,
+              $table: $db.groupExpenses,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$EventParticipantsTableFilterComposer get participantId {
+    final $$EventParticipantsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.participantId,
+        referencedTable: $db.eventParticipants,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$EventParticipantsTableFilterComposer(
+              $db: $db,
+              $table: $db.eventParticipants,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$ExpenseSplitsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExpenseSplitsTable> {
+  $$ExpenseSplitsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSelected => $composableBuilder(
+      column: $table.isSelected, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get customPercentage => $composableBuilder(
+      column: $table.customPercentage,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get splitAmountInCents => $composableBuilder(
+      column: $table.splitAmountInCents,
+      builder: (column) => ColumnOrderings(column));
+
+  $$GroupExpensesTableOrderingComposer get expenseId {
+    final $$GroupExpensesTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.expenseId,
+        referencedTable: $db.groupExpenses,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GroupExpensesTableOrderingComposer(
+              $db: $db,
+              $table: $db.groupExpenses,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$EventParticipantsTableOrderingComposer get participantId {
+    final $$EventParticipantsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.participantId,
+        referencedTable: $db.eventParticipants,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$EventParticipantsTableOrderingComposer(
+              $db: $db,
+              $table: $db.eventParticipants,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$ExpenseSplitsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExpenseSplitsTable> {
+  $$ExpenseSplitsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSelected => $composableBuilder(
+      column: $table.isSelected, builder: (column) => column);
+
+  GeneratedColumn<double> get customPercentage => $composableBuilder(
+      column: $table.customPercentage, builder: (column) => column);
+
+  GeneratedColumn<int> get splitAmountInCents => $composableBuilder(
+      column: $table.splitAmountInCents, builder: (column) => column);
+
+  $$GroupExpensesTableAnnotationComposer get expenseId {
+    final $$GroupExpensesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.expenseId,
+        referencedTable: $db.groupExpenses,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GroupExpensesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.groupExpenses,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$EventParticipantsTableAnnotationComposer get participantId {
+    final $$EventParticipantsTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.participantId,
+            referencedTable: $db.eventParticipants,
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$EventParticipantsTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.eventParticipants,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+}
+
+class $$ExpenseSplitsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ExpenseSplitsTable,
+    ExpenseSplitData,
+    $$ExpenseSplitsTableFilterComposer,
+    $$ExpenseSplitsTableOrderingComposer,
+    $$ExpenseSplitsTableAnnotationComposer,
+    $$ExpenseSplitsTableCreateCompanionBuilder,
+    $$ExpenseSplitsTableUpdateCompanionBuilder,
+    (ExpenseSplitData, $$ExpenseSplitsTableReferences),
+    ExpenseSplitData,
+    PrefetchHooks Function({bool expenseId, bool participantId})> {
+  $$ExpenseSplitsTableTableManager(_$AppDatabase db, $ExpenseSplitsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExpenseSplitsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExpenseSplitsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExpenseSplitsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> expenseId = const Value.absent(),
+            Value<int> participantId = const Value.absent(),
+            Value<bool> isSelected = const Value.absent(),
+            Value<double?> customPercentage = const Value.absent(),
+            Value<int> splitAmountInCents = const Value.absent(),
+          }) =>
+              ExpenseSplitsCompanion(
+            id: id,
+            expenseId: expenseId,
+            participantId: participantId,
+            isSelected: isSelected,
+            customPercentage: customPercentage,
+            splitAmountInCents: splitAmountInCents,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int expenseId,
+            required int participantId,
+            Value<bool> isSelected = const Value.absent(),
+            Value<double?> customPercentage = const Value.absent(),
+            Value<int> splitAmountInCents = const Value.absent(),
+          }) =>
+              ExpenseSplitsCompanion.insert(
+            id: id,
+            expenseId: expenseId,
+            participantId: participantId,
+            isSelected: isSelected,
+            customPercentage: customPercentage,
+            splitAmountInCents: splitAmountInCents,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$ExpenseSplitsTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({expenseId = false, participantId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (expenseId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.expenseId,
+                    referencedTable:
+                        $$ExpenseSplitsTableReferences._expenseIdTable(db),
+                    referencedColumn:
+                        $$ExpenseSplitsTableReferences._expenseIdTable(db).id,
+                  ) as T;
+                }
+                if (participantId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.participantId,
+                    referencedTable:
+                        $$ExpenseSplitsTableReferences._participantIdTable(db),
+                    referencedColumn: $$ExpenseSplitsTableReferences
+                        ._participantIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$ExpenseSplitsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ExpenseSplitsTable,
+    ExpenseSplitData,
+    $$ExpenseSplitsTableFilterComposer,
+    $$ExpenseSplitsTableOrderingComposer,
+    $$ExpenseSplitsTableAnnotationComposer,
+    $$ExpenseSplitsTableCreateCompanionBuilder,
+    $$ExpenseSplitsTableUpdateCompanionBuilder,
+    (ExpenseSplitData, $$ExpenseSplitsTableReferences),
+    ExpenseSplitData,
+    PrefetchHooks Function({bool expenseId, bool participantId})>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -6742,4 +9897,12 @@ class $AppDatabaseManager {
       $$BudgetsTableTableManager(_db, _db.budgets);
   $$UserProfilesTableTableManager get userProfiles =>
       $$UserProfilesTableTableManager(_db, _db.userProfiles);
+  $$SharingEventsTableTableManager get sharingEvents =>
+      $$SharingEventsTableTableManager(_db, _db.sharingEvents);
+  $$EventParticipantsTableTableManager get eventParticipants =>
+      $$EventParticipantsTableTableManager(_db, _db.eventParticipants);
+  $$GroupExpensesTableTableManager get groupExpenses =>
+      $$GroupExpensesTableTableManager(_db, _db.groupExpenses);
+  $$ExpenseSplitsTableTableManager get expenseSplits =>
+      $$ExpenseSplitsTableTableManager(_db, _db.expenseSplits);
 }
