@@ -15,7 +15,7 @@ class DioClient {
         sendTimeout: const Duration(seconds: 10),
         headers: {
           'Accept': 'application/json',
-          'User-Agent': 'Expendly-App/1.1.0',
+          'User-Agent': 'Expendly-App/1.1.1',
         },
       ),
     );

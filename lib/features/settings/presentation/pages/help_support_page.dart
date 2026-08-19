@@ -682,7 +682,7 @@ class _HelpSupportPageState extends State<HelpSupportPage>
               // Additional info footer
               Center(
                 child: Text(
-                  'Expendly v1.1.0 • Offline Personal Finance',
+                  'Expendly v1.1.1 • Offline Personal Finance',
                   style: customTypography.labelMediumMono.copyWith(
                     color: colorScheme.outline,
                     fontSize: 10.sp,
