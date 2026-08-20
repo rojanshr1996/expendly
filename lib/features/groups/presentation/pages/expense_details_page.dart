@@ -12,6 +12,7 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
@@ -120,6 +121,82 @@ class ExpenseDetailsPage extends StatelessWidget {
     final l10n = context.l10n;
     final topInset = MediaQuery.of(context).padding.top;
     final headerPaddingTop = topInset + kToolbarHeight;
+    final isTablet = Breakpoints.isTablet(context);
+
+    if (isTablet) {
+      return Scaffold(
+        backgroundColor: colorScheme.surface,
+        extendBodyBehindAppBar: true,
+        appBar: LiquidGlassAppBar(
+          titleText: l10n.expenseDetails,
+          onLeadingPressed: () => context.router.maybePop(),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.share_outlined,
+                color: colorScheme.onSurface,
+              ),
+              tooltip: 'Share Bill Details',
+              onPressed: () => _shareExpenseSummary(context),
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            top: headerPaddingTop + 16.0,
+            left: 24.0,
+            right: 24.0,
+            bottom: 40.0,
+          ),
+          physics: const BouncingScrollPhysics(),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1080.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Left Column: Hero Details, Event Context, Metadata & Delete Action
+                  Expanded(
+                    flex: 5,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _HeroExpenseCard(expense: expense),
+                        const SizedBox(height: 16.0),
+                        _EventContextCard(
+                          event: event,
+                          expenseAmount: expense.amount,
+                        ),
+                        const SizedBox(height: 16.0),
+                        _ExpenseMetadataCard(expense: expense),
+                        const SizedBox(height: 20.0),
+                        _DeleteExpenseButton(
+                          onDeletePressed: () => _confirmAndDelete(context),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 20.0),
+
+                  // Right Column: Split Breakdown & Banner
+                  Expanded(
+                    flex: 5,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _SplitBreakdownCard(expense: expense),
+                        const SizedBox(height: 16.0),
+                        BannerAdWidget(adUnitId: AdHelper.bannerAdUnitId),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -224,9 +301,13 @@ class _HeroExpenseCard extends StatelessWidget {
     final customColors = context.customColors;
     final customTypography = context.customTypography;
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final isTablet = Breakpoints.isTablet(context);
 
     return GlassContainer(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+      padding: EdgeInsets.symmetric(
+        horizontal: isTablet ? 20.0 : 20.w,
+        vertical: isTablet ? 24.0 : 24.h,
+      ),
       child: Column(
         children: [
           // Payer Avatar with liquid glass styling (Scale & Fade)
@@ -244,8 +325,8 @@ class _HeroExpenseCard extends StatelessWidget {
               );
             },
             child: Container(
-              width: 64.w,
-              height: 64.w,
+              width: isTablet ? 64.0 : 64.w,
+              height: isTablet ? 64.0 : 64.w,
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   center: Alignment.topLeft,
@@ -271,7 +352,7 @@ class _HeroExpenseCard extends StatelessWidget {
                   BoxShadow(
                     color: colorScheme.primary
                         .withValues(alpha: isLight ? 0.12 : 0.25),
-                    blurRadius: 16.r,
+                    blurRadius: isTablet ? 16.0 : 16.r,
                     offset: const Offset(0, 4),
                   ),
                 ],
@@ -284,7 +365,7 @@ class _HeroExpenseCard extends StatelessWidget {
                   style: customTypography.headlineLargeMonoBold.copyWith(
                     color: colorScheme.primary,
                     fontWeight: FontWeight.bold,
-                    fontSize: 24.sp,
+                    fontSize: isTablet ? 24.0 : 24.sp,
                   ),
                 ),
               ),
@@ -301,7 +382,7 @@ class _HeroExpenseCard extends StatelessWidget {
               return Opacity(
                 opacity: value.clamp(0.0, 1.0),
                 child: Transform.translate(
-                  offset: Offset(0, (1.0 - value) * -8.h),
+                  offset: Offset(0, (1.0 - value) * (isTablet ? -8.0 : -8.h)),
                   child: child,
                 ),
               );
@@ -332,10 +413,13 @@ class _HeroExpenseCard extends StatelessWidget {
               );
             },
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+              padding: EdgeInsets.symmetric(
+                horizontal: isTablet ? 12.0 : 12.w,
+                vertical: isTablet ? 4.0 : 4.h,
+              ),
               decoration: BoxDecoration(
                 color: colorScheme.primary.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(20.r),
+                borderRadius: BorderRadius.circular(isTablet ? 20.0 : 20.r),
                 border: Border.all(
                   color: colorScheme.primary.withValues(alpha: 0.3),
                 ),
@@ -345,10 +429,10 @@ class _HeroExpenseCard extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.account_circle_outlined,
-                    size: 14.sp,
+                    size: isTablet ? 14.0 : 14.sp,
                     color: colorScheme.primary,
                   ),
-                  SizedBox(width: 5.w),
+                  SizedBox(width: isTablet ? 5.0 : 5.w),
                   Text(
                     context.l10n.paidBy(expense.paidByName),
                     style: customTypography.labelMediumMono.copyWith(
@@ -382,7 +466,7 @@ class _HeroExpenseCard extends StatelessWidget {
               compact: false,
               style: customTypography.headlineLargeMonoBold.copyWith(
                 color: colorScheme.primary,
-                fontSize: 32.sp,
+                fontSize: isTablet ? 32.0 : 32.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -396,7 +480,7 @@ class _HeroExpenseCard extends StatelessWidget {
                 .format(expense.date),
             style: customTypography.labelMediumMono.copyWith(
               color: colorScheme.onSurfaceVariant,
-              fontSize: 12.sp,
+              fontSize: isTablet ? 12.0 : 12.sp,
             ),
           ),
         ],
@@ -419,24 +503,25 @@ class _EventContextCard extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final customColors = context.customColors;
     final customTypography = context.customTypography;
+    final isTablet = Breakpoints.isTablet(context);
 
     final pctOfTotal = event.totalSpent > 0
         ? ((expenseAmount / event.totalSpent) * 100).clamp(0.0, 100.0)
         : 100.0;
 
     return GlassContainer(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(isTablet ? 16.0 : 16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                width: 36.w,
-                height: 36.w,
+                width: isTablet ? 36.0 : 36.w,
+                height: isTablet ? 36.0 : 36.w,
                 decoration: BoxDecoration(
                   color: colorScheme.secondary.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10.r),
+                  borderRadius: BorderRadius.circular(isTablet ? 10.0 : 10.r),
                   border: Border.all(
                     color: colorScheme.secondary.withValues(alpha: 0.3),
                   ),
@@ -444,7 +529,7 @@ class _EventContextCard extends StatelessWidget {
                 child: Icon(
                   Icons.groups_rounded,
                   color: colorScheme.secondary,
-                  size: 20.sp,
+                  size: isTablet ? 20.0 : 20.sp,
                 ),
               ),
               horizontalMarginSmall,
@@ -456,11 +541,11 @@ class _EventContextCard extends StatelessWidget {
                       'EVENT / GROUP',
                       style: customTypography.labelMediumMono.copyWith(
                         color: colorScheme.onSurfaceVariant,
-                        fontSize: 10.sp,
+                        fontSize: isTablet ? 10.0 : 10.sp,
                         letterSpacing: 1.1,
                       ),
                     ),
-                    SizedBox(height: 2.h),
+                    SizedBox(height: isTablet ? 2.0 : 2.h),
                     Text(
                       event.name,
                       style: context.customTypography.bodyLargeBold.copyWith(
@@ -473,9 +558,9 @@ class _EventContextCard extends StatelessWidget {
               StatusBadge(status: event.status),
             ],
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: isTablet ? 12.0 : 12.h),
           Divider(height: 1, color: customColors.glassStroke),
-          SizedBox(height: 12.h),
+          SizedBox(height: isTablet ? 12.0 : 12.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -494,7 +579,7 @@ class _EventContextCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 6.h),
+          SizedBox(height: isTablet ? 6.0 : 6.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -530,10 +615,10 @@ class _SplitBreakdownCard extends StatelessWidget {
     final customColors = context.customColors;
     final customTypography = context.customTypography;
     final l10n = context.l10n;
-    // final isLight = Theme.of(context).brightness == Brightness.light;
+    final isTablet = Breakpoints.isTablet(context);
 
     return GlassContainer(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(isTablet ? 16.0 : 16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -545,7 +630,7 @@ class _SplitBreakdownCard extends StatelessWidget {
                 style: customTypography.labelMediumMono.copyWith(
                   letterSpacing: 1.2,
                   color: colorScheme.onSurfaceVariant,
-                  fontSize: 11.sp,
+                  fontSize: isTablet ? 11.0 : 11.sp,
                 ),
               ),
               Text(
@@ -553,12 +638,12 @@ class _SplitBreakdownCard extends StatelessWidget {
                 style: customTypography.labelMediumMono.copyWith(
                   color: colorScheme.primary,
                   fontWeight: FontWeight.bold,
-                  fontSize: 11.sp,
+                  fontSize: isTablet ? 11.0 : 11.sp,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 14.h),
+          SizedBox(height: isTablet ? 14.0 : 14.h),
           ...expense.splits.asMap().entries.map((entry) {
             final index = entry.key;
             final split = entry.value;
@@ -573,13 +658,15 @@ class _SplitBreakdownCard extends StatelessWidget {
             return Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    vertical: isTablet ? 8.0 : 8.h,
+                  ),
                   child: Row(
                     children: [
                       // Avatar circle
                       Container(
-                        width: 38.w,
-                        height: 38.w,
+                        width: isTablet ? 38.0 : 38.w,
+                        height: isTablet ? 38.0 : 38.w,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isPayer
@@ -607,7 +694,7 @@ class _SplitBreakdownCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(width: 12.w),
+                      SizedBox(width: isTablet ? 12.0 : 12.w),
 
                       // Member Name & Status Details
                       Expanded(
@@ -623,29 +710,31 @@ class _SplitBreakdownCard extends StatelessWidget {
                                         .customTypography.bodyLargeBold
                                         .copyWith(
                                       color: colorScheme.onSurface,
-                                      fontSize: 13.sp,
+                                      fontSize: isTablet ? 13.0 : 13.sp,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 if (isPayer) ...[
-                                  SizedBox(width: 6.w),
+                                  SizedBox(width: isTablet ? 6.0 : 6.w),
                                   Container(
                                     padding: EdgeInsets.symmetric(
-                                      horizontal: 6.w,
-                                      vertical: 1.5.h,
+                                      horizontal: isTablet ? 6.0 : 6.w,
+                                      vertical: isTablet ? 1.5 : 1.5.h,
                                     ),
                                     decoration: BoxDecoration(
                                       color: colorScheme.primary
                                           .withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(6.r),
+                                      borderRadius: BorderRadius.circular(
+                                        isTablet ? 6.0 : 6.r,
+                                      ),
                                     ),
                                     child: Text(
                                       'PAYER',
                                       style: customTypography.labelMediumMono
                                           .copyWith(
                                         color: colorScheme.primary,
-                                        fontSize: 9.sp,
+                                        fontSize: isTablet ? 9.0 : 9.sp,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -653,7 +742,7 @@ class _SplitBreakdownCard extends StatelessWidget {
                                 ],
                               ],
                             ),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: isTablet ? 2.0 : 2.h),
                             Text(
                               isPayer
                                   ? 'Paid full • Gets back ${(expense.amount - split.splitAmount).toStringAsFixed(2)}'
@@ -662,7 +751,7 @@ class _SplitBreakdownCard extends StatelessWidget {
                                 color: isPayer
                                     ? customColors.semanticGreen
                                     : colorScheme.onSurfaceVariant,
-                                fontSize: 11.sp,
+                                fontSize: isTablet ? 11.0 : 11.sp,
                               ),
                             ),
                           ],
@@ -679,15 +768,15 @@ class _SplitBreakdownCard extends StatelessWidget {
                                 .copyWith(
                               color: colorScheme.onSurface,
                               fontWeight: FontWeight.bold,
-                              fontSize: 14.sp,
+                              fontSize: isTablet ? 14.0 : 14.sp,
                             ),
                           ),
-                          SizedBox(height: 2.h),
+                          SizedBox(height: isTablet ? 2.0 : 2.h),
                           Text(
                             '${pct.toStringAsFixed(1)}%',
                             style: customTypography.labelMediumMono.copyWith(
                               color: colorScheme.outline,
-                              fontSize: 10.sp,
+                              fontSize: isTablet ? 10.0 : 10.sp,
                               letterSpacing: 0.6,
                             ),
                           ),
@@ -718,6 +807,7 @@ class _ExpenseMetadataCard extends StatelessWidget {
     final locale = Localizations.localeOf(context).languageCode;
     final formattedCreatedAt =
         DateFormat.yMMMMd(locale).add_jm().format(expense.createdAt);
+    final isTablet = Breakpoints.isTablet(context);
 
     final rows = <Widget>[
       _ExpenseDetailRow(
@@ -750,7 +840,7 @@ class _ExpenseMetadataCard extends StatelessWidget {
     }
 
     return GlassContainer(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(isTablet ? 16.0 : 16.w),
       child: Column(
         children: children,
       ),
@@ -775,12 +865,13 @@ class _ExpenseDetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final customTypography = context.customTypography;
+    final isTablet = Breakpoints.isTablet(context);
 
     return Row(
       children: [
         Icon(
           icon,
-          size: 18.r,
+          size: isTablet ? 18.0 : 18.r,
           color: colorScheme.outline,
         ),
         horizontalMarginSmall,
@@ -788,7 +879,7 @@ class _ExpenseDetailRow extends StatelessWidget {
           label,
           style: customTypography.bodyMedium.copyWith(
             color: colorScheme.onSurfaceVariant,
-            fontSize: 13.sp,
+            fontSize: isTablet ? 13.0 : 13.sp,
           ),
         ),
         horizontalMarginSmall,
@@ -799,11 +890,11 @@ class _ExpenseDetailRow extends StatelessWidget {
             style: isMonospace
                 ? customTypography.labelMediumMono.copyWith(
                     color: colorScheme.onSurface,
-                    fontSize: 12.sp,
+                    fontSize: isTablet ? 12.0 : 12.sp,
                   )
                 : customTypography.bodyLargeBold.copyWith(
                     color: colorScheme.onSurface,
-                    fontSize: 13.sp,
+                    fontSize: isTablet ? 13.0 : 13.sp,
                   ),
           ),
         ),
@@ -863,6 +954,7 @@ class _DeleteExpenseButton extends StatelessWidget {
     final l10n = context.l10n;
     final customTypography = context.customTypography;
     final customColors = context.customColors;
+    final isTablet = Breakpoints.isTablet(context);
 
     return SizedBox(
       width: double.infinity,
@@ -875,12 +967,12 @@ class _DeleteExpenseButton extends StatelessWidget {
             width: 1.2,
           ),
           backgroundColor: customColors.semanticRed.withValues(alpha: 0.08),
-          padding: EdgeInsets.symmetric(vertical: 14.h),
+          padding: EdgeInsets.symmetric(vertical: isTablet ? 14.0 : 14.h),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14.r),
+            borderRadius: BorderRadius.circular(isTablet ? 14.0 : 14.r),
           ),
         ),
-        icon: Icon(Icons.delete_outline_rounded, size: 20.r),
+        icon: Icon(Icons.delete_outline_rounded, size: isTablet ? 20.0 : 20.r),
         label: Text(
           l10n.deleteExpense,
           maxLines: 1,

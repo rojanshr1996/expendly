@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../features/transactions/domain/entities/category_item.dart';
 import '../database/enums/database_enums.dart';
 import '../extensions/context_extensions.dart';
+import '../responsive/breakpoints.dart';
 import '../theme/font_weights.dart';
+import 'adaptive_sheet.dart';
 
 /// Reusable modal sheet for picking a category from a responsive grid.
 /// Solves category pill scrolling issues by offering search, icons, and clean grid views.
@@ -31,10 +33,10 @@ class CategoryPickerSheet extends StatefulWidget {
     TransactionType initialType = TransactionType.expense,
     bool allowOverallLimitOption = false,
   }) {
-    return showModalBottomSheet<CategoryItem?>(
+    return AdaptiveSheet.show<CategoryItem?>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      maxDialogWidth: 600.0,
       builder: (ctx) => CategoryPickerSheet(
         categories: categories,
         selectedCategory: selectedCategory,
@@ -127,15 +129,18 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
     final customColors = context.customColors;
     final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final isTablet = Breakpoints.isTablet(context);
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.75,
+        height: isTablet ? 560.0 : MediaQuery.of(context).size.height * 0.75,
         decoration: BoxDecoration(
           color:
               isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+          borderRadius: isTablet
+              ? BorderRadius.circular(24.0)
+              : BorderRadius.vertical(top: Radius.circular(28.r)),
           border: Border.all(
             color: isLight
                 ? colorScheme.outlineVariant.withValues(alpha: 0.50)
@@ -143,23 +148,28 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
             width: 1.0,
           ),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+        padding: EdgeInsets.symmetric(
+          horizontal: isTablet ? 24.0 : 20.w,
+          vertical: isTablet ? 20.0 : 16.h,
+        ),
         child: Column(
           children: [
-            // Sheet Handle & Drag Bar
-            Center(
-              child: Container(
-                width: 40.w,
-                height: 4.h,
-                decoration: BoxDecoration(
-                  color: isLight
-                      ? colorScheme.outline.withValues(alpha: 0.4)
-                      : colorScheme.outlineVariant.withValues(alpha: 0.7),
-                  borderRadius: BorderRadius.circular(2.r),
+            // Sheet Handle & Drag Bar (mobile only)
+            if (!isTablet) ...[
+              Center(
+                child: Container(
+                  width: 40.w,
+                  height: 4.h,
+                  decoration: BoxDecoration(
+                    color: isLight
+                        ? colorScheme.outline.withValues(alpha: 0.4)
+                        : colorScheme.outlineVariant.withValues(alpha: 0.7),
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16.h),
+              SizedBox(height: 16.h),
+            ],
 
             // Header Title
             Row(
@@ -274,13 +284,15 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                     );
                   }
 
+                  final isTablet = Breakpoints.isTablet(context);
+
                   return GridView.builder(
                     physics: const BouncingScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 10.w,
-                      mainAxisSpacing: 10.h,
-                      childAspectRatio: 1.05,
+                      crossAxisCount: isTablet ? 4 : 3,
+                      crossAxisSpacing: isTablet ? 12.0 : 10.w,
+                      mainAxisSpacing: isTablet ? 12.0 : 10.h,
+                      childAspectRatio: isTablet ? 1.15 : 1.05,
                     ),
                     itemCount: filtered.length +
                         (widget.allowOverallLimitOption ? 1 : 0),

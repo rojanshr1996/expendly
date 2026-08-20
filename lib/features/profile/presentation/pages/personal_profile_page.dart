@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../domain/entities/user_profile.dart';
@@ -205,141 +206,149 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
             ),
             child: Form(
               key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Profile Avatar Section
-                  SizedBox(height: 8.h),
-                  ProfileAvatarPicker(
-                    imagePath: _selectedImagePath,
-                    onTapPick: _pickImageFromGallery,
-                    onTapRemove: _selectedImagePath != null
-                        ? () => setState(() => _selectedImagePath = null)
-                        : null,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth:
+                        Breakpoints.isTablet(context) ? 680.0 : double.infinity,
                   ),
-                  SizedBox(height: 12.h),
-
-                  // Account ID text
-                  Text(
-                    accountId,
-                    style: customTypography.labelMediumMono.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 12.sp,
-                      letterSpacing: 1.5,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 32.h),
-
-                  // Form Fields using common AppTextField component
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Full Name Field
-                      AppTextField(
-                        controller: _nameController,
-                        labelText: l10n.fullNameLabel,
-                        labelStyle: labelStyle,
-                        hintText: l10n.yourNameHint,
-                        onChanged: (_) => setState(() {}),
-                        prefixIcon: Icon(
-                          Icons.person_outlined,
-                          color: colorScheme.onSurfaceVariant,
-                          size: 20.sp,
-                        ),
-                        fillColor: Colors.transparent,
-                        borderRadius: BorderRadius.circular(16.r),
-                        validator: (val) {
-                          if (val == null || val.trim().isEmpty) {
-                            return l10n.pleaseEnterYourName;
-                          }
-                          return null;
-                        },
+                      // Profile Avatar Section
+                      SizedBox(height: 8.h),
+                      ProfileAvatarPicker(
+                        imagePath: _selectedImagePath,
+                        onTapPick: _pickImageFromGallery,
+                        onTapRemove: _selectedImagePath != null
+                            ? () => setState(() => _selectedImagePath = null)
+                            : null,
                       ),
-                      SizedBox(height: 20.h),
+                      SizedBox(height: 12.h),
 
-                      // Email Address Field
-                      AppTextField(
-                        controller: _emailController,
-                        labelText: l10n.emailAddressLabel,
-                        labelStyle: labelStyle,
-                        hintText: l10n.emailHint,
-                        onChanged: (_) => setState(() {}),
-                        keyboardType: TextInputType.emailAddress,
-                        prefixIcon: Icon(
-                          Icons.mail_outline_rounded,
+                      // Account ID text
+                      Text(
+                        accountId,
+                        style: customTypography.labelMediumMono.copyWith(
                           color: colorScheme.onSurfaceVariant,
-                          size: 20.sp,
+                          fontSize: 12.sp,
+                          letterSpacing: 1.5,
+                          fontWeight: FontWeight.bold,
                         ),
-                        fillColor: Colors.transparent,
-                        borderRadius: BorderRadius.circular(16.r),
                       ),
                       SizedBox(height: 32.h),
 
-                      // Action Buttons
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52.h,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.primary,
-                            foregroundColor: colorScheme.onPrimary,
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.r),
+                      // Form Fields using common AppTextField component
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Full Name Field
+                          AppTextField(
+                            controller: _nameController,
+                            labelText: l10n.fullNameLabel,
+                            labelStyle: labelStyle,
+                            hintText: l10n.yourNameHint,
+                            onChanged: (_) => setState(() {}),
+                            prefixIcon: Icon(
+                              Icons.person_outlined,
+                              color: colorScheme.onSurfaceVariant,
+                              size: 20.sp,
+                            ),
+                            fillColor: Colors.transparent,
+                            borderRadius: BorderRadius.circular(16.r),
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) {
+                                return l10n.pleaseEnterYourName;
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 20.h),
+
+                          // Email Address Field
+                          AppTextField(
+                            controller: _emailController,
+                            labelText: l10n.emailAddressLabel,
+                            labelStyle: labelStyle,
+                            hintText: l10n.emailHint,
+                            onChanged: (_) => setState(() {}),
+                            keyboardType: TextInputType.emailAddress,
+                            prefixIcon: Icon(
+                              Icons.mail_outline_rounded,
+                              color: colorScheme.onSurfaceVariant,
+                              size: 20.sp,
+                            ),
+                            fillColor: Colors.transparent,
+                            borderRadius: BorderRadius.circular(16.r),
+                          ),
+                          SizedBox(height: 32.h),
+
+                          // Action Buttons
+                          SizedBox(
+                            width: double.infinity,
+                            height: 52.h,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorScheme.primary,
+                                foregroundColor: colorScheme.onPrimary,
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.r),
+                                ),
+                              ),
+                              onPressed: _isSaving ? null : _saveProfile,
+                              child: _isSaving
+                                  ? SizedBox(
+                                      width: 24.w,
+                                      height: 24.w,
+                                      child: CircularProgressIndicator(
+                                        color: colorScheme.onPrimary,
+                                        strokeWidth: 2.5,
+                                      ),
+                                    )
+                                  : Text(
+                                      l10n.saveChanges,
+                                      style: (textTheme.titleMedium ??
+                                              const TextStyle())
+                                          .copyWith(
+                                        color: colorScheme.onPrimary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16.sp,
+                                      ),
+                                    ),
                             ),
                           ),
-                          onPressed: _isSaving ? null : _saveProfile,
-                          child: _isSaving
-                              ? SizedBox(
-                                  width: 24.w,
-                                  height: 24.w,
-                                  child: CircularProgressIndicator(
-                                    color: colorScheme.onPrimary,
-                                    strokeWidth: 2.5,
-                                  ),
-                                )
-                              : Text(
-                                  l10n.saveChanges,
-                                  style: (textTheme.titleMedium ??
-                                          const TextStyle())
-                                      .copyWith(
-                                    color: colorScheme.onPrimary,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.sp,
+                          if (showDiscard) ...[
+                            SizedBox(height: 12.h),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48.h,
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: colorScheme.onSurfaceVariant,
+                                  side: BorderSide(
+                                      color: colorScheme.outlineVariant),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16.r),
                                   ),
                                 ),
-                        ),
+                                onPressed: () => _discardChanges(profile),
+                                child: Text(
+                                  l10n.discardChanges,
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                          SizedBox(height: 24.h),
+                        ],
                       ),
-                      if (showDiscard) ...[
-                        SizedBox(height: 12.h),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 48.h,
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: colorScheme.onSurfaceVariant,
-                              side:
-                                  BorderSide(color: colorScheme.outlineVariant),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.r),
-                              ),
-                            ),
-                            onPressed: () => _discardChanges(profile),
-                            child: Text(
-                              l10n.discardChanges,
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                      SizedBox(height: 24.h),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
           ),

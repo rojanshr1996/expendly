@@ -3,8 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/adaptive_sheet.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../domain/entities/settlement.dart';
@@ -25,10 +27,10 @@ class SettleUpSheet extends StatefulWidget {
     required Settlement settlement,
     required Future<void> Function(double amount, String note) onConfirm,
   }) {
-    return showModalBottomSheet<void>(
+    return AdaptiveSheet.show<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      maxDialogWidth: 480.0,
       builder: (_) => SettleUpSheet(
         settlement: settlement,
         onConfirm: onConfirm,
@@ -82,6 +84,7 @@ class _SettleUpSheetState extends State<SettleUpSheet> {
     final customColors = context.customColors;
     final customTypography = context.customTypography;
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final isTablet = Breakpoints.isTablet(context);
     final currencySymbol = getIt<PreferenceService>().currencySymbol;
 
     final greenColor =
@@ -95,7 +98,9 @@ class _SettleUpSheetState extends State<SettleUpSheet> {
         decoration: BoxDecoration(
           color:
               isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+          borderRadius: isTablet
+              ? BorderRadius.circular(24.0)
+              : BorderRadius.vertical(top: Radius.circular(28.r)),
           border: Border.all(
             color: isLight
                 ? colorScheme.outlineVariant.withValues(alpha: 0.50)
@@ -106,25 +111,30 @@ class _SettleUpSheetState extends State<SettleUpSheet> {
         child: SafeArea(
           top: false,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(
+              horizontal: isTablet ? 24.0 : 20.w,
+              vertical: isTablet ? 20.0 : 16.h,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Drag Handle
-                Center(
-                  child: Container(
-                    width: 40.w,
-                    height: 4.h,
-                    decoration: BoxDecoration(
-                      color: isLight
-                          ? colorScheme.outline.withValues(alpha: 0.4)
-                          : colorScheme.outlineVariant.withValues(alpha: 0.7),
-                      borderRadius: BorderRadius.circular(2.r),
+                // Drag Handle (phone only)
+                if (!isTablet) ...[
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: isLight
+                            ? colorScheme.outline.withValues(alpha: 0.4)
+                            : colorScheme.outlineVariant.withValues(alpha: 0.7),
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 12.h),
+                  SizedBox(height: 12.h),
+                ],
 
                 // Header
                 Row(

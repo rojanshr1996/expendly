@@ -10,6 +10,7 @@ import '../../../../core/database/app_database.dart';
 import '../../../../core/database/enums/database_enums.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/ads/interstitial_ad_helper.dart';
 import '../../../../core/theme/font_weights.dart';
@@ -157,7 +158,10 @@ class _CreateNewBudgetPageState extends State<CreateNewBudgetPage> {
                     ),
                     child: Center(
                       child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 500),
+                        constraints: BoxConstraints(
+                          maxWidth:
+                              Breakpoints.isTablet(context) ? 680.0 : 500.0,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -427,22 +431,32 @@ class _CreateNewBudgetPageState extends State<CreateNewBudgetPage> {
                     top: 12.h,
                     bottom: 12.h + MediaQuery.of(context).viewPadding.bottom,
                   ),
-                  child: ElevatedButton.icon(
-                    onPressed: _saveBudget,
-                    icon: const Icon(Icons.add_circle_rounded, size: 22),
-                    label: Text(
-                      context.l10n.createBudget,
-                      style: customTypography.headlineMediumMonoBold.copyWith(
-                        color: colorScheme.onPrimary,
-                        fontSize: 16.sp,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: Breakpoints.isTablet(context)
+                            ? 680.0
+                            : double.infinity,
                       ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                      minimumSize: Size(double.infinity, 52.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.r),
+                      child: ElevatedButton.icon(
+                        onPressed: _saveBudget,
+                        icon: const Icon(Icons.add_circle_rounded, size: 22),
+                        label: Text(
+                          context.l10n.createBudget,
+                          style:
+                              customTypography.headlineMediumMonoBold.copyWith(
+                            color: colorScheme.onPrimary,
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
+                          minimumSize: Size(double.infinity, 52.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.r),
+                          ),
+                        ),
                       ),
                     ),
                   ),

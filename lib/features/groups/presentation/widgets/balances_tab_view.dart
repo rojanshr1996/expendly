@@ -10,12 +10,18 @@ class BalancesTabView extends StatelessWidget {
   final List<Settlement> settlements;
   final List<EventParticipant> participants;
   final SharingEvent event;
+  final bool shrinkWrap;
+  final ScrollPhysics? physics;
+  final EdgeInsetsGeometry? padding;
 
   const BalancesTabView({
     super.key,
     required this.settlements,
     required this.participants,
     required this.event,
+    this.shrinkWrap = false,
+    this.physics,
+    this.padding,
   });
 
   @override
@@ -24,6 +30,9 @@ class BalancesTabView extends StatelessWidget {
       settlements: settlements,
       participants: participants,
       event: event,
+      shrinkWrap: shrinkWrap,
+      physics: physics,
+      padding: padding,
     );
   }
 }

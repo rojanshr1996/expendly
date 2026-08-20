@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:expendly/core/constants/margin_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,18 +12,23 @@ import '../../../../core/ads/widgets/banner_ad_widget.dart';
 import '../../../../core/database/app_database.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
+import '../../../../core/responsive/tablet_spacing.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/animated_empty_state_hero.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
+import '../../../../core/widgets/side_panel.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../data/datasources/budget_local_datasource.dart';
 import '../../data/repositories/budget_repository_impl.dart';
 import '../../domain/entities/budget_item.dart';
 import '../cubit/budget_cubit.dart';
 import '../cubit/budget_state.dart';
+import '../widgets/budget_card_grid.dart';
+import '../widgets/budget_health_sidebar.dart';
 import '../widgets/budgets_overview_shimmer.dart';
 
 class BudgetsOverviewPage extends StatefulWidget {
@@ -102,6 +108,36 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
           final topInset = MediaQuery.of(context).padding.top;
           final headerPaddingTop = topInset + kToolbarHeight;
 
+          final isTablet = Breakpoints.isTablet(context);
+
+          if (isTablet) {
+            return Scaffold(
+              backgroundColor: colorScheme.surface,
+              body: BlocBuilder<BudgetCubit, BudgetState>(
+                buildWhen: (previous, current) {
+                  if (previous.runtimeType != current.runtimeType) return true;
+                  if (previous is BudgetLoaded && current is BudgetLoaded) {
+                    return previous.budgets != current.budgets;
+                  }
+                  return true;
+                },
+                builder: (context, state) {
+                  if (state is BudgetLoading) {
+                    return const Padding(
+                      padding: EdgeInsets.all(TabletSpacing.canvasPadding),
+                      child: BudgetsOverviewShimmer(
+                          key: ValueKey('tablet_loading')),
+                    );
+                  }
+                  if (state is BudgetLoaded) {
+                    return _buildTabletContent(context, state);
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            );
+          }
+
           return Scaffold(
             backgroundColor: colorScheme.surface,
             extendBodyBehindAppBar: true,
@@ -141,6 +177,115 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildTabletContent(
+    BuildContext context,
+    BudgetLoaded state,
+  ) {
+    final budgets = state.budgets;
+    if (budgets.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedEmptyStateHero(
+                primaryIcon: Icons.account_balance_wallet_rounded,
+                primaryColor: context.colorScheme.primary,
+                secondaryBadgeTop: Icons.pie_chart_rounded,
+                secondaryColorTop: context.colorScheme.primary,
+                secondaryBadgeBottom: Icons.savings_outlined,
+                secondaryColorBottom: context.colorScheme.secondary,
+                containerSize: 110.0,
+                heroSize: 160.0,
+              ),
+              const SizedBox(height: 24.0),
+              Text(
+                context.l10n.noBudgetsSet,
+                style: context.customTypography.bodyLargeBold.copyWith(
+                  color: context.colorScheme.onSurface,
+                  fontSize: 20.0,
+                ),
+              ),
+              const SizedBox(height: 8.0),
+              Text(
+                context.l10n.noBudgetsDesc,
+                textAlign: TextAlign.center,
+                style: context.customTypography.bodyMedium.copyWith(
+                  color: context.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 28.0),
+              ElevatedButton.icon(
+                onPressed: () => _openCreateBudgetScreen(context),
+                icon: const Icon(Icons.add_rounded),
+                label: Text(context.l10n.setFirstBudget),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: context.colorScheme.primary,
+                  foregroundColor: context.colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 14.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  elevation: 0,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      color: AppColors.primary,
+      onRefresh: () => context.read<BudgetCubit>().loadBudgets(),
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
+        padding: const EdgeInsets.all(TabletSpacing.canvasPadding),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Left: 2-Column Grid of Budgets (flex: 7)
+            Expanded(
+              flex: 7,
+              child: BudgetCardGrid(
+                budgets: budgets,
+                isPrivacyModeNotifier: widget.isPrivacyModeNotifier,
+                selectedBudgetId: _selectedBudgetId,
+                onBudgetSelected: (b) {
+                  setState(() {
+                    _selectedBudgetId = b.id;
+                  });
+                },
+                onCreateBudget: () => _openCreateBudgetScreen(context),
+                onDeleteBudget: (item) {
+                  if (_selectedBudgetId == item.id) {
+                    _selectedBudgetId = null;
+                  }
+                  context.read<BudgetCubit>().deleteBudget(item.id);
+                },
+              ),
+            ),
+            const SizedBox(width: TabletSpacing.gridGutter),
+
+            // Right: Budget Health Sidebar (flex: 3, 320px)
+            SidePanel(
+              width: 320.0,
+              padding: EdgeInsets.zero,
+              child: BudgetHealthSidebar(
+                budgets: budgets,
+                isPrivacyModeNotifier: widget.isPrivacyModeNotifier,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -405,10 +550,11 @@ class _TotalBudgetHealthCard extends StatelessWidget {
                           letterSpacing: 1.2,
                           fontWeight: FontWeight.bold,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    horizontalMarginSmall,
                     if (selectedItem != null)
                       InkWell(
                         onTap: onResetSelection,

@@ -7,10 +7,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/biometric_auth_service.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/font_weights.dart';
+import '../../../../core/widgets/adaptive_sheet.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/custom_keypad.dart';
@@ -23,11 +25,10 @@ class ResetPinModal extends StatefulWidget {
   const ResetPinModal({super.key});
 
   static Future<void> show(BuildContext context) {
-    return showModalBottomSheet(
+    return AdaptiveSheet.show<void>(
       context: context,
       isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
+      maxDialogWidth: 460.0,
       builder: (_) => const ResetPinModal(),
     );
   }
@@ -238,7 +239,9 @@ class _ResetPinModalState extends State<ResetPinModal> {
     final customTypography = context.customTypography;
     final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
-    final maxHeight = MediaQuery.of(context).size.height * 0.88;
+    final isTablet = Breakpoints.isTablet(context);
+    final maxHeight =
+        isTablet ? 600.0 : MediaQuery.of(context).size.height * 0.88;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -249,7 +252,9 @@ class _ResetPinModalState extends State<ResetPinModal> {
         decoration: BoxDecoration(
           color:
               isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+          borderRadius: isTablet
+              ? BorderRadius.circular(24.0)
+              : BorderRadius.vertical(top: Radius.circular(28.r)),
           border: Border.all(
             color: isLight
                 ? colorScheme.outlineVariant.withValues(alpha: 0.50)
@@ -260,25 +265,30 @@ class _ResetPinModalState extends State<ResetPinModal> {
         child: SafeArea(
           top: false,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(
+              horizontal: isTablet ? 24.0 : 20.w,
+              vertical: isTablet ? 20.0 : 16.h,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Drag Handle
-                Center(
-                  child: Container(
-                    width: 40.w,
-                    height: 4.h,
-                    decoration: BoxDecoration(
-                      color: isLight
-                          ? colorScheme.outline.withValues(alpha: 0.4)
-                          : colorScheme.outlineVariant.withValues(alpha: 0.7),
-                      borderRadius: BorderRadius.circular(2.r),
+                // Drag Handle (phone only)
+                if (!isTablet) ...[
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: isLight
+                            ? colorScheme.outline.withValues(alpha: 0.4)
+                            : colorScheme.outlineVariant.withValues(alpha: 0.7),
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 12.h),
+                  SizedBox(height: 12.h),
+                ],
 
                 // Header Row: Back (if not first step), Title, Close
                 ValueListenableBuilder<ResetPinStep>(
