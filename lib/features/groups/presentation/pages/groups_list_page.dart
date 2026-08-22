@@ -9,15 +9,20 @@ import '../../../../core/ads/ad_helper.dart';
 import '../../../../core/ads/widgets/banner_ad_widget.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
+import '../../../../core/responsive/tablet_spacing.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/widgets/animated_entrance_item.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
+import '../../../../core/widgets/master_detail_layout.dart';
 import '../../domain/entities/sharing_event.dart';
 import '../cubit/groups_cubit.dart';
 import '../cubit/groups_state.dart';
 import '../widgets/event_card.dart';
+import '../widgets/group_detail_panel.dart';
+import '../widgets/groups_master_list.dart';
 import '../widgets/groups_shimmer.dart';
 
 @RoutePage()
@@ -31,6 +36,8 @@ class GroupsListPage extends StatefulWidget {
 class _GroupsListPageState extends State<GroupsListPage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+  final ValueNotifier<SharingEvent?> _selectedEventNotifier =
+      ValueNotifier<SharingEvent?>(null);
 
   @override
   void initState() {
@@ -41,6 +48,7 @@ class _GroupsListPageState extends State<GroupsListPage>
 
   @override
   void dispose() {
+    _selectedEventNotifier.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -51,43 +59,102 @@ class _GroupsListPageState extends State<GroupsListPage>
     final topInset = MediaQuery.of(context).padding.top;
     final headerPaddingTop = topInset + kToolbarHeight;
 
+    final isTablet = Breakpoints.isTablet(context);
+
     return BlocProvider<GroupsCubit>.value(
       value: getIt<GroupsCubit>(),
-      child: Scaffold(
-        backgroundColor: colorScheme.surface,
-        extendBodyBehindAppBar: true,
-        appBar: const LiquidGlassAppBar(
-          titleText: 'Split Bills & Expenses',
-        ),
-        floatingActionButton: BlocBuilder<GroupsCubit, GroupsState>(
-          builder: (context, state) {
-            if (state is GroupsLoaded && state.events.isNotEmpty) {
-              return FloatingActionButton.extended(
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-                elevation: 3,
-                icon: const Icon(Icons.add_rounded),
-                label: Text(
-                  context.l10n.newEvent,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                onPressed: () => context.router.push(NewEventRoute()),
-              );
-            }
-            return const SizedBox.shrink();
-          },
-        ),
-        body: BlocBuilder<GroupsCubit, GroupsState>(
-          builder: (context, state) {
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              switchInCurve: Curves.easeOutCubic,
-              switchOutCurve: Curves.easeInCubic,
-              child: _buildBody(context, state, headerPaddingTop),
-            );
-          },
-        ),
-      ),
+      child: isTablet
+          ? Scaffold(
+              backgroundColor: colorScheme.surface,
+              body: BlocBuilder<GroupsCubit, GroupsState>(
+                builder: (context, state) {
+                  if (state is GroupsLoading || state is GroupsInitial) {
+                    return const Padding(
+                      padding: EdgeInsets.all(TabletSpacing.canvasPadding),
+                      child:
+                          GroupsShimmer(key: ValueKey('groups_shimmer_tablet')),
+                    );
+                  }
+                  if (state is GroupsLoaded) {
+                    return _buildTabletContent(context, state);
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            )
+          : Scaffold(
+              backgroundColor: colorScheme.surface,
+              extendBodyBehindAppBar: true,
+              appBar: const LiquidGlassAppBar(
+                titleText: 'Split Bills & Expenses',
+              ),
+              floatingActionButton: BlocBuilder<GroupsCubit, GroupsState>(
+                builder: (context, state) {
+                  if (state is GroupsLoaded && state.events.isNotEmpty) {
+                    return FloatingActionButton.extended(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      elevation: 3,
+                      icon: const Icon(Icons.add_rounded),
+                      label: Text(
+                        context.l10n.newEvent,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: () => context.router.push(NewEventRoute()),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+              body: BlocBuilder<GroupsCubit, GroupsState>(
+                builder: (context, state) {
+                  return AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    child: _buildBody(context, state, headerPaddingTop),
+                  );
+                },
+              ),
+            ),
+    );
+  }
+
+  Widget _buildTabletContent(
+    BuildContext context,
+    GroupsLoaded state,
+  ) {
+    final events = state.events;
+
+    return ValueListenableBuilder<SharingEvent?>(
+      valueListenable: _selectedEventNotifier,
+      builder: (context, selectedEv, _) {
+        final activeEv =
+            selectedEv ?? (events.isNotEmpty ? events.first : null);
+
+        return MasterDetailLayout(
+          masterFlex: 4,
+          detailFlex: 6,
+          gutterWidth: TabletSpacing.gridGutter,
+          showDivider: true,
+          master: GroupsMasterList(
+            events: events,
+            selectedEvent: activeEv,
+            onEventSelected: (ev) {
+              _selectedEventNotifier.value = ev;
+            },
+            onCreateEvent: () => context.router.push(NewEventRoute()),
+          ),
+          detail: GroupDetailPanel(
+            event: activeEv,
+            onViewDetails: activeEv == null
+                ? null
+                : () => context.router.push(
+                      EventDetailRoute(eventId: activeEv.id),
+                    ),
+          ),
+        );
+      },
     );
   }
 

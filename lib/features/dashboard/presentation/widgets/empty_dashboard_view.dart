@@ -314,7 +314,7 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
 
             // Add First Transaction CTA Button
             ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 320.w),
+              constraints: const BoxConstraints(maxWidth: 340.0),
               child: AppButton(
                 text: context.l10n.addFirstTransaction,
                 icon: const Icon(Icons.add_rounded),
@@ -324,51 +324,54 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
             verticalMarginLarge,
 
             // Secondary Guidance Badges Footer
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 16.0,
+              runSpacing: 8.0,
               children: [
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.verified_user_outlined,
-                      size: 15.sp,
+                      size: 15.0,
                       color: colorScheme.onSurfaceVariant
                           .withAlpha((0.6 * 255).round()),
                     ),
-                    horizontalMarginXXSmall,
+                    const SizedBox(width: 4.0),
                     Text(
                       'Private & Secure',
                       style: customTypography.labelMediumMono.copyWith(
-                        fontSize: 11.sp,
+                        fontSize: 11.0,
                         color: colorScheme.onSurfaceVariant
                             .withAlpha((0.7 * 255).round()),
                       ),
                     ),
                   ],
                 ),
-                horizontalMarginMedium,
                 Container(
-                  width: 4.w,
-                  height: 4.w,
+                  width: 4.0,
+                  height: 4.0,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: colorScheme.outlineVariant,
                   ),
                 ),
-                horizontalMarginMedium,
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.cloud_off_rounded,
-                      size: 15.sp,
+                      size: 15.0,
                       color: colorScheme.onSurfaceVariant
                           .withAlpha((0.6 * 255).round()),
                     ),
-                    horizontalMarginXXSmall,
+                    const SizedBox(width: 4.0),
                     Text(
                       'Offline Ready',
                       style: customTypography.labelMediumMono.copyWith(
-                        fontSize: 11.sp,
+                        fontSize: 11.0,
                         color: colorScheme.onSurfaceVariant
                             .withAlpha((0.7 * 255).round()),
                       ),

@@ -7,11 +7,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
+import '../../../../core/responsive/tablet_spacing.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
+import '../../../../core/widgets/master_detail_layout.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../domain/entities/sharing_event.dart';
 import '../cubit/event_detail_cubit.dart';
@@ -206,7 +209,7 @@ class _EventDetailPageState extends State<EventDetailPage>
         floatingActionButton: AnimatedBuilder(
           animation: _tabController,
           builder: (context, _) {
-            if (_tabController.index != 0) {
+            if (_tabController.index != 0 || Breakpoints.isTablet(context)) {
               return const SizedBox.shrink();
             }
 
@@ -281,6 +284,111 @@ class _EventDetailPageState extends State<EventDetailPage>
             if (state is EventDetailLoaded) {
               final event = state.event;
 
+              if (Breakpoints.isTablet(context)) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                    top: headerPaddingTop + 8.0,
+                    left: 20.0,
+                    right: 20.0,
+                    bottom: 16.0,
+                  ),
+                  child: MasterDetailLayout(
+                    masterFlex: 5,
+                    detailFlex: 5,
+                    gutterWidth: TabletSpacing.gridGutter,
+                    showDivider: true,
+                    master: SingleChildScrollView(
+                      padding: const EdgeInsets.only(bottom: 24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildEventSummaryCard(context, event),
+                          const SizedBox(height: 16.0),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: Text(
+                              context.l10n.balances,
+                              style: context.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8.0),
+                          BalancesTabView(
+                            settlements: state.settlements,
+                            participants: event.participants,
+                            event: event,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: const EdgeInsets.only(bottom: 24.0),
+                          ),
+                        ],
+                      ),
+                    ),
+                    detail: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 4.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '${context.l10n.expenses} (${state.expenses.length})',
+                                style: context.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+                              ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: colorScheme.primary,
+                                  foregroundColor: colorScheme.onPrimary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                icon: const Icon(Icons.add_rounded, size: 18),
+                                label: Text(context.l10n.addExpense),
+                                onPressed: () async {
+                                  final res = await context.router.push(
+                                    AddExpenseRoute(
+                                      eventId: event.id,
+                                      participants: event.participants,
+                                    ),
+                                  );
+                                  if (res == true) {
+                                    _cubit.loadEventDetail(widget.eventId);
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8.0),
+                        Expanded(
+                          child: ExpensesTabView(
+                            expenses: state.expenses,
+                            event: event,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 8.0,
+                            ),
+                            onExpenseAdded: () =>
+                                _cubit.loadEventDetail(widget.eventId),
+                            onDeleteExpense: (expenseId) =>
+                                _confirmDeleteExpense(context, expenseId),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+
               return Padding(
                 padding: EdgeInsets.only(top: headerPaddingTop),
                 child: Column(
@@ -289,57 +397,7 @@ class _EventDetailPageState extends State<EventDetailPage>
                     Padding(
                       padding:
                           EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                      child: _ReportsLiquidGlassCard(
-                        borderRadius: BorderRadius.circular(18.r),
-                        padding: EdgeInsets.all(18.w),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      context.l10n.totalSpend,
-                                      style: context
-                                          .customTypography.labelMediumMono,
-                                    ),
-                                    SizedBox(height: 4.h),
-                                    CompactAmountText(
-                                      amount: event.totalSpent,
-                                      style: context.customTypography
-                                          .headlineMediumMonoBold
-                                          .copyWith(color: colorScheme.primary),
-                                    ),
-                                  ],
-                                ),
-                                StatusBadge(status: event.status),
-                              ],
-                            ),
-                            SizedBox(height: 16.h),
-                            Divider(
-                              color: customColors.glassStroke,
-                              height: 1,
-                            ),
-                            SizedBox(height: 12.h),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                ParticipantAvatarRow(
-                                    participants: event.participants),
-                                Text(
-                                  '${event.participants.length} ${context.l10n.members}',
-                                  style: context.textTheme.labelSmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                      child: _buildEventSummaryCard(context, event),
                     ),
 
                     // Tab Content and Floating Liquid Glass Tab Bar in Stack
@@ -467,6 +525,61 @@ class _EventDetailPageState extends State<EventDetailPage>
             return const SizedBox.shrink();
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildEventSummaryCard(BuildContext context, SharingEvent event) {
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final isTablet = Breakpoints.isTablet(context);
+
+    return _ReportsLiquidGlassCard(
+      borderRadius: BorderRadius.circular(isTablet ? 18.0 : 18.r),
+      padding: EdgeInsets.all(isTablet ? 18.0 : 18.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.totalSpend,
+                    style: context.customTypography.labelMediumMono,
+                  ),
+                  SizedBox(height: isTablet ? 4.0 : 4.h),
+                  CompactAmountText(
+                    amount: event.totalSpent,
+                    style: context.customTypography.headlineMediumMonoBold
+                        .copyWith(color: colorScheme.primary),
+                  ),
+                ],
+              ),
+              StatusBadge(status: event.status),
+            ],
+          ),
+          SizedBox(height: isTablet ? 16.0 : 16.h),
+          Divider(
+            color: customColors.glassStroke,
+            height: 1,
+          ),
+          SizedBox(height: isTablet ? 12.0 : 12.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ParticipantAvatarRow(participants: event.participants),
+              Text(
+                '${event.participants.length} ${context.l10n.members}',
+                style: context.textTheme.labelSmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

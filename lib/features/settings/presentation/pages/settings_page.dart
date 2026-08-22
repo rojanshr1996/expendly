@@ -12,10 +12,12 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/ads/ad_helper.dart';
 import '../../../../core/ads/widgets/banner_ad_widget.dart';
+import '../../../../core/config/app_config.dart';
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/models/backup_result.dart';
+import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/backup_service.dart';
 import '../../../../core/services/biometric_auth_service.dart';
@@ -25,6 +27,7 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/font_weights.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../../../core/utils/url_utils.dart';
+import '../../../../core/widgets/adaptive_sheet.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../../profile/presentation/cubit/profile_cubit.dart';
@@ -70,14 +73,6 @@ class _SettingsPageState extends State<SettingsPage>
     );
 
     getIt<ProfileCubit>().loadProfile();
-  }
-
-  @override
-  void dispose() {
-    _isBiometricEnabledNotifier.dispose();
-    _isLoggingOutNotifier.dispose();
-    _logoutAnimationController.dispose();
-    super.dispose();
   }
 
   Future<void> _toggleBiometrics(bool val) async {
@@ -160,11 +155,10 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   void _showRestoreSheet(BuildContext context) {
-    showModalBottomSheet<void>(
+    AdaptiveSheet.show<void>(
       context: context,
       isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
+      maxDialogWidth: 520.0,
       builder: (ctx) => _CsvRestoreSheet(
         parentContext: context,
         onImportDone: (result) {
@@ -353,12 +347,19 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   @override
+  void dispose() {
+    _isBiometricEnabledNotifier.dispose();
+    _isLoggingOutNotifier.dispose();
+    _logoutAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final textTheme = context.textTheme;
-    final customTypography = context.customTypography;
-
     final pref = getIt<PreferenceService>();
+    final isTablet = Breakpoints.isTablet(context);
 
     return AnimatedBuilder(
       animation: _logoutAnimation,
@@ -368,12 +369,15 @@ class _SettingsPageState extends State<SettingsPage>
         final opacity = (1.0 - (progress * 0.8)).clamp(0.0, 1.0);
 
         return Stack(
+          fit: StackFit.expand,
           children: [
-            Opacity(
-              opacity: opacity,
-              child: Transform.scale(
-                scale: scale,
-                child: child,
+            Positioned.fill(
+              child: Opacity(
+                opacity: opacity,
+                child: Transform.scale(
+                  scale: scale,
+                  child: child,
+                ),
               ),
             ),
             if (progress > 0)
@@ -384,7 +388,7 @@ class _SettingsPageState extends State<SettingsPage>
                     child: Transform.scale(
                       scale: 0.8 + (progress * 0.3),
                       child: Container(
-                        padding: EdgeInsets.all(24.r),
+                        padding: EdgeInsets.all(isTablet ? 32.0 : 24.r),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: colorScheme.error.withValues(alpha: 0.15),
@@ -396,14 +400,14 @@ class _SettingsPageState extends State<SettingsPage>
                             BoxShadow(
                               color: colorScheme.error
                                   .withValues(alpha: 0.3 * progress),
-                              blurRadius: 30.r,
-                              spreadRadius: 4.r,
+                              blurRadius: isTablet ? 32.0 : 30.r,
+                              spreadRadius: isTablet ? 4.0 : 4.r,
                             ),
                           ],
                         ),
                         child: Icon(
                           Icons.lock_rounded,
-                          size: 48.sp,
+                          size: isTablet ? 56.0 : 48.sp,
                           color: colorScheme.error,
                         ),
                       ),
@@ -421,318 +425,394 @@ class _SettingsPageState extends State<SettingsPage>
           titleText: context.l10n.settings,
           onLeadingPressed: () => context.router.maybePop(),
         ),
-        body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.only(
-            left: 20.w,
-            right: 20.w,
-            top: MediaQuery.of(context).padding.top + kToolbarHeight + 16.h,
-            bottom: 16.h,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Account Section
-              SettingsSectionHeader(title: context.l10n.accountSection),
-              BlocBuilder<ProfileCubit, ProfileState>(
-                bloc: getIt<ProfileCubit>(),
-                builder: (context, state) {
-                  final profile = state is ProfileLoaded ? state.profile : null;
-                  final hasProfile = profile != null;
-
-                  return _buildGroupedCard(
-                    context,
-                    children: [
-                      SettingsTile(
-                        icon: Icons.person_outline_rounded,
-                        iconColor: colorScheme.primary,
-                        title: context.l10n.personalProfile,
-                        subtitle: hasProfile
-                            ? (profile.email != null &&
-                                    profile.email!.isNotEmpty
-                                ? '${profile.name} • ${profile.email}'
-                                : profile.name)
-                            : context.l10n.personalProfileDesc,
-                        trailing: hasProfile
-                            ? UserAvatar(
-                                imagePath: profile.imagePath,
-                                radius: 16.r,
-                                borderWidth: 1.0,
-                              )
-                            : null,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder: (_) => const PersonalProfilePage(),
-                            ),
-                          );
-                        },
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.only(
+                  left: isTablet ? 32.0 : 20.w,
+                  right: isTablet ? 32.0 : 20.w,
+                  top: MediaQuery.of(context).padding.top +
+                      kToolbarHeight +
+                      (isTablet ? 20.0 : 16.h),
+                  bottom: isTablet ? 32.0 : 16.h,
+                ),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 720.0 : double.infinity,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildAccountSection(context),
+                        _buildSecuritySection(context),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: isTablet ? 16.0 : 14.h),
+                          child:
+                              BannerAdWidget(adUnitId: AdHelper.bannerAdUnitId),
+                        ),
+                        _buildAppearanceSection(context),
+                        _buildDataSection(context),
+                        _buildAboutSection(context),
+                        const SettingsFooter(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            !pref.isSecurityPinSet
+                ? emptyBox
+                : Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isTablet ? 32.0 : 20.w,
+                      vertical: isTablet ? 16.0 : 12.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLow,
+                      border: Border(
+                        top: BorderSide(
+                          color: colorScheme.outlineVariant,
+                          width: 1.0,
+                        ),
                       ),
-                    ],
-                  );
-                },
-              ),
-
-              // Security Section
-              SettingsSectionHeader(title: context.l10n.securitySection),
-              _buildGroupedCard(
-                context,
-                children: [
-                  SettingsTile(
-                    icon: Icons.pin_outlined,
-                    iconColor: colorScheme.secondary,
-                    title: pref.isSecurityPinSet
-                        ? context.l10n.changeSecurityPin
-                        : context.l10n.setupSecurityPin,
-                    subtitle: pref.isSecurityPinSet
-                        ? context.l10n.pinConfigured
-                        : context.l10n.setupSecurityPinDesc,
-                    onTap: () async {
-                      await ChangePinModal.show(context);
-                      if (mounted) setState(() {});
-                    },
-                  ),
-                  ValueListenableBuilder<bool>(
-                    valueListenable: _isBiometricEnabledNotifier,
-                    builder: (context, isBiometricEnabled, _) {
-                      final hasPin = pref.isSecurityPinSet;
-
-                      return SettingsTile(
-                        icon: Icons.fingerprint_rounded,
-                        iconColor: colorScheme.secondary,
-                        title: context.l10n.biometricAuth,
-                        subtitle: !hasPin
-                            ? context.l10n.pinRequiredForBiometrics
-                            : null,
-                        onTap: () => _toggleBiometrics(!isBiometricEnabled),
-                        trailing: Switch.adaptive(
-                          value: isBiometricEnabled && hasPin,
-                          activeTrackColor: colorScheme.primary,
-                          onChanged: (val) => _toggleBiometrics(val),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-
-              // Banner Ad below Security Section
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 14.h),
-                child: BannerAdWidget(adUnitId: AdHelper.bannerAdUnitId),
-              ),
-
-              // Appearance Section
-              SettingsSectionHeader(title: context.l10n.appearanceSection),
-              _buildGroupedCard(
-                context,
-                children: [
-                  ValueListenableBuilder<String>(
-                    valueListenable: pref.themeModeNotifier,
-                    builder: (context, themeMode, _) {
-                      final isDark = themeMode != 'light';
-
-                      return SettingsTile(
-                        icon: isDark
-                            ? Icons.dark_mode_outlined
-                            : Icons.light_mode_outlined,
-                        iconColor: colorScheme.onSurfaceVariant,
-                        title: context.l10n.themeLabel,
-                        subtitle: isDark
-                            ? context.l10n.darkMode
-                            : context.l10n.lightMode,
-                        onTap: () {
-                          pref.setThemeMode(isDark ? 'light' : 'dark');
-                        },
-                        trailing: Switch.adaptive(
-                          value: isDark,
-                          activeTrackColor: colorScheme.primary,
-                          onChanged: (val) {
-                            pref.setThemeMode(val ? 'dark' : 'light');
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                  ValueListenableBuilder<String>(
-                    valueListenable: pref.currencyCodeNotifier,
-                    builder: (context, code, _) {
-                      return ValueListenableBuilder<String>(
-                        valueListenable: pref.currencySymbolNotifier,
-                        builder: (context, symbol, _) {
-                          return SettingsTile(
-                            icon: Icons.payments_outlined,
-                            iconColor: colorScheme.onSurfaceVariant,
-                            title: context.l10n.primaryCurrency,
-                            trailing: Text(
-                              '$code ($symbol)',
-                              style: customTypography.labelMediumMono.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                                fontWeight: FontWeights.bold,
+                    ),
+                    child: SafeArea(
+                      top: false,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: isTablet ? 720.0 : double.infinity,
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: isTablet ? 52.0 : 48.h,
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: colorScheme.error,
+                                side: BorderSide(
+                                  color:
+                                      colorScheme.error.withValues(alpha: 0.5),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      isTablet ? 14.0 : 12.r),
+                                ),
                               ),
+                              icon: Icon(
+                                Icons.logout_rounded,
+                                size: isTablet ? 22.0 : 20.sp,
+                              ),
+                              label: Text(
+                                context.l10n.logout,
+                                style:
+                                    (textTheme.bodyLarge ?? const TextStyle())
+                                        .copyWith(
+                                  fontWeight: FontWeights.bold,
+                                  color: colorScheme.error,
+                                ),
+                              ),
+                              onPressed: () => _showLogoutDialog(context),
                             ),
-                            onTap: () => CurrencySelectionModal.show(context),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ],
-              ),
-
-              // Data Management Section
-              SettingsSectionHeader(title: context.l10n.dataManagementSection),
-              _buildGroupedCard(
-                context,
-                children: [
-                  // ── Auto CSV Backup status tile ──
-                  SettingsTile(
-                    icon: Icons.backup_rounded,
-                    iconColor: colorScheme.primary,
-                    title: context.l10n.csvBackupTitle,
-                    subtitle: () {
-                      final last = pref.lastSnapshotAt;
-                      if (last == null) return context.l10n.neverBackedUp;
-                      return context.l10n
-                          .lastBackupTime(_formatLastBackupDate(last));
-                    }(),
-                    trailing: TextButton(
-                      onPressed: _backupNow,
-                      child: Text(
-                        context.l10n.backupNow,
-                        style: TextStyle(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeights.bold,
-                          fontSize: 13.sp,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  // ── Export transactions CSV (Sheets / Excel) ──
-                  SettingsTile(
-                    icon: Icons.share_rounded,
-                    iconColor: colorScheme.secondary,
-                    title: context.l10n.exportDataCsv,
-                    subtitle: context.l10n.exportCsvDesc,
-                    onTap: () async {
-                      try {
-                        final filePath = await getIt<DataExportImportService>()
-                            .exportDataToCsv(openAfterExport: false);
-                        if (!context.mounted) return;
-                        final xFile = XFile(filePath);
-                        await SharePlus.instance.share(ShareParams(
-                            files: [xFile], text: 'My Transactions Data'));
-                      } catch (e) {
-                        AppLogger.e('SettingsPage: CSV export/share failed', e);
-                        if (!context.mounted) return;
-                        StatusComponents.showToast(
-                          context,
-                          message: context.l10n.csvExportFailedGeneric,
-                          isError: true,
-                        );
-                      }
-                    },
-                  ),
-                  // ── Restore from backup CSV ──
-                  SettingsTile(
-                    icon: Icons.restore_rounded,
-                    iconColor: colorScheme.tertiary,
-                    title: context.l10n.restoreCsvTitle,
-                    subtitle: context.l10n.restoreCsvDesc,
-                    onTap: () => _showRestoreSheet(context),
-                  ),
-                ],
-              ),
-
-              // Support & Legal Section
-              SettingsSectionHeader(title: context.l10n.supportAndLegalSection),
-              _buildGroupedCard(
-                context,
-                children: [
-                  SettingsTile(
-                    icon: Icons.info_outline_rounded,
-                    iconColor: colorScheme.primary,
-                    title: context.l10n.aboutExpendly,
-                    subtitle: context.l10n.aboutExpendlySubtitle,
-                    onTap: () => context.router.push(const AboutRoute()),
-                  ),
-                  SettingsTile(
-                    icon: Icons.gavel_rounded,
-                    iconColor: colorScheme.tertiary,
-                    title: context.l10n.termsAndConditions,
-                    subtitle: context.l10n.termsDesc,
-                    onTap: () => UrlUtils.launchExternalUrl(
-                      'https://expendly.web.app/terms',
-                    ),
-                  ),
-                  SettingsTile(
-                    icon: Icons.privacy_tip_outlined,
-                    iconColor: colorScheme.primary,
-                    title: 'Privacy Policy',
-                    subtitle: 'Read our privacy policy',
-                    onTap: () => UrlUtils.launchExternalUrl(
-                      'https://expendly.web.app/privacy',
-                    ),
-                  ),
-                  SettingsTile(
-                    icon: Icons.help_outline_rounded,
-                    iconColor: colorScheme.secondary,
-                    title: context.l10n.helpAndSupport,
-                    subtitle: context.l10n.helpSupportDesc,
-                    onTap: () => context.router.push(const HelpSupportRoute()),
-                  ),
-                ],
-              ),
-
-              // Footer
-              const SettingsFooter(),
-            ],
-          ),
+          ],
         ),
-        bottomNavigationBar: !pref.isSecurityPinSet
-            ? null
-            : Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow,
-                  border: Border(
-                    top: BorderSide(
-                      color: colorScheme.outlineVariant,
-                      width: 1.0,
-                    ),
-                  ),
+      ),
+    );
+  }
+
+  Widget _buildAccountSection(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SettingsSectionHeader(title: context.l10n.accountSection),
+        BlocBuilder<ProfileCubit, ProfileState>(
+          bloc: getIt<ProfileCubit>(),
+          builder: (context, state) {
+            final profile = state is ProfileLoaded ? state.profile : null;
+            final hasProfile = profile != null;
+
+            return _buildGroupedCard(
+              context,
+              children: [
+                SettingsTile(
+                  icon: Icons.person_outline_rounded,
+                  iconColor: colorScheme.primary,
+                  title: context.l10n.personalProfile,
+                  subtitle: hasProfile
+                      ? (profile.email != null && profile.email!.isNotEmpty
+                          ? '${profile.name} • ${profile.email}'
+                          : profile.name)
+                      : context.l10n.personalProfileDesc,
+                  trailing: hasProfile
+                      ? UserAvatar(
+                          imagePath: profile.imagePath,
+                          radius: 16.r,
+                          borderWidth: 1.0,
+                        )
+                      : null,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (_) => const PersonalProfilePage(),
+                      ),
+                    );
+                  },
                 ),
-                child: SafeArea(
-                  top: false,
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 48.h,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: colorScheme.error,
-                        side: BorderSide(
-                          color: colorScheme.error.withValues(alpha: 0.5),
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                      ),
-                      icon: Icon(Icons.logout_rounded, size: 20.sp),
-                      label: Text(
-                        context.l10n.logout,
-                        style:
-                            (textTheme.bodyLarge ?? const TextStyle()).copyWith(
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSecuritySection(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final pref = getIt<PreferenceService>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SettingsSectionHeader(title: context.l10n.securitySection),
+        _buildGroupedCard(
+          context,
+          children: [
+            SettingsTile(
+              icon: Icons.pin_outlined,
+              iconColor: colorScheme.secondary,
+              title: pref.isSecurityPinSet
+                  ? context.l10n.changeSecurityPin
+                  : context.l10n.setupSecurityPin,
+              subtitle: pref.isSecurityPinSet
+                  ? context.l10n.pinConfigured
+                  : context.l10n.setupSecurityPinDesc,
+              onTap: () async {
+                await ChangePinModal.show(context);
+                if (mounted) setState(() {});
+              },
+            ),
+            ValueListenableBuilder<bool>(
+              valueListenable: _isBiometricEnabledNotifier,
+              builder: (context, isBiometricEnabled, _) {
+                final hasPin = pref.isSecurityPinSet;
+
+                return SettingsTile(
+                  icon: Icons.fingerprint_rounded,
+                  iconColor: colorScheme.secondary,
+                  title: context.l10n.biometricAuth,
+                  subtitle:
+                      !hasPin ? context.l10n.pinRequiredForBiometrics : null,
+                  onTap: () => _toggleBiometrics(!isBiometricEnabled),
+                  trailing: Switch.adaptive(
+                    value: isBiometricEnabled && hasPin,
+                    activeTrackColor: colorScheme.primary,
+                    onChanged: (val) => _toggleBiometrics(val),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAppearanceSection(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final customTypography = context.customTypography;
+    final pref = getIt<PreferenceService>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SettingsSectionHeader(title: context.l10n.appearanceSection),
+        _buildGroupedCard(
+          context,
+          children: [
+            ValueListenableBuilder<String>(
+              valueListenable: pref.themeModeNotifier,
+              builder: (context, themeMode, _) {
+                final isDark = themeMode != 'light';
+
+                return SettingsTile(
+                  icon: isDark
+                      ? Icons.dark_mode_outlined
+                      : Icons.light_mode_outlined,
+                  iconColor: colorScheme.onSurfaceVariant,
+                  title: context.l10n.themeLabel,
+                  subtitle:
+                      isDark ? context.l10n.darkMode : context.l10n.lightMode,
+                  onTap: () {
+                    pref.setThemeMode(isDark ? 'light' : 'dark');
+                  },
+                  trailing: Switch.adaptive(
+                    value: isDark,
+                    activeTrackColor: colorScheme.primary,
+                    onChanged: (val) {
+                      pref.setThemeMode(val ? 'dark' : 'light');
+                    },
+                  ),
+                );
+              },
+            ),
+            ValueListenableBuilder<String>(
+              valueListenable: pref.currencyCodeNotifier,
+              builder: (context, code, _) {
+                return ValueListenableBuilder<String>(
+                  valueListenable: pref.currencySymbolNotifier,
+                  builder: (context, symbol, _) {
+                    return SettingsTile(
+                      icon: Icons.payments_outlined,
+                      iconColor: colorScheme.onSurfaceVariant,
+                      title: context.l10n.primaryCurrency,
+                      trailing: Text(
+                        '$code ($symbol)',
+                        style: customTypography.labelMediumMono.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                           fontWeight: FontWeights.bold,
-                          color: colorScheme.error,
                         ),
                       ),
-                      onPressed: () => _showLogoutDialog(context),
-                    ),
+                      onTap: () => CurrencySelectionModal.show(context),
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDataSection(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final pref = getIt<PreferenceService>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SettingsSectionHeader(title: context.l10n.dataManagementSection),
+        _buildGroupedCard(
+          context,
+          children: [
+            // ── Auto CSV Backup status tile ──
+            SettingsTile(
+              icon: Icons.backup_rounded,
+              iconColor: colorScheme.primary,
+              title: context.l10n.csvBackupTitle,
+              subtitle: () {
+                final last = pref.lastSnapshotAt;
+                if (last == null) return context.l10n.neverBackedUp;
+                return context.l10n.lastBackupTime(_formatLastBackupDate(last));
+              }(),
+              trailing: TextButton(
+                onPressed: _backupNow,
+                child: Text(
+                  context.l10n.backupNow,
+                  style: TextStyle(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeights.bold,
+                    fontSize: 13.sp,
                   ),
                 ),
               ),
-      ),
+            ),
+            // ── Export transactions CSV (Sheets / Excel) ──
+            SettingsTile(
+              icon: Icons.share_rounded,
+              iconColor: colorScheme.secondary,
+              title: context.l10n.exportDataCsv,
+              subtitle: context.l10n.exportCsvDesc,
+              onTap: () async {
+                try {
+                  final filePath = await getIt<DataExportImportService>()
+                      .exportDataToCsv(openAfterExport: false);
+                  if (!context.mounted) return;
+                  final xFile = XFile(filePath);
+                  await SharePlus.instance.share(ShareParams(
+                      files: [xFile], text: 'My Transactions Data'));
+                } catch (e) {
+                  AppLogger.e('SettingsPage: CSV export/share failed', e);
+                  if (!context.mounted) return;
+                  StatusComponents.showToast(
+                    context,
+                    message: context.l10n.csvExportFailedGeneric,
+                    isError: true,
+                  );
+                }
+              },
+            ),
+            // ── Restore from backup CSV ──
+            SettingsTile(
+              icon: Icons.restore_rounded,
+              iconColor: colorScheme.tertiary,
+              title: context.l10n.restoreCsvTitle,
+              subtitle: context.l10n.restoreCsvDesc,
+              onTap: () => _showRestoreSheet(context),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAboutSection(BuildContext context) {
+    final colorScheme = context.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SettingsSectionHeader(title: context.l10n.supportAndLegalSection),
+        _buildGroupedCard(
+          context,
+          children: [
+            SettingsTile(
+              icon: Icons.info_outline_rounded,
+              iconColor: colorScheme.primary,
+              title: context.l10n.aboutExpendly,
+              subtitle: AppConfig.aboutVersionDisplay,
+              onTap: () => context.router.push(const AboutRoute()),
+            ),
+            SettingsTile(
+              icon: Icons.gavel_rounded,
+              iconColor: colorScheme.tertiary,
+              title: context.l10n.termsAndConditions,
+              subtitle: context.l10n.termsDesc,
+              onTap: () => UrlUtils.launchExternalUrl(
+                'https://expendly.web.app/terms',
+              ),
+            ),
+            SettingsTile(
+              icon: Icons.privacy_tip_outlined,
+              iconColor: colorScheme.primary,
+              title: 'Privacy Policy',
+              subtitle: 'Read our privacy policy',
+              onTap: () => UrlUtils.launchExternalUrl(
+                'https://expendly.web.app/privacy',
+              ),
+            ),
+            SettingsTile(
+              icon: Icons.help_outline_rounded,
+              iconColor: colorScheme.secondary,
+              title: context.l10n.helpAndSupport,
+              subtitle: context.l10n.helpSupportDesc,
+              onTap: () => context.router.push(const HelpSupportRoute()),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -954,9 +1034,11 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
     final textTheme = context.textTheme;
     final isLight = Theme.of(context).brightness == Brightness.light;
     final pref = getIt<PreferenceService>();
+    final isTablet = Breakpoints.isTablet(context);
     final hasSelectedFile = _selectedFilePath != null ||
         (_selectedRawContent != null && _selectedRawContent!.isNotEmpty);
-    final maxHeight = MediaQuery.of(context).size.height * 0.88;
+    final maxHeight =
+        isTablet ? 600.0 : MediaQuery.of(context).size.height * 0.88;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -967,7 +1049,9 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
         decoration: BoxDecoration(
           color:
               isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+          borderRadius: isTablet
+              ? BorderRadius.circular(24.0)
+              : BorderRadius.vertical(top: Radius.circular(28.r)),
           border: Border.all(
             color: isLight
                 ? colorScheme.outlineVariant.withValues(alpha: 0.50)
@@ -978,27 +1062,33 @@ class _CsvRestoreSheetState extends State<_CsvRestoreSheet> {
         child: SafeArea(
           top: false,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(
+              horizontal: isTablet ? 24.0 : 20.w,
+              vertical: isTablet ? 20.0 : 16.h,
+            ),
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Drag Handle
-                  Center(
-                    child: Container(
-                      width: 40.w,
-                      height: 4.h,
-                      decoration: BoxDecoration(
-                        color: isLight
-                            ? colorScheme.outline.withValues(alpha: 0.4)
-                            : colorScheme.outlineVariant.withValues(alpha: 0.7),
-                        borderRadius: BorderRadius.circular(2.r),
+                  // Drag Handle (phone only)
+                  if (!isTablet) ...[
+                    Center(
+                      child: Container(
+                        width: 40.w,
+                        height: 4.h,
+                        decoration: BoxDecoration(
+                          color: isLight
+                              ? colorScheme.outline.withValues(alpha: 0.4)
+                              : colorScheme.outlineVariant
+                                  .withValues(alpha: 0.7),
+                          borderRadius: BorderRadius.circular(2.r),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 14.h),
+                    SizedBox(height: 14.h),
+                  ],
 
                   // ── Header ───────────────────────────────────────────────────
                   Row(

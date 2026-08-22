@@ -137,21 +137,28 @@ class DashboardRecentGroups extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.diversity_3_outlined,
-                      size: 16.sp,
-                      color: colorScheme.primary,
-                    ),
-                    SizedBox(width: 6.w),
-                    Text(
-                      'SPLIT BILLS & EXPENSES',
-                      style: context.customTypography.labelMediumMono.copyWith(
-                        letterSpacing: 1.1,
+                Expanded(
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.diversity_3_outlined,
+                        size: 16.sp,
+                        color: colorScheme.primary,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 6.w),
+                      Flexible(
+                        child: Text(
+                          'SPLIT BILLS & EXPENSES',
+                          style:
+                              context.customTypography.labelMediumMono.copyWith(
+                            letterSpacing: 1.1,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 GestureDetector(
                   onTap: onSeeAllPressed,

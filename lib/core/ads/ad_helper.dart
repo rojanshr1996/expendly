@@ -26,42 +26,30 @@ class AdHelper {
   static String get bannerAdUnitId {
     // In debug mode or non-prod flavors, always use Google's official test ad units
     if (kDebugMode || !AppConfig.instance.isProd) {
-      if (Platform.isAndroid) {
-        return _testAndroidBannerId;
-      } else if (Platform.isIOS) {
+      if (Platform.isIOS) {
         return _testIosBannerId;
-      } else {
-        throw UnsupportedError('Unsupported platform for AdMob');
       }
+      return _testAndroidBannerId;
     }
 
-    if (Platform.isAndroid) {
-      return _prodAndroidBannerId;
-    } else if (Platform.isIOS) {
+    if (Platform.isIOS) {
       return _prodIosBannerId;
-    } else {
-      throw UnsupportedError('Unsupported platform for AdMob');
     }
+    return _prodAndroidBannerId;
   }
 
   static String get interstitialAdUnitId {
     // In debug mode or non-prod flavors, always use Google's official test ad units
     if (kDebugMode || !AppConfig.instance.isProd) {
-      if (Platform.isAndroid) {
-        return _testAndroidInterstitialId;
-      } else if (Platform.isIOS) {
+      if (Platform.isIOS) {
         return _testIosInterstitialId;
-      } else {
-        throw UnsupportedError('Unsupported platform for AdMob');
       }
+      return _testAndroidInterstitialId;
     }
 
-    if (Platform.isAndroid) {
-      return _prodAndroidInterstitialId;
-    } else if (Platform.isIOS) {
+    if (Platform.isIOS) {
       return _prodIosInterstitialId;
-    } else {
-      throw UnsupportedError('Unsupported platform for AdMob');
     }
+    return _prodAndroidInterstitialId;
   }
 }

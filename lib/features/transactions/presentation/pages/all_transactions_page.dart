@@ -16,10 +16,16 @@ import '../../../../core/widgets/animated_empty_state_hero.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
+import '../../../../core/responsive/breakpoints.dart';
+import '../../../../core/responsive/tablet_spacing.dart';
+import '../../../../core/widgets/master_detail_layout.dart';
+import '../../../../core/widgets/status_components.dart';
 import '../../domain/entities/transaction_item.dart';
 import '../cubit/transaction_cubit.dart';
 import '../cubit/transaction_state.dart';
 import '../widgets/all_transactions_shimmer.dart';
+import '../widgets/transaction_detail_panel.dart';
+import '../widgets/transaction_master_list.dart';
 
 class AllTransactionsPage extends StatefulWidget {
   final ValueNotifier<bool>? isPrivacyModeNotifier;
@@ -81,8 +87,12 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
     });
   }
 
+  final ValueNotifier<TransactionItem?> _selectedTransactionNotifier =
+      ValueNotifier<TransactionItem?>(null);
+
   @override
   void dispose() {
+    _selectedTransactionNotifier.dispose();
     _viewModeNotifier.dispose();
     _selectedMonthNotifier.dispose();
     _selectedDateNotifier.dispose();
@@ -205,757 +215,500 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    final textTheme = context.textTheme;
-    final customTypography = context.customTypography;
-
     return BlocProvider.value(
       value: _cubit,
       child: Builder(
         builder: (context) {
-          final topInset = MediaQuery.of(context).padding.top;
-          final headerPaddingTop = topInset + kToolbarHeight;
+          final isTablet = Breakpoints.isTablet(context);
+          if (isTablet) {
+            return _buildTabletLayout(context);
+          }
+          return _buildCompactLayout(context);
+        },
+      ),
+    );
+  }
 
-          return Scaffold(
-            backgroundColor: colorScheme.surface,
-            extendBodyBehindAppBar: true,
-            appBar: LiquidGlassAppBar(
-              title: ValueListenableBuilder<String>(
-                valueListenable: _viewModeNotifier,
-                builder: (context, viewMode, _) {
+  Widget _buildTabletLayout(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.colorScheme.surface,
+      body: BlocBuilder<TransactionCubit, TransactionState>(
+        builder: (context, state) {
+          if (state is TransactionLoading) {
+            return const AllTransactionsShimmer();
+          }
+
+          final transactions = state is TransactionLoaded
+              ? state.transactions
+              : <TransactionItem>[];
+
+          return ValueListenableBuilder<TransactionItem?>(
+            valueListenable: _selectedTransactionNotifier,
+            builder: (context, selectedTx, _) {
+              final activeTx = selectedTx ??
+                  (transactions.isNotEmpty ? transactions.first : null);
+
+              return MasterDetailLayout(
+                masterFlex: 4,
+                detailFlex: 6,
+                gutterWidth: TabletSpacing.gridGutter,
+                showDivider: true,
+                master: TransactionMasterList(
+                  transactions: transactions,
+                  selectedTransaction: activeTx,
+                  onTransactionSelected: (item) {
+                    _selectedTransactionNotifier.value = item;
+                  },
+                  isPrivacyModeNotifier: widget.isPrivacyModeNotifier,
+                  selectedMonthNotifier: _selectedMonthNotifier,
+                  viewModeNotifier: _viewModeNotifier,
+                  onAddTransaction: () async {
+                    final result =
+                        await context.router.push(ModernAddTransactionRoute());
+                    if (result == true && mounted) {
+                      _cubit.loadTransactions();
+                    }
+                  },
+                ),
+                detail: TransactionDetailPanel(
+                  transaction: activeTx,
+                  isPrivacyModeNotifier: widget.isPrivacyModeNotifier,
+                  onEdit: activeTx == null
+                      ? null
+                      : () async {
+                          final result = await context.router.push(
+                            ModernAddTransactionRoute(
+                                initialTransaction: activeTx),
+                          );
+                          if (result == true && mounted) {
+                            _cubit.loadTransactions();
+                          }
+                        },
+                  onDelete: activeTx == null
+                      ? null
+                      : () async {
+                          final l10n = context.l10n;
+                          final confirmed = await StatusComponents
+                              .showConfirmationBottomSheet(
+                            context,
+                            title: l10n.deleteTransactionConfirmTitle,
+                            message: l10n.deleteTransactionConfirmDesc,
+                            confirmLabel: l10n.confirm,
+                            cancelLabel: l10n.cancel,
+                            isDestructive: true,
+                          );
+                          if (confirmed == true && mounted) {
+                            _cubit.deleteTransaction(activeTx.id);
+                            _selectedTransactionNotifier.value = null;
+                          }
+                        },
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCompactLayout(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final textTheme = context.textTheme;
+    final customTypography = context.customTypography;
+    final topInset = MediaQuery.of(context).padding.top;
+    final headerPaddingTop = topInset + kToolbarHeight;
+
+    return Scaffold(
+      backgroundColor: colorScheme.surface,
+      extendBodyBehindAppBar: true,
+      appBar: LiquidGlassAppBar(
+        title: ValueListenableBuilder<String>(
+          valueListenable: _viewModeNotifier,
+          builder: (context, viewMode, _) {
+            return ValueListenableBuilder<DateTime>(
+              valueListenable: _selectedMonthNotifier,
+              builder: (context, selectedMonth, _) {
+                final locale = Localizations.localeOf(context).languageCode;
+                final periodText = viewMode == 'monthly'
+                    ? DateFormat.y(locale).format(selectedMonth)
+                    : DateFormat.yMMMM(locale).format(selectedMonth);
+
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.chevron_left_rounded,
+                        color: colorScheme.onSurface,
+                        size: 26.r,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: _previousPeriod,
+                    ),
+                    SizedBox(width: 4.w),
+                    InkWell(
+                      onTap: () => _pickMonth(context),
+                      borderRadius: BorderRadius.circular(8.r),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6.w,
+                          vertical: 2.h,
+                        ),
+                        child: Text(
+                          periodText,
+                          style: (textTheme.titleMedium ?? const TextStyle())
+                              .copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeights.bold,
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 4.w),
+                    IconButton(
+                      icon: Icon(
+                        Icons.chevron_right_rounded,
+                        color: colorScheme.onSurface,
+                        size: 26.r,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: _nextPeriod,
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
+      ),
+      body: Padding(
+        padding: EdgeInsets.only(top: headerPaddingTop),
+        child: Column(
+          children: [
+            // Top View Mode Tab Selector (Daily | Calendar | Monthly | List)
+            ValueListenableBuilder<String>(
+              valueListenable: _viewModeNotifier,
+              builder: (context, viewMode, _) {
+                return _ViewModeTabBar(
+                  currentMode: viewMode,
+                  onModeSelected: _toggleViewMode,
+                );
+              },
+            ),
+
+            // Search Bar Header with Entrance Animation
+            FadeTransition(
+              opacity: _headerFadeAnimation,
+              child: SlideTransition(
+                position: _headerSlideAnimation,
+                child: _LiquidGlassCard(
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical: 6.h,
+                  ),
+                  borderRadius: BorderRadius.circular(16.r),
+                  child: AppTextField(
+                    hintText: context.l10n.searchCategoryHint,
+                    prefixIcon: Icon(
+                      Icons.search_rounded,
+                      color: colorScheme.outline,
+                    ),
+                    fillColor: Colors.transparent,
+                    borderRadius: BorderRadius.circular(16.r),
+                    onChanged: (val) {
+                      context.read<TransactionCubit>().filterSearch(val);
+                    },
+                  ),
+                ),
+              ),
+            ),
+
+            // Transaction Type Filter Row (All, Expenses, Income, Transfer)
+            FadeTransition(
+              opacity: _headerFadeAnimation,
+              child: SlideTransition(
+                position: _headerSlideAnimation,
+                child: BlocBuilder<TransactionCubit, TransactionState>(
+                  builder: (context, state) {
+                    final selectedType =
+                        state is TransactionLoaded ? state.selectedType : null;
+
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      clipBehavior: Clip.none,
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20.w,
+                        vertical: 6.h,
+                      ),
+                      child: Row(
+                        children: [
+                          _TypeFilterChip(
+                            label: 'All',
+                            icon: Icons.tune_rounded,
+                            isSelected: selectedType == null,
+                            activeColor: colorScheme.primary,
+                            onTap: () {
+                              context.read<TransactionCubit>().filterType(null);
+                            },
+                          ),
+                          SizedBox(width: 8.w),
+                          _TypeFilterChip(
+                            label: context.l10n.expenses,
+                            icon: Icons.arrow_downward_rounded,
+                            isSelected: selectedType == TransactionType.expense,
+                            activeColor: context.customColors.semanticRed,
+                            onTap: () {
+                              context.read<TransactionCubit>().filterType(
+                                    selectedType == TransactionType.expense
+                                        ? null
+                                        : TransactionType.expense,
+                                  );
+                            },
+                          ),
+                          SizedBox(width: 8.w),
+                          _TypeFilterChip(
+                            label: context.l10n.income,
+                            icon: Icons.arrow_upward_rounded,
+                            isSelected: selectedType == TransactionType.income,
+                            activeColor: context.customColors.semanticGreen,
+                            onTap: () {
+                              context.read<TransactionCubit>().filterType(
+                                    selectedType == TransactionType.income
+                                        ? null
+                                        : TransactionType.income,
+                                  );
+                            },
+                          ),
+                          SizedBox(width: 8.w),
+                          _TypeFilterChip(
+                            label: context.l10n.transfer,
+                            icon: Icons.swap_horiz_rounded,
+                            isSelected:
+                                selectedType == TransactionType.transfer,
+                            activeColor: context.customColors.semanticBlue,
+                            onTap: () {
+                              context.read<TransactionCubit>().filterType(
+                                    selectedType == TransactionType.transfer
+                                        ? null
+                                        : TransactionType.transfer,
+                                  );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: 4.h),
+
+            // Sub-headers for Calendar & List Mode
+            ValueListenableBuilder<String>(
+              valueListenable: _viewModeNotifier,
+              builder: (context, viewMode, _) {
+                if (viewMode == 'calendar') {
                   return ValueListenableBuilder<DateTime>(
                     valueListenable: _selectedMonthNotifier,
                     builder: (context, selectedMonth, _) {
-                      final locale =
-                          Localizations.localeOf(context).languageCode;
-                      final periodText = viewMode == 'monthly'
-                          ? DateFormat.y(locale).format(selectedMonth)
-                          : DateFormat.yMMMM(locale).format(selectedMonth);
-
-                      return Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              Icons.chevron_left_rounded,
-                              color: colorScheme.onSurface,
-                              size: 26.r,
-                            ),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            onPressed: _previousPeriod,
-                          ),
-                          SizedBox(width: 4.w),
-                          InkWell(
-                            onTap: () => _pickMonth(context),
-                            borderRadius: BorderRadius.circular(8.r),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 6.w,
-                                vertical: 2.h,
-                              ),
-                              child: Text(
-                                periodText,
-                                style:
-                                    (textTheme.titleMedium ?? const TextStyle())
-                                        .copyWith(
-                                  color: colorScheme.onSurface,
-                                  fontWeight: FontWeights.bold,
-                                  fontSize: 16.sp,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 4.w),
-                          IconButton(
-                            icon: Icon(
-                              Icons.chevron_right_rounded,
-                              color: colorScheme.onSurface,
-                              size: 26.r,
-                            ),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            onPressed: _nextPeriod,
-                          ),
-                        ],
+                      return ValueListenableBuilder<DateTime>(
+                        valueListenable: _selectedDateNotifier,
+                        builder: (context, selectedDate, _) {
+                          return _HorizontalDateSelector(
+                            selectedMonth: selectedMonth,
+                            selectedDate: selectedDate,
+                            scrollController: _calendarScrollController,
+                            onDateSelected: (date) {
+                              _selectedDateNotifier.value = date;
+                              _scrollToSelectedDate(animated: true);
+                            },
+                          );
+                        },
                       );
                     },
                   );
-                },
-              ),
+                }
+                return const SizedBox.shrink();
+              },
             ),
-            body: Padding(
-              padding: EdgeInsets.only(top: headerPaddingTop),
-              child: Column(
-                children: [
-                  // Top View Mode Tab Selector (Daily | Calendar | Monthly | List)
-                  ValueListenableBuilder<String>(
-                    valueListenable: _viewModeNotifier,
-                    builder: (context, viewMode, _) {
-                      return _ViewModeTabBar(
-                        currentMode: viewMode,
-                        onModeSelected: _toggleViewMode,
-                      );
-                    },
-                  ),
 
-                  // Search Bar Header with Entrance Animation
-                  FadeTransition(
-                    opacity: _headerFadeAnimation,
-                    child: SlideTransition(
-                      position: _headerSlideAnimation,
-                      child: _LiquidGlassCard(
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 20.w,
-                          vertical: 6.h,
-                        ),
-                        borderRadius: BorderRadius.circular(16.r),
-                        child: AppTextField(
-                          hintText: context.l10n.searchCategoryHint,
-                          prefixIcon: Icon(
-                            Icons.search_rounded,
-                            color: colorScheme.outline,
+            // Transactions Content Area wrapped in GestureDetector for swipe gestures
+            Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onHorizontalDragEnd: (details) {
+                  if (details.primaryVelocity != null) {
+                    if (details.primaryVelocity! < -250) {
+                      _nextPeriod();
+                    } else if (details.primaryVelocity! > 250) {
+                      _previousPeriod();
+                    }
+                  }
+                },
+                child: ValueListenableBuilder<String>(
+                  valueListenable: _viewModeNotifier,
+                  builder: (context, viewMode, _) {
+                    return AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 350),
+                      switchInCurve: Curves.easeOutCubic,
+                      switchOutCurve: Curves.easeInCubic,
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: ScaleTransition(
+                            scale: Tween<double>(begin: 0.96, end: 1.0)
+                                .animate(animation),
+                            child: child,
                           ),
-                          fillColor: Colors.transparent,
-                          borderRadius: BorderRadius.circular(16.r),
-                          onChanged: (val) {
-                            context.read<TransactionCubit>().filterSearch(val);
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Transaction Type Filter Row (All, Expenses, Income, Transfer)
-                  FadeTransition(
-                    opacity: _headerFadeAnimation,
-                    child: SlideTransition(
-                      position: _headerSlideAnimation,
-                      child: BlocBuilder<TransactionCubit, TransactionState>(
-                        builder: (context, state) {
-                          final selectedType = state is TransactionLoaded
-                              ? state.selectedType
-                              : null;
-
-                          return SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            clipBehavior: Clip.none,
-                            physics: const BouncingScrollPhysics(),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20.w,
-                              vertical: 6.h,
-                            ),
-                            child: Row(
-                              children: [
-                                _TypeFilterChip(
-                                  label: 'All',
-                                  icon: Icons.tune_rounded,
-                                  isSelected: selectedType == null,
-                                  activeColor: colorScheme.primary,
-                                  onTap: () {
-                                    context
-                                        .read<TransactionCubit>()
-                                        .filterType(null);
-                                  },
-                                ),
-                                SizedBox(width: 8.w),
-                                _TypeFilterChip(
-                                  label: context.l10n.expenses,
-                                  icon: Icons.arrow_downward_rounded,
-                                  isSelected:
-                                      selectedType == TransactionType.expense,
-                                  activeColor: context.customColors.semanticRed,
-                                  onTap: () {
-                                    context.read<TransactionCubit>().filterType(
-                                          selectedType ==
-                                                  TransactionType.expense
-                                              ? null
-                                              : TransactionType.expense,
-                                        );
-                                  },
-                                ),
-                                SizedBox(width: 8.w),
-                                _TypeFilterChip(
-                                  label: context.l10n.income,
-                                  icon: Icons.arrow_upward_rounded,
-                                  isSelected:
-                                      selectedType == TransactionType.income,
-                                  activeColor:
-                                      context.customColors.semanticGreen,
-                                  onTap: () {
-                                    context.read<TransactionCubit>().filterType(
-                                          selectedType == TransactionType.income
-                                              ? null
-                                              : TransactionType.income,
-                                        );
-                                  },
-                                ),
-                                SizedBox(width: 8.w),
-                                _TypeFilterChip(
-                                  label: context.l10n.transfer,
-                                  icon: Icons.swap_horiz_rounded,
-                                  isSelected:
-                                      selectedType == TransactionType.transfer,
-                                  activeColor:
-                                      context.customColors.semanticBlue,
-                                  onTap: () {
-                                    context.read<TransactionCubit>().filterType(
-                                          selectedType ==
-                                                  TransactionType.transfer
-                                              ? null
-                                              : TransactionType.transfer,
-                                        );
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-
-                  // Sub-headers for Calendar & List Mode
-                  ValueListenableBuilder<String>(
-                    valueListenable: _viewModeNotifier,
-                    builder: (context, viewMode, _) {
-                      if (viewMode == 'calendar') {
-                        return ValueListenableBuilder<DateTime>(
+                        );
+                      },
+                      child: KeyedSubtree(
+                        key: ValueKey('content_$viewMode'),
+                        child: ValueListenableBuilder<DateTime>(
                           valueListenable: _selectedMonthNotifier,
                           builder: (context, selectedMonth, _) {
                             return ValueListenableBuilder<DateTime>(
                               valueListenable: _selectedDateNotifier,
                               builder: (context, selectedDate, _) {
-                                return _HorizontalDateSelector(
-                                  selectedMonth: selectedMonth,
-                                  selectedDate: selectedDate,
-                                  scrollController: _calendarScrollController,
-                                  onDateSelected: (date) {
-                                    _selectedDateNotifier.value = date;
-                                    _scrollToSelectedDate(animated: true);
-                                  },
-                                );
-                              },
-                            );
-                          },
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
+                                return BlocBuilder<TransactionCubit,
+                                    TransactionState>(
+                                  builder: (context, state) {
+                                    if (state is TransactionLoading) {
+                                      return const AllTransactionsShimmer();
+                                    }
 
-                  // Transactions Content Area wrapped in GestureDetector for swipe gestures
-                  Expanded(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.translucent,
-                      onHorizontalDragEnd: (details) {
-                        if (details.primaryVelocity != null) {
-                          if (details.primaryVelocity! < -250) {
-                            _nextPeriod();
-                          } else if (details.primaryVelocity! > 250) {
-                            _previousPeriod();
-                          }
-                        }
-                      },
-                      child: ValueListenableBuilder<String>(
-                        valueListenable: _viewModeNotifier,
-                        builder: (context, viewMode, _) {
-                          return AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 350),
-                            switchInCurve: Curves.easeOutCubic,
-                            switchOutCurve: Curves.easeInCubic,
-                            transitionBuilder: (child, animation) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: ScaleTransition(
-                                  scale: Tween<double>(begin: 0.96, end: 1.0)
-                                      .animate(animation),
-                                  child: child,
-                                ),
-                              );
-                            },
-                            child: KeyedSubtree(
-                              key: ValueKey('content_$viewMode'),
-                              child: ValueListenableBuilder<DateTime>(
-                                valueListenable: _selectedMonthNotifier,
-                                builder: (context, selectedMonth, _) {
-                                  return ValueListenableBuilder<DateTime>(
-                                    valueListenable: _selectedDateNotifier,
-                                    builder: (context, selectedDate, _) {
-                                      return BlocBuilder<TransactionCubit,
-                                          TransactionState>(
-                                        builder: (context, state) {
-                                          if (state is TransactionLoading) {
-                                            return const AllTransactionsShimmer();
-                                          }
+                                    if (state is TransactionLoaded) {
+                                      final items = state.filteredTransactions;
+                                      if (items.isEmpty) {
+                                        return _EmptyStateView(
+                                          title:
+                                              context.l10n.noTransactionsFound,
+                                          subtitle:
+                                              context.l10n.noTransactionsDesc,
+                                        );
+                                      }
 
-                                          if (state is TransactionLoaded) {
-                                            final items =
-                                                state.filteredTransactions;
-                                            if (items.isEmpty) {
-                                              return _EmptyStateView(
-                                                title: context
-                                                    .l10n.noTransactionsFound,
-                                                subtitle: context
-                                                    .l10n.noTransactionsDesc,
-                                              );
-                                            }
+                                      // --- DAILY BALANCE SHEET MODE ---
+                                      if (viewMode == 'daily') {
+                                        final monthItems = items.where((tx) {
+                                          return tx.timestamp.year ==
+                                                  selectedMonth.year &&
+                                              tx.timestamp.month ==
+                                                  selectedMonth.month;
+                                        }).toList();
 
-                                            // --- DAILY BALANCE SHEET MODE ---
-                                            if (viewMode == 'daily') {
-                                              final monthItems =
-                                                  items.where((tx) {
-                                                return tx.timestamp.year ==
-                                                        selectedMonth.year &&
-                                                    tx.timestamp.month ==
-                                                        selectedMonth.month;
-                                              }).toList();
+                                        final totalIncome = monthItems
+                                            .where((tx) =>
+                                                tx.type ==
+                                                TransactionType.income)
+                                            .fold(
+                                              0.0,
+                                              (sum, tx) => sum + tx.amount,
+                                            );
+                                        final totalExpense = monthItems.fold(
+                                          0.0,
+                                          (sum, tx) =>
+                                              sum +
+                                              (tx.type ==
+                                                      TransactionType.expense
+                                                  ? tx.amount
+                                                  : _parseTransferFeeFromNote(
+                                                      tx.note)),
+                                        );
 
-                                              final totalIncome = monthItems
-                                                  .where((tx) =>
-                                                      tx.type ==
-                                                      TransactionType.income)
-                                                  .fold(
-                                                    0.0,
-                                                    (sum, tx) =>
-                                                        sum + tx.amount,
-                                                  );
-                                              final totalExpense =
-                                                  monthItems.fold(
-                                                0.0,
-                                                (sum, tx) =>
-                                                    sum +
-                                                    (tx.type ==
-                                                            TransactionType
-                                                                .expense
-                                                        ? tx.amount
-                                                        : _parseTransferFeeFromNote(
-                                                            tx.note)),
+                                        final Map<DateTime,
+                                                List<TransactionItem>>
+                                            dailyGrouped = {};
+                                        for (final item in monthItems) {
+                                          final dayKey = DateTime(
+                                            item.timestamp.year,
+                                            item.timestamp.month,
+                                            item.timestamp.day,
+                                          );
+                                          dailyGrouped
+                                              .putIfAbsent(dayKey, () => [])
+                                              .add(item);
+                                        }
+
+                                        final sortedDays =
+                                            dailyGrouped.keys.toList()
+                                              ..sort(
+                                                (a, b) => b.compareTo(a),
                                               );
 
-                                              final Map<DateTime,
-                                                      List<TransactionItem>>
-                                                  dailyGrouped = {};
-                                              for (final item in monthItems) {
-                                                final dayKey = DateTime(
-                                                  item.timestamp.year,
-                                                  item.timestamp.month,
-                                                  item.timestamp.day,
-                                                );
-                                                dailyGrouped
-                                                    .putIfAbsent(
-                                                        dayKey, () => [])
-                                                    .add(item);
-                                              }
-
-                                              final sortedDays =
-                                                  dailyGrouped.keys.toList()
-                                                    ..sort(
-                                                      (a, b) => b.compareTo(a),
-                                                    );
-
-                                              return RefreshIndicator(
-                                                color: colorScheme.primary,
-                                                onRefresh: () => context
-                                                    .read<TransactionCubit>()
-                                                    .loadTransactions(
-                                                        isSilent: true),
-                                                child: ListView(
-                                                  physics:
-                                                      const BouncingScrollPhysics(),
-                                                  padding: EdgeInsets.only(
-                                                    bottom: 120.h,
-                                                  ),
-                                                  children: [
-                                                    _BalanceSheetSummaryHeader(
-                                                      totalIncome: totalIncome,
-                                                      totalExpense:
-                                                          totalExpense,
-                                                    ),
-                                                    if (sortedDays.isEmpty)
-                                                      _EmptyStateView(
-                                                        title: context.l10n
-                                                            .noTransactionsFound,
-                                                        subtitle: context.l10n
-                                                            .noTransactionsDesc,
-                                                      )
-                                                    else
-                                                      ...sortedDays
-                                                          .map((dayDate) {
-                                                        final dayTxList =
-                                                            dailyGrouped[
-                                                                dayDate]!;
-                                                        final dayIncome =
-                                                            dayTxList
-                                                                .where(
-                                                                  (tx) =>
-                                                                      tx.type ==
-                                                                      TransactionType
-                                                                          .income,
-                                                                )
-                                                                .fold(
-                                                                  0.0,
-                                                                  (sum, tx) =>
-                                                                      sum +
-                                                                      tx.amount,
-                                                                );
-                                                        final dayExpense =
-                                                            dayTxList.fold(
-                                                          0.0,
-                                                          (sum, tx) =>
-                                                              sum +
-                                                              (tx.type ==
-                                                                      TransactionType
-                                                                          .expense
-                                                                  ? tx.amount
-                                                                  : _parseTransferFeeFromNote(
-                                                                      tx.note)),
-                                                        );
-
-                                                        return Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            _DailyGroupHeader(
-                                                              date: dayDate,
-                                                              incomeSum:
-                                                                  dayIncome,
-                                                              expenseSum:
-                                                                  dayExpense,
-                                                            ),
-                                                            ...dayTxList
-                                                                .asMap()
-                                                                .entries
-                                                                .map(
-                                                                  (entry) =>
-                                                                      _StaggeredListViewItem(
-                                                                    index: entry
-                                                                        .key,
-                                                                    child:
-                                                                        _TransactionListTile(
-                                                                      transaction:
-                                                                          entry
-                                                                              .value,
-                                                                      isPrivacyModeNotifier:
-                                                                          widget
-                                                                              .isPrivacyModeNotifier,
-                                                                      onDelete:
-                                                                          () {
-                                                                        context
-                                                                            .read<TransactionCubit>()
-                                                                            .deleteTransaction(
-                                                                              entry.value.id,
-                                                                            );
-                                                                      },
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                          ],
-                                                        );
-                                                      }),
-                                                  ],
-                                                ),
-                                              );
-                                            }
-
-                                            // --- MONTHLY BALANCE SHEET MODE ---
-                                            if (viewMode == 'monthly') {
-                                              final yearItems =
-                                                  items.where((tx) {
-                                                return tx.timestamp.year ==
-                                                    selectedMonth.year;
-                                              }).toList();
-
-                                              final totalIncome = yearItems
-                                                  .where((tx) =>
-                                                      tx.type ==
-                                                      TransactionType.income)
-                                                  .fold(
-                                                    0.0,
-                                                    (sum, tx) =>
-                                                        sum + tx.amount,
-                                                  );
-                                              final totalExpense =
-                                                  yearItems.fold(
-                                                0.0,
-                                                (sum, tx) =>
-                                                    sum +
-                                                    (tx.type ==
-                                                            TransactionType
-                                                                .expense
-                                                        ? tx.amount
-                                                        : _parseTransferFeeFromNote(
-                                                            tx.note)),
-                                              );
-
-                                              final Map<DateTime,
-                                                      List<TransactionItem>>
-                                                  monthlyGrouped = {};
-                                              for (final item in yearItems) {
-                                                final monthKey = DateTime(
-                                                  item.timestamp.year,
-                                                  item.timestamp.month,
-                                                );
-                                                monthlyGrouped
-                                                    .putIfAbsent(
-                                                        monthKey, () => [])
-                                                    .add(item);
-                                              }
-
-                                              final sortedMonths =
-                                                  monthlyGrouped.keys.toList()
-                                                    ..sort(
-                                                      (a, b) => b.compareTo(a),
-                                                    );
-
-                                              return RefreshIndicator(
-                                                color: colorScheme.primary,
-                                                onRefresh: () => context
-                                                    .read<TransactionCubit>()
-                                                    .loadTransactions(
-                                                        isSilent: true),
-                                                child: ListView(
-                                                  physics:
-                                                      const BouncingScrollPhysics(),
-                                                  padding: EdgeInsets.only(
-                                                    bottom: 120.h,
-                                                  ),
-                                                  children: [
-                                                    _BalanceSheetSummaryHeader(
-                                                      totalIncome: totalIncome,
-                                                      totalExpense:
-                                                          totalExpense,
-                                                    ),
-                                                    if (sortedMonths.isEmpty)
-                                                      _EmptyStateView(
-                                                        title: context.l10n
-                                                            .noTransactionsFound,
-                                                        subtitle: context.l10n
-                                                            .noTransactionsDesc,
-                                                      )
-                                                    else
-                                                      ...sortedMonths
-                                                          .map((monthDate) {
-                                                        final monthTxList =
-                                                            monthlyGrouped[
-                                                                monthDate]!;
-                                                        final monthIncome =
-                                                            monthTxList
-                                                                .where(
-                                                                  (tx) =>
-                                                                      tx.type ==
-                                                                      TransactionType
-                                                                          .income,
-                                                                )
-                                                                .fold(
-                                                                  0.0,
-                                                                  (sum, tx) =>
-                                                                      sum +
-                                                                      tx.amount,
-                                                                );
-                                                        final monthExpense =
-                                                            monthTxList
-                                                                .where(
-                                                                  (tx) =>
-                                                                      tx.type ==
-                                                                      TransactionType
-                                                                          .expense,
-                                                                )
-                                                                .fold(
-                                                                  0.0,
-                                                                  (sum, tx) =>
-                                                                      sum +
-                                                                      tx.amount,
-                                                                );
-
-                                                        return Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            _MonthlyGroupHeader(
-                                                              date: monthDate,
-                                                              incomeSum:
-                                                                  monthIncome,
-                                                              expenseSum:
-                                                                  monthExpense,
-                                                            ),
-                                                            ...monthTxList
-                                                                .asMap()
-                                                                .entries
-                                                                .map(
-                                                                  (entry) =>
-                                                                      _StaggeredListViewItem(
-                                                                    index: entry
-                                                                        .key,
-                                                                    child:
-                                                                        _TransactionListTile(
-                                                                      transaction:
-                                                                          entry
-                                                                              .value,
-                                                                      isPrivacyModeNotifier:
-                                                                          widget
-                                                                              .isPrivacyModeNotifier,
-                                                                      onDelete:
-                                                                          () {
-                                                                        context
-                                                                            .read<TransactionCubit>()
-                                                                            .deleteTransaction(
-                                                                              entry.value.id,
-                                                                            );
-                                                                      },
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                          ],
-                                                        );
-                                                      }),
-                                                  ],
-                                                ),
-                                              );
-                                            }
-
-                                            // --- CALENDAR MODE & LIST MODE ---
-                                            List<TransactionItem> displayItems =
-                                                items;
-
-                                            if (viewMode == 'calendar') {
-                                              displayItems = items.where((tx) {
-                                                return tx.timestamp.year ==
-                                                        selectedDate.year &&
-                                                    tx.timestamp.month ==
-                                                        selectedDate.month &&
-                                                    tx.timestamp.day ==
-                                                        selectedDate.day;
-                                              }).toList();
-
-                                              if (displayItems.isEmpty) {
-                                                final locale =
-                                                    Localizations.localeOf(
-                                                  context,
-                                                ).languageCode;
-                                                final formattedDate =
-                                                    DateFormat.yMMMd(locale)
-                                                        .format(selectedDate);
-                                                return _EmptyStateView(
-                                                  title: context.l10n
-                                                      .noTransactionsOnDate(
-                                                    formattedDate,
-                                                  ),
+                                        return RefreshIndicator(
+                                          color: colorScheme.primary,
+                                          onRefresh: () => context
+                                              .read<TransactionCubit>()
+                                              .loadTransactions(isSilent: true),
+                                          child: ListView(
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            padding: EdgeInsets.only(
+                                              bottom: 120.h,
+                                            ),
+                                            children: [
+                                              _BalanceSheetSummaryHeader(
+                                                totalIncome: totalIncome,
+                                                totalExpense: totalExpense,
+                                              ),
+                                              if (sortedDays.isEmpty)
+                                                _EmptyStateView(
+                                                  title: context
+                                                      .l10n.noTransactionsFound,
                                                   subtitle: context
                                                       .l10n.noTransactionsDesc,
-                                                );
-                                              }
-                                            }
-
-                                            final Map<String,
-                                                    List<TransactionItem>>
-                                                grouped = {};
-                                            for (final item in displayItems) {
-                                              final dateKey = _formatDateHeader(
-                                                context,
-                                                item.timestamp,
-                                              );
-                                              grouped
-                                                  .putIfAbsent(
-                                                    dateKey,
-                                                    () => [],
-                                                  )
-                                                  .add(item);
-                                            }
-
-                                            if (grouped.isEmpty) {
-                                              return _EmptyStateView(
-                                                title: context
-                                                    .l10n.noTransactionsFound,
-                                                subtitle: context
-                                                    .l10n.noTransactionsDesc,
-                                              );
-                                            }
-
-                                            return RefreshIndicator(
-                                              color: colorScheme.primary,
-                                              onRefresh: () => context
-                                                  .read<TransactionCubit>()
-                                                  .loadTransactions(
-                                                      isSilent: true),
-                                              child: ListView.builder(
-                                                physics:
-                                                    const BouncingScrollPhysics(),
-                                                padding: EdgeInsets.only(
-                                                  bottom: 120.h,
-                                                ),
-                                                itemCount: grouped.keys.length,
-                                                itemBuilder: (context, index) {
-                                                  final dateKey = grouped.keys
-                                                      .elementAt(index);
-                                                  final dateItems =
-                                                      grouped[dateKey]!;
-                                                  final baseStaggerIndex =
-                                                      index * 3;
+                                                )
+                                              else
+                                                ...sortedDays.map((dayDate) {
+                                                  final dayTxList =
+                                                      dailyGrouped[dayDate]!;
+                                                  final dayIncome = dayTxList
+                                                      .where(
+                                                        (tx) =>
+                                                            tx.type ==
+                                                            TransactionType
+                                                                .income,
+                                                      )
+                                                      .fold(
+                                                        0.0,
+                                                        (sum, tx) =>
+                                                            sum + tx.amount,
+                                                      );
+                                                  final dayExpense =
+                                                      dayTxList.fold(
+                                                    0.0,
+                                                    (sum, tx) =>
+                                                        sum +
+                                                        (tx.type ==
+                                                                TransactionType
+                                                                    .expense
+                                                            ? tx.amount
+                                                            : _parseTransferFeeFromNote(
+                                                                tx.note)),
+                                                  );
 
                                                   return Column(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      _StaggeredListViewItem(
-                                                        index: baseStaggerIndex,
-                                                        child: Padding(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                            horizontal: 20.w,
-                                                            vertical: 8.h,
-                                                          ),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              Text(
-                                                                dateKey
-                                                                    .toUpperCase(),
-                                                                style: customTypography
-                                                                    .labelMediumMono
-                                                                    .copyWith(
-                                                                  color: colorScheme
-                                                                      .outline,
-                                                                  letterSpacing:
-                                                                      1.2,
-                                                                ),
-                                                              ),
-                                                              Text(
-                                                                context.l10n
-                                                                    .transactionsCount(
-                                                                  dateItems
-                                                                      .length,
-                                                                ),
-                                                                style: customTypography
-                                                                    .labelMediumMono
-                                                                    .copyWith(
-                                                                  color: colorScheme
-                                                                      .onSurfaceVariant,
-                                                                  fontSize:
-                                                                      11.sp,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
+                                                      _DailyGroupHeader(
+                                                        date: dayDate,
+                                                        incomeSum: dayIncome,
+                                                        expenseSum: dayExpense,
                                                       ),
-                                                      ...dateItems
+                                                      ...dayTxList
                                                           .asMap()
                                                           .entries
                                                           .map(
                                                             (entry) =>
                                                                 _StaggeredListViewItem(
-                                                              index:
-                                                                  baseStaggerIndex +
-                                                                      entry
-                                                                          .key +
-                                                                      1,
+                                                              index: entry.key,
                                                               child:
                                                                   _TransactionListTile(
                                                                 transaction:
@@ -978,29 +731,328 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                                                           ),
                                                     ],
                                                   );
-                                                },
-                                              ),
-                                            );
-                                          }
+                                                }),
+                                            ],
+                                          ),
+                                        );
+                                      }
 
-                                          return const SizedBox.shrink();
-                                        },
+                                      // --- MONTHLY BALANCE SHEET MODE ---
+                                      if (viewMode == 'monthly') {
+                                        final yearItems = items.where((tx) {
+                                          return tx.timestamp.year ==
+                                              selectedMonth.year;
+                                        }).toList();
+
+                                        final totalIncome = yearItems
+                                            .where((tx) =>
+                                                tx.type ==
+                                                TransactionType.income)
+                                            .fold(
+                                              0.0,
+                                              (sum, tx) => sum + tx.amount,
+                                            );
+                                        final totalExpense = yearItems.fold(
+                                          0.0,
+                                          (sum, tx) =>
+                                              sum +
+                                              (tx.type ==
+                                                      TransactionType.expense
+                                                  ? tx.amount
+                                                  : _parseTransferFeeFromNote(
+                                                      tx.note)),
+                                        );
+
+                                        final Map<DateTime,
+                                                List<TransactionItem>>
+                                            monthlyGrouped = {};
+                                        for (final item in yearItems) {
+                                          final monthKey = DateTime(
+                                            item.timestamp.year,
+                                            item.timestamp.month,
+                                          );
+                                          monthlyGrouped
+                                              .putIfAbsent(monthKey, () => [])
+                                              .add(item);
+                                        }
+
+                                        final sortedMonths =
+                                            monthlyGrouped.keys.toList()
+                                              ..sort(
+                                                (a, b) => b.compareTo(a),
+                                              );
+
+                                        return RefreshIndicator(
+                                          color: colorScheme.primary,
+                                          onRefresh: () => context
+                                              .read<TransactionCubit>()
+                                              .loadTransactions(isSilent: true),
+                                          child: ListView(
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            padding: EdgeInsets.only(
+                                              bottom: 120.h,
+                                            ),
+                                            children: [
+                                              _BalanceSheetSummaryHeader(
+                                                totalIncome: totalIncome,
+                                                totalExpense: totalExpense,
+                                              ),
+                                              if (sortedMonths.isEmpty)
+                                                _EmptyStateView(
+                                                  title: context
+                                                      .l10n.noTransactionsFound,
+                                                  subtitle: context
+                                                      .l10n.noTransactionsDesc,
+                                                )
+                                              else
+                                                ...sortedMonths
+                                                    .map((monthDate) {
+                                                  final monthTxList =
+                                                      monthlyGrouped[
+                                                          monthDate]!;
+                                                  final monthIncome =
+                                                      monthTxList
+                                                          .where(
+                                                            (tx) =>
+                                                                tx.type ==
+                                                                TransactionType
+                                                                    .income,
+                                                          )
+                                                          .fold(
+                                                            0.0,
+                                                            (sum, tx) =>
+                                                                sum + tx.amount,
+                                                          );
+                                                  final monthExpense =
+                                                      monthTxList
+                                                          .where(
+                                                            (tx) =>
+                                                                tx.type ==
+                                                                TransactionType
+                                                                    .expense,
+                                                          )
+                                                          .fold(
+                                                            0.0,
+                                                            (sum, tx) =>
+                                                                sum + tx.amount,
+                                                          );
+
+                                                  return Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      _MonthlyGroupHeader(
+                                                        date: monthDate,
+                                                        incomeSum: monthIncome,
+                                                        expenseSum:
+                                                            monthExpense,
+                                                      ),
+                                                      ...monthTxList
+                                                          .asMap()
+                                                          .entries
+                                                          .map(
+                                                            (entry) =>
+                                                                _StaggeredListViewItem(
+                                                              index: entry.key,
+                                                              child:
+                                                                  _TransactionListTile(
+                                                                transaction:
+                                                                    entry.value,
+                                                                isPrivacyModeNotifier:
+                                                                    widget
+                                                                        .isPrivacyModeNotifier,
+                                                                onDelete: () {
+                                                                  context
+                                                                      .read<
+                                                                          TransactionCubit>()
+                                                                      .deleteTransaction(
+                                                                        entry
+                                                                            .value
+                                                                            .id,
+                                                                      );
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ),
+                                                    ],
+                                                  );
+                                                }),
+                                            ],
+                                          ),
+                                        );
+                                      }
+
+                                      // --- CALENDAR MODE & LIST MODE ---
+                                      List<TransactionItem> displayItems =
+                                          items;
+
+                                      if (viewMode == 'calendar') {
+                                        displayItems = items.where((tx) {
+                                          return tx.timestamp.year ==
+                                                  selectedDate.year &&
+                                              tx.timestamp.month ==
+                                                  selectedDate.month &&
+                                              tx.timestamp.day ==
+                                                  selectedDate.day;
+                                        }).toList();
+
+                                        if (displayItems.isEmpty) {
+                                          final locale = Localizations.localeOf(
+                                            context,
+                                          ).languageCode;
+                                          final formattedDate =
+                                              DateFormat.yMMMd(locale)
+                                                  .format(selectedDate);
+                                          return _EmptyStateView(
+                                            title: context.l10n
+                                                .noTransactionsOnDate(
+                                              formattedDate,
+                                            ),
+                                            subtitle:
+                                                context.l10n.noTransactionsDesc,
+                                          );
+                                        }
+                                      }
+
+                                      final Map<String, List<TransactionItem>>
+                                          grouped = {};
+                                      for (final item in displayItems) {
+                                        final dateKey = _formatDateHeader(
+                                          context,
+                                          item.timestamp,
+                                        );
+                                        grouped
+                                            .putIfAbsent(
+                                              dateKey,
+                                              () => [],
+                                            )
+                                            .add(item);
+                                      }
+
+                                      if (grouped.isEmpty) {
+                                        return _EmptyStateView(
+                                          title:
+                                              context.l10n.noTransactionsFound,
+                                          subtitle:
+                                              context.l10n.noTransactionsDesc,
+                                        );
+                                      }
+
+                                      return RefreshIndicator(
+                                        color: colorScheme.primary,
+                                        onRefresh: () => context
+                                            .read<TransactionCubit>()
+                                            .loadTransactions(isSilent: true),
+                                        child: ListView.builder(
+                                          physics:
+                                              const BouncingScrollPhysics(),
+                                          padding: EdgeInsets.only(
+                                            bottom: 120.h,
+                                          ),
+                                          itemCount: grouped.keys.length,
+                                          itemBuilder: (context, index) {
+                                            final dateKey =
+                                                grouped.keys.elementAt(index);
+                                            final dateItems = grouped[dateKey]!;
+                                            final baseStaggerIndex = index * 3;
+
+                                            return Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                _StaggeredListViewItem(
+                                                  index: baseStaggerIndex,
+                                                  child: Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                      horizontal: 20.w,
+                                                      vertical: 8.h,
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          dateKey.toUpperCase(),
+                                                          style: customTypography
+                                                              .labelMediumMono
+                                                              .copyWith(
+                                                            color: colorScheme
+                                                                .outline,
+                                                            letterSpacing: 1.2,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          context.l10n
+                                                              .transactionsCount(
+                                                            dateItems.length,
+                                                          ),
+                                                          style: customTypography
+                                                              .labelMediumMono
+                                                              .copyWith(
+                                                            color: colorScheme
+                                                                .onSurfaceVariant,
+                                                            fontSize: 11.sp,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                ...dateItems
+                                                    .asMap()
+                                                    .entries
+                                                    .map(
+                                                      (entry) =>
+                                                          _StaggeredListViewItem(
+                                                        index:
+                                                            baseStaggerIndex +
+                                                                entry.key +
+                                                                1,
+                                                        child:
+                                                            _TransactionListTile(
+                                                          transaction:
+                                                              entry.value,
+                                                          isPrivacyModeNotifier:
+                                                              widget
+                                                                  .isPrivacyModeNotifier,
+                                                          onDelete: () {
+                                                            context
+                                                                .read<
+                                                                    TransactionCubit>()
+                                                                .deleteTransaction(
+                                                                  entry
+                                                                      .value.id,
+                                                                );
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ),
+                                              ],
+                                            );
+                                          },
+                                        ),
                                       );
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                          );
-                        },
+                                    }
+
+                                    return const SizedBox.shrink();
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                    );
+                  },
+                ),
               ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }

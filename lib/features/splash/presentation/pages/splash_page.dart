@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/config/app_config.dart';
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
@@ -232,7 +233,7 @@ class _SplashPageState extends State<SplashPage>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          l10n.appVersion,
+                          AppConfig.versionDisplay,
                           style: (textTheme.labelSmall ?? const TextStyle())
                               .copyWith(
                             color: colorScheme.onSurfaceVariant

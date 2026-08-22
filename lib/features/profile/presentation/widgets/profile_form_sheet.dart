@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
+import '../../../../core/widgets/adaptive_sheet.dart';
 import '../../domain/entities/user_profile.dart';
 import '../cubit/profile_cubit.dart';
 import 'profile_avatar_picker.dart';
@@ -19,11 +21,10 @@ class ProfileFormSheet extends StatefulWidget {
 
   static Future<void> show(BuildContext context,
       {UserProfile? initialProfile}) {
-    return showModalBottomSheet<void>(
+    return AdaptiveSheet.show<void>(
       context: context,
       isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
+      maxDialogWidth: 540.0,
       builder: (ctx) => ProfileFormSheet(initialProfile: initialProfile),
     );
   }
@@ -128,9 +129,11 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
     final textTheme = context.textTheme;
     final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final isTablet = Breakpoints.isTablet(context);
     final customColors = context.customColors;
     final isEditing = widget.initialProfile != null;
-    final maxHeight = MediaQuery.of(context).size.height * 0.88;
+    final maxHeight =
+        isTablet ? 640.0 : MediaQuery.of(context).size.height * 0.88;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -141,7 +144,9 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
         decoration: BoxDecoration(
           color:
               isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+          borderRadius: isTablet
+              ? BorderRadius.circular(24.0)
+              : BorderRadius.vertical(top: Radius.circular(28.r)),
           border: Border.all(
             color: isLight
                 ? colorScheme.outlineVariant.withValues(alpha: 0.50)
@@ -152,7 +157,10 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
         child: SafeArea(
           top: false,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(
+              horizontal: isTablet ? 24.0 : 20.w,
+              vertical: isTablet ? 20.0 : 16.h,
+            ),
             child: Form(
               key: _formKey,
               child: SingleChildScrollView(
@@ -161,21 +169,23 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Drag Handle
-                    Center(
-                      child: Container(
-                        width: 40.w,
-                        height: 4.h,
-                        decoration: BoxDecoration(
-                          color: isLight
-                              ? colorScheme.outline.withValues(alpha: 0.4)
-                              : colorScheme.outlineVariant
-                                  .withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(2.r),
+                    // Drag Handle (phone only)
+                    if (!isTablet) ...[
+                      Center(
+                        child: Container(
+                          width: 40.w,
+                          height: 4.h,
+                          decoration: BoxDecoration(
+                            color: isLight
+                                ? colorScheme.outline.withValues(alpha: 0.4)
+                                : colorScheme.outlineVariant
+                                    .withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(2.r),
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 14.h),
+                      SizedBox(height: 14.h),
+                    ],
                     // Header title
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

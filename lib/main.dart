@@ -228,50 +228,69 @@ class _ExpendlyAppState extends State<ExpendlyApp> with WidgetsBindingObserver {
     final config = AppConfig.instance;
     final prefService = getIt<PreferenceService>();
 
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) {
-        return ValueListenableBuilder<String>(
-          valueListenable: prefService.themeModeNotifier,
-          builder: (context, themeModeStr, child) {
-            final themeMode = themeModeStr == 'dark'
-                ? ThemeMode.dark
-                : (themeModeStr == 'system'
-                    ? ThemeMode.system
-                    : ThemeMode.light);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final height = constraints.maxHeight;
+        final isTablet = width >= 600;
+        final isLandscape = width > height;
 
-            return MaterialApp.router(
-              title: config.appName,
-              debugShowCheckedModeBanner: false,
-              theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              themeMode: themeMode,
-              routerConfig: _appRouter.config(),
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: const [
-                Locale('en'), // English
-              ],
-              builder: (context, child) {
-                Widget content = child ?? const SizedBox.shrink();
-                if (config.showFlavorBanner && !config.isProd) {
-                  final colorScheme = Theme.of(context).colorScheme;
-                  content = Banner(
-                    message: config.flavor.name.toUpperCase(),
-                    location: BannerLocation.topEnd,
-                    color: config.isDev
-                        ? colorScheme.tertiary
-                        : colorScheme.secondary,
-                    child: content,
-                  );
-                }
-                return AppUpdateGuard(child: content);
+        final designSize = isTablet
+            ? (isLandscape ? const Size(1024, 768) : const Size(768, 1024))
+            : const Size(375, 812);
+
+        return ScreenUtilInit(
+          designSize: designSize,
+          minTextAdapt: true,
+          splitScreenMode: true,
+          fontSizeResolver: (num fontSize, ScreenUtil instance) {
+            if (isTablet) {
+              return fontSize.toDouble();
+            }
+            return fontSize * instance.scaleText;
+          },
+          builder: (context, child) {
+            return ValueListenableBuilder<String>(
+              valueListenable: prefService.themeModeNotifier,
+              builder: (context, themeModeStr, child) {
+                final themeMode = themeModeStr == 'dark'
+                    ? ThemeMode.dark
+                    : (themeModeStr == 'system'
+                        ? ThemeMode.system
+                        : ThemeMode.light);
+
+                return MaterialApp.router(
+                  title: config.appName,
+                  debugShowCheckedModeBanner: false,
+                  theme: AppTheme.lightTheme,
+                  darkTheme: AppTheme.darkTheme,
+                  themeMode: themeMode,
+                  routerConfig: _appRouter.config(),
+                  localizationsDelegates: const [
+                    AppLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+                  supportedLocales: const [
+                    Locale('en'), // English
+                  ],
+                  builder: (context, child) {
+                    Widget content = child ?? const SizedBox.shrink();
+                    if (config.showFlavorBanner && !config.isProd) {
+                      final colorScheme = Theme.of(context).colorScheme;
+                      content = Banner(
+                        message: config.flavor.name.toUpperCase(),
+                        location: BannerLocation.topEnd,
+                        color: config.isDev
+                            ? colorScheme.tertiary
+                            : colorScheme.secondary,
+                        child: content,
+                      );
+                    }
+                    return AppUpdateGuard(child: content);
+                  },
+                );
               },
             );
           },

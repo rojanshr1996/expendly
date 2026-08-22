@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../constants/margin_constants.dart';
 import '../extensions/context_extensions.dart';
 import '../theme/font_weights.dart';
 
@@ -29,7 +27,7 @@ class CustomKeypad extends StatelessWidget {
     final colorScheme = context.colorScheme;
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -40,7 +38,7 @@ class CustomKeypad extends StatelessWidget {
               _KeypadButton(keyLabel: '3', onTap: () => onKeyPress('3')),
             ],
           ),
-          verticalMarginXSmall,
+          const SizedBox(height: 8.0),
           Row(
             children: [
               _KeypadButton(keyLabel: '4', onTap: () => onKeyPress('4')),
@@ -48,7 +46,7 @@ class CustomKeypad extends StatelessWidget {
               _KeypadButton(keyLabel: '6', onTap: () => onKeyPress('6')),
             ],
           ),
-          verticalMarginXSmall,
+          const SizedBox(height: 8.0),
           Row(
             children: [
               _KeypadButton(keyLabel: '7', onTap: () => onKeyPress('7')),
@@ -56,7 +54,7 @@ class CustomKeypad extends StatelessWidget {
               _KeypadButton(keyLabel: '9', onTap: () => onKeyPress('9')),
             ],
           ),
-          verticalMarginXSmall,
+          const SizedBox(height: 8.0),
           Row(
             children: [
               showDecimal
@@ -70,17 +68,17 @@ class CustomKeypad extends StatelessWidget {
             ],
           ),
           if (onSubmitPress != null) ...[
-            verticalMarginSmall,
+            const SizedBox(height: 12.0),
             SizedBox(
               width: double.infinity,
-              height: 48.h,
+              height: 48.0,
               child: ElevatedButton(
                 onPressed: onSubmitPress,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorScheme.primary,
                   foregroundColor: colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                 ),
                 child: Text(
@@ -111,13 +109,12 @@ class _KeypadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = context.textTheme;
     final colorScheme = context.colorScheme;
     final isLight = Theme.of(context).brightness == Brightness.light;
     final isPressedNotifier = ValueNotifier<bool>(false);
 
     if (keyLabel == '' && icon == null) {
-      return Expanded(child: SizedBox(height: 56.h));
+      return const Expanded(child: SizedBox(height: 52.0));
     }
 
     return Expanded(
@@ -136,8 +133,8 @@ class _KeypadButton extends StatelessWidget {
               scale: isPressed ? 0.94 : 1.0,
               duration: const Duration(milliseconds: 80),
               child: Container(
-                height: 56.h,
-                margin: EdgeInsets.symmetric(horizontal: 4.w),
+                height: 52.0,
+                margin: const EdgeInsets.symmetric(horizontal: 4.0),
                 decoration: BoxDecoration(
                   color: isPressed
                       ? (isLight
@@ -146,7 +143,7 @@ class _KeypadButton extends StatelessWidget {
                       : (isLight
                           ? colorScheme.surfaceContainerLowest
                           : colorScheme.surfaceContainerLow),
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(
                     color: isLight
                         ? colorScheme.outlineVariant.withValues(alpha: 0.50)
@@ -159,12 +156,12 @@ class _KeypadButton extends StatelessWidget {
                     ? Icon(
                         icon,
                         color: colorScheme.onSurface,
-                        size: 22.sp,
+                        size: 22.0,
                       )
                     : Text(
                         keyLabel!,
-                        style: (textTheme.headlineMedium ?? const TextStyle())
-                            .copyWith(
+                        style: TextStyle(
+                          fontSize: 22.0,
                           fontWeight: FontWeights.semiBold,
                           color: colorScheme.onSurface,
                         ),

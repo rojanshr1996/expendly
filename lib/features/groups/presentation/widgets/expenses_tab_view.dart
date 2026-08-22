@@ -18,6 +18,7 @@ class ExpensesTabView extends StatelessWidget {
   final SharingEvent event;
   final VoidCallback? onExpenseAdded;
   final void Function(int expenseId)? onDeleteExpense;
+  final EdgeInsetsGeometry? padding;
 
   const ExpensesTabView({
     super.key,
@@ -25,6 +26,7 @@ class ExpensesTabView extends StatelessWidget {
     required this.event,
     this.onExpenseAdded,
     this.onDeleteExpense,
+    this.padding,
   });
 
   @override
@@ -38,7 +40,7 @@ class ExpensesTabView extends StatelessWidget {
       return Align(
         alignment: Alignment.topCenter,
         child: Padding(
-          padding:
+          padding: padding ??
               EdgeInsets.only(left: 20.w, right: 20.w, top: 68.h, bottom: 24.h),
           child: GlassContainer(
             padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 28.h),
@@ -110,7 +112,7 @@ class ExpensesTabView extends StatelessWidget {
     final br = BorderRadius.circular(18.r);
 
     return ListView.builder(
-      padding: EdgeInsets.fromLTRB(20.w, 60.h, 20.w, 96.h),
+      padding: padding ?? EdgeInsets.fromLTRB(20.w, 60.h, 20.w, 96.h),
       itemCount: grouped.keys.length,
       itemBuilder: (context, groupIndex) {
         final header = grouped.keys.elementAt(groupIndex);
