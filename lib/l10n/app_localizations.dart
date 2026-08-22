@@ -277,7 +277,7 @@ abstract class AppLocalizations {
   /// App version label on splash screen
   ///
   /// In en, this message translates to:
-  /// **'VER 1.1.0'**
+  /// **'VER 1.1.2'**
   String get appVersion;
 
   /// Header title for currency setup page
@@ -1687,7 +1687,7 @@ abstract class AppLocalizations {
   /// Subtitle for About page menu item
   ///
   /// In en, this message translates to:
-  /// **'Version 1.1.0'**
+  /// **'Version 1.1.2'**
   String get aboutExpendlySubtitle;
 
   /// Menu title for Terms & Conditions page

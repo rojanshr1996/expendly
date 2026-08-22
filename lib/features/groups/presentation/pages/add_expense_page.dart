@@ -7,8 +7,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/adaptive_sheet.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/app_text_field.dart';
@@ -58,184 +60,173 @@ class _AddExpensePageState extends State<AddExpensePage> {
     final colorScheme = context.colorScheme;
     final customColors = context.customColors;
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final isTablet = Breakpoints.isTablet(context);
 
-    showModalBottomSheet<void>(
+    AdaptiveSheet.show<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      maxDialogWidth: 480.0,
       builder: (modalContext) {
         return Container(
           constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(modalContext).size.height * 0.7,
+            maxHeight: isTablet
+                ? 560.0
+                : MediaQuery.of(modalContext).size.height * 0.7,
           ),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isLight
-                  ? [
-                      colorScheme.surfaceContainerLowest
-                          .withValues(alpha: 0.45),
-                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.30),
-                    ]
-                  : [
-                      colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
-                      colorScheme.surfaceContainerLow.withValues(alpha: 0.20),
-                    ],
-            ),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+            color: isLight
+                ? colorScheme.surface
+                : colorScheme.surfaceContainerHigh,
+            borderRadius: isTablet
+                ? BorderRadius.circular(24.0)
+                : BorderRadius.vertical(top: Radius.circular(28.r)),
             border: Border.all(
               color: isLight
-                  ? Colors.white.withValues(alpha: 0.60)
+                  ? colorScheme.outlineVariant.withValues(alpha: 0.50)
                   : customColors.glassStroke.withValues(alpha: 0.45),
               width: 1.0,
             ),
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-              child: SafeArea(
-                top: false,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Drag handle
-                    Center(
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 12.h),
-                        width: 40.w,
-                        height: 4.h,
-                        decoration: BoxDecoration(
-                          color:
-                              colorScheme.outlineVariant.withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(2.r),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Drag handle (phone only)
+                if (!isTablet)
+                  Center(
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 12.h),
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: isLight
+                            ? colorScheme.outline.withValues(alpha: 0.4)
+                            : colorScheme.outlineVariant.withValues(alpha: 0.7),
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                  ),
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Select Who Paid',
+                        style: context.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Select Who Paid',
-                            style: context.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.onSurface,
+                      IconButton(
+                        icon: Icon(Icons.close_rounded,
+                            color: colorScheme.onSurfaceVariant),
+                        onPressed: () => Navigator.pop(modalContext),
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(
+                  height: 1,
+                  color: isLight
+                      ? colorScheme.outlineVariant.withValues(alpha: 0.5)
+                      : customColors.glassStroke,
+                ),
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    itemCount: widget.participants.length,
+                    separatorBuilder: (_, __) => SizedBox(height: 8.h),
+                    itemBuilder: (ctx, index) {
+                      final p = widget.participants[index];
+                      final isSelected = state.paidByParticipantId == p.id;
+
+                      return InkWell(
+                        onTap: () {
+                          cubit.setPaidBy(p.id);
+                          Navigator.pop(modalContext);
+                        },
+                        borderRadius: BorderRadius.circular(16.r),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16.w, vertical: 12.h),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? (isLight
+                                    ? colorScheme.primary
+                                        .withValues(alpha: 0.15)
+                                    : colorScheme.primary
+                                        .withValues(alpha: 0.20))
+                                : (isLight
+                                    ? colorScheme.surfaceContainerLowest
+                                    : colorScheme.surfaceContainerLow
+                                        .withValues(alpha: 0.50)),
+                            borderRadius: BorderRadius.circular(16.r),
+                            border: Border.all(
+                              color: isSelected
+                                  ? colorScheme.primary
+                                  : isLight
+                                      ? colorScheme.outlineVariant
+                                          .withValues(alpha: 0.50)
+                                      : customColors.glassStroke,
+                              width: isSelected ? 1.5 : 1,
                             ),
                           ),
-                          IconButton(
-                            icon: Icon(Icons.close_rounded,
-                                color: colorScheme.onSurfaceVariant),
-                            onPressed: () => Navigator.pop(modalContext),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Divider(
-                      height: 1,
-                      color: isLight
-                          ? colorScheme.outlineVariant.withValues(alpha: 0.4)
-                          : customColors.glassStroke,
-                    ),
-                    Flexible(
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.w, vertical: 12.h),
-                        itemCount: widget.participants.length,
-                        separatorBuilder: (_, __) => SizedBox(height: 8.h),
-                        itemBuilder: (ctx, index) {
-                          final p = widget.participants[index];
-                          final isSelected = state.paidByParticipantId == p.id;
-
-                          return InkWell(
-                            onTap: () {
-                              cubit.setPaidBy(p.id);
-                              Navigator.pop(modalContext);
-                            },
-                            borderRadius: BorderRadius.circular(16.r),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 16.w, vertical: 12.h),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? colorScheme.primary.withValues(
-                                        alpha: isLight ? 0.12 : 0.18)
-                                    : isLight
-                                        ? Colors.white.withValues(alpha: 0.70)
-                                        : colorScheme.surfaceContainerHigh
-                                            .withValues(alpha: 0.4),
-                                borderRadius: BorderRadius.circular(16.r),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? colorScheme.primary
-                                      : isLight
-                                          ? colorScheme.outlineVariant
-                                              .withValues(alpha: 0.4)
-                                          : customColors.glassStroke,
-                                  width: isSelected ? 1.5 : 1,
-                                ),
+                          child: Row(
+                            children: [
+                              ParticipantAvatar(
+                                name: p.name,
+                                colorIndex: p.colorIndex,
                               ),
-                              child: Row(
-                                children: [
-                                  ParticipantAvatar(
-                                    name: p.name,
-                                    colorIndex: p.colorIndex,
-                                  ),
-                                  SizedBox(width: 14.w),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          p.name,
-                                          style: context
-                                              .customTypography.bodyLargeBold
-                                              .copyWith(
-                                            color: isSelected
-                                                ? colorScheme.primary
-                                                : colorScheme.onSurface,
+                              SizedBox(width: 14.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      p.name,
+                                      style: context
+                                          .customTypography.bodyLargeBold
+                                          .copyWith(
+                                        color: isSelected
+                                            ? colorScheme.primary
+                                            : colorScheme.onSurface,
+                                      ),
+                                    ),
+                                    if (p.email != null && p.email!.isNotEmpty)
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 2.h),
+                                        child: Text(
+                                          p.email!,
+                                          style: context.textTheme.labelSmall
+                                              ?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                            fontSize: 11.sp,
                                           ),
                                         ),
-                                        if (p.email != null &&
-                                            p.email!.isNotEmpty)
-                                          Padding(
-                                            padding: EdgeInsets.only(top: 2.h),
-                                            child: Text(
-                                              p.email!,
-                                              style: context
-                                                  .textTheme.labelSmall
-                                                  ?.copyWith(
-                                                color: colorScheme
-                                                    .onSurfaceVariant,
-                                                fontSize: 11.sp,
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                  if (isSelected)
-                                    Icon(
-                                      Icons.check_circle_rounded,
-                                      color: colorScheme.primary,
-                                      size: 22.sp,
-                                    ),
-                                ],
+                                      ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 12.h),
-                  ],
+                              if (isSelected)
+                                Icon(
+                                  Icons.check_circle_rounded,
+                                  color: colorScheme.primary,
+                                  size: 22.sp,
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
+                SizedBox(height: 12.h),
+              ],
             ),
           ),
         );
@@ -303,6 +294,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
           final topInset = MediaQuery.of(context).padding.top;
           final headerPaddingTop = topInset + kToolbarHeight;
 
+          final isTablet = Breakpoints.isTablet(context);
+
           return Scaffold(
             backgroundColor: colorScheme.surface,
             extendBodyBehindAppBar: true,
@@ -311,368 +304,396 @@ class _AddExpensePageState extends State<AddExpensePage> {
               titleText: context.l10n.addExpense,
               onLeadingPressed: () => context.router.popForced(),
             ),
-            bottomNavigationBar: _LiquidGlassBottomBar(
-              child: AppButton(
-                text: '${context.l10n.saveExpense} →',
-                isLoading: state.isSaving,
-                onPressed: () => cubit.saveExpense(),
-                variant: AppButtonVariant.primary,
+            bottomNavigationBar: Center(
+              heightFactor: 1.0,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isTablet ? 720.0 : double.infinity,
+                ),
+                child: _LiquidGlassBottomBar(
+                  child: AppButton(
+                    text: '${context.l10n.saveExpense} →',
+                    isLoading: state.isSaving,
+                    onPressed: () => cubit.saveExpense(),
+                    variant: AppButtonVariant.primary,
+                  ),
+                ),
               ),
             ),
-            body: ListView(
-              padding: EdgeInsets.only(
-                left: 20.w,
-                right: 20.w,
-                top: headerPaddingTop + 16.h,
-                bottom: 96.h + MediaQuery.of(context).viewPadding.bottom,
-              ),
-              children: [
-                // Amount Card
-                _LiquidGlassCard(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                  child: GestureDetector(
-                    onTap: () => _amountFocusNode.requestFocus(),
-                    behavior: HitTestBehavior.opaque,
-                    child: Column(
-                      children: [
-                        Text(
-                          context.l10n.amount.toUpperCase(),
-                          style: customTypography.labelMediumMono.copyWith(
-                            color: colorScheme.outline,
-                            letterSpacing: 1.5,
-                            fontSize: 11.sp,
-                          ),
-                        ),
-                        SizedBox(height: 10.h),
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.baseline,
-                            textBaseline: TextBaseline.alphabetic,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ValueListenableBuilder<String>(
-                                valueListenable: getIt<PreferenceService>()
-                                    .currencySymbolNotifier,
-                                builder: (context, currencySymbol, _) {
-                                  return Text(
-                                    '$currencySymbol ',
-                                    style: customTypography
-                                        .headlineLargeMonoBold
-                                        .copyWith(
-                                      color: colorScheme.primary,
-                                      fontSize: 36.sp,
-                                    ),
-                                  );
-                                },
+            body: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isTablet ? 720.0 : double.infinity,
+                ),
+                child: ListView(
+                  padding: EdgeInsets.only(
+                    left: isTablet ? 24.0 : 20.w,
+                    right: isTablet ? 24.0 : 20.w,
+                    top: headerPaddingTop + (isTablet ? 20.0 : 16.h),
+                    bottom: 96.h + MediaQuery.of(context).viewPadding.bottom,
+                  ),
+                  children: [
+                    // Amount Card
+                    _LiquidGlassCard(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isTablet ? 24.0 : 20.w,
+                        vertical: isTablet ? 24.0 : 20.h,
+                      ),
+                      child: GestureDetector(
+                        onTap: () => _amountFocusNode.requestFocus(),
+                        behavior: HitTestBehavior.opaque,
+                        child: Column(
+                          children: [
+                            Text(
+                              context.l10n.amount.toUpperCase(),
+                              style: customTypography.labelMediumMono.copyWith(
+                                color: colorScheme.outline,
+                                letterSpacing: 1.5,
+                                fontSize: 11.sp,
                               ),
-                              IntrinsicWidth(
-                                child: TextField(
-                                  controller: _amountController,
-                                  focusNode: _amountFocusNode,
-                                  autofocus: true,
-                                  keyboardType:
-                                      const TextInputType.numberWithOptions(
-                                          decimal: true),
-                                  textInputAction: TextInputAction.next,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'^\d*\.?\d{0,2}')),
-                                  ],
-                                  style: customTypography.headlineLargeMonoBold
-                                      .copyWith(
-                                    color: colorScheme.primary,
-                                    fontSize: 36.sp,
+                            ),
+                            SizedBox(height: 10.h),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.alphabetic,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ValueListenableBuilder<String>(
+                                    valueListenable: getIt<PreferenceService>()
+                                        .currencySymbolNotifier,
+                                    builder: (context, currencySymbol, _) {
+                                      return Text(
+                                        '$currencySymbol ',
+                                        style: customTypography
+                                            .headlineLargeMonoBold
+                                            .copyWith(
+                                          color: colorScheme.primary,
+                                          fontSize: 36.sp,
+                                        ),
+                                      );
+                                    },
                                   ),
-                                  cursorColor: colorScheme.primary,
-                                  decoration: InputDecoration(
-                                    filled: false,
-                                    fillColor: Colors.transparent,
-                                    hintText: '0',
-                                    hintStyle: customTypography
-                                        .headlineLargeMonoBold
-                                        .copyWith(
-                                      color: colorScheme.primary
-                                          .withValues(alpha: 0.35),
-                                      fontSize: 36.sp,
+                                  IntrinsicWidth(
+                                    child: TextField(
+                                      controller: _amountController,
+                                      focusNode: _amountFocusNode,
+                                      autofocus: true,
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                              decimal: true),
+                                      textInputAction: TextInputAction.next,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(r'^\d*\.?\d{0,2}')),
+                                      ],
+                                      style: customTypography
+                                          .headlineLargeMonoBold
+                                          .copyWith(
+                                        color: colorScheme.primary,
+                                        fontSize: 36.sp,
+                                      ),
+                                      cursorColor: colorScheme.primary,
+                                      decoration: InputDecoration(
+                                        filled: false,
+                                        fillColor: Colors.transparent,
+                                        hintText: '0',
+                                        hintStyle: customTypography
+                                            .headlineLargeMonoBold
+                                            .copyWith(
+                                          color: colorScheme.primary
+                                              .withValues(alpha: 0.35),
+                                          fontSize: 36.sp,
+                                        ),
+                                        border: InputBorder.none,
+                                        enabledBorder: InputBorder.none,
+                                        focusedBorder: InputBorder.none,
+                                        errorBorder: InputBorder.none,
+                                        disabledBorder: InputBorder.none,
+                                        contentPadding: EdgeInsets.zero,
+                                        isDense: true,
+                                      ),
+                                      onChanged: (val) {
+                                        final parsed =
+                                            double.tryParse(val) ?? 0.0;
+                                        cubit.setAmount(parsed);
+                                      },
                                     ),
-                                    border: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    focusedBorder: InputBorder.none,
-                                    errorBorder: InputBorder.none,
-                                    disabledBorder: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero,
-                                    isDense: true,
                                   ),
-                                  onChanged: (val) {
-                                    final parsed = double.tryParse(val) ?? 0.0;
-                                    cubit.setAmount(parsed);
-                                  },
-                                ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
 
-                SizedBox(height: 16.h),
+                    SizedBox(height: 16.h),
 
-                // Description Card
-                _LiquidGlassCard(
-                  padding: EdgeInsets.all(16.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.l10n.description.toUpperCase(),
-                        style: customTypography.labelMediumMono.copyWith(
-                          color: colorScheme.outline,
-                          letterSpacing: 1.2,
-                          fontSize: 11.sp,
-                        ),
-                      ),
-                      SizedBox(height: 8.h),
-                      AppTextField(
-                        controller: _descriptionController,
-                        hintText: 'e.g. Seafood Dinner',
-                        onChanged: (val) => cubit.setDescription(val),
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: 16.h),
-
-                // Paid By Card (Triggering Modal Bottom Sheet)
-                _LiquidGlassCard(
-                  padding: EdgeInsets.all(16.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'PAID BY',
-                        style: customTypography.labelMediumMono.copyWith(
-                          color: colorScheme.outline,
-                          letterSpacing: 1.2,
-                          fontSize: 11.sp,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      InkWell(
-                        onTap: () =>
-                            _showPaidByPickerBottomSheet(context, cubit, state),
-                        borderRadius: BorderRadius.circular(14.r),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 14.w, vertical: 12.h),
-                          decoration: BoxDecoration(
-                            color: isLight
-                                ? colorScheme.surfaceContainerLowest
-                                    .withValues(alpha: 0.8)
-                                : colorScheme.surfaceContainerHigh
-                                    .withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(14.r),
-                            border: Border.all(
-                              color: isLight
-                                  ? colorScheme.outlineVariant
-                                      .withValues(alpha: 0.5)
-                                  : customColors.glassStroke,
-                              width: 1,
+                    // Description Card
+                    _LiquidGlassCard(
+                      padding: EdgeInsets.all(16.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.l10n.description.toUpperCase(),
+                            style: customTypography.labelMediumMono.copyWith(
+                              color: colorScheme.outline,
+                              letterSpacing: 1.2,
+                              fontSize: 11.sp,
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              if (selectedPaidBy != null) ...[
-                                ParticipantAvatar(
-                                  name: selectedPaidBy.name,
-                                  colorIndex: selectedPaidBy.colorIndex,
+                          SizedBox(height: 8.h),
+                          AppTextField(
+                            controller: _descriptionController,
+                            hintText: 'e.g. Seafood Dinner',
+                            onChanged: (val) => cubit.setDescription(val),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: 16.h),
+
+                    // Paid By Card (Triggering Modal Bottom Sheet)
+                    _LiquidGlassCard(
+                      padding: EdgeInsets.all(16.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'PAID BY',
+                            style: customTypography.labelMediumMono.copyWith(
+                              color: colorScheme.outline,
+                              letterSpacing: 1.2,
+                              fontSize: 11.sp,
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
+                          InkWell(
+                            onTap: () => _showPaidByPickerBottomSheet(
+                                context, cubit, state),
+                            borderRadius: BorderRadius.circular(14.r),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 14.w, vertical: 12.h),
+                              decoration: BoxDecoration(
+                                color: isLight
+                                    ? colorScheme.surfaceContainerLowest
+                                        .withValues(alpha: 0.8)
+                                    : colorScheme.surfaceContainerHigh
+                                        .withValues(alpha: 0.5),
+                                borderRadius: BorderRadius.circular(14.r),
+                                border: Border.all(
+                                  color: isLight
+                                      ? colorScheme.outlineVariant
+                                          .withValues(alpha: 0.5)
+                                      : customColors.glassStroke,
+                                  width: 1,
                                 ),
-                                SizedBox(width: 12.w),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        selectedPaidBy.name,
-                                        style: customTypography.bodyLargeBold
-                                            .copyWith(
-                                          color: colorScheme.onSurface,
+                              ),
+                              child: Row(
+                                children: [
+                                  if (selectedPaidBy != null) ...[
+                                    ParticipantAvatar(
+                                      name: selectedPaidBy.name,
+                                      colorIndex: selectedPaidBy.colorIndex,
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            selectedPaidBy.name,
+                                            style: customTypography
+                                                .bodyLargeBold
+                                                .copyWith(
+                                              color: colorScheme.onSurface,
+                                            ),
+                                          ),
+                                          if (selectedPaidBy.email != null &&
+                                              selectedPaidBy.email!.isNotEmpty)
+                                            Text(
+                                              selectedPaidBy.email!,
+                                              style: context
+                                                  .textTheme.labelSmall
+                                                  ?.copyWith(
+                                                color: colorScheme
+                                                    .onSurfaceVariant,
+                                                fontSize: 11.sp,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ] else
+                                    Expanded(
+                                      child: Text(
+                                        'Select who paid...',
+                                        style: context.textTheme.bodyMedium
+                                            ?.copyWith(
+                                          color: colorScheme.onSurfaceVariant,
                                         ),
                                       ),
-                                      if (selectedPaidBy.email != null &&
-                                          selectedPaidBy.email!.isNotEmpty)
-                                        Text(
-                                          selectedPaidBy.email!,
-                                          style: context.textTheme.labelSmall
-                                              ?.copyWith(
-                                            color: colorScheme.onSurfaceVariant,
-                                            fontSize: 11.sp,
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ] else
-                                Expanded(
-                                  child: Text(
-                                    'Select who paid...',
-                                    style:
-                                        context.textTheme.bodyMedium?.copyWith(
-                                      color: colorScheme.onSurfaceVariant,
                                     ),
+                                  Icon(
+                                    Icons.keyboard_arrow_down_rounded,
+                                    color: colorScheme.primary,
+                                    size: 22.sp,
                                   ),
-                                ),
-                              Icon(
-                                Icons.keyboard_arrow_down_rounded,
-                                color: colorScheme.primary,
-                                size: 22.sp,
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: 16.h),
-
-                // Split Among Card
-                _LiquidGlassCard(
-                  padding: EdgeInsets.all(16.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.l10n.splitAmong.toUpperCase(),
-                        style: customTypography.labelMediumMono.copyWith(
-                          color: colorScheme.outline,
-                          letterSpacing: 1.2,
-                          fontSize: 11.sp,
-                        ),
-                      ),
-                      SizedBox(height: 12.h),
-
-                      // Visually Even Liquid Glass Animated Tab Bar
-                      _LiquidGlassSplitModeTabBar(
-                        currentMode: state.splitMode,
-                        onModeChanged: (mode) => cubit.setSplitMode(mode),
-                      ),
-
-                      // Real-time allocation status badge
-                      if (state.splitMode != SplitMode.equal &&
-                          state.amount > 0) ...[
-                        SizedBox(height: 12.h),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 12.w, vertical: 8.h),
-                          decoration: BoxDecoration(
-                            color: isBalanced
-                                ? greenColor.withValues(alpha: 0.12)
-                                : redColor.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(10.r),
-                            border: Border.all(
-                              color: isBalanced
-                                  ? greenColor.withValues(alpha: 0.35)
-                                  : redColor.withValues(alpha: 0.35),
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                isBalanced
-                                    ? Icons.check_circle_outline_rounded
-                                    : Icons.info_outline_rounded,
-                                color: isBalanced ? greenColor : redColor,
-                                size: 16.sp,
-                              ),
-                              SizedBox(width: 8.w),
-                              Expanded(
-                                child: Text(
-                                  isBalanced
-                                      ? (state.splitMode == SplitMode.percentage
-                                          ? '100% allocated'
-                                          : 'Total amount balanced')
-                                      : (statusMessage ??
-                                          'Split amounts must balance'),
-                                  style: context.textTheme.labelSmall?.copyWith(
-                                    color: isBalanced ? greenColor : redColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: 16.h),
+
+                    // Split Among Card
+                    _LiquidGlassCard(
+                      padding: EdgeInsets.all(16.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.l10n.splitAmong.toUpperCase(),
+                            style: customTypography.labelMediumMono.copyWith(
+                              color: colorScheme.outline,
+                              letterSpacing: 1.2,
+                              fontSize: 11.sp,
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+
+                          // Visually Even Liquid Glass Animated Tab Bar
+                          _LiquidGlassSplitModeTabBar(
+                            currentMode: state.splitMode,
+                            onModeChanged: (mode) => cubit.setSplitMode(mode),
+                          ),
+
+                          // Real-time allocation status badge
+                          if (state.splitMode != SplitMode.equal &&
+                              state.amount > 0) ...[
+                            SizedBox(height: 12.h),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w, vertical: 8.h),
+                              decoration: BoxDecoration(
+                                color: isBalanced
+                                    ? greenColor.withValues(alpha: 0.12)
+                                    : redColor.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(10.r),
+                                border: Border.all(
+                                  color: isBalanced
+                                      ? greenColor.withValues(alpha: 0.35)
+                                      : redColor.withValues(alpha: 0.35),
                                 ),
                               ),
-                            ],
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    isBalanced
+                                        ? Icons.check_circle_outline_rounded
+                                        : Icons.info_outline_rounded,
+                                    color: isBalanced ? greenColor : redColor,
+                                    size: 16.sp,
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  Expanded(
+                                    child: Text(
+                                      isBalanced
+                                          ? (state.splitMode ==
+                                                  SplitMode.percentage
+                                              ? '100% allocated'
+                                              : 'Total amount balanced')
+                                          : (statusMessage ??
+                                              'Split amounts must balance'),
+                                      style: context.textTheme.labelSmall
+                                          ?.copyWith(
+                                        color:
+                                            isBalanced ? greenColor : redColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+
+                          SizedBox(height: 12.h),
+                          Divider(
+                            color: isLight
+                                ? colorScheme.outlineVariant
+                                    .withValues(alpha: 0.35)
+                                : customColors.glassStroke,
+                            height: 1,
                           ),
-                        ),
-                      ],
+                          SizedBox(height: 8.h),
 
-                      SizedBox(height: 12.h),
-                      Divider(
-                        color: isLight
-                            ? colorScheme.outlineVariant.withValues(alpha: 0.35)
-                            : customColors.glassStroke,
-                        height: 1,
+                          // List of participants to split with
+                          ...widget.participants.map((p) {
+                            final isSelected =
+                                state.participantSelection[p.id] ?? false;
+                            final splitResult = state.calculatedSplits
+                                .where((s) => s.participantId == p.id)
+                                .firstOrNull;
+                            final splitAmount = splitResult?.amount ?? 0.0;
+                            final splitPercentage = splitResult?.percentage;
+
+                            final isCustomized = state.splitMode ==
+                                    SplitMode.exact
+                                ? (state.customAmounts.containsKey(p.id) &&
+                                    state.customAmounts[p.id] != null)
+                                : state.splitMode == SplitMode.percentage
+                                    ? (state.customPercentages
+                                            .containsKey(p.id) &&
+                                        state.customPercentages[p.id] != null)
+                                    : false;
+
+                            final dummySplit = ExpenseSplit(
+                              id: p.id,
+                              expenseId: 0,
+                              participantId: p.id,
+                              participantName: p.name,
+                              isSelected: isSelected,
+                              customPercentage: splitPercentage,
+                              splitAmount: splitAmount,
+                            );
+
+                            return SplitParticipantTile(
+                              split: dummySplit,
+                              splitMode: state.splitMode,
+                              isEqually: state.splitMode == SplitMode.equal,
+                              isCustomized: isCustomized,
+                              customAmount: state.customAmounts[p.id],
+                              customPercentage: state.customPercentages[p.id],
+                              onToggle: (_) => cubit.toggleParticipant(p.id),
+                              onAmountChanged: (val) {
+                                final amt = double.tryParse(val);
+                                cubit.setCustomAmount(p.id, amt);
+                              },
+                              onPercentageChanged: (val) {
+                                final pct = double.tryParse(val);
+                                cubit.setCustomPercentage(p.id, pct);
+                              },
+                            );
+                          }),
+                        ],
                       ),
-                      SizedBox(height: 8.h),
+                    ),
 
-                      // List of participants to split with
-                      ...widget.participants.map((p) {
-                        final isSelected =
-                            state.participantSelection[p.id] ?? false;
-                        final splitResult = state.calculatedSplits
-                            .where((s) => s.participantId == p.id)
-                            .firstOrNull;
-                        final splitAmount = splitResult?.amount ?? 0.0;
-                        final splitPercentage = splitResult?.percentage;
-
-                        final isCustomized = state.splitMode == SplitMode.exact
-                            ? (state.customAmounts.containsKey(p.id) &&
-                                state.customAmounts[p.id] != null)
-                            : state.splitMode == SplitMode.percentage
-                                ? (state.customPercentages.containsKey(p.id) &&
-                                    state.customPercentages[p.id] != null)
-                                : false;
-
-                        final dummySplit = ExpenseSplit(
-                          id: p.id,
-                          expenseId: 0,
-                          participantId: p.id,
-                          participantName: p.name,
-                          isSelected: isSelected,
-                          customPercentage: splitPercentage,
-                          splitAmount: splitAmount,
-                        );
-
-                        return SplitParticipantTile(
-                          split: dummySplit,
-                          splitMode: state.splitMode,
-                          isEqually: state.splitMode == SplitMode.equal,
-                          isCustomized: isCustomized,
-                          customAmount: state.customAmounts[p.id],
-                          customPercentage: state.customPercentages[p.id],
-                          onToggle: (_) => cubit.toggleParticipant(p.id),
-                          onAmountChanged: (val) {
-                            final amt = double.tryParse(val);
-                            cubit.setCustomAmount(p.id, amt);
-                          },
-                          onPercentageChanged: (val) {
-                            final pct = double.tryParse(val);
-                            cubit.setCustomPercentage(p.id, pct);
-                          },
-                        );
-                      }),
-                    ],
-                  ),
+                    SizedBox(height: 24.h),
+                  ],
                 ),
-
-                SizedBox(height: 24.h),
-              ],
+              ),
             ),
           );
         },

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
@@ -12,7 +11,7 @@ abstract class AppTypography {
 
   /// Headline Large (32px, Bold, Line Height 40px, Tracking -0.04em)
   static TextStyle get headlineLarge => GoogleFonts.hankenGrotesk(
-        fontSize: 32.sp,
+        fontSize: 32.0,
         fontWeight: FontWeight.w700,
         height: 40 / 32,
         letterSpacing: -1.28,
@@ -21,7 +20,7 @@ abstract class AppTypography {
 
   /// Headline Large Mobile (28px, Bold, Line Height 34px, Tracking -0.04em)
   static TextStyle get headlineLargeMobile => GoogleFonts.hankenGrotesk(
-        fontSize: 28.sp,
+        fontSize: 28.0,
         fontWeight: FontWeight.w700,
         height: 34 / 28,
         letterSpacing: -1.12,
@@ -30,7 +29,7 @@ abstract class AppTypography {
 
   /// Headline Medium (24px, SemiBold 600, Line Height 32px, Tracking -0.03em)
   static TextStyle get headlineMedium => GoogleFonts.hankenGrotesk(
-        fontSize: 24.sp,
+        fontSize: 24.0,
         fontWeight: FontWeight.w600,
         height: 32 / 24,
         letterSpacing: -0.72,
@@ -39,7 +38,7 @@ abstract class AppTypography {
 
   /// Headline Small (20px, SemiBold 600, Line Height 28px, Tracking -0.02em)
   static TextStyle get headlineSmall => GoogleFonts.hankenGrotesk(
-        fontSize: 20.sp,
+        fontSize: 20.0,
         fontWeight: FontWeight.w600,
         height: 28 / 20,
         letterSpacing: -0.4,
@@ -48,7 +47,7 @@ abstract class AppTypography {
 
   /// Title Large (22px, Bold 700, Line Height 28px, Tracking -0.02em)
   static TextStyle get titleLarge => GoogleFonts.hankenGrotesk(
-        fontSize: 22.sp,
+        fontSize: 22.0,
         fontWeight: FontWeight.w700,
         height: 28 / 22,
         letterSpacing: -0.44,
@@ -57,7 +56,7 @@ abstract class AppTypography {
 
   /// Title Medium (18px, SemiBold 600, Line Height 24px, Tracking -0.01em)
   static TextStyle get titleMedium => GoogleFonts.hankenGrotesk(
-        fontSize: 18.sp,
+        fontSize: 18.0,
         fontWeight: FontWeight.w600,
         height: 24 / 18,
         letterSpacing: -0.18,
@@ -66,7 +65,7 @@ abstract class AppTypography {
 
   /// Title Small (14px, SemiBold 600, Line Height 20px)
   static TextStyle get titleSmall => GoogleFonts.hankenGrotesk(
-        fontSize: 14.sp,
+        fontSize: 14.0,
         fontWeight: FontWeight.w600,
         height: 20 / 14,
         color: AppColors.onSurface,
@@ -74,7 +73,7 @@ abstract class AppTypography {
 
   /// Body Large (16px, Regular 400, Line Height 24px, Tracking -0.01em)
   static TextStyle get bodyLarge => GoogleFonts.hankenGrotesk(
-        fontSize: 16.sp,
+        fontSize: 16.0,
         fontWeight: FontWeight.w400,
         height: 24 / 16,
         letterSpacing: -0.16,
@@ -83,7 +82,7 @@ abstract class AppTypography {
 
   /// Body Large Bold (16px, Bold 700)
   static TextStyle get bodyLargeBold => GoogleFonts.hankenGrotesk(
-        fontSize: 16.sp,
+        fontSize: 16.0,
         fontWeight: FontWeight.w700,
         height: 24 / 16,
         letterSpacing: -0.16,
@@ -92,7 +91,7 @@ abstract class AppTypography {
 
   /// Body Medium (14px, Regular 400, Line Height 20px, Tracking 0.0em)
   static TextStyle get bodyMedium => GoogleFonts.hankenGrotesk(
-        fontSize: 14.sp,
+        fontSize: 14.0,
         fontWeight: FontWeight.w400,
         height: 20 / 14,
         letterSpacing: 0,
@@ -101,7 +100,7 @@ abstract class AppTypography {
 
   /// Body Small (12px, Regular 400, Line Height 16px)
   static TextStyle get bodySmall => GoogleFonts.hankenGrotesk(
-        fontSize: 12.sp,
+        fontSize: 12.0,
         fontWeight: FontWeight.w400,
         height: 16 / 12,
         color: AppColors.onSurfaceVariant,
@@ -109,7 +108,7 @@ abstract class AppTypography {
 
   /// Label Large (14px, SemiBold 600, Line Height 20px, Tracking 0.01em)
   static TextStyle get labelLarge => GoogleFonts.hankenGrotesk(
-        fontSize: 14.sp,
+        fontSize: 14.0,
         fontWeight: FontWeight.w600,
         height: 20 / 14,
         letterSpacing: 0.14,
@@ -118,7 +117,7 @@ abstract class AppTypography {
 
   /// Label Medium (12px, Medium 500, Line Height 16px, Tracking 0.02em - Hanken Grotesk)
   static TextStyle get labelMedium => GoogleFonts.hankenGrotesk(
-        fontSize: 12.sp,
+        fontSize: 12.0,
         fontWeight: FontWeight.w500,
         height: 16 / 12,
         letterSpacing: 0.24,
@@ -127,7 +126,7 @@ abstract class AppTypography {
 
   /// Label Small (10px, Medium 500, Line Height 14px)
   static TextStyle get labelSmall => GoogleFonts.hankenGrotesk(
-        fontSize: 10.sp,
+        fontSize: 10.0,
         fontWeight: FontWeight.w500,
         height: 14 / 10,
         color: AppColors.outline,
@@ -137,7 +136,7 @@ abstract class AppTypography {
 
   /// Label Medium Monospaced (12px, Medium 500 - JetBrains Mono)
   static TextStyle get labelMediumMono => GoogleFonts.jetBrainsMono(
-        fontSize: 12.sp,
+        fontSize: 12.0,
         fontWeight: FontWeight.w500,
         height: 16 / 12,
         letterSpacing: 0.24,
@@ -146,7 +145,7 @@ abstract class AppTypography {
 
   /// Currency & Amount Monospaced Display (24px, Bold - JetBrains Mono)
   static TextStyle get amountDisplay => GoogleFonts.jetBrainsMono(
-        fontSize: 24.sp,
+        fontSize: 24.0,
         fontWeight: FontWeight.w700,
         height: 32 / 24,
         letterSpacing: -0.48,
@@ -155,7 +154,7 @@ abstract class AppTypography {
 
   /// Amount Large Display (36px, Bold - JetBrains Mono)
   static TextStyle get amountLarge => GoogleFonts.jetBrainsMono(
-        fontSize: 36.sp,
+        fontSize: 36.0,
         fontWeight: FontWeight.w700,
         height: 44 / 36,
         letterSpacing: -0.72,
@@ -164,14 +163,14 @@ abstract class AppTypography {
 
   /// Headline Medium Monospaced Bold (20px, Bold - JetBrains Mono)
   static TextStyle get headlineMediumMonoBold => GoogleFonts.jetBrainsMono(
-        fontSize: 20.sp,
+        fontSize: 20.0,
         fontWeight: FontWeight.w700,
         color: AppColors.onSurface,
       );
 
   /// Headline Large Monospaced Bold (32px, Bold - JetBrains Mono)
   static TextStyle get headlineLargeMonoBold => GoogleFonts.jetBrainsMono(
-        fontSize: 32.sp,
+        fontSize: 32.0,
         fontWeight: FontWeight.w700,
         color: AppColors.onSurface,
       );
@@ -186,18 +185,18 @@ abstract class AppTypography {
 
     return TextTheme(
       displayLarge: GoogleFonts.hankenGrotesk(
-        fontSize: 57.sp,
+        fontSize: 57.0,
         fontWeight: FontWeight.w400,
         letterSpacing: -0.25,
         color: onSurface,
       ),
       displayMedium: GoogleFonts.hankenGrotesk(
-        fontSize: 45.sp,
+        fontSize: 45.0,
         fontWeight: FontWeight.w400,
         color: onSurface,
       ),
       displaySmall: GoogleFonts.hankenGrotesk(
-        fontSize: 36.sp,
+        fontSize: 36.0,
         fontWeight: FontWeight.w400,
         color: onSurface,
       ),

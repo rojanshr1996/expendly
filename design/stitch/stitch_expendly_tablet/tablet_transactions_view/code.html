@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>All Transactions</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#2f3634",
+                        "surface-container": "#1a211f",
+                        "on-tertiary": "#4b2800",
+                        "background": "#0e1513",
+                        "inverse-surface": "#dde4e1",
+                        "tertiary": "#ffd1aa",
+                        "outline-variant": "#3c4a46",
+                        "on-surface": "#dde4e1",
+                        "surface": "#0e1513",
+                        "on-tertiary-fixed": "#2d1600",
+                        "glass-stroke": "rgba(255, 255, 255, 0.05)",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-primary-fixed-variant": "#005047",
+                        "primary-fixed": "#62fae3",
+                        "primary-fixed-dim": "#3cddc7",
+                        "on-secondary-container": "#b0b2ff",
+                        "on-primary-fixed": "#00201c",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "semantic-green": "#34d399",
+                        "secondary-fixed": "#e1e0ff",
+                        "on-error-container": "#ffdad6",
+                        "primary-container": "#2dd4bf",
+                        "surface-container-lowest": "#09100e",
+                        "on-surface-variant": "#bacac5",
+                        "primary": "#57f1db",
+                        "on-background": "#dde4e1",
+                        "tertiary-fixed": "#ffdcc0",
+                        "secondary-container": "#3131c0",
+                        "outline": "#859490",
+                        "secondary": "#c0c1ff",
+                        "surface-dim": "#0e1513",
+                        "error": "#ffb4ab",
+                        "glass-overlay": "rgba(14, 21, 19, 0.7)",
+                        "surface-container-high": "#242b2a",
+                        "on-primary-container": "#00574d",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-primary": "#003731",
+                        "on-secondary-fixed": "#07006c",
+                        "semantic-red": "#fb7185",
+                        "tertiary-container": "#ffac5a",
+                        "on-secondary": "#1000a9",
+                        "surface-bright": "#333b39",
+                        "inverse-on-surface": "#2b3230",
+                        "surface-tint": "#3cddc7",
+                        "on-tertiary-container": "#744000",
+                        "on-error": "#690005",
+                        "inverse-primary": "#006b5f",
+                        "surface-container-low": "#161d1b",
+                        "surface-container-highest": "#2f3634"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "stack-tight": "4px",
+                        "inner-component": "12px",
+                        "gutter-md": "16px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "title-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-md": ["JetBrains Mono"],
+                        "label-sm": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "500" }],
+                        "display-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "label-sm": ["10px", { "lineHeight": "12px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        .bento-card {
+            background-color: theme('colors.surface-container');
+            border: 1px solid theme('colors.glass-stroke');
+            border-radius: theme('borderRadius.xl');
+            padding: theme('spacing.container-padding');
+        }
+        .bento-card-no-pad {
+            background-color: theme('colors.surface-container');
+            border: 1px solid theme('colors.glass-stroke');
+            border-radius: theme('borderRadius.xl');
+        }
+        .glass-panel {
+            background-color: theme('colors.surface-container/60');
+            backdrop-filter: blur(12px);
+            border: 1px solid theme('colors.glass-stroke');
+            border-radius: theme('borderRadius.xl');
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: theme('colors.surface-container-highest');
+            border-radius: theme('borderRadius.full');
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-body-md overflow-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface/60 dark:bg-surface/60 backdrop-blur-md sticky top-0 w-full z-50 flex justify-between items-center px-container-padding py-base w-full">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-glass-stroke">
+<img class="w-full h-full object-cover" data-alt="A macro shot of a sleek, abstract metallic sphere glowing with a soft, bioluminescent cyan light against a deep obsidian background. The surface is smooth and reflective, embodying a modern, technical aesthetic. Professional studio lighting highlights subtle frosted glass textures around the edges. 8k resolution, photorealistic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxjILkyCyOns1PSh5ty0QzaPFgKu3tikfTGc1y55QjDX2aOBZIDRHOlI4cvaBiB_MGtherUZ6NSpVMgbkaZ4zm5SWKhcHSjaczRqmeGdunPl3DF22AHRQYj744G3JZQmasFpCEsRcplc_bH-SRNYbOPXbeiQwMtL9ja2MiiL5WMnPXDfYt0BmKhvqHi98TT2sdY1rQ5katKoq-BNhcUBC8K0hukg2-uyF55804CzypiJ58sc80K7VbFA"/>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Ledger</h1>
+</div>
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex overflow-hidden p-container-padding gap-gutter-md h-[calc(100vh-80px)]">
+<!-- Left Pane: Transactions List -->
+<section class="w-1/3 flex flex-col gap-base h-full">
+<!-- Filter Header -->
+<div class="bento-card p-4 flex flex-col gap-base shrink-0">
+<div class="flex justify-between items-center">
+<h2 class="font-title-lg text-title-lg text-on-surface">Transactions</h2>
+<button class="text-primary hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+<!-- Horizontal Date Picker / Quick Filters -->
+<div class="flex gap-2 overflow-x-auto custom-scrollbar pb-2">
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-full font-label-md text-label-md whitespace-nowrap">All Time</button>
+<button class="bg-surface-container-high border border-glass-stroke text-on-surface-variant hover:text-primary px-4 py-2 rounded-full font-label-md text-label-md whitespace-nowrap transition-colors">This Week</button>
+<button class="bg-surface-container-high border border-glass-stroke text-on-surface-variant hover:text-primary px-4 py-2 rounded-full font-label-md text-label-md whitespace-nowrap transition-colors">This Month</button>
+<button class="bg-surface-container-high border border-glass-stroke text-on-surface-variant hover:text-primary px-4 py-2 rounded-full font-label-md text-label-md whitespace-nowrap transition-colors">Custom</button>
+</div>
+<!-- Search -->
+<div class="relative mt-2">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-highest border border-glass-stroke rounded-lg py-2 pl-10 pr-4 text-on-surface font-body-sm focus:outline-none focus:border-primary transition-colors" placeholder="Search transactions..." type="text"/>
+</div>
+</div>
+<!-- List Container -->
+<div class="bento-card-no-pad flex-1 overflow-y-auto custom-scrollbar p-2">
+<!-- Date Group: Today -->
+<div class="mb-6">
+<h3 class="font-label-md text-label-md text-on-surface-variant px-2 mb-2 sticky top-0 bg-surface-container py-1 z-10">TODAY</h3>
+<div class="flex flex-col gap-1">
+<!-- Active Item -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-highest border border-primary/30 cursor-pointer relative overflow-hidden group">
+<div class="absolute inset-0 bg-primary/5 opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-3 relative z-10">
+<div class="w-11 h-11 bg-surface-container-high rounded-lg flex items-center justify-center text-primary border border-glass-stroke shadow-[0_0_15px_rgba(87,241,219,0.15)]">
+<span class="material-symbols-outlined">shopping_cart</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Whole Foods Market</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Groceries</p>
+</div>
+</div>
+<div class="text-right relative z-10">
+<p class="font-body-md text-body-md text-on-surface">-$142.50</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">10:42 AM</p>
+</div>
+</div>
+<!-- Inactive Item -->
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-highest/50 cursor-pointer transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 bg-surface-container-highest rounded-lg flex items-center justify-center text-on-surface-variant border border-glass-stroke group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">local_cafe</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Blue Bottle Coffee</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Dining</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-body-md text-body-md text-on-surface">-$6.50</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">08:15 AM</p>
+</div>
+</div>
+<!-- Incoming Transfer -->
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-highest/50 cursor-pointer transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 bg-surface-container-highest rounded-lg flex items-center justify-center text-semantic-green border border-glass-stroke group-hover:shadow-[0_0_10px_rgba(52,211,153,0.2)] transition-all">
+<span class="material-symbols-outlined">arrow_downward</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Stripe Transfer</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Income</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-body-md text-body-md text-semantic-green">+$4,250.00</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">07:00 AM</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Date Group: Yesterday -->
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant px-2 mb-2 sticky top-0 bg-surface-container py-1 z-10">YESTERDAY</h3>
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-highest/50 cursor-pointer transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 bg-surface-container-highest rounded-lg flex items-center justify-center text-on-surface-variant border border-glass-stroke group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">directions_car</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Uber Ride</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Transport</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-body-md text-body-md text-on-surface">-$24.00</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">09:30 PM</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-highest/50 cursor-pointer transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 bg-surface-container-highest rounded-lg flex items-center justify-center text-on-surface-variant border border-glass-stroke group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Osteria Mozza</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Dining</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-body-md text-body-md text-on-surface">-$185.00</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">07:45 PM</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Pane: Detail View -->
+<section class="w-2/3 h-full flex flex-col gap-gutter-md overflow-y-auto custom-scrollbar pb-8">
+<!-- Hero Card -->
+<div class="bento-card relative overflow-hidden flex flex-col items-center justify-center py-12">
+<!-- Decorative background glow -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="w-16 h-16 bg-surface-container-highest rounded-2xl flex items-center justify-center text-primary border border-glass-stroke shadow-[0_0_30px_rgba(87,241,219,0.2)] mb-4 relative z-10">
+<span class="material-symbols-outlined text-4xl">shopping_cart</span>
+</div>
+<h2 class="font-display-lg text-display-lg text-on-surface mb-1 relative z-10">-$142.50</h2>
+<p class="font-title-lg text-title-lg text-on-surface-variant relative z-10">Whole Foods Market</p>
+<div class="flex gap-4 mt-6 relative z-10">
+<span class="bg-surface-container-highest px-3 py-1 rounded-full font-label-md text-label-md text-on-surface border border-glass-stroke flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span> Today, 10:42 AM
+                    </span>
+<span class="bg-surface-container-highest px-3 py-1 rounded-full font-label-md text-label-md text-on-surface border border-glass-stroke flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">category</span> Groceries
+                    </span>
+<span class="bg-surface-container-highest px-3 py-1 rounded-full font-label-md text-label-md text-on-surface border border-glass-stroke flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">credit_card</span> •••• 4209
+                    </span>
+</div>
+</div>
+<!-- Detail Grid -->
+<div class="grid grid-cols-2 gap-gutter-md">
+<!-- Map / Location Card -->
+<div class="bento-card-no-pad overflow-hidden flex flex-col h-64">
+<div class="p-4 border-b border-glass-stroke flex justify-between items-center bg-surface-container/50">
+<h3 class="font-title-lg text-title-lg text-on-surface">Location</h3>
+<span class="material-symbols-outlined text-on-surface-variant">location_on</span>
+</div>
+<div class="flex-1 relative">
+<img class="w-full h-full object-cover" data-alt="A minimalist, dark-mode map interface of Los Angeles. The map uses deep charcoal and obsidian tones, with subtle bioluminescent cyan accents highlighting major roads. A glowing cyan pin marker indicates a specific location. The aesthetic is highly technical, clean, and modern, resembling a premium digital dashboard." data-location="Los Angeles" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDToX9Qo1InHUhrR1zy09MBeYguLzfM2BuTNi34L3tAvQkdIE2Yp_xJWb2la2YBcPpixiiARtk472T4GnFu7dyvKk6i3hy-TuNRMyfhCq44S3vhGWlcfnIQaiLpuMDjb932Z4vAalqnRc9_RtTG6Tq7IfsUh0ttcceMmvnY8hn2wfX0snyM7WO2UcAR7YfSBIBAppBCaE3OO_g14g0fXdrJ1KYrsNC8khGk-I7fDfjKCbRciptLUWxNng"/>
+<div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-background to-transparent pointer-events-none">
+<p class="font-body-md text-body-md text-on-surface">3rd St &amp; Fairfax Ave</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Los Angeles, CA</p>
+</div>
+</div>
+</div>
+<!-- Receipt / Document Card -->
+<div class="bento-card-no-pad overflow-hidden flex flex-col h-64">
+<div class="p-4 border-b border-glass-stroke flex justify-between items-center bg-surface-container/50">
+<h3 class="font-title-lg text-title-lg text-on-surface">Receipt</h3>
+<span class="material-symbols-outlined text-on-surface-variant">receipt_long</span>
+</div>
+<div class="flex-1 relative bg-surface-container-highest/30 flex items-center justify-center p-4">
+<img class="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm mix-blend-luminosity" data-alt="A macro, slightly blurred background image of a physical paper receipt with high-contrast text, partially illuminated by a cool blue-green rim light. The receipt is resting on a dark, matte surface. The image is framed to look like a scanned document within a sleek digital interface. Modern, technical vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLi4jYHh2guAp5q7MBS6KPNxMaqh6udiX7Xd8ESfrplf2BykK3_N8j5dh49gh16APzl9oDnEYWiC27v0x7dQomeU4uag9ui5e8Qjd0GIAPEWhWlyQ31pbo8HyE4K-hlo4YVbktDPtZn5ohpmWTBOqeRqhWoznibrHYsDWLGhW3JiF__SkzOOJZYJZmzgNvHv_VUH5fZmb9i2Ilqjyqsb9A97ZwdEXeZNVAT6XfMftPYUOiarodarKICA"/>
+<button class="relative z-10 bg-surface/80 backdrop-blur-md border border-glass-stroke px-6 py-3 rounded-lg font-title-lg text-title-lg text-primary flex items-center gap-2 hover:bg-surface transition-colors shadow-lg">
+<span class="material-symbols-outlined">zoom_in</span> View Image
+                         </button>
+</div>
+</div>
+</div>
+<!-- Notes & Tags -->
+<div class="bento-card flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h3 class="font-title-lg text-title-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">edit_note</span> Notes &amp; Tags
+                    </h3>
+<button class="text-on-surface-variant hover:text-primary transition-colors">Edit</button>
+</div>
+<div class="bg-surface-container-highest/50 rounded-lg p-4 border border-glass-stroke">
+<p class="font-body-md text-body-md text-on-surface-variant">Weekly organic grocery run. Need to split cost of cleaning supplies with roommates.</p>
+</div>
+<div class="flex gap-2 flex-wrap mt-2">
+<span class="bg-surface-container-high px-3 py-1.5 rounded-full font-label-sm text-label-sm text-on-surface border border-glass-stroke flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary"></span> shared
+                    </span>
+<span class="bg-surface-container-high px-3 py-1.5 rounded-full font-label-sm text-label-sm text-on-surface border border-glass-stroke flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span> essentials
+                    </span>
+<button class="bg-surface-container px-3 py-1.5 rounded-full font-label-sm text-label-sm text-on-surface-variant border border-dashed border-glass-stroke hover:text-primary hover:border-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">add</span> add tag
+                    </button>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex gap-4 mt-4">
+<button class="flex-1 bg-surface-container border border-glass-stroke text-on-surface font-title-lg text-title-lg py-3 rounded-xl hover:bg-surface-container-high transition-colors">
+                    Report Issue
+                </button>
+<button class="flex-1 bg-surface-container border border-glass-stroke text-on-surface font-title-lg text-title-lg py-3 rounded-xl hover:bg-surface-container-high transition-colors">
+                    Split Expense
+                </button>
+</div>
+</section>
+</main>
+</body></html>

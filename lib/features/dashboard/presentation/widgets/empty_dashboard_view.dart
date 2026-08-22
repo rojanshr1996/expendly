@@ -153,8 +153,10 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
     final textTheme = context.textTheme;
     final customTypography = context.customTypography;
+    final isLight = Theme.of(context).brightness == Brightness.light;
 
     return Center(
       child: Padding(
@@ -185,14 +187,13 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
                             height: 180.w,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: colorScheme.primary
-                                  .withAlpha((0.12 * 255).round()),
+                              color: colorScheme.primary.withValues(
+                                alpha: isLight ? 0.08 : 0.12,
+                              ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: colorScheme.primary.withAlpha(
-                                    (0.25 * _mainIconPulseAnimation.value * 255)
-                                        .round()
-                                        .clamp(0, 255),
+                                  color: colorScheme.primary.withValues(
+                                    alpha: isLight ? 0.12 : 0.25,
                                   ),
                                   blurRadius:
                                       (40 * _mainIconPulseAnimation.value).r,
@@ -214,11 +215,18 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
                             width: 140.w,
                             height: 140.w,
                             decoration: BoxDecoration(
-                              color: context.customColors.surfaceLow
-                                  .withAlpha((0.5 * 255).round()),
+                              color: isLight
+                                  ? colorScheme.surfaceContainerLow
+                                      .withValues(alpha: 0.8)
+                                  : customColors.surfaceLow
+                                      .withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(24.r),
                               border: Border.all(
-                                  color: context.customColors.glassStroke),
+                                color: isLight
+                                    ? colorScheme.outlineVariant
+                                        .withValues(alpha: 0.40)
+                                    : customColors.glassStroke,
+                              ),
                             ),
                           ),
                         ),
@@ -245,7 +253,9 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
                           iconSize: 22.sp,
                           iconColor: colorScheme.primary,
                           containerSize: 42.w,
-                          backgroundColor: context.customColors.surfaceLow,
+                          backgroundColor: isLight
+                              ? colorScheme.surfaceContainerLowest
+                              : customColors.surfaceLow,
                           borderRadius: BorderRadius.circular(14.r),
                           scaleAnimation: _topBadgeScaleAnimation,
                           floatAnimation: _badgeFloatAnimation,
@@ -261,7 +271,9 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
                           iconSize: 24.sp,
                           iconColor: colorScheme.secondary,
                           containerSize: 44.w,
-                          backgroundColor: context.customColors.surfaceLow,
+                          backgroundColor: isLight
+                              ? colorScheme.surfaceContainerLowest
+                              : customColors.surfaceLow,
                           borderRadius: BorderRadius.circular(14.r),
                           scaleAnimation: _bottomBadgeScaleAnimation,
                           floatAnimation: _badgeFloatAnimation,
@@ -302,7 +314,7 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
 
             // Add First Transaction CTA Button
             ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 320.w),
+              constraints: const BoxConstraints(maxWidth: 340.0),
               child: AppButton(
                 text: context.l10n.addFirstTransaction,
                 icon: const Icon(Icons.add_rounded),
@@ -312,51 +324,54 @@ class _EmptyDashboardViewState extends State<EmptyDashboardView>
             verticalMarginLarge,
 
             // Secondary Guidance Badges Footer
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 16.0,
+              runSpacing: 8.0,
               children: [
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.verified_user_outlined,
-                      size: 15.sp,
+                      size: 15.0,
                       color: colorScheme.onSurfaceVariant
                           .withAlpha((0.6 * 255).round()),
                     ),
-                    horizontalMarginXXSmall,
+                    const SizedBox(width: 4.0),
                     Text(
                       'Private & Secure',
                       style: customTypography.labelMediumMono.copyWith(
-                        fontSize: 11.sp,
+                        fontSize: 11.0,
                         color: colorScheme.onSurfaceVariant
                             .withAlpha((0.7 * 255).round()),
                       ),
                     ),
                   ],
                 ),
-                horizontalMarginMedium,
                 Container(
-                  width: 4.w,
-                  height: 4.w,
+                  width: 4.0,
+                  height: 4.0,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: colorScheme.outlineVariant,
                   ),
                 ),
-                horizontalMarginMedium,
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.cloud_off_rounded,
-                      size: 15.sp,
+                      size: 15.0,
                       color: colorScheme.onSurfaceVariant
                           .withAlpha((0.6 * 255).round()),
                     ),
-                    horizontalMarginXXSmall,
+                    const SizedBox(width: 4.0),
                     Text(
                       'Offline Ready',
                       style: customTypography.labelMediumMono.copyWith(
-                        fontSize: 11.sp,
+                        fontSize: 11.0,
                         color: colorScheme.onSurfaceVariant
                             .withAlpha((0.7 * 255).round()),
                       ),
@@ -405,6 +420,8 @@ class AnimatedLargeIconCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final colorScheme = Theme.of(context).colorScheme;
     final scale = scaleAnimation?.value ?? 1.0;
     final angle = rotateAnimation?.value ?? rotateAngle;
     final floatOffsetY = floatAnimation?.value ?? 0.0;
@@ -421,11 +438,14 @@ class AnimatedLargeIconCard extends StatelessWidget {
             height: containerSize,
             padding: EdgeInsets.zero,
             borderRadius: borderRadius ?? BorderRadius.circular(24.r),
+            blur: isLight ? 0 : 12,
             backgroundColor: backgroundColor ??
-                Theme.of(context)
-                    .colorScheme
-                    .surfaceContainerHigh
-                    .withAlpha((0.8 * 255).round()),
+                (isLight
+                    ? colorScheme.surfaceContainerLowest
+                    : colorScheme.surfaceContainerHigh.withValues(alpha: 0.85)),
+            borderStrokeColor: isLight
+                ? iconColor.withValues(alpha: 0.25)
+                : iconColor.withValues(alpha: 0.35),
             child: Center(
               child: Icon(
                 icon,

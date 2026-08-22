@@ -5,7 +5,8 @@ import '../constants/margin_constants.dart';
 import '../extensions/context_extensions.dart';
 import '../extensions/padding_extensions.dart';
 import '../extensions/shimmer_extensions.dart';
-
+import '../responsive/breakpoints.dart';
+import 'adaptive_sheet.dart';
 import 'glass_container.dart';
 
 /// Feedback & Status Components matching modern design system standards.
@@ -82,28 +83,34 @@ abstract class StatusComponents {
     final textTheme = context.textTheme;
     final colorScheme = context.colorScheme;
     final customColors = context.customColors;
+    final isTablet = Breakpoints.isTablet(context);
 
-    return showModalBottomSheet<bool>(
+    return AdaptiveSheet.show<bool>(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) {
+      maxDialogWidth: 440.0,
+      builder: (dialogCtx) {
         return GlassContainer(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-          padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 32.h),
+          borderRadius: isTablet
+              ? BorderRadius.circular(24.0)
+              : BorderRadius.vertical(top: Radius.circular(20.r)),
+          padding: isTablet
+              ? const EdgeInsets.all(24.0)
+              : EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 32.h),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Bottom sheet handle
-              Container(
-                width: 36.w,
-                height: 4.h,
-                decoration: BoxDecoration(
-                  color: colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(2.r),
+              // Bottom sheet handle (phone only)
+              if (!isTablet) ...[
+                Container(
+                  width: 36.w,
+                  height: 4.h,
+                  decoration: BoxDecoration(
+                    color: colorScheme.outlineVariant,
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
                 ),
-              ),
-              verticalMargin20,
+                verticalMargin20,
+              ],
               Text(
                 title,
                 style: textTheme.headlineMedium,
@@ -120,14 +127,14 @@ abstract class StatusComponents {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(false),
+                      onPressed: () => Navigator.of(dialogCtx).pop(false),
                       child: Text(cancelLabel),
                     ),
                   ),
                   horizontalMarginSmall,
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(true),
+                      onPressed: () => Navigator.of(dialogCtx).pop(true),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: isDestructive
                             ? customColors.semanticRed

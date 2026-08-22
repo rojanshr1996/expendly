@@ -5,8 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../di/injection.dart';
+import '../extensions/context_extensions.dart';
 import '../services/remote_config_service.dart';
-import '../theme/app_colors.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_typography.dart';
 
@@ -124,8 +124,10 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
   }
 
   Widget _buildMaintenanceScreen(BuildContext context) {
+    final colorScheme = context.colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: Container(
           width: double.infinity,
@@ -137,14 +139,14 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
                 width: 96.r,
                 height: 96.r,
                 decoration: BoxDecoration(
-                  color: AppColors.tertiaryContainer,
+                  color: colorScheme.tertiaryContainer,
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.tertiary, width: 2),
+                  border: Border.all(color: colorScheme.tertiary, width: 2),
                 ),
                 child: Icon(
                   Icons.build_circle_rounded,
                   size: 48.r,
-                  color: AppColors.tertiary,
+                  color: colorScheme.tertiary,
                 ),
               ),
               SizedBox(height: 24.h),
@@ -153,6 +155,7 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
                 textAlign: TextAlign.center,
                 style: AppTypography.headlineMedium.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
                 ),
               ),
               SizedBox(height: 12.h),
@@ -160,7 +163,7 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
                 _remoteConfig.maintenanceMessage,
                 textAlign: TextAlign.center,
                 style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.outline,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -171,8 +174,10 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
   }
 
   Widget _buildForceUpdateScreen(BuildContext context) {
+    final colorScheme = context.colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: Container(
           width: double.infinity,
@@ -184,14 +189,14 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
                 width: 96.r,
                 height: 96.r,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryContainer,
+                  color: colorScheme.primaryContainer,
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.primary, width: 2),
+                  border: Border.all(color: colorScheme.primary, width: 2),
                 ),
                 child: Icon(
                   Icons.system_update_rounded,
                   size: 48.r,
-                  color: AppColors.primary,
+                  color: colorScheme.primary,
                 ),
               ),
               SizedBox(height: 24.h),
@@ -200,6 +205,7 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
                 textAlign: TextAlign.center,
                 style: AppTypography.headlineMedium.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
                 ),
               ),
               SizedBox(height: 12.h),
@@ -207,7 +213,7 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
                 _remoteConfig.forceUpdateMessage,
                 textAlign: TextAlign.center,
                 style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.outline,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               SizedBox(height: 32.h),
@@ -227,18 +233,28 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
   }
 
   Widget _buildOptionalUpdateDialog(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+
     return Container(
-      color: Colors.black54,
+      color: Colors.black.withValues(alpha: isLight ? 0.4 : 0.6),
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Material(
-        color: AppColors.surfaceLow,
+        color: isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
         borderRadius: AppRadius.borderLg,
+        elevation: isLight ? 4 : 0,
         child: Container(
           padding: EdgeInsets.all(24.r),
           decoration: BoxDecoration(
             borderRadius: AppRadius.borderLg,
-            border: Border.all(color: AppColors.glassStroke, width: 1.0),
+            border: Border.all(
+              color: isLight
+                  ? colorScheme.outlineVariant.withValues(alpha: 0.50)
+                  : customColors.glassStroke,
+              width: 1.0,
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -246,13 +262,14 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
               Icon(
                 Icons.new_releases_rounded,
                 size: 48.r,
-                color: AppColors.secondary,
+                color: colorScheme.secondary,
               ),
               SizedBox(height: 16.h),
               Text(
                 _remoteConfig.optionalUpdateTitle,
                 style: AppTypography.headlineMedium.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
                 ),
               ),
               SizedBox(height: 8.h),
@@ -260,7 +277,7 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
                 _remoteConfig.optionalUpdateMessage,
                 textAlign: TextAlign.center,
                 style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.outline,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               SizedBox(height: 24.h),

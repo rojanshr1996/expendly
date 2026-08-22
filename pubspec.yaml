@@ -1,7 +1,8 @@
 name: expendly
 description: "Expendly - Personal finance management application with modern fiscal design."
 publish_to: 'none'
-version: 1.1.0+2
+
+version: 1.1.2+4
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

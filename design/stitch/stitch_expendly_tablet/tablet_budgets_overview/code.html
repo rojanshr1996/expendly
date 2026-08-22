@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lumina Wallet - Budgets</title>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(14, 21, 19, 0.5); 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1); 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2); 
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#2f3634",
+                      "surface-container": "#1a211f",
+                      "on-tertiary": "#4b2800",
+                      "background": "#0e1513",
+                      "inverse-surface": "#dde4e1",
+                      "tertiary": "#ffd1aa",
+                      "outline-variant": "#3c4a46",
+                      "on-surface": "#dde4e1",
+                      "surface": "#0e1513",
+                      "on-tertiary-fixed": "#2d1600",
+                      "glass-stroke": "rgba(255, 255, 255, 0.05)",
+                      "error-container": "#93000a",
+                      "secondary-fixed-dim": "#c0c1ff",
+                      "on-primary-fixed-variant": "#005047",
+                      "primary-fixed": "#62fae3",
+                      "primary-fixed-dim": "#3cddc7",
+                      "on-secondary-container": "#b0b2ff",
+                      "on-primary-fixed": "#00201c",
+                      "on-secondary-fixed-variant": "#2f2ebe",
+                      "tertiary-fixed-dim": "#ffb875",
+                      "semantic-green": "#34d399",
+                      "secondary-fixed": "#e1e0ff",
+                      "on-error-container": "#ffdad6",
+                      "primary-container": "#2dd4bf",
+                      "surface-container-lowest": "#09100e",
+                      "on-surface-variant": "#bacac5",
+                      "primary": "#57f1db",
+                      "on-background": "#dde4e1",
+                      "tertiary-fixed": "#ffdcc0",
+                      "secondary-container": "#3131c0",
+                      "outline": "#859490",
+                      "secondary": "#c0c1ff",
+                      "surface-dim": "#0e1513",
+                      "error": "#ffb4ab",
+                      "glass-overlay": "rgba(14, 21, 19, 0.7)",
+                      "surface-container-high": "#242b2a",
+                      "on-primary-container": "#00574d",
+                      "on-tertiary-fixed-variant": "#6b3b00",
+                      "on-primary": "#003731",
+                      "on-secondary-fixed": "#07006c",
+                      "semantic-red": "#fb7185",
+                      "tertiary-container": "#ffac5a",
+                      "on-secondary": "#1000a9",
+                      "surface-bright": "#333b39",
+                      "inverse-on-surface": "#2b3230",
+                      "surface-tint": "#3cddc7",
+                      "on-tertiary-container": "#744000",
+                      "on-error": "#690005",
+                      "inverse-primary": "#006b5f",
+                      "surface-container-low": "#161d1b",
+                      "surface-container-highest": "#2f3634"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "stack-tight": "4px",
+                      "inner-component": "12px",
+                      "gutter-md": "16px",
+                      "container-padding": "24px"
+              },
+              "fontFamily": {
+                      "title-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-sm": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-md": [
+                              "JetBrains Mono"
+                      ],
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ]
+              },
+              "fontSize": {
+                      "title-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "15px",
+                              {
+                                      "lineHeight": "22px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "22px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "11px",
+                              {
+                                      "lineHeight": "14px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-sm": [
+                              "10px",
+                              {
+                                      "lineHeight": "12px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-x-hidden selection:bg-primary selection:text-on-primary relative">
+<!-- Ambient Background Glows -->
+<div class="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+<div class="fixed bottom-[-20%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 rounded-full blur-[100px] pointer-events-none z-0"></div>
+<!-- TopAppBar (From JSON) -->
+<header class="bg-surface/60 dark:bg-surface/60 backdrop-blur-md sticky top-0 w-full z-50 border-b border-glass-stroke flex justify-between items-center px-container-padding py-base w-full">
+<div class="flex items-center gap-gutter-md">
+<button class="w-10 h-10 rounded-full bg-surface-container border border-glass-stroke overflow-hidden hover:opacity-80 transition-opacity scale-95 active:scale-90 transition-transform">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A futuristic, slightly glowing user avatar portrait of an individual in a high-tech cyberpunk setting, with cyan and dark green lighting reflecting off metallic accessories, evoking a modern-technical fintech user." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKDf943Jk6f1d9vVHXZOeQusd4tsUphYCw7A2t1AcGvEYzEiC_UAapRdkzOJsrt5Xkr_H__yCtu5vwYya-wRyNT1LRU5wokOAVkJWuclOhSQwdjH99rrox3wneDgD_PvxgFoZeUGUQrWvSq0wWeFYYR_Eva7VFc5WodqQGANSWmFuszMBgkeCPUotCn4P_JOiAd9xmGRjoL6-bmH-cHyosQ3Zv29ZCT20iMSX8neyK8YXesOmGyESlpQ"/>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">Ledger</h1>
+</div>
+<!-- Desktop Nav Cluster (Injected logic: hidden md:flex) -->
+<nav class="hidden md:flex items-center gap-container-padding">
+<a class="flex items-center gap-2 text-on-surface-variant hover:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md uppercase tracking-wider">Home</span>
+</a>
+<!-- Active State: Insights -->
+<a class="flex items-center gap-2 text-primary hover:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined fill" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-label-md text-label-md uppercase tracking-wider font-bold">Insights</span>
+</a>
+<a class="flex items-center gap-2 text-on-surface-variant hover:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md uppercase tracking-wider">Wallets</span>
+</a>
+</nav>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-primary hover:opacity-80 transition-opacity scale-95 active:scale-90 transition-transform bg-surface-container-high border border-glass-stroke">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-container-padding py-container-padding z-10 relative flex flex-col md:flex-row gap-gutter-md pb-32 md:pb-container-padding">
+<!-- Left Column: Budget Grid -->
+<div class="flex-1 flex flex-col gap-gutter-md">
+<!-- Header & Action -->
+<div class="flex justify-between items-end mb-inner-component">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-surface mb-stack-tight">Budgets</h2>
+<p class="text-on-surface-variant font-body-sm text-body-sm">Track and manage your spending limits.</p>
+</div>
+<button class="hidden md:flex bg-primary-container text-on-primary-container font-label-md text-label-md px-4 py-2 rounded-lg items-center gap-2 hover:bg-primary hover:text-on-primary transition-colors shadow-[0_0_15px_rgba(87,241,219,0.2)]">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    ADD BUDGET
+                </button>
+</div>
+<!-- Bento Grid for Budgets -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-gutter-md">
+<!-- Budget Card 1: Groceries (Warning) -->
+<div class="bg-surface-container rounded-xl border border-glass-stroke p-container-padding flex flex-col gap-inner-component relative overflow-hidden group hover:border-outline-variant transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-inner-component">
+<div class="w-11 h-11 bg-surface-container-highest rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">shopping_cart</span>
+</div>
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface">Groceries</h3>
+<p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">Monthly</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="mt-base">
+<div class="flex justify-between items-baseline mb-stack-tight">
+<span class="font-headline-md text-headline-md text-tertiary-container">$480.00</span>
+<span class="font-label-md text-label-md text-on-surface-variant">of $500.00</span>
+</div>
+<!-- Progress Bar Container -->
+<div class="h-2 w-full bg-white/10 rounded-full overflow-hidden relative">
+<!-- Fill -->
+<div class="absolute top-0 left-0 h-full bg-tertiary-container rounded-full w-[96%] shadow-[0_0_10px_rgba(255,172,90,0.5)]"></div>
+</div>
+<p class="font-label-sm text-label-sm text-tertiary-container mt-stack-tight text-right flex items-center justify-end gap-1">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                            Near Limit (96%)
+                        </p>
+</div>
+</div>
+<!-- Budget Card 2: Dining Out (Good) -->
+<div class="bg-surface-container rounded-xl border border-glass-stroke p-container-padding flex flex-col gap-inner-component relative overflow-hidden group hover:border-outline-variant transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-inner-component">
+<div class="w-11 h-11 bg-surface-container-highest rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface">Dining Out</h3>
+<p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">Monthly</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="mt-base">
+<div class="flex justify-between items-baseline mb-stack-tight">
+<span class="font-headline-md text-headline-md text-on-surface">$120.50</span>
+<span class="font-label-md text-label-md text-on-surface-variant">of $300.00</span>
+</div>
+<!-- Progress Bar Container -->
+<div class="h-2 w-full bg-white/10 rounded-full overflow-hidden relative">
+<!-- Fill -->
+<div class="absolute top-0 left-0 h-full bg-primary rounded-full w-[40%] shadow-[0_0_10px_rgba(87,241,219,0.3)]"></div>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-stack-tight text-right">
+                            $179.50 remaining
+                        </p>
+</div>
+</div>
+<!-- Budget Card 3: Transportation (Over) -->
+<div class="bg-surface-container rounded-xl border border-glass-stroke p-container-padding flex flex-col gap-inner-component relative overflow-hidden group hover:border-outline-variant transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-inner-component">
+<div class="w-11 h-11 bg-error-container/30 rounded-lg flex items-center justify-center text-semantic-red border border-semantic-red/20">
+<span class="material-symbols-outlined">directions_car</span>
+</div>
+<div>
+<h3 class="font-title-lg text-title-lg text-semantic-red">Transport</h3>
+<p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">Monthly</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="mt-base">
+<div class="flex justify-between items-baseline mb-stack-tight">
+<span class="font-headline-md text-headline-md text-semantic-red">$165.00</span>
+<span class="font-label-md text-label-md text-on-surface-variant">of $150.00</span>
+</div>
+<!-- Progress Bar Container -->
+<div class="h-2 w-full bg-white/10 rounded-full overflow-hidden relative">
+<!-- Fill -->
+<div class="absolute top-0 left-0 h-full bg-semantic-red rounded-full w-full shadow-[0_0_10px_rgba(251,113,133,0.5)]"></div>
+</div>
+<p class="font-label-sm text-label-sm text-semantic-red mt-stack-tight text-right flex items-center justify-end gap-1">
+<span class="material-symbols-outlined text-[14px]">error</span>
+                            Over budget by $15.00
+                        </p>
+</div>
+</div>
+<!-- Budget Card 4: Entertainment (Good) -->
+<div class="bg-surface-container rounded-xl border border-glass-stroke p-container-padding flex flex-col gap-inner-component relative overflow-hidden group hover:border-outline-variant transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-inner-component">
+<div class="w-11 h-11 bg-surface-container-highest rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">movie</span>
+</div>
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface">Entertainment</h3>
+<p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">Monthly</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="mt-base">
+<div class="flex justify-between items-baseline mb-stack-tight">
+<span class="font-headline-md text-headline-md text-on-surface">$45.00</span>
+<span class="font-label-md text-label-md text-on-surface-variant">of $200.00</span>
+</div>
+<!-- Progress Bar Container -->
+<div class="h-2 w-full bg-white/10 rounded-full overflow-hidden relative">
+<!-- Fill -->
+<div class="absolute top-0 left-0 h-full bg-primary rounded-full w-[22.5%] shadow-[0_0_10px_rgba(87,241,219,0.3)]"></div>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-stack-tight text-right">
+                            $155.00 remaining
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Budget Health Widget -->
+<aside class="w-full md:w-[320px] lg:w-[360px] flex flex-col gap-gutter-md shrink-0">
+<!-- Health Card -->
+<div class="bg-surface-container-high rounded-xl border border-glass-stroke p-container-padding relative overflow-hidden">
+<!-- Decorative background blur -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none"></div>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-inner-component flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">health_and_safety</span>
+                    Budget Health
+                </h3>
+<div class="flex flex-col gap-base">
+<div class="flex justify-between items-center py-2 border-b border-glass-stroke">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Total Budgeted</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold">$1,150.00</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-glass-stroke">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Total Spent</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold">$810.50</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Remaining Pool</span>
+<span class="font-body-md text-body-md text-primary font-semibold">$339.50</span>
+</div>
+</div>
+<!-- Abstract Chart Area -->
+<div class="mt-container-padding h-32 w-full flex items-end justify-between gap-1 relative">
+<!-- Chart Bars (Varying opacities based on current month progress) -->
+<div class="w-full bg-primary/20 hover:bg-primary/40 transition-colors rounded-t-sm h-[40%]"></div>
+<div class="w-full bg-primary/30 hover:bg-primary/50 transition-colors rounded-t-sm h-[60%]"></div>
+<div class="w-full bg-primary/40 hover:bg-primary/60 transition-colors rounded-t-sm h-[35%]"></div>
+<div class="w-full bg-primary/50 hover:bg-primary/70 transition-colors rounded-t-sm h-[80%] relative">
+<!-- Active Indicator -->
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 font-label-sm text-label-sm bg-surface text-on-surface px-2 py-1 rounded border border-glass-stroke">This Wk</div>
+</div>
+<div class="w-full bg-primary/10 rounded-t-sm h-[20%] border border-dashed border-glass-stroke"></div>
+<div class="w-full bg-primary/10 rounded-t-sm h-[30%] border border-dashed border-glass-stroke"></div>
+</div>
+<button class="w-full mt-inner-component bg-transparent border border-outline-variant text-on-surface font-label-md text-label-md py-2 rounded-lg hover:bg-surface-variant transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">history</span>
+                    VIEW HISTORY
+                </button>
+</div>
+<!-- Suggestion Card -->
+<div class="bg-surface-container rounded-xl border border-glass-stroke p-inner-component flex gap-inner-component items-start">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 text-secondary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">lightbulb</span>
+</div>
+<div>
+<h4 class="font-body-md text-body-md text-on-surface mb-1">Adjust Grocery Limit</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">You consistently near your grocery limit. Consider raising it by $50 using your remaining pool.</p>
+</div>
+</div>
+</aside>
+</main>
+<!-- Mobile Bottom NavBar (From JSON, hidden on md) -->
+<!-- Applying Active State logic to Insights (closest match to Budgets/Analytics) -->
+<nav class="md:hidden bg-surface/60 dark:bg-surface/60 backdrop-blur-md fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 border-t border-glass-stroke">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/80 transition-colors scale-98 active:scale-95 transition-all duration-200 gap-1 w-16" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<!-- ACTIVE ITEM: Insights -->
+<a class="flex flex-col items-center justify-center text-primary font-bold hover:text-primary/80 transition-colors scale-98 active:scale-95 transition-all duration-200 gap-1 w-16 relative" href="#">
+<!-- Active Pill Background -->
+<div class="absolute inset-0 bg-primary/10 rounded-full scale-110 -z-10 blur-sm"></div>
+<span class="material-symbols-outlined fill" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-label-md text-label-md">Insights</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/80 transition-colors scale-98 active:scale-95 transition-all duration-200 gap-1 w-16" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Wallets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/80 transition-colors scale-98 active:scale-95 transition-all duration-200 gap-1 w-16" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<!-- Mobile FAB (Contextual for Budgets) -->
+<button class="md:hidden fixed bottom-28 right-container-padding w-14 h-14 bg-primary text-on-primary rounded-xl shadow-[0_4px_20px_rgba(87,241,219,0.4)] flex items-center justify-center z-40 hover:bg-primary-fixed transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+</body></html>

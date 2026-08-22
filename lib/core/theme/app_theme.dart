@@ -63,6 +63,24 @@ abstract class AppTheme {
         margin: EdgeInsets.zero,
       ),
 
+      // Dialog Theme (Glassmorphic dark container)
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppColors.surfaceLow,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppRadius.borderLg,
+          side: const BorderSide(color: AppColors.glassStroke, width: 1.0),
+        ),
+        titleTextStyle: AppTypography.titleMedium.copyWith(
+          color: AppColors.onSurface,
+          fontWeight: FontWeight.bold,
+        ),
+        contentTextStyle: AppTypography.bodyMedium.copyWith(
+          color: AppColors.onSurfaceVariant,
+        ),
+      ),
+
       // App Bar Theme (Clean glass surface)
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.background,
@@ -223,6 +241,25 @@ abstract class AppTheme {
               color: AppColors.lightOutlineVariant, width: 1.0),
         ),
         margin: EdgeInsets.zero,
+      ),
+
+      // Dialog Theme (Light container with crisp outline)
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppColors.lightSurface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppRadius.borderLg,
+          side: const BorderSide(
+              color: AppColors.lightOutlineVariant, width: 1.0),
+        ),
+        titleTextStyle: AppTypography.titleMedium.copyWith(
+          color: AppColors.lightOnSurface,
+          fontWeight: FontWeight.bold,
+        ),
+        contentTextStyle: AppTypography.bodyMedium.copyWith(
+          color: AppColors.lightOnSurfaceVariant,
+        ),
       ),
 
       // App Bar Theme (Clean light background surface)

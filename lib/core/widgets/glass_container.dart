@@ -40,13 +40,13 @@ class GlassContainer extends StatelessWidget {
     final effectiveRadius = borderRadius ?? AppRadius.borderLg;
     final effectiveBg = backgroundColor ??
         (isLight
-            ? colorScheme.surfaceContainerLowest.withValues(alpha: 0.45)
-            : colorScheme.surfaceContainerHigh.withValues(alpha: 0.35));
+            ? colorScheme.surfaceContainerLowest.withValues(alpha: 0.90)
+            : colorScheme.surfaceContainerHigh.withValues(alpha: 0.45));
     final effectiveStroke = borderStrokeColor ??
         (isLight
-            ? Colors.white.withValues(alpha: 0.60)
+            ? colorScheme.outlineVariant.withValues(alpha: 0.50)
             : customColors.glassStroke.withValues(alpha: 0.45));
-    final effectiveBlur = blur == 24.0 ? 18.0 : blur;
+    final effectiveBlur = blur == 24.0 ? 16.0 : blur;
 
     Widget container = Container(
       width: width,

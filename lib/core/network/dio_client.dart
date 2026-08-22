@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
+import '../config/app_config.dart';
 import '../utils/app_logger.dart';
 
 @lazySingleton
@@ -15,7 +16,7 @@ class DioClient {
         sendTimeout: const Duration(seconds: 10),
         headers: {
           'Accept': 'application/json',
-          'User-Agent': 'Expendly-App/1.1.0',
+          'User-Agent': 'Expendly-App/${AppConfig.appVersion}',
         },
       ),
     );

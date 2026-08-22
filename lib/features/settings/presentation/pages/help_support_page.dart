@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/config/app_config.dart';
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
@@ -682,7 +683,7 @@ class _HelpSupportPageState extends State<HelpSupportPage>
               // Additional info footer
               Center(
                 child: Text(
-                  'Expendly v1.1.0 • Offline Personal Finance',
+                  '${context.l10n.appName} ${AppConfig.formattedVersion} • Offline Personal Finance',
                   style: customTypography.labelMediumMono.copyWith(
                     color: colorScheme.outline,
                     fontSize: 10.sp,

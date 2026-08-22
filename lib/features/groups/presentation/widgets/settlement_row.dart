@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
@@ -28,7 +29,8 @@ class SettlementRow extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final customColors = context.customColors;
     final isLight = Theme.of(context).brightness == Brightness.light;
-    final br = BorderRadius.circular(18.r);
+    final isTablet = Breakpoints.isTablet(context);
+    final br = BorderRadius.circular(isTablet ? 16.0 : 18.r);
 
     final isSelectedFrom =
         settlement.fromParticipant.id == selectedParticipant.id;
@@ -81,7 +83,7 @@ class SettlementRow extends StatelessWidget {
         isUserDebtor ? AppButtonVariant.primary : AppButtonVariant.secondary;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
+      margin: EdgeInsets.only(bottom: isTablet ? 10.0 : 12.h),
       decoration: BoxDecoration(
         borderRadius: br,
         gradient: LinearGradient(
@@ -106,13 +108,13 @@ class SettlementRow extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.white.withValues(alpha: isLight ? 0.6 : 0.0),
-            blurRadius: 6.r,
-            spreadRadius: -1.r,
+            blurRadius: isTablet ? 6.0 : 6.r,
+            spreadRadius: isTablet ? -1.0 : -1.r,
             offset: const Offset(0, -1),
           ),
           BoxShadow(
             color: Colors.black.withValues(alpha: isLight ? 0.04 : 0.16),
-            blurRadius: 14.r,
+            blurRadius: isTablet ? 14.0 : 14.r,
             spreadRadius: 0,
             offset: const Offset(0, 4),
           ),
@@ -123,11 +125,14 @@ class SettlementRow extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+            padding: EdgeInsets.symmetric(
+              horizontal: isTablet ? 12.0 : 14.w,
+              vertical: isTablet ? 10.0 : 12.h,
+            ),
             child: Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(8.w),
+                  padding: EdgeInsets.all(isTablet ? 6.0 : 8.w),
                   decoration: BoxDecoration(
                     color: iconColor.withValues(alpha: isLight ? 0.14 : 0.12),
                     shape: BoxShape.circle,
@@ -136,14 +141,18 @@ class SettlementRow extends StatelessWidget {
                       width: 1,
                     ),
                   ),
-                  child: Icon(iconData, color: iconColor, size: 18.w),
+                  child: Icon(
+                    iconData,
+                    color: iconColor,
+                    size: isTablet ? 16.0 : 18.w,
+                  ),
                 ),
-                SizedBox(width: 10.w),
+                SizedBox(width: isTablet ? 8.0 : 10.w),
                 ParticipantAvatar(
                   name: otherParticipant.name,
                   colorIndex: otherParticipant.colorIndex,
                 ),
-                SizedBox(width: 12.w),
+                SizedBox(width: isTablet ? 10.0 : 12.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,24 +162,26 @@ class SettlementRow extends StatelessWidget {
                         style: context.customTypography.bodyMedium.copyWith(
                           color: colorScheme.onSurface,
                           fontWeight: FontWeight.w600,
+                          fontSize: isTablet ? 13.5 : null,
                         ),
                       ),
                       if (settlement.reasons.isNotEmpty) ...[
-                        SizedBox(height: 2.h),
+                        SizedBox(height: isTablet ? 2.0 : 2.h),
                         Text(
                           'For ${settlement.reasons.join(', ')}',
                           style: context.textTheme.labelSmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
+                            fontSize: isTablet ? 11.5 : null,
                           ),
                         ),
                       ],
-                      SizedBox(height: 4.h),
+                      SizedBox(height: isTablet ? 4.0 : 4.h),
                       CompactAmountText(
                         amount: settlement.amount,
                         style: context.customTypography.headlineMediumMonoBold
                             .copyWith(
                           color: iconColor,
-                          fontSize: 14.5.sp,
+                          fontSize: isTablet ? 14.0 : 14.5.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -178,16 +189,18 @@ class SettlementRow extends StatelessWidget {
                   ),
                 ),
                 if (onAction != null && (isSelfSelected || isOtherSelf)) ...[
-                  SizedBox(width: 8.w),
+                  SizedBox(width: isTablet ? 6.0 : 8.w),
                   AppButton(
                     text: actionLabel,
-                    width: 86.w,
-                    height: 34.h,
+                    width: isTablet ? null : 86.w,
+                    height: isTablet ? 32.0 : 34.h,
                     textStyle: TextStyle(
-                      fontSize: 12.sp,
+                      fontSize: isTablet ? 12.0 : 12.sp,
                       fontWeight: FontWeight.bold,
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 8.w),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isTablet ? 12.0 : 8.w,
+                    ),
                     onPressed: onAction!,
                     variant: actionVariant,
                   ),

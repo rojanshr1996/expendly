@@ -10,25 +10,32 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
+import '../../../../core/responsive/tablet_spacing.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/adaptive_navigation_rail.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../../analytics/presentation/pages/refined_reports_page.dart';
 import '../../../budgets/presentation/cubit/budget_cubit.dart';
 import '../../../budgets/presentation/cubit/budget_state.dart';
 import '../../../budgets/presentation/pages/budgets_overview_page.dart';
+import '../../../groups/presentation/cubit/groups_cubit.dart';
+import '../../../groups/presentation/pages/groups_list_page.dart';
+import '../../../settings/presentation/pages/settings_page.dart';
 import '../../../transactions/presentation/pages/all_transactions_page.dart';
 import '../cubit/dashboard_cubit.dart';
 import '../cubit/dashboard_state.dart';
 import '../widgets/dashboard_bento_grid.dart';
 import '../widgets/dashboard_cash_flow_chart.dart';
+import '../widgets/dashboard_categories_donut.dart';
 import '../widgets/dashboard_header.dart';
 import '../widgets/dashboard_recent_activity.dart';
 import '../widgets/dashboard_recent_groups.dart';
 import '../widgets/dashboard_shimmer.dart';
+import '../widgets/dashboard_tablet_header.dart';
+import '../widgets/dashboard_tablet_summary_row.dart';
 import '../widgets/empty_dashboard_view.dart';
-import '../../../groups/presentation/cubit/groups_cubit.dart';
-import '../../../groups/presentation/pages/groups_list_page.dart';
 
 @RoutePage()
 class DashboardPage extends StatefulWidget {
@@ -41,11 +48,20 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final ValueNotifier<int> _currentTabNotifier = ValueNotifier<int>(0);
   final ValueNotifier<bool> _isPrivacyModeNotifier = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _isNavRailExpandedNotifier =
+      ValueNotifier<bool>(true);
+
+  /// Maps tablet tab indices to the total tab count.
+  /// Compact: 0=Overview, 1=Activity, 2=Budgets (3 tabs)
+  /// Tablet:  0=Overview, 1=Activity, 2=Budgets, 3=Reports, 4=Groups, 5=Settings (6 tabs)
+  static const int _compactTabCount = 3;
+  static const int _tabletTabCount = 6;
 
   @override
   void dispose() {
     _isPrivacyModeNotifier.dispose();
     _currentTabNotifier.dispose();
+    _isNavRailExpandedNotifier.dispose();
     super.dispose();
   }
 
@@ -136,24 +152,159 @@ class _DashboardPageState extends State<DashboardPage> {
       ],
       child: Builder(
         builder: (context) {
-          return ValueListenableBuilder<int>(
-            valueListenable: _currentTabNotifier,
-            builder: (context, currentTab, _) {
-              return PopScope(
-                canPop: currentTab == 0,
-                onPopInvokedWithResult: (didPop, _) {
-                  if (!didPop) {
-                    _currentTabNotifier.value = 0;
-                  }
-                },
-                child: Scaffold(
-                  extendBody: true,
-                  backgroundColor: context.colorScheme.surface,
-                  body: IndexedStack(
-                    index: currentTab.clamp(0, 2),
+          final isTablet = Breakpoints.isTablet(context);
+          return isTablet
+              ? _buildTabletLayout(context)
+              : _buildCompactLayout(context);
+        },
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Compact Layout (Phone) — Original bottom nav bar
+  // ---------------------------------------------------------------------------
+
+  Widget _buildCompactLayout(BuildContext context) {
+    return ValueListenableBuilder<int>(
+      valueListenable: _currentTabNotifier,
+      builder: (context, currentTab, _) {
+        return PopScope(
+          canPop: currentTab == 0,
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop) {
+              _currentTabNotifier.value = 0;
+            }
+          },
+          child: Scaffold(
+            extendBody: true,
+            backgroundColor: context.colorScheme.surface,
+            body: IndexedStack(
+              index: currentTab.clamp(0, _compactTabCount - 1),
+              children: [
+                // Tab 0: Overview
+                _buildOverviewTab(context),
+
+                // Tab 1: Activity / All Transactions
+                AllTransactionsPage(
+                    isPrivacyModeNotifier: _isPrivacyModeNotifier),
+
+                // Tab 2: Budgets Overview
+                BudgetsOverviewPage(
+                    isPrivacyModeNotifier: _isPrivacyModeNotifier),
+              ],
+            ),
+
+            // Floating Bottom Navigation Bar with Center Add FAB
+            bottomNavigationBar: ValueListenableBuilder<int>(
+              valueListenable: _currentTabNotifier,
+              builder: (context, currentTab, _) {
+                return _FloatingBottomNavBar(
+                  currentTab: currentTab,
+                  onTabSelected: (index) {
+                    if (index == 3) {
+                      context.router.push(const SettingsRoute());
+                    } else {
+                      _currentTabNotifier.value = index;
+                    }
+                  },
+                  onCenterFabPressed: () =>
+                      _handleCenterFabPress(context, currentTab),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Tablet Layout — Navigation Rail + expanded content
+  // ---------------------------------------------------------------------------
+
+  Widget _buildTabletLayout(BuildContext context) {
+    final l10n = context.l10n;
+
+    // Define navigation rail items for tablet
+    final navItems = [
+      NavRailItem(
+        icon: Icons.dashboard_outlined,
+        activeIcon: Icons.dashboard_rounded,
+        label: l10n.overview,
+        index: 0,
+      ),
+      NavRailItem(
+        icon: Icons.receipt_long_outlined,
+        activeIcon: Icons.receipt_long_rounded,
+        label: l10n.activity,
+        index: 1,
+      ),
+      NavRailItem(
+        icon: Icons.account_balance_wallet_outlined,
+        activeIcon: Icons.account_balance_wallet_rounded,
+        label: l10n.budgets,
+        index: 2,
+      ),
+      NavRailItem(
+        icon: Icons.bar_chart_outlined,
+        activeIcon: Icons.bar_chart_rounded,
+        label: l10n.reports,
+        index: 3,
+      ),
+      NavRailItem(
+        icon: Icons.group_outlined,
+        activeIcon: Icons.group_rounded,
+        label: l10n.groups,
+        index: 4,
+      ),
+    ];
+
+    final bottomNavItems = [
+      NavRailItem(
+        icon: Icons.settings_outlined,
+        activeIcon: Icons.settings_rounded,
+        label: l10n.settings,
+        index: 5,
+      ),
+    ];
+
+    final isWideTablet = MediaQuery.sizeOf(context).width >= 900;
+
+    return ValueListenableBuilder<int>(
+      valueListenable: _currentTabNotifier,
+      builder: (context, currentTab, _) {
+        return PopScope(
+          canPop: currentTab == 0,
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop) {
+              _currentTabNotifier.value = 0;
+            }
+          },
+          child: Scaffold(
+            backgroundColor: context.colorScheme.surface,
+            body: Row(
+              children: [
+                // Left: Navigation Rail
+                AdaptiveNavigationRail(
+                  selectedIndex: currentTab,
+                  isExpanded: isWideTablet,
+                  items: navItems,
+                  bottomItems: bottomNavItems,
+                  onDestinationSelected: (index) {
+                    _currentTabNotifier.value = index;
+                  },
+                  onNewEntryPressed: () =>
+                      _handleCenterFabPress(context, currentTab),
+                ),
+
+                // Right: Main content area
+                Expanded(
+                  child: IndexedStack(
+                    index: currentTab.clamp(0, _tabletTabCount - 1),
                     children: [
-                      // Tab 0: Overview
-                      _buildOverviewTab(context),
+                      // Tab 0: Overview (without DashboardHeader — nav rail handles navigation)
+                      _buildOverviewTabTablet(context),
 
                       // Tab 1: Activity / All Transactions
                       AllTransactionsPage(
@@ -162,35 +313,30 @@ class _DashboardPageState extends State<DashboardPage> {
                       // Tab 2: Budgets Overview
                       BudgetsOverviewPage(
                           isPrivacyModeNotifier: _isPrivacyModeNotifier),
+
+                      // Tab 3: Reports & Analytics
+                      RefinedReportsPage(
+                          isPrivacyModeNotifier: _isPrivacyModeNotifier),
+
+                      // Tab 4: Groups & Splits
+                      const GroupsListPage(),
+
+                      // Tab 5: Settings
+                      const SettingsPage(),
                     ],
                   ),
-
-                  // Floating Bottom Navigation Bar with Center Add FAB
-                  bottomNavigationBar: ValueListenableBuilder<int>(
-                    valueListenable: _currentTabNotifier,
-                    builder: (context, currentTab, _) {
-                      return _FloatingBottomNavBar(
-                        currentTab: currentTab,
-                        onTabSelected: (index) {
-                          if (index == 3) {
-                            context.router.push(const SettingsRoute());
-                          } else {
-                            _currentTabNotifier.value = index;
-                          }
-                        },
-                        onCenterFabPressed: () =>
-                            _handleCenterFabPress(context, currentTab),
-                      );
-                    },
-                  ),
                 ),
-              );
-            },
-          );
-        },
-      ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
+
+  // ---------------------------------------------------------------------------
+  // Overview Tab — Compact (Phone)
+  // ---------------------------------------------------------------------------
 
   Widget _buildOverviewTab(BuildContext context) {
     final topInset = MediaQuery.of(context).padding.top;
@@ -248,6 +394,164 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Overview Tab — Tablet
+  // ---------------------------------------------------------------------------
+
+  Widget _buildOverviewTabTablet(BuildContext context) {
+    return BlocBuilder<DashboardCubit, DashboardState>(
+      buildWhen: (previous, current) {
+        if (previous.runtimeType != current.runtimeType) return true;
+        if (previous is DashboardLoaded && current is DashboardLoaded) {
+          return previous.summary != current.summary;
+        }
+        return true;
+      },
+      builder: (context, state) {
+        if (state is DashboardLoading) {
+          return const Padding(
+            padding: EdgeInsets.only(top: TabletSpacing.canvasPadding),
+            child: DashboardShimmer(key: ValueKey('tablet_shimmer')),
+          );
+        }
+        return _buildTabletLoadedOrErrorContent(context, state);
+      },
+    );
+  }
+
+  Widget _buildTabletLoadedOrErrorContent(
+    BuildContext context,
+    DashboardState state,
+  ) {
+    if (state is DashboardError) {
+      return Center(
+        key: const ValueKey('tablet_error'),
+        child: Text(
+          context.l10n.errorMessage(state.message),
+          style: (context.textTheme.bodyLarge ?? const TextStyle()).copyWith(
+            color: context.colorScheme.error,
+          ),
+        ),
+      );
+    }
+
+    if (state is DashboardLoaded) {
+      final summary = state.summary;
+      final bool isEmptyState = summary.recentTransactions.isEmpty &&
+          summary.totalIncome == 0 &&
+          summary.totalExpense == 0;
+
+      if (isEmptyState) {
+        return RefreshIndicator(
+          key: const ValueKey('tablet_empty_content'),
+          color: AppColors.primary,
+          onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: TabletSpacing.canvasPadding,
+              vertical: 16.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                DashboardTabletHeader(
+                  isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                  onNewEntryPressed: () => _openAddTransaction(context),
+                  onRefreshPressed: () =>
+                      context.read<DashboardCubit>().loadDashboardData(),
+                ),
+                const SizedBox(height: TabletSpacing.sectionGap),
+                EmptyDashboardView(
+                  key: const ValueKey('tablet_empty'),
+                  onAddTransaction: () {
+                    _openAddTransaction(context);
+                  },
+                ),
+                const SizedBox(height: TabletSpacing.sectionGap),
+              ],
+            ),
+          ),
+        );
+      }
+
+      return RefreshIndicator(
+        key: const ValueKey('tablet_loaded_content'),
+        color: AppColors.primary,
+        onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: TabletSpacing.canvasPadding,
+            vertical: 16.0,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 1. Tablet Header Bar with greetings & action buttons
+              DashboardTabletHeader(
+                isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                onNewEntryPressed: () => _openAddTransaction(context),
+                onRefreshPressed: () =>
+                    context.read<DashboardCubit>().loadDashboardData(),
+              ),
+              const SizedBox(height: TabletSpacing.sectionGap),
+
+              // 2. Horizontal 3-card Summary Row
+              DashboardTabletSummaryRow(
+                summary: summary,
+                isPrivacyModeNotifier: _isPrivacyModeNotifier,
+              ),
+              const SizedBox(height: TabletSpacing.sectionGap),
+
+              // 3. Side-by-Side Cash Flow Chart (flex 5) + Categories Donut (flex 3)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Expanded(
+                    flex: 5,
+                    child: DashboardCashFlowChart(),
+                  ),
+                  const SizedBox(width: TabletSpacing.gridGutter),
+                  Expanded(
+                    flex: 3,
+                    child: DashboardCategoriesDonut(
+                      summary: summary,
+                      isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: TabletSpacing.sectionGap),
+
+              // 4. Recent Activity Section (Full Width)
+              DashboardRecentActivity(
+                transactions: summary.recentTransactions,
+                currencySymbol: summary.currencySymbol,
+                isPrivacyModeNotifier: _isPrivacyModeNotifier,
+                onSeeAllPressed: () {
+                  // On tablet, switch to the Transactions tab
+                  _currentTabNotifier.value = 1;
+                },
+              ),
+              const SizedBox(height: TabletSpacing.sectionGap),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return const SizedBox.shrink(key: ValueKey('tablet_none'));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Compact — Loaded/Error Content (Original)
+  // ---------------------------------------------------------------------------
+
   Widget _buildLoadedOrErrorContent(
     BuildContext context,
     DashboardState state,
@@ -275,13 +579,54 @@ class _DashboardPageState extends State<DashboardPage> {
           summary.totalExpense == 0;
 
       if (isEmptyState) {
-        return Padding(
-          padding: EdgeInsets.only(top: headerPaddingTop),
-          child: EmptyDashboardView(
-            key: const ValueKey('empty'),
-            onAddTransaction: () {
-              _openAddTransaction(context);
-            },
+        return RefreshIndicator(
+          key: const ValueKey('empty_content'),
+          color: AppColors.primary,
+          edgeOffset: headerPaddingTop,
+          displacement: 30.h,
+          onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            padding: EdgeInsets.only(
+              top: headerPaddingTop + 8.h,
+              bottom: 120.h,
+            ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Empty Dashboard Hero & CTA
+                    EmptyDashboardView(
+                      key: const ValueKey('empty'),
+                      onAddTransaction: () {
+                        _openAddTransaction(context);
+                      },
+                    ),
+                    verticalMarginMedium,
+
+                    // Shared Groups / Split Bill Section (Always accessible)
+                    _StaggeredEntrance(
+                      delayMs: 150,
+                      child: DashboardRecentGroups(
+                        onSeeAllPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (_) => const GroupsListPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    verticalMarginLarge,
+                  ],
+                ).defaultCanvasPadding(),
+              ),
+            ),
           ),
         );
       }
@@ -453,10 +798,18 @@ class _FloatingBottomNavBar extends StatelessWidget {
                 spreadRadius: -1.r,
                 offset: const Offset(0, -1),
               ),
+              // Subtle contact separation shadow
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isLight ? 0.04 : 0.15),
+                blurRadius: 8.r,
+                spreadRadius: 1.r,
+                offset: const Offset(0, 2),
+              ),
               // Soft Ambient Elevation Shadow
               BoxShadow(
-                color: Colors.black.withValues(alpha: isLight ? 0.03 : 0.10),
-                blurRadius: 12.r,
+                color: Colors.black.withValues(alpha: isLight ? 0.07 : 0.25),
+                blurRadius: 16.r,
+                spreadRadius: 0,
                 offset: const Offset(0, 4),
               ),
             ],

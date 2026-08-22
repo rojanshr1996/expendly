@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/theme/font_weights.dart';
+import '../../../../core/widgets/adaptive_sheet.dart';
 import '../../../../core/widgets/glass_container.dart';
 
 /// Speed Dial Floating Action Button triggering quick logging for Expense, Income, and Transfer.
@@ -31,27 +33,32 @@ class QuickActionFabState extends State<QuickActionFab> {
     final customColors = context.customColors;
     final textTheme = context.textTheme;
     final l10n = context.l10n;
+    final isTablet = Breakpoints.isTablet(context);
 
-    showModalBottomSheet(
+    AdaptiveSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
+      maxDialogWidth: 420.0,
       builder: (_) {
         return GlassContainer(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-          padding: EdgeInsets.all(24.w),
+          borderRadius: isTablet
+              ? const BorderRadius.all(Radius.circular(24.0))
+              : BorderRadius.vertical(top: Radius.circular(24.r)),
+          padding: isTablet ? const EdgeInsets.all(24.0) : EdgeInsets.all(24.w),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 36.w,
-                height: 4.h,
-                decoration: BoxDecoration(
-                  color: colorScheme.onSurfaceVariant
-                      .withAlpha((0.4 * 255).round()),
-                  borderRadius: BorderRadius.circular(2.r),
+              if (!isTablet) ...[
+                Container(
+                  width: 36.w,
+                  height: 4.h,
+                  decoration: BoxDecoration(
+                    color: colorScheme.onSurfaceVariant
+                        .withAlpha((0.4 * 255).round()),
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
                 ),
-              ),
-              verticalMarginMedium,
+                verticalMarginMedium,
+              ],
 
               Text(
                 l10n.addTransaction,

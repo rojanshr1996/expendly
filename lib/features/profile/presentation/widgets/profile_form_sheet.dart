@@ -1,11 +1,11 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
+import '../../../../core/widgets/adaptive_sheet.dart';
 import '../../domain/entities/user_profile.dart';
 import '../cubit/profile_cubit.dart';
 import 'profile_avatar_picker.dart';
@@ -21,11 +21,10 @@ class ProfileFormSheet extends StatefulWidget {
 
   static Future<void> show(BuildContext context,
       {UserProfile? initialProfile}) {
-    return showModalBottomSheet<void>(
+    return AdaptiveSheet.show<void>(
       context: context,
       isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
+      maxDialogWidth: 540.0,
       builder: (ctx) => ProfileFormSheet(initialProfile: initialProfile),
     );
   }
@@ -130,9 +129,11 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
     final textTheme = context.textTheme;
     final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final isTablet = Breakpoints.isTablet(context);
     final customColors = context.customColors;
     final isEditing = widget.initialProfile != null;
-    final maxHeight = MediaQuery.of(context).size.height * 0.88;
+    final maxHeight =
+        isTablet ? 640.0 : MediaQuery.of(context).size.height * 0.88;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -141,227 +142,225 @@ class _ProfileFormSheetState extends State<ProfileFormSheet> {
       child: Container(
         constraints: BoxConstraints(maxHeight: maxHeight),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isLight
-                ? [
-                    colorScheme.surfaceContainerLowest.withValues(alpha: 0.45),
-                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.30),
-                  ]
-                : [
-                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
-                    colorScheme.surfaceContainerLow.withValues(alpha: 0.20),
-                  ],
-          ),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+          color:
+              isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
+          borderRadius: isTablet
+              ? BorderRadius.circular(24.0)
+              : BorderRadius.vertical(top: Radius.circular(28.r)),
           border: Border.all(
             color: isLight
-                ? Colors.white.withValues(alpha: 0.60)
+                ? colorScheme.outlineVariant.withValues(alpha: 0.50)
                 : customColors.glassStroke.withValues(alpha: 0.45),
             width: 1.0,
           ),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-                child: Form(
-                  key: _formKey,
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Drag Handle
-                        Center(
-                          child: Container(
-                            width: 40.w,
-                            height: 4.h,
-                            decoration: BoxDecoration(
-                              color: colorScheme.outlineVariant
-                                  .withValues(alpha: 0.7),
-                              borderRadius: BorderRadius.circular(2.r),
-                            ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isTablet ? 24.0 : 20.w,
+              vertical: isTablet ? 20.0 : 16.h,
+            ),
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Drag Handle (phone only)
+                    if (!isTablet) ...[
+                      Center(
+                        child: Container(
+                          width: 40.w,
+                          height: 4.h,
+                          decoration: BoxDecoration(
+                            color: isLight
+                                ? colorScheme.outline.withValues(alpha: 0.4)
+                                : colorScheme.outlineVariant
+                                    .withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(2.r),
                           ),
                         ),
-                        SizedBox(height: 14.h),
-                        // Header title
+                      ),
+                      SizedBox(height: 14.h),
+                    ],
+                    // Header title
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  isEditing
-                                      ? Icons.edit_note_rounded
-                                      : Icons.person_add_alt_1_rounded,
-                                  color: colorScheme.primary,
-                                  size: 24.sp,
-                                ),
-                                SizedBox(width: 10.w),
-                                Text(
-                                  isEditing
-                                      ? l10n.editProfile
-                                      : l10n.setUpProfile,
-                                  style: (textTheme.titleMedium ??
-                                          const TextStyle())
-                                      .copyWith(
-                                    color: colorScheme.onSurface,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.sp,
-                                  ),
-                                ),
-                              ],
+                            Icon(
+                              isEditing
+                                  ? Icons.edit_note_rounded
+                                  : Icons.person_add_alt_1_rounded,
+                              color: colorScheme.primary,
+                              size: 24.sp,
                             ),
-                            IconButton(
-                              icon: Icon(Icons.close_rounded,
-                                  color: colorScheme.onSurfaceVariant),
-                              onPressed: () => Navigator.pop(context),
+                            SizedBox(width: 10.w),
+                            Text(
+                              isEditing ? l10n.editProfile : l10n.setUpProfile,
+                              style:
+                                  (textTheme.titleMedium ?? const TextStyle())
+                                      .copyWith(
+                                color: colorScheme.onSurface,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.sp,
+                              ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 16.h),
-
-                        // Avatar picker widget
-                        ProfileAvatarPicker(
-                          imagePath: _selectedImagePath,
-                          onTapPick: _pickImageFromGallery,
-                          onTapRemove: _selectedImagePath != null
-                              ? () => setState(() => _selectedImagePath = null)
-                              : null,
-                        ),
-                        SizedBox(height: 8.h),
-                        Center(
-                          child: Text(
-                            l10n.tapAvatarChoosePhoto,
-                            style: TextStyle(
-                              color: colorScheme.onSurfaceVariant,
-                              fontSize: 12.sp,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 20.h),
-
-                        // Full Name field
-                        TextFormField(
-                          controller: _nameController,
-                          style: TextStyle(color: colorScheme.onSurface),
-                          decoration: InputDecoration(
-                            labelText: '${l10n.fullNameLabel} *',
-                            hintText: l10n.yourNameHint,
-                            prefixIcon: Icon(Icons.person_outline_rounded,
-                                color: colorScheme.primary),
-                            filled: true,
-                            fillColor: colorScheme.surfaceContainerHigh,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide:
-                                  BorderSide(color: colorScheme.outlineVariant),
-                            ),
-                          ),
-                          validator: (val) {
-                            if (val == null || val.trim().isEmpty) {
-                              return l10n.pleaseEnterYourName;
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 14.h),
-
-                        // Email field
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          style: TextStyle(color: colorScheme.onSurface),
-                          decoration: InputDecoration(
-                            labelText: l10n.emailAddressLabel,
-                            hintText: l10n.emailHint,
-                            prefixIcon: Icon(Icons.email_outlined,
-                                color: colorScheme.secondary),
-                            filled: true,
-                            fillColor: colorScheme.surfaceContainerHigh,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide:
-                                  BorderSide(color: colorScheme.outlineVariant),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 14.h),
-
-                        // Phone field
-                        TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.phone,
-                          style: TextStyle(color: colorScheme.onSurface),
-                          decoration: InputDecoration(
-                            labelText: 'Phone Number (Optional)',
-                            hintText: 'e.g. +1 234 567 8900',
-                            prefixIcon: Icon(Icons.phone_outlined,
-                                color: colorScheme.tertiary),
-                            filled: true,
-                            fillColor: colorScheme.surfaceContainerHigh,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide:
-                                  BorderSide(color: colorScheme.outlineVariant),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 14.h),
-
-                        // Bio / Notes field
-                        TextFormField(
-                          controller: _bioController,
-                          maxLines: 2,
-                          style: TextStyle(color: colorScheme.onSurface),
-                          decoration: InputDecoration(
-                            labelText: l10n.professionalBioLabel,
-                            hintText: l10n.bioHint,
-                            prefixIcon: Icon(Icons.info_outline_rounded,
-                                color: colorScheme.outline),
-                            filled: true,
-                            fillColor: colorScheme.surfaceContainerHigh,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide:
-                                  BorderSide(color: colorScheme.outlineVariant),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 24.h),
-
-                        // Save button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 48.h,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: colorScheme.primary,
-                              foregroundColor: colorScheme.onPrimary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.r),
-                              ),
-                            ),
-                            onPressed: _onSave,
-                            child: Text(
-                              l10n.saveChanges,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15.sp,
-                              ),
-                            ),
-                          ),
+                        IconButton(
+                          icon: Icon(Icons.close_rounded,
+                              color: colorScheme.onSurfaceVariant),
+                          onPressed: () => Navigator.pop(context),
                         ),
                       ],
                     ),
-                  ),
+                    SizedBox(height: 16.h),
+
+                    // Avatar picker widget
+                    ProfileAvatarPicker(
+                      imagePath: _selectedImagePath,
+                      onTapPick: _pickImageFromGallery,
+                      onTapRemove: _selectedImagePath != null
+                          ? () => setState(() => _selectedImagePath = null)
+                          : null,
+                    ),
+                    SizedBox(height: 8.h),
+                    Center(
+                      child: Text(
+                        l10n.tapAvatarChoosePhoto,
+                        style: TextStyle(
+                          color: colorScheme.onSurfaceVariant,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+
+                    // Full Name field
+                    TextFormField(
+                      controller: _nameController,
+                      style: TextStyle(color: colorScheme.onSurface),
+                      decoration: InputDecoration(
+                        labelText: '${l10n.fullNameLabel} *',
+                        hintText: l10n.yourNameHint,
+                        prefixIcon: Icon(Icons.person_outline_rounded,
+                            color: colorScheme.primary),
+                        filled: true,
+                        fillColor: isLight
+                            ? colorScheme.surfaceContainerLow
+                            : colorScheme.surfaceContainerHigh,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                          borderSide:
+                              BorderSide(color: colorScheme.outlineVariant),
+                        ),
+                      ),
+                      validator: (val) {
+                        if (val == null || val.trim().isEmpty) {
+                          return l10n.pleaseEnterYourName;
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 14.h),
+
+                    // Email field
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      style: TextStyle(color: colorScheme.onSurface),
+                      decoration: InputDecoration(
+                        labelText: l10n.emailAddressLabel,
+                        hintText: l10n.emailHint,
+                        prefixIcon: Icon(Icons.email_outlined,
+                            color: colorScheme.secondary),
+                        filled: true,
+                        fillColor: isLight
+                            ? colorScheme.surfaceContainerLow
+                            : colorScheme.surfaceContainerHigh,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                          borderSide:
+                              BorderSide(color: colorScheme.outlineVariant),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 14.h),
+
+                    // Phone field
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      style: TextStyle(color: colorScheme.onSurface),
+                      decoration: InputDecoration(
+                        labelText: 'Phone Number (Optional)',
+                        hintText: 'e.g. +1 234 567 8900',
+                        prefixIcon: Icon(Icons.phone_outlined,
+                            color: colorScheme.tertiary),
+                        filled: true,
+                        fillColor: isLight
+                            ? colorScheme.surfaceContainerLow
+                            : colorScheme.surfaceContainerHigh,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                          borderSide:
+                              BorderSide(color: colorScheme.outlineVariant),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 14.h),
+
+                    // Bio / Notes field
+                    TextFormField(
+                      controller: _bioController,
+                      maxLines: 2,
+                      style: TextStyle(color: colorScheme.onSurface),
+                      decoration: InputDecoration(
+                        labelText: l10n.professionalBioLabel,
+                        hintText: l10n.bioHint,
+                        prefixIcon: Icon(Icons.info_outline_rounded,
+                            color: colorScheme.outline),
+                        filled: true,
+                        fillColor: isLight
+                            ? colorScheme.surfaceContainerLow
+                            : colorScheme.surfaceContainerHigh,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                          borderSide:
+                              BorderSide(color: colorScheme.outlineVariant),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24.h),
+
+                    // Save button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48.h,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                        ),
+                        onPressed: _onSave,
+                        child: Text(
+                          l10n.saveChanges,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

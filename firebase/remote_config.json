@@ -2,13 +2,13 @@
   "parameters": {
     "min_required_version": {
       "defaultValue": {
-        "value": "1.1.0"
+        "value": "1.1.2"
       },
       "description": "Minimum app version required. Users on lower versions will be forced to update."
     },
     "latest_version": {
       "defaultValue": {
-        "value": "1.1.0"
+        "value": "1.1.2"
       },
       "description": "Latest available app version. Users on lower versions will be prompted with an optional update."
     },
