@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../extensions/context_extensions.dart';
@@ -16,6 +18,7 @@ class LiquidGlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onLeadingPressed;
   final bool showLeading;
   final bool primary;
+  final double blur;
 
   const LiquidGlassAppBar({
     super.key,
@@ -29,6 +32,7 @@ class LiquidGlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onLeadingPressed,
     this.showLeading = true,
     this.primary = true,
+    this.blur = 16.0,
   });
 
   @override
@@ -81,12 +85,12 @@ class LiquidGlassAppBar extends StatelessWidget implements PreferredSizeWidget {
             end: Alignment.bottomRight,
             colors: isLight
                 ? [
-                    colorScheme.surfaceContainerLowest.withValues(alpha: 0.85),
-                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.75),
+                    colorScheme.surfaceContainerLowest.withValues(alpha: 0.35),
+                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.20),
                   ]
                 : [
-                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.85),
-                    colorScheme.surfaceContainerLow.withValues(alpha: 0.75),
+                    colorScheme.surfaceContainerHigh.withValues(alpha: 0.25),
+                    colorScheme.surfaceContainerLow.withValues(alpha: 0.15),
                   ],
           ),
           border: Border(
@@ -104,6 +108,12 @@ class LiquidGlassAppBar extends StatelessWidget implements PreferredSizeWidget {
               offset: const Offset(0, 4),
             ),
           ],
+        ),
+        child: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+            child: const SizedBox.expand(),
+          ),
         ),
       ),
     );

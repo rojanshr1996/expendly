@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/config/app_config.dart';
 import '../../../../core/extensions/context_extensions.dart';
 
 /// Footer component for Settings screen displaying app version and brand message.
@@ -18,7 +19,7 @@ class SettingsFooter extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              '${context.l10n.appName} v1.1.1',
+              '${context.l10n.appName} ${AppConfig.formattedVersion}',
               style: customTypography.labelMediumMono.copyWith(
                 color: colorScheme.outline,
                 fontWeight: FontWeight.bold,

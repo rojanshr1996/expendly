@@ -13,6 +13,7 @@ class AdaptiveSheet {
     bool isDismissible = true,
     bool useRootNavigator = true,
     bool isScrollControlled = true,
+    Color? backgroundColor,
   }) async {
     final isTablet = Breakpoints.isTablet(context);
 
@@ -23,7 +24,8 @@ class AdaptiveSheet {
         useRootNavigator: useRootNavigator,
         builder: (dialogContext) {
           return Dialog(
-            backgroundColor: dialogContext.colorScheme.surface,
+            backgroundColor:
+                backgroundColor ?? dialogContext.colorScheme.surface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24.0),
             ),
@@ -41,11 +43,12 @@ class AdaptiveSheet {
         isDismissible: isDismissible,
         useRootNavigator: useRootNavigator,
         isScrollControlled: isScrollControlled,
-        backgroundColor: context.colorScheme.surface,
+        backgroundColor: backgroundColor ?? Colors.transparent,
+        elevation: 0,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
         ),
-        clipBehavior: Clip.antiAlias,
+        clipBehavior: Clip.none,
         builder: builder,
       );
     }

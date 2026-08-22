@@ -12,6 +12,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/ads/ad_helper.dart';
 import '../../../../core/ads/widgets/banner_ad_widget.dart';
+import '../../../../core/config/app_config.dart';
 import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
@@ -368,12 +369,15 @@ class _SettingsPageState extends State<SettingsPage>
         final opacity = (1.0 - (progress * 0.8)).clamp(0.0, 1.0);
 
         return Stack(
+          fit: StackFit.expand,
           children: [
-            Opacity(
-              opacity: opacity,
-              child: Transform.scale(
-                scale: scale,
-                child: child,
+            Positioned.fill(
+              child: Opacity(
+                opacity: opacity,
+                child: Transform.scale(
+                  scale: scale,
+                  child: child,
+                ),
               ),
             ),
             if (progress > 0)
@@ -421,96 +425,107 @@ class _SettingsPageState extends State<SettingsPage>
           titleText: context.l10n.settings,
           onLeadingPressed: () => context.router.maybePop(),
         ),
-        body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.only(
-            left: isTablet ? 32.0 : 20.w,
-            right: isTablet ? 32.0 : 20.w,
-            top: MediaQuery.of(context).padding.top +
-                kToolbarHeight +
-                (isTablet ? 20.0 : 16.h),
-            bottom: isTablet ? 32.0 : 16.h,
-          ),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: isTablet ? 720.0 : double.infinity,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildAccountSection(context),
-                  _buildSecuritySection(context),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: isTablet ? 16.0 : 14.h),
-                    child: BannerAdWidget(adUnitId: AdHelper.bannerAdUnitId),
-                  ),
-                  _buildAppearanceSection(context),
-                  _buildDataSection(context),
-                  _buildAboutSection(context),
-                  const SettingsFooter(),
-                ],
-              ),
-            ),
-          ),
-        ),
-        bottomNavigationBar: !pref.isSecurityPinSet
-            ? null
-            : Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isTablet ? 32.0 : 20.w,
-                  vertical: isTablet ? 16.0 : 12.h,
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.only(
+                  left: isTablet ? 32.0 : 20.w,
+                  right: isTablet ? 32.0 : 20.w,
+                  top: MediaQuery.of(context).padding.top +
+                      kToolbarHeight +
+                      (isTablet ? 20.0 : 16.h),
+                  bottom: isTablet ? 32.0 : 16.h,
                 ),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow,
-                  border: Border(
-                    top: BorderSide(
-                      color: colorScheme.outlineVariant,
-                      width: 1.0,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 720.0 : double.infinity,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildAccountSection(context),
+                        _buildSecuritySection(context),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: isTablet ? 16.0 : 14.h),
+                          child:
+                              BannerAdWidget(adUnitId: AdHelper.bannerAdUnitId),
+                        ),
+                        _buildAppearanceSection(context),
+                        _buildDataSection(context),
+                        _buildAboutSection(context),
+                        const SettingsFooter(),
+                      ],
                     ),
                   ),
                 ),
-                child: SafeArea(
-                  top: false,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: isTablet ? 720.0 : double.infinity,
+              ),
+            ),
+            !pref.isSecurityPinSet
+                ? emptyBox
+                : Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isTablet ? 32.0 : 20.w,
+                      vertical: isTablet ? 16.0 : 12.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLow,
+                      border: Border(
+                        top: BorderSide(
+                          color: colorScheme.outlineVariant,
+                          width: 1.0,
+                        ),
                       ),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: isTablet ? 52.0 : 48.h,
-                        child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: colorScheme.error,
-                            side: BorderSide(
-                              color: colorScheme.error.withValues(alpha: 0.5),
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(isTablet ? 14.0 : 12.r),
+                    ),
+                    child: SafeArea(
+                      top: false,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: isTablet ? 720.0 : double.infinity,
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: isTablet ? 52.0 : 48.h,
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: colorScheme.error,
+                                side: BorderSide(
+                                  color:
+                                      colorScheme.error.withValues(alpha: 0.5),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      isTablet ? 14.0 : 12.r),
+                                ),
+                              ),
+                              icon: Icon(
+                                Icons.logout_rounded,
+                                size: isTablet ? 22.0 : 20.sp,
+                              ),
+                              label: Text(
+                                context.l10n.logout,
+                                style:
+                                    (textTheme.bodyLarge ?? const TextStyle())
+                                        .copyWith(
+                                  fontWeight: FontWeights.bold,
+                                  color: colorScheme.error,
+                                ),
+                              ),
+                              onPressed: () => _showLogoutDialog(context),
                             ),
                           ),
-                          icon: Icon(Icons.logout_rounded,
-                              size: isTablet ? 22.0 : 20.sp),
-                          label: Text(
-                            context.l10n.logout,
-                            style: (textTheme.bodyLarge ?? const TextStyle())
-                                .copyWith(
-                              fontWeight: FontWeights.bold,
-                              color: colorScheme.error,
-                            ),
-                          ),
-                          onPressed: () => _showLogoutDialog(context),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ),
+          ],
+        ),
       ),
     );
   }
@@ -767,7 +782,7 @@ class _SettingsPageState extends State<SettingsPage>
               icon: Icons.info_outline_rounded,
               iconColor: colorScheme.primary,
               title: context.l10n.aboutExpendly,
-              subtitle: context.l10n.aboutExpendlySubtitle,
+              subtitle: AppConfig.aboutVersionDisplay,
               onTap: () => context.router.push(const AboutRoute()),
             ),
             SettingsTile(

@@ -110,23 +110,31 @@ class BudgetCardGrid extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Grid of Budget Cards (Single column on tablet panel for clean 2-column page layout)
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.zero,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 1,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            mainAxisExtent: 155,
-          ),
-          itemCount: budgets.length < 4 ? budgets.length + 1 : budgets.length,
-          itemBuilder: (context, index) {
-            if (index < budgets.length) {
-              return _buildBudgetCard(context, budgets[index]);
-            } else {
-              return _buildAddBudgetCard(context);
-            }
+        Builder(
+          builder: (context) {
+            final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+            final cardHeight = textScale > 1.2 ? 180.0 : 155.0;
+
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 1,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                mainAxisExtent: cardHeight,
+              ),
+              itemCount:
+                  budgets.length < 4 ? budgets.length + 1 : budgets.length,
+              itemBuilder: (context, index) {
+                if (index < budgets.length) {
+                  return _buildBudgetCard(context, budgets[index]);
+                } else {
+                  return _buildAddBudgetCard(context);
+                }
+              },
+            );
           },
         ),
       ],

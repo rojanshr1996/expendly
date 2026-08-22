@@ -8,6 +8,14 @@ enum AppFlavor {
 
 /// Offline-first environment configuration model based on active application flavor.
 class AppConfig {
+  /// Single source of truth for the application version across the entire app.
+  static const String appVersion = '1.1.2';
+  static const String buildNumber = '4';
+  static const String fullVersion = '$appVersion+$buildNumber';
+  static const String formattedVersion = 'v$appVersion';
+  static const String versionDisplay = 'VER $appVersion';
+  static const String aboutVersionDisplay = 'Version $appVersion';
+
   final AppFlavor flavor;
   final String appName;
   final bool enableLogging;

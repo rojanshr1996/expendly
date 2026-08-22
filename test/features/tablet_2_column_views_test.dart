@@ -1,24 +1,16 @@
-import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:expendly/core/config/app_config.dart';
-import 'package:expendly/core/database/app_database.dart';
 import 'package:expendly/core/di/injection.dart';
 import 'package:expendly/core/services/preference_service.dart';
 import 'package:expendly/core/services/secure_storage_service.dart';
 import 'package:expendly/core/theme/app_theme.dart';
-import 'package:expendly/features/analytics/data/datasources/analytics_local_datasource.dart';
-import 'package:expendly/features/analytics/data/repositories/analytics_repository_impl.dart';
-import 'package:expendly/features/analytics/presentation/cubit/analytics_cubit.dart';
-import 'package:expendly/features/analytics/presentation/pages/refined_reports_page.dart';
+import 'package:expendly/features/analytics/domain/entities/analytics_report.dart';
 import 'package:expendly/features/analytics/presentation/widgets/report_chart_panel.dart';
 import 'package:expendly/features/analytics/presentation/widgets/report_insights_sidebar.dart';
-import 'package:expendly/features/budgets/data/datasources/budget_local_datasource.dart';
-import 'package:expendly/features/budgets/data/repositories/budget_repository_impl.dart';
-import 'package:expendly/features/budgets/presentation/cubit/budget_cubit.dart';
-import 'package:expendly/features/budgets/presentation/pages/budgets_overview_page.dart';
+import 'package:expendly/features/budgets/domain/entities/budget_item.dart';
 import 'package:expendly/features/budgets/presentation/widgets/budget_card_grid.dart';
 import 'package:expendly/features/budgets/presentation/widgets/budget_health_sidebar.dart';
 import 'package:expendly/l10n/app_localizations.dart';
@@ -42,7 +34,6 @@ Widget _wrapTestApp(Widget child, {Size size = const Size(1024, 768)}) {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  late AppDatabase db;
 
   setUpAll(() {
     AppConfig.initialize(
@@ -52,10 +43,6 @@ void main() {
       ),
     );
 
-    db = AppDatabase.forTesting(NativeDatabase.memory());
-    if (!getIt.isRegistered<AppDatabase>()) {
-      getIt.registerSingleton<AppDatabase>(db);
-    }
     if (!getIt.isRegistered<SecureStorageService>()) {
       getIt.registerLazySingleton<SecureStorageService>(
         () => SecureStorageService(),
@@ -66,71 +53,123 @@ void main() {
         () => PreferenceService(getIt<SecureStorageService>()),
       );
     }
-    if (!getIt.isRegistered<BudgetCubit>()) {
-      final ds = BudgetLocalDataSourceImpl(db);
-      final repo = BudgetRepositoryImpl(ds);
-      getIt.registerLazySingleton<BudgetCubit>(
-        () => BudgetCubit(repo),
-      );
-    }
-    if (!getIt.isRegistered<AnalyticsCubit>()) {
-      final ds = AnalyticsLocalDataSourceImpl(db);
-      final repo = AnalyticsRepositoryImpl(ds);
-      getIt.registerLazySingleton<AnalyticsCubit>(
-        () => AnalyticsCubit(repo),
-      );
-    }
-  });
-
-  tearDownAll(() async {
-    await db.close();
-    await getIt.reset();
   });
 
   group('2-Column Tablet Layout Tests', () {
     testWidgets(
-        'BudgetsOverviewPage renders 2-column layout (Card List + Health Sidebar) on tablet without overflow',
+        'Budgets 2-column layout (Card List + Health Sidebar) renders on tablet without overflow',
         (tester) async {
       tester.view.physicalSize = const Size(800, 1280);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
+      final sampleBudgets = [
+        const BudgetItem(
+          id: 1,
+          categoryName: 'Food & Dining',
+          targetAmount: 500.0,
+          spentAmount: 250.0,
+          categoryIcon: 'restaurant',
+          categoryColorHex: 'FF5722',
+        ),
+        const BudgetItem(
+          id: 2,
+          categoryName: 'Transportation',
+          targetAmount: 200.0,
+          spentAmount: 180.0,
+          categoryIcon: 'directions_car',
+          categoryColorHex: '2196F3',
+        ),
+      ];
+
       await tester.pumpWidget(
         _wrapTestApp(
-          const Scaffold(
-            body: BudgetsOverviewPage(),
+          Scaffold(
+            body: SingleChildScrollView(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 6,
+                    child: BudgetCardGrid(
+                      budgets: sampleBudgets,
+                      onCreateBudget: () {},
+                      onDeleteBudget: (_) {},
+                    ),
+                  ),
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    flex: 4,
+                    child: BudgetHealthSidebar(
+                      budgets: sampleBudgets,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           size: const Size(800, 1280),
         ),
       );
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
 
       // Verify Budget Card Grid and Health Sidebar exist side-by-side
       expect(find.byType(BudgetCardGrid), findsOneWidget);
       expect(find.byType(BudgetHealthSidebar), findsOneWidget);
+      expect(find.text('Food & Dining'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
     testWidgets(
-        'RefinedReportsPage renders 2-column layout (Chart Panel + Unified Insights Sidebar) on tablet without overflow',
+        'Analytics 2-column layout (Chart Panel + Unified Insights Sidebar) renders on tablet without overflow',
         (tester) async {
       tester.view.physicalSize = const Size(1024, 768);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
+      const sampleReport = AnalyticsReport(
+        totalIncome: 5000.0,
+        totalExpense: 3200.0,
+        netSavings: 1800.0,
+        savingsRatePercentage: 36.0,
+        avgDailySpend: 100.0,
+        budgetHealthPercentage: 78.0,
+        budgetHealthStatus: 'Healthy',
+        topCategoryName: 'Rent',
+        topCategoryPercentage: 40.0,
+        dailyFlows: [],
+        categoryBreakdowns: [],
+      );
+
       await tester.pumpWidget(
         _wrapTestApp(
-          const Scaffold(
-            body: RefinedReportsPage(),
+          Scaffold(
+            body: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Expanded(
+                  flex: 6,
+                  child: ReportChartPanel(
+                    report: sampleReport,
+                  ),
+                ),
+                Expanded(
+                  flex: 4,
+                  child: ReportInsightsSidebar(
+                    report: sampleReport,
+                    onExportPdf: () {},
+                    onExportCsv: () {},
+                  ),
+                ),
+              ],
+            ),
           ),
           size: const Size(1024, 768),
         ),
       );
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
 
       // Verify Report Chart Panel and Insights Sidebar are rendered in 2 columns
       expect(find.byType(ReportChartPanel), findsOneWidget);

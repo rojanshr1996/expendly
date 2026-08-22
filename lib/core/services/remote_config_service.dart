@@ -4,6 +4,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:injectable/injectable.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../config/app_config.dart';
 import '../utils/app_logger.dart';
 
 enum AppUpdateStatus {
@@ -59,9 +60,9 @@ class RemoteConfigService {
     );
 
     // 1. Set In-App Defaults
-    await _remoteConfig.setDefaults(const {
-      keyMinRequiredVersion: '1.1.1',
-      keyLatestVersion: '1.1.1',
+    await _remoteConfig.setDefaults({
+      keyMinRequiredVersion: AppConfig.appVersion,
+      keyLatestVersion: AppConfig.appVersion,
       keyIsMaintenanceMode: false,
       keyIsAdsEnabled: true,
       keyForceUpdateTitle: 'Update Required',

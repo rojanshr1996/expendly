@@ -305,23 +305,11 @@ class _CurrencySelectionModalState extends State<CurrencySelectionModal> {
   Widget build(BuildContext context) {
     final isTablet = Breakpoints.isTablet(context);
 
-    if (isTablet) {
-      return _buildSheetContainer(context, null, true);
-    }
-
-    return DraggableScrollableSheet(
-      initialChildSize: 0.78,
-      minChildSize: 0.45,
-      maxChildSize: 0.92,
-      builder: (context, scrollController) {
-        return _buildSheetContainer(context, scrollController, false);
-      },
-    );
+    return _buildSheetContainer(context, isTablet);
   }
 
   Widget _buildSheetContainer(
     BuildContext context,
-    ScrollController? scrollController,
     bool isTablet,
   ) {
     final colorScheme = context.colorScheme;
@@ -333,7 +321,7 @@ class _CurrencySelectionModalState extends State<CurrencySelectionModal> {
     final currentCode = prefs.currencyCode;
 
     return Container(
-      height: isTablet ? 600.0 : null,
+      height: isTablet ? 600.0 : MediaQuery.of(context).size.height * 0.78,
       decoration: BoxDecoration(
         color: isLight ? colorScheme.surface : colorScheme.surfaceContainerHigh,
         borderRadius: isTablet
@@ -524,7 +512,6 @@ class _CurrencySelectionModalState extends State<CurrencySelectionModal> {
                         }
 
                         return ListView.separated(
-                          controller: scrollController,
                           physics: const BouncingScrollPhysics(),
                           itemCount: filtered.length,
                           separatorBuilder: (_, __) => SizedBox(height: 8.h),

@@ -99,17 +99,29 @@ class ReportChartPanel extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Cash Flow Activity',
-                style: context.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
+              Expanded(
+                flex: 3,
+                child: Text(
+                  'Cash Flow Activity',
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Text(
-                report.periodName,
-                style: context.textTheme.labelMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+              const SizedBox(width: 8.0),
+              Flexible(
+                flex: 2,
+                child: Text(
+                  report.periodName,
+                  style: context.textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.end,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -345,6 +357,8 @@ class _MetricCard extends StatelessWidget {
             style: context.textTheme.labelSmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 8.0),
           ValueListenableBuilder<bool>(

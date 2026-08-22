@@ -73,13 +73,18 @@ class BudgetHealthSidebar extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Total Budget Health',
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
+                    Expanded(
+                      child: Text(
+                        'Total Budget Health',
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    const SizedBox(width: 8.0),
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10.0, vertical: 4.0),
@@ -233,12 +238,17 @@ class BudgetHealthSidebar extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: context.textTheme.bodySmall?.copyWith(
-            color: context.colorScheme.onSurfaceVariant,
+        Expanded(
+          child: Text(
+            label,
+            style: context.textTheme.bodySmall?.copyWith(
+              color: context.colorScheme.onSurfaceVariant,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
+        const SizedBox(width: 8.0),
         ValueListenableBuilder<bool>(
           valueListenable: isPrivacyModeNotifier ?? ValueNotifier(false),
           builder: (context, isPrivacy, _) {
