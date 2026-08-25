@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/events/transaction_events.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/preferences/quick_entry_preferences.dart';
 import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/font_weights.dart';
@@ -253,6 +254,9 @@ class _CurrencySelectionModalState extends State<CurrencySelectionModal> {
       }
 
       await prefs.setCurrency(code: item.code, symbol: item.symbol);
+      if (getIt.isRegistered<QuickEntryPreferences>()) {
+        await getIt<QuickEntryPreferences>().handleCurrencyChanged(item.code);
+      }
 
       // Reload all active cubit states and notify event bus so all app screens refresh
       try {

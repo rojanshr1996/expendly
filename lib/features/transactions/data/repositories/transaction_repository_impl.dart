@@ -20,6 +20,16 @@ class TransactionRepositoryImpl implements TransactionRepository {
       _localDataSource.getTransactionsByType(type);
 
   @override
+  Future<List<TransactionItem>> getRecentTransactions({
+    int limit = 10,
+    TransactionType? type,
+  }) =>
+      _localDataSource.getRecentTransactions(
+        limit: limit,
+        type: type,
+      );
+
+  @override
   Future<int> addTransaction({
     required TransactionType type,
     required double amount,

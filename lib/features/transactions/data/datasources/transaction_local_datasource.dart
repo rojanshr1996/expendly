@@ -10,6 +10,10 @@ import '../../domain/entities/transaction_item.dart';
 abstract class TransactionLocalDataSource {
   Future<List<TransactionItem>> getAllTransactions();
   Future<List<TransactionItem>> getTransactionsByType(TransactionType type);
+  Future<List<TransactionItem>> getRecentTransactions({
+    int limit = 10,
+    TransactionType? type,
+  });
   Future<int> addTransaction({
     required TransactionType type,
     required double amount,
@@ -91,6 +95,52 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
       ]);
 
     final rows = await query.get();
+
+    return rows.map((row) {
+      final tx = row.readTable(_db.transactions);
+      final cat = row.readTable(_db.categories);
+
+      return TransactionItem(
+        id: tx.id,
+        type: tx.type,
+        amount: tx.amount / 100.0,
+        currencyCode: tx.currencyCode,
+        categoryId: cat.id,
+        categoryName: cat.name,
+        categoryIcon: cat.icon,
+        categoryColorHex: cat.color,
+        timestamp: tx.timestamp,
+        note: tx.note,
+        paymentMethod: tx.paymentMethod,
+      );
+    }).toList();
+  }
+
+  @override
+  Future<List<TransactionItem>> getRecentTransactions({
+    int limit = 10,
+    TransactionType? type,
+  }) async {
+    final baseQuery = _db.select(_db.transactions).join([
+      innerJoin(
+        _db.categories,
+        _db.categories.id.equalsExp(_db.transactions.categoryId),
+      ),
+    ]);
+
+    if (type != null) {
+      baseQuery.where(_db.transactions.type.equals(type.index));
+    }
+
+    baseQuery
+      ..orderBy([
+        OrderingTerm(
+            expression: _db.transactions.timestamp, mode: OrderingMode.desc),
+        OrderingTerm(expression: _db.transactions.id, mode: OrderingMode.desc),
+      ])
+      ..limit(limit);
+
+    final rows = await baseQuery.get();
 
     return rows.map((row) {
       final tx = row.readTable(_db.transactions);

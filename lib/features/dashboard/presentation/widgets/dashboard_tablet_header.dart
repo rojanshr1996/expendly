@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/widgets/app_button.dart';
 
 class DashboardTabletHeader extends StatelessWidget {
   final ValueNotifier<bool> isPrivacyModeNotifier;
   final VoidCallback onNewEntryPressed;
   final VoidCallback onRefreshPressed;
+  final VoidCallback? onDetailedEntryPressed;
+  final VoidCallback? onQuickAddPressed;
 
   const DashboardTabletHeader({
     super.key,
     required this.isPrivacyModeNotifier,
     required this.onNewEntryPressed,
     required this.onRefreshPressed,
+    this.onDetailedEntryPressed,
+    this.onQuickAddPressed,
   });
 
   @override
@@ -78,23 +83,31 @@ class DashboardTabletHeader extends StatelessWidget {
                 tooltip: 'Refresh',
               ),
               const SizedBox(width: 8.0),
-              ElevatedButton.icon(
-                onPressed: onNewEntryPressed,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: context.colorScheme.primary,
-                  foregroundColor: context.colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 12.0,
-                  ),
-                  elevation: 0,
-                ),
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text(
-                  'New Entry',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
+              AppButton(
+                text: 'Quick add',
+                icon: const Icon(Icons.bolt_rounded, size: 20),
+                variant: AppButtonVariant.primary,
+                backgroundColor: context.colorScheme.primary,
+                foregroundColor: context.colorScheme.onPrimary,
+                height: 44,
+                width: null,
+                padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                borderRadius: BorderRadius.circular(12.0),
+                onPressed: onQuickAddPressed ?? onNewEntryPressed,
               ),
+              const SizedBox(width: 8.0),
+              if (onDetailedEntryPressed != null) ...[
+                AppButton(
+                  text: 'Detailed',
+                  icon: const Icon(Icons.edit_note_rounded, size: 20),
+                  variant: AppButtonVariant.outlined,
+                  height: 44,
+                  width: null,
+                  padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                  borderRadius: BorderRadius.circular(12.0),
+                  onPressed: onDetailedEntryPressed,
+                ),
+              ],
             ],
           ),
         ],

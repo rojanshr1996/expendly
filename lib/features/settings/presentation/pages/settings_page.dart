@@ -30,6 +30,7 @@ import '../../../../core/utils/url_utils.dart';
 import '../../../../core/widgets/adaptive_sheet.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/status_components.dart';
+import '../../../analytics/presentation/pages/refined_reports_page.dart';
 import '../../../profile/presentation/cubit/profile_cubit.dart';
 import '../../../profile/presentation/cubit/profile_state.dart';
 import '../../../profile/presentation/pages/personal_profile_page.dart';
@@ -448,6 +449,7 @@ class _SettingsPageState extends State<SettingsPage>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildAccountSection(context),
+                        _buildReportsSection(context),
                         _buildSecuritySection(context),
                         Padding(
                           padding: EdgeInsets.symmetric(
@@ -687,6 +689,36 @@ class _SettingsPageState extends State<SettingsPage>
                       onTap: () => CurrencySelectionModal.show(context),
                     );
                   },
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReportsSection(BuildContext context) {
+    final colorScheme = context.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SettingsSectionHeader(title: 'Analytics & Reports'),
+        _buildGroupedCard(
+          context,
+          children: [
+            SettingsTile(
+              icon: Icons.bar_chart_rounded,
+              iconColor: colorScheme.primary,
+              title: context.l10n.reports,
+              subtitle: 'Financial insights, breakdowns & trends',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (_) => const RefinedReportsPage(),
+                  ),
                 );
               },
             ),

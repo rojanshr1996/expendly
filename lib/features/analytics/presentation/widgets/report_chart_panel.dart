@@ -1,7 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/services/preference_service.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../domain/entities/analytics_report.dart';
@@ -150,8 +152,12 @@ class ReportChartPanel extends StatelessWidget {
                               colorScheme.surfaceContainerHigh,
                           getTooltipItem: (group, groupIndex, rod, rodIndex) {
                             final flow = report.dailyFlows[group.x.toInt()];
+                            final currencySymbol =
+                                getIt.isRegistered<PreferenceService>()
+                                    ? getIt<PreferenceService>().currencySymbol
+                                    : '\$';
                             return BarTooltipItem(
-                              '${flow.label}\n\$${flow.amount.toStringAsFixed(2)}',
+                              '${flow.label}\n$currencySymbol${flow.amount.toStringAsFixed(2)}',
                               TextStyle(
                                 color: colorScheme.onSurface,
                                 fontWeight: FontWeight.bold,
