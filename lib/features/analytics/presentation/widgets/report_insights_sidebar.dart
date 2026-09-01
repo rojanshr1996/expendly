@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/services/preference_service.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../domain/entities/analytics_report.dart';
 
@@ -194,7 +196,7 @@ class ReportInsightsSidebar extends StatelessWidget {
                       ),
                       const SizedBox(height: 4.0),
                       Text(
-                        '\$${report.avgDailySpend.toStringAsFixed(2)}',
+                        '${getIt.isRegistered<PreferenceService>() ? getIt<PreferenceService>().currencySymbol : '\$'}${report.avgDailySpend.toStringAsFixed(2)}',
                         style: TextStyle(
                           fontSize: 15.0,
                           fontWeight: FontWeight.bold,

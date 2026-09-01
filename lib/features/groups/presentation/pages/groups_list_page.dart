@@ -287,7 +287,7 @@ class _GroupsListPageState extends State<GroupsListPage>
         ];
 
         return _GroupsLiquidGlassCard(
-          margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+          margin: EdgeInsets.symmetric(horizontal: 16.w),
           borderRadius: BorderRadius.circular(14.r),
           padding: EdgeInsets.all(4.w),
           child: Row(

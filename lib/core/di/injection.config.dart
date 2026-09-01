@@ -12,6 +12,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:local_auth/local_auth.dart' as _i152;
+import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 import '../../features/analytics/data/datasources/analytics_local_datasource.dart'
     as _i378;
@@ -70,10 +71,19 @@ import '../../features/transactions/data/repositories/transaction_repository_imp
     as _i443;
 import '../../features/transactions/domain/repositories/transaction_repository.dart'
     as _i421;
+import '../../features/transactions/domain/usecases/get_quick_entry_defaults_use_case.dart'
+    as _i676;
+import '../../features/transactions/domain/usecases/get_recent_expenses_use_case.dart'
+    as _i950;
+import '../../features/transactions/domain/usecases/update_quick_entry_defaults_use_case.dart'
+    as _i300;
+import '../../features/transactions/presentation/cubit/quick_add_cubit.dart'
+    as _i798;
 import '../../features/transactions/presentation/cubit/transaction_cubit.dart'
     as _i1035;
 import '../database/app_database.dart' as _i982;
 import '../network/dio_client.dart' as _i667;
+import '../preferences/quick_entry_preferences.dart' as _i483;
 import '../services/backup_service.dart' as _i832;
 import '../services/biometric_auth_service.dart' as _i919;
 import '../services/data_export_import_service.dart' as _i115;
@@ -92,16 +102,20 @@ const String _dev = 'dev';
 
 extension GetItInjectableX on _i174.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
-  _i174.GetIt init({
+  Future<_i174.GetIt> init({
     String? environment,
     _i526.EnvironmentFilter? environmentFilter,
-  }) {
+  }) async {
     final gh = _i526.GetItHelper(
       this,
       environment,
       environmentFilter,
     );
     final registerModule = _$RegisterModule();
+    await gh.factoryAsync<_i460.SharedPreferences>(
+      () => registerModule.prefs,
+      preResolve: true,
+    );
     gh.lazySingleton<_i982.AppDatabase>(() => _i982.AppDatabase());
     gh.lazySingleton<_i558.FlutterSecureStorage>(
         () => registerModule.secureStorage);
@@ -145,6 +159,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i654.BudgetRepositoryImpl(gh<_i334.BudgetLocalDataSource>()));
     gh.lazySingleton<_i821.AnalyticsCubit>(
         () => _i821.AnalyticsCubit(gh<_i1044.AnalyticsRepository>()));
+    gh.lazySingleton<_i483.QuickEntryPreferences>(
+        () => _i483.QuickEntryPreferences(gh<_i460.SharedPreferences>()));
     gh.lazySingleton<_i364.ExchangeRateRepository>(
         () => _i276.ExchangeRateRepositoryImpl(
               gh<_i149.ExchangeRateRemoteDataSource>(),
@@ -153,6 +169,9 @@ extension GetItInjectableX on _i174.GetIt {
             ));
     gh.lazySingleton<_i32.BudgetCubit>(
         () => _i32.BudgetCubit(gh<_i1021.BudgetRepository>()));
+    gh.lazySingleton<_i300.UpdateQuickEntryDefaultsUseCase>(() =>
+        _i300.UpdateQuickEntryDefaultsUseCase(
+            gh<_i483.QuickEntryPreferences>()));
     gh.lazySingleton<_i421.TransactionRepository>(() =>
         _i443.TransactionRepositoryImpl(
             gh<_i394.TransactionLocalDataSource>()));
@@ -160,6 +179,15 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i180.EncryptionService(gh<_i535.SecureStorageService>()));
     gh.lazySingleton<_i605.PreferenceService>(
         () => _i605.PreferenceService(gh<_i535.SecureStorageService>()));
+    gh.lazySingleton<_i950.GetRecentExpensesUseCase>(() =>
+        _i950.GetRecentExpensesUseCase(gh<_i421.TransactionRepository>()));
+    gh.lazySingleton<_i676.GetQuickEntryDefaultsUseCase>(
+        () => _i676.GetQuickEntryDefaultsUseCase(
+              quickEntryPreferences: gh<_i483.QuickEntryPreferences>(),
+              preferenceService: gh<_i605.PreferenceService>(),
+              transactionRepository: gh<_i421.TransactionRepository>(),
+              appDatabase: gh<_i982.AppDatabase>(),
+            ));
     gh.lazySingleton<_i894.ProfileRepository>(
         () => _i334.ProfileRepositoryImpl(gh<_i1046.ProfileLocalDataSource>()));
     gh.lazySingleton<_i137.GroupsRepository>(
@@ -181,6 +209,12 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i605.PreferenceService>(),
               gh<_i349.BackupStorageProvider>(),
             ));
+    gh.factory<_i798.QuickAddCubit>(() => _i798.QuickAddCubit(
+          gh<_i676.GetQuickEntryDefaultsUseCase>(),
+          gh<_i300.UpdateQuickEntryDefaultsUseCase>(),
+          gh<_i421.TransactionRepository>(),
+          gh<_i982.AppDatabase>(),
+        ));
     gh.factory<_i21.EventDetailCubit>(() => _i21.EventDetailCubit(
           gh<_i137.GroupsRepository>(),
           gh<_i792.CalculateSettlements>(),

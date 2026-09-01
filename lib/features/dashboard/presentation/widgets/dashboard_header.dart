@@ -11,6 +11,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/theme/font_weights.dart';
+import '../../../../core/widgets/app_button.dart';
 import '../../../profile/presentation/cubit/profile_cubit.dart';
 import '../../../profile/presentation/cubit/profile_state.dart';
 import '../../../profile/presentation/widgets/user_avatar.dart';
@@ -19,11 +20,15 @@ import '../../../profile/presentation/widgets/user_avatar.dart';
 /// Includes user profile avatar ring, app title, privacy mode toggle (hides balance with •••••), and reports.
 class DashboardHeader extends StatelessWidget {
   final ValueNotifier<bool> isPrivacyModeNotifier;
+  final VoidCallback? onQuickAddPressed;
+  final VoidCallback? onDetailedEntryPressed;
   final VoidCallback? onReportsPressed;
 
   const DashboardHeader({
     super.key,
     required this.isPrivacyModeNotifier,
+    this.onQuickAddPressed,
+    this.onDetailedEntryPressed,
     this.onReportsPressed,
   });
 
@@ -74,60 +79,70 @@ class DashboardHeader extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  BlocBuilder<ProfileCubit, ProfileState>(
-                    bloc: getIt<ProfileCubit>(),
-                    builder: (context, state) {
-                      final profile =
-                          state is ProfileLoaded ? state.profile : null;
+                  Expanded(
+                    child: BlocBuilder<ProfileCubit, ProfileState>(
+                      bloc: getIt<ProfileCubit>(),
+                      builder: (context, state) {
+                        final profile =
+                            state is ProfileLoaded ? state.profile : null;
 
-                      return Row(
-                        children: [
-                          // User Avatar with glowing primary ring (taps to open SettingsPage)
-                          GestureDetector(
-                            onTap: () {
-                              HapticFeedback.selectionClick();
-                              context.router.push(const SettingsRoute());
-                            },
-                            child: UserAvatar(
-                              imagePath: profile?.imagePath,
-                              radius: 19.w,
-                              borderWidth: 1.5,
-                              iconSize: 22.sp,
-                            ),
-                          ),
-                          horizontalMarginSmall,
-
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                profile != null && profile.name.isNotEmpty
-                                    ? profile.name
-                                    : context.l10n.appName,
-                                style:
-                                    (textTheme.titleMedium ?? const TextStyle())
-                                        .copyWith(
-                                  fontWeight: FontWeights.bold,
-                                  color: colorScheme.onSurface,
-                                  fontSize: 16.sp,
-                                ),
+                        return Row(
+                          children: [
+                            // User Avatar with glowing primary ring (taps to open SettingsPage)
+                            GestureDetector(
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                context.router.push(const SettingsRoute());
+                              },
+                              child: UserAvatar(
+                                imagePath: profile?.imagePath,
+                                radius: 19.w,
+                                borderWidth: 1.5,
+                                iconSize: 22.sp,
                               ),
-                              if (profile != null && profile.name.isNotEmpty)
-                                Text(
-                                  context.l10n.appName,
-                                  style: TextStyle(
-                                    color: colorScheme.onSurfaceVariant,
-                                    fontSize: 11.sp,
-                                    fontWeight: FontWeight.w500,
+                            ),
+                            horizontalMarginSmall,
+
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    profile != null && profile.name.isNotEmpty
+                                        ? profile.name
+                                        : context.l10n.appName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: (textTheme.titleMedium ??
+                                            const TextStyle())
+                                        .copyWith(
+                                      fontWeight: FontWeights.bold,
+                                      color: colorScheme.onSurface,
+                                      fontSize: 16.sp,
+                                    ),
                                   ),
-                                ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
+                                  if (profile != null &&
+                                      profile.name.isNotEmpty)
+                                    Text(
+                                      context.l10n.appName,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: colorScheme.onSurfaceVariant,
+                                        fontSize: 11.sp,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
+                  SizedBox(width: 8.w),
                   Row(
                     children: [
                       // Privacy Mode Obfuscation Toggle Button
@@ -155,15 +170,36 @@ class DashboardHeader extends StatelessWidget {
                         },
                       ),
 
-                      // Reports Button
-                      IconButton(
-                        tooltip: context.l10n.reports,
+                      // Quick add Button using AppButton
+                      AppButton(
+                        text: 'Quick add',
                         icon: Icon(
-                          Icons.bar_chart_rounded,
-                          color: colorScheme.onSurfaceVariant,
-                          size: 22.sp,
+                          Icons.add_rounded,
+                          size: 18.sp,
+                          color: colorScheme.onPrimary,
                         ),
-                        onPressed: onReportsPressed,
+                        variant: AppButtonVariant.primary,
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
+                        height: 34.h,
+                        width: null,
+                        padding: EdgeInsets.symmetric(horizontal: 12.w),
+                        borderRadius: BorderRadius.circular(10.r),
+                        textStyle: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeights.semiBold,
+                          color: colorScheme.onPrimary,
+                        ),
+                        onPressed: () {
+                          HapticFeedback.selectionClick();
+                          if (onQuickAddPressed != null) {
+                            onQuickAddPressed!();
+                          } else if (onDetailedEntryPressed != null) {
+                            onDetailedEntryPressed!();
+                          } else if (onReportsPressed != null) {
+                            onReportsPressed!();
+                          }
+                        },
                       ),
                     ],
                   ),
