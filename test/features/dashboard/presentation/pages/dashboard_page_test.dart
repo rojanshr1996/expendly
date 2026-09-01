@@ -89,16 +89,28 @@ void main() {
   }
 
   group('Dashboard Components Tests', () {
-    testWidgets('DashboardHeader renders app name and privacy toggle', (tester) async {
+    testWidgets('DashboardHeader renders app name, privacy toggle, and Quick add AppButton', (tester) async {
       final isPrivacyModeNotifier = ValueNotifier<bool>(false);
+      bool quickAddPressed = false;
 
       await tester.pumpWidget(createTestableWidget(
-        DashboardHeader(isPrivacyModeNotifier: isPrivacyModeNotifier),
+        DashboardHeader(
+          isPrivacyModeNotifier: isPrivacyModeNotifier,
+          onQuickAddPressed: () {
+            quickAddPressed = true;
+          },
+        ),
       ));
       await tester.pumpAndSettle();
 
       expect(find.text('Expendly'), findsOneWidget);
       expect(find.byIcon(Icons.visibility_rounded), findsOneWidget);
+      expect(find.text('Quick add'), findsOneWidget);
+      expect(find.byIcon(Icons.add_rounded), findsOneWidget);
+
+      await tester.tap(find.text('Quick add'));
+      await tester.pumpAndSettle();
+      expect(quickAddPressed, isTrue);
     });
 
     testWidgets('EmptyDashboardView renders welcome text and add button', (tester) async {

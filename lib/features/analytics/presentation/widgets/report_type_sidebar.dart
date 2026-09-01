@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/services/preference_service.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../domain/entities/analytics_report.dart';
 
@@ -8,12 +10,14 @@ class ReportTypeSidebar extends StatelessWidget {
   final AnalyticsReport report;
   final String selectedPeriod;
   final ValueChanged<String> onPeriodChanged;
+  final String? currencySymbol;
 
   const ReportTypeSidebar({
     super.key,
     required this.report,
     required this.selectedPeriod,
     required this.onPeriodChanged,
+    this.currencySymbol,
   });
 
   static const List<String> _periods = [
@@ -28,6 +32,10 @@ class ReportTypeSidebar extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final customColors = context.customColors;
     final textTheme = context.textTheme;
+    final resolvedCurrencySymbol = currencySymbol ??
+        (getIt.isRegistered<PreferenceService>()
+            ? getIt<PreferenceService>().currencySymbol
+            : '\$');
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -71,7 +79,8 @@ class ReportTypeSidebar extends StatelessWidget {
           _buildBadge(
             context,
             title: 'Avg Daily Spend',
-            value: '\$${report.avgDailySpend.toStringAsFixed(2)}',
+            value:
+                '$resolvedCurrencySymbol${report.avgDailySpend.toStringAsFixed(2)}',
             icon: Icons.trending_up_rounded,
             color: customColors.semanticRed,
           ),

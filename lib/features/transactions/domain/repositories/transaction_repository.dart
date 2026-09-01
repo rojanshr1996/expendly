@@ -4,6 +4,13 @@ import '../entities/transaction_item.dart';
 abstract class TransactionRepository {
   Future<List<TransactionItem>> getAllTransactions();
   Future<List<TransactionItem>> getTransactionsByType(TransactionType type);
+  Future<List<TransactionItem>> getRecentTransactions({
+    int limit = 10,
+    TransactionType? type,
+  });
+  Future<List<TransactionItem>> getRecentDistinctExpenses({
+    int limit = 5,
+  });
   Future<int> addTransaction({
     required TransactionType type,
     required double amount,

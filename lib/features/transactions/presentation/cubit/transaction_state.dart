@@ -55,9 +55,10 @@ class TransactionError extends TransactionState {
 
 class TransactionActionSuccess extends TransactionState {
   final String message;
+  final int? transactionId;
 
-  const TransactionActionSuccess(this.message);
+  const TransactionActionSuccess(this.message, {this.transactionId});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, transactionId];
 }

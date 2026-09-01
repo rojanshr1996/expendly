@@ -207,9 +207,9 @@ void main() {
 
       // Header verification
       expect(find.text('Financial Overview'), findsOneWidget);
-      expect(find.text('New Entry'), findsOneWidget);
+      expect(find.text('Quick add'), findsOneWidget);
 
-      await tester.tap(find.text('New Entry'));
+      await tester.tap(find.text('Quick add'));
       expect(newEntryTriggered, isTrue);
 
       await tester.tap(find.byIcon(Icons.refresh));

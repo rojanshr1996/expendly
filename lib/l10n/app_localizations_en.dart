@@ -99,7 +99,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get offlineEncryption => 'OFFLINE DATA';
 
   @override
-  String get appVersion => 'VER 1.1.2';
+  String get appVersion => 'VER 1.2.0';
 
   @override
   String get selectPrimaryCurrency => 'Select Primary Currency';
@@ -877,7 +877,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutExpendly => 'About Expendly';
 
   @override
-  String get aboutExpendlySubtitle => 'Version 1.1.2';
+  String get aboutExpendlySubtitle => 'Version 1.2.0';
 
   @override
   String get termsAndConditions => 'Terms & Conditions';

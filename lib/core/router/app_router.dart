@@ -14,6 +14,7 @@ class AppRouter extends $AppRouter {
         AutoRoute(page: SecurityVerificationRoute.page),
         AutoRoute(page: DashboardRoute.page),
         AutoRoute(page: ModernAddTransactionRoute.page),
+        AutoRoute(page: QuickAddRoute.page),
         AutoRoute(page: CreateNewBudgetRoute.page),
         AutoRoute(page: SettingsRoute.page),
         AutoRoute(page: PersonalProfileRoute.page),
@@ -26,5 +27,6 @@ class AppRouter extends $AppRouter {
         AutoRoute(page: AddExpenseRoute.page),
         AutoRoute(page: ExportSettleRoute.page),
         AutoRoute(page: ExpenseDetailsRoute.page),
+        AutoRoute(page: DailyEntryRoute.page),
       ];
 }

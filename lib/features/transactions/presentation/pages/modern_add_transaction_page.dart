@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,6 +46,14 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
       ValueNotifier<PaymentMethod>(PaymentMethod.cash);
   final TextEditingController _noteController = TextEditingController();
   final TextEditingController _feeController = TextEditingController();
+  bool _isAddingAnother = false;
+
+  void _resetForm() {
+    _amountController.clear();
+    _noteController.clear();
+    _feeController.clear();
+    _isAddingAnother = false;
+  }
 
   List<CategoryItem> _expenseCategories = [];
   List<CategoryItem> _incomeCategories = [];
@@ -316,6 +326,10 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
     final textTheme = context.textTheme;
     final customTypography = context.customTypography;
     final isTablet = Breakpoints.isTablet(context);
+    final isLight = Theme.of(context).brightness == Brightness.light;
+
+    final topInset = MediaQuery.of(context).padding.top;
+    final headerPaddingTop = topInset + kToolbarHeight;
 
     return BlocProvider<TransactionCubit>(
       create: (_) => getIt<TransactionCubit>(),
@@ -329,9 +343,25 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
               SnackBar(
                 content: Text(state.message),
                 backgroundColor: colorScheme.secondary,
+                action: state.transactionId != null
+                    ? SnackBarAction(
+                        label: 'Undo',
+                        textColor: colorScheme.onSecondary,
+                        onPressed: () {
+                          context
+                              .read<TransactionCubit>()
+                              .deleteTransaction(state.transactionId!);
+                        },
+                      )
+                    : null,
               ),
             );
-            context.router.maybePop(true);
+
+            if (_isAddingAnother) {
+              _resetForm();
+            } else {
+              context.router.maybePop(true);
+            }
           } else if (state is TransactionError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -356,748 +386,938 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                   ? 'Edit Transaction'
                   : context.l10n.logTransaction,
             ),
-            body: SingleChildScrollView(
-              padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top +
-                    kToolbarHeight +
-                    (isTablet ? 20.0 : 16.0),
-                bottom: 32.0,
-              ),
-              physics: const BouncingScrollPhysics(),
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: isTablet ? 640.0 : double.infinity,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Segmented Type Selector (Expense / Income / Transfer)
-                      ValueListenableBuilder<TransactionType>(
-                        valueListenable: _typeNotifier,
-                        builder: (context, type, _) {
-                          final tabs = [
-                            {
-                              'type': TransactionType.expense,
-                              'label': context.l10n.expense,
-                              'activeColor': customColors.semanticRed,
-                              'onActiveColor': Colors.white,
-                            },
-                            {
-                              'type': TransactionType.income,
-                              'label': context.l10n.income,
-                              'activeColor': customColors.semanticGreen,
-                              'onActiveColor': Colors.white,
-                            },
-                            {
-                              'type': TransactionType.transfer,
-                              'label': context.l10n.transfer,
-                              'activeColor': customColors.semanticBlue,
-                              'onActiveColor': Colors.white,
-                            },
-                          ];
-
-                          return _LiquidGlassCard(
-                            margin:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            padding: const EdgeInsets.all(4.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(14.0)),
-                            child: Row(
-                              children: tabs.map((t) {
-                                final tabType = t['type'] as TransactionType;
-                                final isSelected = type == tabType;
-                                final activeColor = t['activeColor'] as Color;
-                                final onActiveColor =
-                                    t['onActiveColor'] as Color;
-
-                                return Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 2.0),
-                                    child: GestureDetector(
-                                      key: Key('tab_${tabType.name}'),
-                                      behavior: HitTestBehavior.opaque,
-                                      onTap: () {
-                                        _switchType(tabType);
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 10.0),
-                                        decoration: BoxDecoration(
-                                          color: isSelected
-                                              ? activeColor
-                                              : Colors.transparent,
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(10.0)),
-                                          boxShadow: isSelected
-                                              ? [
-                                                  BoxShadow(
-                                                    color:
-                                                        activeColor.withValues(
-                                                            alpha: 0.35),
-                                                    blurRadius: 8.0,
-                                                    offset: const Offset(0, 2),
-                                                  )
-                                                ]
-                                              : null,
-                                        ),
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          t['label'] as String,
-                                          textAlign: TextAlign.center,
-                                          style: customTypography
-                                              .labelMediumMono
-                                              .copyWith(
-                                            color: isSelected
-                                                ? onActiveColor
-                                                : colorScheme.onSurfaceVariant,
-                                            fontWeight: isSelected
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                            fontSize: 13.0,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
+            body: Padding(
+              padding: EdgeInsets.only(top: headerPaddingTop),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        // 1. Scrollable Form Content (scrolls UNDER the pinned liquid glass tab bar)
+                        Positioned.fill(
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
                             ),
-                          );
-                        },
-                      ),
-
-                      const SizedBox(height: 20.0),
-
-                      // Amount Hero Card Display
-                      ValueListenableBuilder<TransactionType>(
-                        valueListenable: _typeNotifier,
-                        builder: (context, type, _) {
-                          final currencySymbol =
-                              getIt<PreferenceService>().currencySymbol;
-                          final color = type == TransactionType.income
-                              ? customColors.semanticGreen
-                              : type == TransactionType.transfer
-                                  ? customColors.semanticBlue
-                                  : customColors.semanticRed;
-
-                          return GestureDetector(
-                            onTap: () => _amountFocusNode.requestFocus(),
-                            behavior: HitTestBehavior.opaque,
-                            child: Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 20.0, horizontal: 16.0),
-                              decoration: BoxDecoration(
-                                color: colorScheme.surfaceContainerHigh
-                                    .withValues(alpha: 0.55),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(20.0)),
-                                border: Border.all(
-                                  color: color.withValues(alpha: 0.30),
-                                  width: 1.5,
+                            keyboardDismissBehavior:
+                                ScrollViewKeyboardDismissBehavior.onDrag,
+                            padding: const EdgeInsets.only(
+                              top: 60.0,
+                              bottom: 24.0,
+                            ),
+                            child: Center(
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: isTablet ? 640.0 : double.infinity,
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: color.withValues(alpha: 0.08),
-                                    blurRadius: 16.0,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    context.l10n.amountLabel.toUpperCase(),
-                                    style: customTypography.labelMediumMono
-                                        .copyWith(
-                                      color: colorScheme.outline,
-                                      letterSpacing: 1.5,
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.baseline,
-                                    textBaseline: TextBaseline.alphabetic,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        '$currencySymbol ',
-                                        style: customTypography
-                                            .headlineLargeMonoBold
-                                            .copyWith(
-                                          color: color,
-                                          fontSize: 36.0,
-                                        ),
-                                      ),
-                                      IntrinsicWidth(
-                                        child: TextField(
-                                          controller: _amountController,
-                                          focusNode: _amountFocusNode,
-                                          keyboardType: const TextInputType
-                                              .numberWithOptions(decimal: true),
-                                          textInputAction: TextInputAction.next,
-                                          inputFormatters: [
-                                            FilteringTextInputFormatter.allow(
-                                                RegExp(r'^\d*\.?\d{0,2}')),
-                                          ],
-                                          style: customTypography
-                                              .headlineLargeMonoBold
-                                              .copyWith(
-                                            color: color,
-                                            fontSize: 36.0,
-                                          ),
-                                          cursorColor: color,
-                                          decoration: InputDecoration(
-                                            filled: false,
-                                            fillColor: Colors.transparent,
-                                            hintText: '0.00',
-                                            hintStyle: customTypography
-                                                .headlineLargeMonoBold
-                                                .copyWith(
-                                              color:
-                                                  color.withValues(alpha: 0.35),
-                                              fontSize: 36.0,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    // Amount Hero Card Display
+                                    ValueListenableBuilder<TransactionType>(
+                                      valueListenable: _typeNotifier,
+                                      builder: (context, type, _) {
+                                        final currencySymbol =
+                                            getIt<PreferenceService>()
+                                                .currencySymbol;
+                                        final color = type ==
+                                                TransactionType.income
+                                            ? customColors.semanticGreen
+                                            : type == TransactionType.transfer
+                                                ? customColors.semanticBlue
+                                                : customColors.semanticRed;
+
+                                        return GestureDetector(
+                                          onTap: () =>
+                                              _amountFocusNode.requestFocus(),
+                                          behavior: HitTestBehavior.opaque,
+                                          child: Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 20.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 20.0,
+                                                horizontal: 16.0),
+                                            decoration: BoxDecoration(
+                                              color: colorScheme
+                                                  .surfaceContainerHigh
+                                                  .withValues(alpha: 0.55),
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(20.0)),
+                                              border: Border.all(
+                                                color: color.withValues(
+                                                    alpha: 0.30),
+                                                width: 1.5,
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: color.withValues(
+                                                      alpha: 0.08),
+                                                  blurRadius: 16.0,
+                                                  offset: const Offset(0, 4),
+                                                ),
+                                              ],
                                             ),
-                                            border: InputBorder.none,
-                                            enabledBorder: InputBorder.none,
-                                            focusedBorder: InputBorder.none,
-                                            errorBorder: InputBorder.none,
-                                            disabledBorder: InputBorder.none,
-                                            contentPadding: EdgeInsets.zero,
-                                            isDense: true,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-
-                      const SizedBox(height: 20.0),
-
-                      // Category / Transfer Account Selection Fields
-                      ValueListenableBuilder<TransactionType>(
-                        valueListenable: _typeNotifier,
-                        builder: (context, currentType, _) {
-                          if (currentType == TransactionType.transfer) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // From Payment Method (Source)
-                                  Text(
-                                    context.l10n.fromAccount,
-                                    style: customTypography.labelMediumMono
-                                        .copyWith(
-                                      color: colorScheme.outline,
-                                      letterSpacing: 1.2,
-                                      fontSize: 12.0,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  ValueListenableBuilder<PaymentMethod>(
-                                    valueListenable: _paymentMethodNotifier,
-                                    builder: (context, fromMethod, _) {
-                                      return Row(
-                                        children: [
-                                          _buildPaymentMethodOption(
-                                            context,
-                                            method: PaymentMethod.cash,
-                                            label: context.l10n.paymentCash,
-                                            icon: Icons.payments_rounded,
-                                            isSelected: fromMethod ==
-                                                PaymentMethod.cash,
-                                            onSelect: (m) =>
-                                                _paymentMethodNotifier.value =
-                                                    m,
-                                          ),
-                                          const SizedBox(width: 8.0),
-                                          _buildPaymentMethodOption(
-                                            context,
-                                            method: PaymentMethod.account,
-                                            label: context.l10n.paymentAccount,
-                                            icon: Icons.account_balance_rounded,
-                                            isSelected: fromMethod ==
-                                                PaymentMethod.account,
-                                            onSelect: (m) =>
-                                                _paymentMethodNotifier.value =
-                                                    m,
-                                          ),
-                                          const SizedBox(width: 8.0),
-                                          _buildPaymentMethodOption(
-                                            context,
-                                            method: PaymentMethod.card,
-                                            label: context.l10n.paymentCard,
-                                            icon: Icons.credit_card_rounded,
-                                            isSelected: fromMethod ==
-                                                PaymentMethod.card,
-                                            onSelect: (m) =>
-                                                _paymentMethodNotifier.value =
-                                                    m,
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  ),
-
-                                  const SizedBox(height: 16.0),
-
-                                  // To Payment Method (Destination)
-                                  Text(
-                                    context.l10n.toAccount,
-                                    style: customTypography.labelMediumMono
-                                        .copyWith(
-                                      color: colorScheme.outline,
-                                      letterSpacing: 1.2,
-                                      fontSize: 12.0,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  ValueListenableBuilder<PaymentMethod>(
-                                    valueListenable:
-                                        _destinationPaymentMethodNotifier,
-                                    builder: (context, toMethod, _) {
-                                      return Row(
-                                        children: [
-                                          _buildPaymentMethodOption(
-                                            context,
-                                            method: PaymentMethod.cash,
-                                            label: context.l10n.paymentCash,
-                                            icon: Icons.payments_rounded,
-                                            isSelected:
-                                                toMethod == PaymentMethod.cash,
-                                            onSelect: (m) =>
-                                                _destinationPaymentMethodNotifier
-                                                    .value = m,
-                                          ),
-                                          const SizedBox(width: 8.0),
-                                          _buildPaymentMethodOption(
-                                            context,
-                                            method: PaymentMethod.account,
-                                            label: context.l10n.paymentAccount,
-                                            icon: Icons.account_balance_rounded,
-                                            isSelected: toMethod ==
-                                                PaymentMethod.account,
-                                            onSelect: (m) =>
-                                                _destinationPaymentMethodNotifier
-                                                    .value = m,
-                                          ),
-                                          const SizedBox(width: 8.0),
-                                          _buildPaymentMethodOption(
-                                            context,
-                                            method: PaymentMethod.card,
-                                            label: context.l10n.paymentCard,
-                                            icon: Icons.credit_card_rounded,
-                                            isSelected:
-                                                toMethod == PaymentMethod.card,
-                                            onSelect: (m) =>
-                                                _destinationPaymentMethodNotifier
-                                                    .value = m,
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  ),
-
-                                  const SizedBox(height: 16.0),
-
-                                  // Transfer Fee Field
-                                  Text(
-                                    context.l10n.transferFee,
-                                    style: customTypography.labelMediumMono
-                                        .copyWith(
-                                      color: colorScheme.outline,
-                                      letterSpacing: 1.2,
-                                      fontSize: 12.0,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  AppTextField(
-                                    controller: _feeController,
-                                    hintText: 'e.g. 5.00',
-                                    isAmount: true,
-                                    style: customTypography.labelMediumMono
-                                        .copyWith(
-                                      color: colorScheme.onSurface,
-                                      fontSize: 14.0,
-                                    ),
-                                    hintStyle: customTypography.labelMediumMono
-                                        .copyWith(
-                                      color: colorScheme.outline,
-                                      fontSize: 13.0,
-                                    ),
-                                    fillColor: colorScheme.surfaceContainerHigh,
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(14.0)),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-
-                          // Expense or Income Category Selector
-                          final categories =
-                              currentType == TransactionType.expense
-                                  ? _expenseCategories
-                                  : _incomeCategories;
-
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  context.l10n.categoryLabel,
-                                  style:
-                                      customTypography.labelMediumMono.copyWith(
-                                    color: colorScheme.outline,
-                                    letterSpacing: 1.2,
-                                    fontSize: 12.0,
-                                  ),
-                                ),
-                                const SizedBox(height: 8.0),
-                                ValueListenableBuilder<CategoryItem?>(
-                                  valueListenable: _selectedCategoryNotifier,
-                                  builder: (context, selectedCat, _) {
-                                    final catName = selectedCat?.name ??
-                                        context.l10n.categoryLabel;
-                                    final catColor = _parseColor(
-                                        selectedCat?.colorHex ?? '#57F1DB',
-                                        colorScheme.primary);
-                                    final iconData = _getIconData(
-                                        selectedCat?.icon ?? 'category');
-
-                                    return InkWell(
-                                      onTap: () async {
-                                        final picked =
-                                            await CategoryPickerSheet.show(
-                                          context: context,
-                                          categories: categories,
-                                          selectedCategory: selectedCat,
-                                          initialType: currentType,
-                                        );
-                                        if (picked != null) {
-                                          _selectedCategoryNotifier.value =
-                                              picked;
-                                        }
-                                      },
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(14.0)),
-                                      child: Container(
-                                        height: 52.0,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              colorScheme.surfaceContainerHigh,
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(14.0)),
-                                          border: Border.all(
-                                            color: colorScheme.outlineVariant,
-                                            width: 1.0,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
+                                            child: Column(
                                               children: [
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.all(6.0),
-                                                  decoration: BoxDecoration(
-                                                    color: catColor.withValues(
-                                                        alpha: 0.2),
-                                                    borderRadius:
-                                                        const BorderRadius.all(
-                                                            Radius.circular(
-                                                                8.0)),
-                                                  ),
-                                                  child: Icon(
-                                                    iconData,
-                                                    color: catColor,
-                                                    size: 20.0,
+                                                Text(
+                                                  context.l10n.amountLabel
+                                                      .toUpperCase(),
+                                                  style: customTypography
+                                                      .labelMediumMono
+                                                      .copyWith(
+                                                    color: colorScheme.outline,
+                                                    letterSpacing: 1.5,
+                                                    fontSize: 12.0,
+                                                    fontWeight: FontWeight.w600,
                                                   ),
                                                 ),
-                                                const SizedBox(width: 12.0),
+                                                const SizedBox(height: 8.0),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .baseline,
+                                                  textBaseline:
+                                                      TextBaseline.alphabetic,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Text(
+                                                      '$currencySymbol ',
+                                                      style: customTypography
+                                                          .headlineLargeMonoBold
+                                                          .copyWith(
+                                                        color: color,
+                                                        fontSize: 36.0,
+                                                      ),
+                                                    ),
+                                                    IntrinsicWidth(
+                                                      child: TextField(
+                                                        controller:
+                                                            _amountController,
+                                                        focusNode:
+                                                            _amountFocusNode,
+                                                        keyboardType:
+                                                            const TextInputType
+                                                                .numberWithOptions(
+                                                                decimal: true),
+                                                        textInputAction:
+                                                            TextInputAction
+                                                                .next,
+                                                        inputFormatters: [
+                                                          FilteringTextInputFormatter
+                                                              .allow(RegExp(
+                                                                  r'^\d*\.?\d{0,2}')),
+                                                        ],
+                                                        style: customTypography
+                                                            .headlineLargeMonoBold
+                                                            .copyWith(
+                                                          color: color,
+                                                          fontSize: 36.0,
+                                                        ),
+                                                        cursorColor: color,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          filled: false,
+                                                          fillColor: Colors
+                                                              .transparent,
+                                                          hintText: '0.00',
+                                                          hintStyle:
+                                                              customTypography
+                                                                  .headlineLargeMonoBold
+                                                                  .copyWith(
+                                                            color: color
+                                                                .withValues(
+                                                                    alpha:
+                                                                        0.35),
+                                                            fontSize: 36.0,
+                                                          ),
+                                                          border:
+                                                              InputBorder.none,
+                                                          enabledBorder:
+                                                              InputBorder.none,
+                                                          focusedBorder:
+                                                              InputBorder.none,
+                                                          errorBorder:
+                                                              InputBorder.none,
+                                                          disabledBorder:
+                                                              InputBorder.none,
+                                                          contentPadding:
+                                                              EdgeInsets.zero,
+                                                          isDense: true,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+
+                                    const SizedBox(height: 20.0),
+
+                                    // Category / Transfer Account Selection Fields
+                                    ValueListenableBuilder<TransactionType>(
+                                      valueListenable: _typeNotifier,
+                                      builder: (context, currentType, _) {
+                                        if (currentType ==
+                                            TransactionType.transfer) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                // From Payment Method (Source)
                                                 Text(
-                                                  catName,
+                                                  context.l10n.fromAccount,
                                                   style: customTypography
-                                                      .bodyMedium
+                                                      .labelMediumMono
                                                       .copyWith(
-                                                    fontWeight: FontWeight.bold,
+                                                    color: colorScheme.outline,
+                                                    letterSpacing: 1.2,
+                                                    fontSize: 12.0,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8.0),
+                                                ValueListenableBuilder<
+                                                    PaymentMethod>(
+                                                  valueListenable:
+                                                      _paymentMethodNotifier,
+                                                  builder:
+                                                      (context, fromMethod, _) {
+                                                    return Row(
+                                                      children: [
+                                                        _buildPaymentMethodOption(
+                                                          context,
+                                                          method: PaymentMethod
+                                                              .cash,
+                                                          label: context
+                                                              .l10n.paymentCash,
+                                                          icon: Icons
+                                                              .payments_rounded,
+                                                          isSelected:
+                                                              fromMethod ==
+                                                                  PaymentMethod
+                                                                      .cash,
+                                                          onSelect: (m) =>
+                                                              _paymentMethodNotifier
+                                                                  .value = m,
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 8.0),
+                                                        _buildPaymentMethodOption(
+                                                          context,
+                                                          method: PaymentMethod
+                                                              .account,
+                                                          label: context.l10n
+                                                              .paymentAccount,
+                                                          icon: Icons
+                                                              .account_balance_rounded,
+                                                          isSelected:
+                                                              fromMethod ==
+                                                                  PaymentMethod
+                                                                      .account,
+                                                          onSelect: (m) =>
+                                                              _paymentMethodNotifier
+                                                                  .value = m,
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 8.0),
+                                                        _buildPaymentMethodOption(
+                                                          context,
+                                                          method: PaymentMethod
+                                                              .card,
+                                                          label: context
+                                                              .l10n.paymentCard,
+                                                          icon: Icons
+                                                              .credit_card_rounded,
+                                                          isSelected:
+                                                              fromMethod ==
+                                                                  PaymentMethod
+                                                                      .card,
+                                                          onSelect: (m) =>
+                                                              _paymentMethodNotifier
+                                                                  .value = m,
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                ),
+
+                                                const SizedBox(height: 16.0),
+
+                                                // To Payment Method (Destination)
+                                                Text(
+                                                  context.l10n.toAccount,
+                                                  style: customTypography
+                                                      .labelMediumMono
+                                                      .copyWith(
+                                                    color: colorScheme.outline,
+                                                    letterSpacing: 1.2,
+                                                    fontSize: 12.0,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8.0),
+                                                ValueListenableBuilder<
+                                                    PaymentMethod>(
+                                                  valueListenable:
+                                                      _destinationPaymentMethodNotifier,
+                                                  builder:
+                                                      (context, toMethod, _) {
+                                                    return Row(
+                                                      children: [
+                                                        _buildPaymentMethodOption(
+                                                          context,
+                                                          method: PaymentMethod
+                                                              .cash,
+                                                          label: context
+                                                              .l10n.paymentCash,
+                                                          icon: Icons
+                                                              .payments_rounded,
+                                                          isSelected:
+                                                              toMethod ==
+                                                                  PaymentMethod
+                                                                      .cash,
+                                                          onSelect: (m) =>
+                                                              _destinationPaymentMethodNotifier
+                                                                  .value = m,
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 8.0),
+                                                        _buildPaymentMethodOption(
+                                                          context,
+                                                          method: PaymentMethod
+                                                              .account,
+                                                          label: context.l10n
+                                                              .paymentAccount,
+                                                          icon: Icons
+                                                              .account_balance_rounded,
+                                                          isSelected:
+                                                              toMethod ==
+                                                                  PaymentMethod
+                                                                      .account,
+                                                          onSelect: (m) =>
+                                                              _destinationPaymentMethodNotifier
+                                                                  .value = m,
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 8.0),
+                                                        _buildPaymentMethodOption(
+                                                          context,
+                                                          method: PaymentMethod
+                                                              .card,
+                                                          label: context
+                                                              .l10n.paymentCard,
+                                                          icon: Icons
+                                                              .credit_card_rounded,
+                                                          isSelected:
+                                                              toMethod ==
+                                                                  PaymentMethod
+                                                                      .card,
+                                                          onSelect: (m) =>
+                                                              _destinationPaymentMethodNotifier
+                                                                  .value = m,
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                ),
+
+                                                const SizedBox(height: 16.0),
+
+                                                // Transfer Fee Field
+                                                Text(
+                                                  context.l10n.transferFee,
+                                                  style: customTypography
+                                                      .labelMediumMono
+                                                      .copyWith(
+                                                    color: colorScheme.outline,
+                                                    letterSpacing: 1.2,
+                                                    fontSize: 12.0,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8.0),
+                                                AppTextField(
+                                                  controller: _feeController,
+                                                  hintText: 'e.g. 5.00',
+                                                  isAmount: true,
+                                                  style: customTypography
+                                                      .labelMediumMono
+                                                      .copyWith(
                                                     color:
                                                         colorScheme.onSurface,
                                                     fontSize: 14.0,
                                                   ),
+                                                  hintStyle: customTypography
+                                                      .labelMediumMono
+                                                      .copyWith(
+                                                    color: colorScheme.outline,
+                                                    fontSize: 13.0,
+                                                  ),
+                                                  fillColor: colorScheme
+                                                      .surfaceContainerHigh,
+                                                  borderRadius:
+                                                      const BorderRadius.all(
+                                                          Radius.circular(
+                                                              14.0)),
                                                 ),
                                               ],
                                             ),
-                                            Icon(
-                                              Icons.unfold_more_rounded,
+                                          );
+                                        }
+
+                                        // Expense or Income Category Selector
+                                        final categories = currentType ==
+                                                TransactionType.expense
+                                            ? _expenseCategories
+                                            : _incomeCategories;
+
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                context.l10n.categoryLabel,
+                                                style: customTypography
+                                                    .labelMediumMono
+                                                    .copyWith(
+                                                  color: colorScheme.outline,
+                                                  letterSpacing: 1.2,
+                                                  fontSize: 12.0,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8.0),
+                                              ValueListenableBuilder<
+                                                  CategoryItem?>(
+                                                valueListenable:
+                                                    _selectedCategoryNotifier,
+                                                builder:
+                                                    (context, selectedCat, _) {
+                                                  final catName =
+                                                      selectedCat?.name ??
+                                                          context.l10n
+                                                              .categoryLabel;
+                                                  final catColor = _parseColor(
+                                                      selectedCat?.colorHex ??
+                                                          '#57F1DB',
+                                                      colorScheme.primary);
+                                                  final iconData = _getIconData(
+                                                      selectedCat?.icon ??
+                                                          'category');
+
+                                                  return InkWell(
+                                                    onTap: () async {
+                                                      final picked =
+                                                          await CategoryPickerSheet
+                                                              .show(
+                                                        context: context,
+                                                        categories: categories,
+                                                        selectedCategory:
+                                                            selectedCat,
+                                                        initialType:
+                                                            currentType,
+                                                      );
+                                                      if (picked != null) {
+                                                        _selectedCategoryNotifier
+                                                            .value = picked;
+                                                      }
+                                                    },
+                                                    borderRadius:
+                                                        const BorderRadius.all(
+                                                            Radius.circular(
+                                                                14.0)),
+                                                    child: Container(
+                                                      height: 52.0,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 16.0),
+                                                      decoration: BoxDecoration(
+                                                        color: colorScheme
+                                                            .surfaceContainerHigh,
+                                                        borderRadius:
+                                                            const BorderRadius
+                                                                .all(
+                                                                Radius.circular(
+                                                                    14.0)),
+                                                        border: Border.all(
+                                                          color: colorScheme
+                                                              .outlineVariant,
+                                                          width: 1.0,
+                                                        ),
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Container(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(
+                                                                        6.0),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: catColor
+                                                                      .withValues(
+                                                                          alpha:
+                                                                              0.2),
+                                                                  borderRadius:
+                                                                      const BorderRadius
+                                                                          .all(
+                                                                          Radius.circular(
+                                                                              8.0)),
+                                                                ),
+                                                                child: Icon(
+                                                                  iconData,
+                                                                  color:
+                                                                      catColor,
+                                                                  size: 20.0,
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                  width: 12.0),
+                                                              Text(
+                                                                catName,
+                                                                style: customTypography
+                                                                    .bodyMedium
+                                                                    .copyWith(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: colorScheme
+                                                                      .onSurface,
+                                                                  fontSize:
+                                                                      14.0,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          Icon(
+                                                            Icons
+                                                                .unfold_more_rounded,
+                                                            color: colorScheme
+                                                                .outline,
+                                                            size: 20.0,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+
+                                    // Payment Method Selection (Expense only)
+                                    ValueListenableBuilder<TransactionType>(
+                                      valueListenable: _typeNotifier,
+                                      builder: (context, currentType, _) {
+                                        if (currentType !=
+                                            TransactionType.expense) {
+                                          return const SizedBox.shrink();
+                                        }
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(height: 16.0),
+                                              Text(
+                                                context.l10n.paymentMethodLabel,
+                                                style: customTypography
+                                                    .labelMediumMono
+                                                    .copyWith(
+                                                  color: colorScheme.outline,
+                                                  letterSpacing: 1.2,
+                                                  fontSize: 12.0,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8.0),
+                                              ValueListenableBuilder<
+                                                  PaymentMethod>(
+                                                valueListenable:
+                                                    _paymentMethodNotifier,
+                                                builder: (context,
+                                                    selectedMethod, _) {
+                                                  return Row(
+                                                    children: [
+                                                      _buildPaymentMethodOption(
+                                                        context,
+                                                        method:
+                                                            PaymentMethod.cash,
+                                                        label: context
+                                                            .l10n.paymentCash,
+                                                        icon: Icons
+                                                            .payments_rounded,
+                                                        isSelected:
+                                                            selectedMethod ==
+                                                                PaymentMethod
+                                                                    .cash,
+                                                      ),
+                                                      const SizedBox(
+                                                          width: 8.0),
+                                                      _buildPaymentMethodOption(
+                                                        context,
+                                                        method: PaymentMethod
+                                                            .account,
+                                                        label: context.l10n
+                                                            .paymentAccount,
+                                                        icon: Icons
+                                                            .account_balance_rounded,
+                                                        isSelected:
+                                                            selectedMethod ==
+                                                                PaymentMethod
+                                                                    .account,
+                                                      ),
+                                                      const SizedBox(
+                                                          width: 8.0),
+                                                      _buildPaymentMethodOption(
+                                                        context,
+                                                        method:
+                                                            PaymentMethod.card,
+                                                        label: context
+                                                            .l10n.paymentCard,
+                                                        icon: Icons
+                                                            .credit_card_rounded,
+                                                        isSelected:
+                                                            selectedMethod ==
+                                                                PaymentMethod
+                                                                    .card,
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+
+                                    const SizedBox(height: 16.0),
+
+                                    // Date Picker
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            context.l10n.dateAndTimeLabel,
+                                            style: customTypography
+                                                .labelMediumMono
+                                                .copyWith(
+                                              color: colorScheme.outline,
+                                              letterSpacing: 1.2,
+                                              fontSize: 12.0,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8.0),
+                                          ValueListenableBuilder<DateTime>(
+                                            valueListenable: _dateNotifier,
+                                            builder:
+                                                (context, selectedDate, _) {
+                                              return InkWell(
+                                                onTap: () async {
+                                                  final picked =
+                                                      await showDatePicker(
+                                                    context: context,
+                                                    initialDate: selectedDate,
+                                                    firstDate: DateTime(2020),
+                                                    lastDate: DateTime(2100),
+                                                  );
+                                                  if (picked != null) {
+                                                    _dateNotifier.value =
+                                                        picked;
+                                                  }
+                                                },
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(14.0)),
+                                                child: Container(
+                                                  height: 52.0,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 16.0),
+                                                  decoration: BoxDecoration(
+                                                    color: colorScheme
+                                                        .surfaceContainerHigh,
+                                                    borderRadius:
+                                                        const BorderRadius.all(
+                                                            Radius.circular(
+                                                                14.0)),
+                                                    border: Border.all(
+                                                      color: colorScheme
+                                                          .outlineVariant,
+                                                      width: 1.0,
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Icon(
+                                                            Icons
+                                                                .calendar_today_rounded,
+                                                            size: 20.0,
+                                                            color: colorScheme
+                                                                .primary,
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 12.0),
+                                                          Text(
+                                                            '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                                                            style:
+                                                                customTypography
+                                                                    .bodyMedium
+                                                                    .copyWith(
+                                                              color: colorScheme
+                                                                  .onSurface,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 14.0,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Icon(
+                                                        Icons
+                                                            .edit_calendar_rounded,
+                                                        color:
+                                                            colorScheme.outline,
+                                                        size: 20.0,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    const SizedBox(height: 16.0),
+
+                                    // Note / Description Field
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            context.l10n.noteLabel,
+                                            style: customTypography
+                                                .labelMediumMono
+                                                .copyWith(
+                                              color: colorScheme.outline,
+                                              letterSpacing: 1.2,
+                                              fontSize: 12.0,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8.0),
+                                          AppTextField(
+                                            controller: _noteController,
+                                            hintText: context.l10n.addNoteHint,
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            style:
+                                                textTheme.bodyMedium?.copyWith(
+                                              color: colorScheme.onSurface,
+                                              fontSize: 14.0,
+                                            ),
+                                            hintStyle:
+                                                textTheme.bodyMedium?.copyWith(
+                                              color: colorScheme.outline,
+                                              fontSize: 13.5,
+                                            ),
+                                            prefixIcon: Icon(
+                                              Icons.sticky_note_2_outlined,
                                               color: colorScheme.outline,
                                               size: 20.0,
                                             ),
-                                          ],
-                                        ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 16.0,
+                                                    vertical: 14.0),
+                                            fillColor: colorScheme
+                                                .surfaceContainerHigh,
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(14.0)),
+                                          ),
+                                        ],
                                       ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+                                    ),
 
-                      // Payment Method Selection (Expense only)
-                      ValueListenableBuilder<TransactionType>(
-                        valueListenable: _typeNotifier,
-                        builder: (context, currentType, _) {
-                          if (currentType != TransactionType.expense) {
-                            return const SizedBox.shrink();
-                          }
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 16.0),
-                                Text(
-                                  context.l10n.paymentMethodLabel,
-                                  style:
-                                      customTypography.labelMediumMono.copyWith(
-                                    color: colorScheme.outline,
-                                    letterSpacing: 1.2,
-                                    fontSize: 12.0,
-                                  ),
+                                    const SizedBox(height: 16.0),
+                                  ],
                                 ),
-                                const SizedBox(height: 8.0),
-                                ValueListenableBuilder<PaymentMethod>(
-                                  valueListenable: _paymentMethodNotifier,
-                                  builder: (context, selectedMethod, _) {
-                                    return Row(
-                                      children: [
-                                        _buildPaymentMethodOption(
-                                          context,
-                                          method: PaymentMethod.cash,
-                                          label: context.l10n.paymentCash,
-                                          icon: Icons.payments_rounded,
-                                          isSelected: selectedMethod ==
-                                              PaymentMethod.cash,
-                                        ),
-                                        const SizedBox(width: 8.0),
-                                        _buildPaymentMethodOption(
-                                          context,
-                                          method: PaymentMethod.account,
-                                          label: context.l10n.paymentAccount,
-                                          icon: Icons.account_balance_rounded,
-                                          isSelected: selectedMethod ==
-                                              PaymentMethod.account,
-                                        ),
-                                        const SizedBox(width: 8.0),
-                                        _buildPaymentMethodOption(
-                                          context,
-                                          method: PaymentMethod.card,
-                                          label: context.l10n.paymentCard,
-                                          icon: Icons.credit_card_rounded,
-                                          isSelected: selectedMethod ==
-                                              PaymentMethod.card,
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-
-                      const SizedBox(height: 16.0),
-
-                      // Date Picker
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              context.l10n.dateAndTimeLabel,
-                              style: customTypography.labelMediumMono.copyWith(
-                                color: colorScheme.outline,
-                                letterSpacing: 1.2,
-                                fontSize: 12.0,
                               ),
                             ),
-                            const SizedBox(height: 8.0),
-                            ValueListenableBuilder<DateTime>(
-                              valueListenable: _dateNotifier,
-                              builder: (context, selectedDate, _) {
-                                return InkWell(
-                                  onTap: () async {
-                                    final picked = await showDatePicker(
-                                      context: context,
-                                      initialDate: selectedDate,
-                                      firstDate: DateTime(2020),
-                                      lastDate: DateTime(2100),
-                                    );
-                                    if (picked != null) {
-                                      _dateNotifier.value = picked;
-                                    }
-                                  },
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(14.0)),
-                                  child: Container(
-                                    height: 52.0,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0),
-                                    decoration: BoxDecoration(
-                                      color: colorScheme.surfaceContainerHigh,
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(14.0)),
-                                      border: Border.all(
-                                        color: colorScheme.outlineVariant,
-                                        width: 1.0,
+                          ),
+                        ),
+                        // 2. Fixed Non-Scrollable Pinned Liquid Glass Tab Bar Component
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: Center(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: isTablet ? 640.0 : double.infinity,
+                              ),
+                              child: ValueListenableBuilder<TransactionType>(
+                                valueListenable: _typeNotifier,
+                                builder: (context, type, _) {
+                                  return _TypeSelectorRow(
+                                    selectedType: type,
+                                    onTypeSelected: _switchType,
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Fixed Bottom Save Container taking the bottom space of the page
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      border: Border(
+                        top: BorderSide(
+                          color: isLight
+                              ? colorScheme.outlineVariant
+                                  .withValues(alpha: 0.50)
+                              : customColors.glassStroke
+                                  .withValues(alpha: 0.40),
+                          width: 1.0,
+                        ),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black
+                              .withValues(alpha: isLight ? 0.04 : 0.15),
+                          blurRadius: 10.0,
+                          offset: const Offset(0, -3),
+                        ),
+                      ],
+                    ),
+                    child: SafeArea(
+                      top: false,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isTablet ? 32.0 : 20.0,
+                          vertical: 12.0,
+                        ),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: isTablet ? 640.0 : double.infinity,
+                            ),
+                            child: Builder(
+                              builder: (blocContext) {
+                                final isEditing =
+                                    widget.initialTransaction != null;
+
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (!isEditing) ...[
+                                      OutlinedButton(
+                                        onPressed: () => _handleSave(
+                                            blocContext,
+                                            addAnother: true),
+                                        style: OutlinedButton.styleFrom(
+                                          foregroundColor: colorScheme.primary,
+                                          minimumSize: Size(double.infinity,
+                                              isTablet ? 54.0 : 48.0),
+                                          side: BorderSide(
+                                              color: colorScheme.primary,
+                                              width: 1.5),
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(14.0)),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'Save & Add Another',
+                                          textAlign: TextAlign.center,
+                                          style: customTypography.bodyLargeBold
+                                              .copyWith(
+                                            color: colorScheme.primary,
+                                            fontSize: isTablet ? 15.0 : 13.0,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10.0),
+                                    ],
+                                    ElevatedButton(
+                                      onPressed: () => _handleSave(blocContext,
+                                          addAnother: false),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: colorScheme.primary,
+                                        foregroundColor: colorScheme.onPrimary,
+                                        minimumSize: Size(double.infinity,
+                                            isTablet ? 54.0 : 48.0),
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(14.0)),
+                                        ),
+                                        elevation: 0,
+                                      ),
+                                      child: Text(
+                                        isEditing
+                                            ? 'Update Transaction'
+                                            : context.l10n.saveTransaction,
+                                        textAlign: TextAlign.center,
+                                        style: customTypography.bodyLargeBold
+                                            .copyWith(
+                                          color: colorScheme.onPrimary,
+                                          fontSize: isTablet ? 16.0 : 14.0,
+                                        ),
                                       ),
                                     ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.calendar_today_rounded,
-                                              size: 20.0,
-                                              color: colorScheme.primary,
-                                            ),
-                                            const SizedBox(width: 12.0),
-                                            Text(
-                                              '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                                              style: customTypography.bodyMedium
-                                                  .copyWith(
-                                                color: colorScheme.onSurface,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Icon(
-                                          Icons.edit_calendar_rounded,
-                                          color: colorScheme.outline,
-                                          size: 20.0,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  ],
                                 );
                               },
                             ),
-                          ],
+                          ),
                         ),
                       ),
-
-                      const SizedBox(height: 16.0),
-
-                      // Note / Description Field
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              context.l10n.noteLabel,
-                              style: customTypography.labelMediumMono.copyWith(
-                                color: colorScheme.outline,
-                                letterSpacing: 1.2,
-                                fontSize: 12.0,
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            AppTextField(
-                              controller: _noteController,
-                              hintText: context.l10n.addNoteHint,
-                              textInputAction: TextInputAction.done,
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurface,
-                                fontSize: 14.0,
-                              ),
-                              hintStyle: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.outline,
-                                fontSize: 13.5,
-                              ),
-                              prefixIcon: Icon(
-                                Icons.sticky_note_2_outlined,
-                                color: colorScheme.outline,
-                                size: 20.0,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 14.0),
-                              fillColor: colorScheme.surfaceContainerHigh,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(14.0)),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 28.0),
-
-                      // Save / Update Transaction Button
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Builder(
-                          builder: (blocContext) {
-                            return ElevatedButton(
-                              onPressed: () => _handleSave(blocContext),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: colorScheme.primary,
-                                foregroundColor: colorScheme.onPrimary,
-                                minimumSize: Size(
-                                    double.infinity, isTablet ? 54.0 : 48.0),
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(14.0)),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: Text(
-                                widget.initialTransaction != null
-                                    ? 'Update Transaction'
-                                    : context.l10n.saveTransaction,
-                                style: customTypography.bodyLargeBold.copyWith(
-                                  color: colorScheme.onPrimary,
-                                  fontSize: isTablet ? 16.0 : 15.0,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-
-                      const SizedBox(height: 32.0),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ),
@@ -1106,7 +1326,9 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
     );
   }
 
-  Future<void> _handleSave(BuildContext blocContext) async {
+  Future<void> _handleSave(BuildContext blocContext,
+      {bool addAnother = false}) async {
+    _isAddingAnother = addAnother;
     final colorScheme = Theme.of(context).colorScheme;
     final amount = double.tryParse(_amountController.text.trim()) ?? 0.0;
     if (amount <= 0) {
@@ -1387,6 +1609,104 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
   }
 }
 
+class _TypeSelectorRow extends StatelessWidget {
+  final TransactionType selectedType;
+  final ValueChanged<TransactionType> onTypeSelected;
+
+  const _TypeSelectorRow({
+    required this.selectedType,
+    required this.onTypeSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final customColors = context.customColors;
+    final customTypography = context.customTypography;
+    final isTablet = Breakpoints.isTablet(context);
+
+    final tabs = [
+      {
+        'type': TransactionType.expense,
+        'label': context.l10n.expense,
+        'activeColor': customColors.semanticRed,
+        'onActiveColor': Colors.white,
+      },
+      {
+        'type': TransactionType.income,
+        'label': context.l10n.income,
+        'activeColor': customColors.semanticGreen,
+        'onActiveColor': Colors.white,
+      },
+      {
+        'type': TransactionType.transfer,
+        'label': context.l10n.transfer,
+        'activeColor': customColors.semanticBlue,
+        'onActiveColor': Colors.white,
+      },
+    ];
+
+    return _LiquidGlassCard(
+      margin: EdgeInsets.symmetric(
+        horizontal: isTablet ? 0.0 : 20.0,
+        vertical: 6.0,
+      ),
+      borderRadius: const BorderRadius.all(Radius.circular(14.0)),
+      padding: const EdgeInsets.all(4.0),
+      child: Row(
+        children: tabs.map((t) {
+          final tabType = t['type'] as TransactionType;
+          final isSelected = tabType == selectedType;
+          final activeColor = t['activeColor'] as Color;
+          final onActiveColor = t['onActiveColor'] as Color;
+
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2.0),
+              child: GestureDetector(
+                key: Key('tab_${tabType.name}'),
+                behavior: HitTestBehavior.opaque,
+                onTap: () => onTypeSelected(tabType),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  decoration: BoxDecoration(
+                    color: isSelected ? activeColor : Colors.transparent,
+                    borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: activeColor.withValues(alpha: 0.35),
+                              blurRadius: 8.0,
+                              offset: const Offset(0, 2),
+                            )
+                          ]
+                        : null,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    t['label'] as String,
+                    textAlign: TextAlign.center,
+                    style: customTypography.labelMediumMono.copyWith(
+                      color: isSelected
+                          ? onActiveColor
+                          : colorScheme.onSurfaceVariant,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontSize: 13.0,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
 class _LiquidGlassCard extends StatelessWidget {
   final Widget child;
   final BorderRadius? borderRadius;
@@ -1409,27 +1729,61 @@ class _LiquidGlassCard extends StatelessWidget {
 
     return Container(
       margin: margin,
-      padding: padding ?? EdgeInsets.zero,
       decoration: BoxDecoration(
         borderRadius: br,
-        color: isLight
-            ? colorScheme.surfaceContainerHigh.withValues(alpha: 0.70)
-            : colorScheme.surfaceContainerHigh.withValues(alpha: 0.40),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isLight
+              ? [
+                  colorScheme.surfaceContainerLowest.withValues(alpha: 0.15),
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.08),
+                ]
+              : [
+                  colorScheme.surfaceContainerHigh.withValues(alpha: 0.12),
+                  colorScheme.surfaceContainerLow.withValues(alpha: 0.05),
+                ],
+        ),
         border: Border.all(
           color: isLight
-              ? colorScheme.outlineVariant.withValues(alpha: 0.50)
-              : customColors.glassStroke.withValues(alpha: 0.40),
+              ? Colors.white.withValues(alpha: 0.35)
+              : customColors.glassStroke.withValues(alpha: 0.25),
           width: 1.0,
         ),
         boxShadow: [
+          // Specular Top Highlight Glow
+          BoxShadow(
+            color: Colors.white.withValues(alpha: isLight ? 0.40 : 0.05),
+            blurRadius: 4.0,
+            spreadRadius: -1.0,
+            offset: const Offset(0, -1),
+          ),
+          // Subtle contact separation shadow
           BoxShadow(
             color: Colors.black.withValues(alpha: isLight ? 0.04 : 0.15),
-            blurRadius: 10.0,
+            blurRadius: 8.0,
+            spreadRadius: 1.0,
             offset: const Offset(0, 2),
+          ),
+          // Soft Ambient Elevation Shadow
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isLight ? 0.07 : 0.25),
+            blurRadius: 16.0,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: child,
+      child: ClipRRect(
+        borderRadius: br,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Padding(
+            padding: padding ?? EdgeInsets.zero,
+            child: child,
+          ),
+        ),
+      ),
     );
   }
 }

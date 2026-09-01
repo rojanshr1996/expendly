@@ -3,6 +3,8 @@ import 'package:injectable/injectable.dart';
 
 import '../../../../core/database/app_database.dart';
 import '../../../../core/database/enums/database_enums.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/services/preference_service.dart';
 import '../../domain/entities/analytics_report.dart';
 
 abstract class AnalyticsLocalDataSource {
@@ -145,13 +147,17 @@ class AnalyticsLocalDataSourceImpl implements AnalyticsLocalDataSource {
       topCatName = topItem.categoryName;
       topCatPct = topItem.percentage;
 
+      final currencySymbol = getIt.isRegistered<PreferenceService>()
+          ? getIt<PreferenceService>().currencySymbol
+          : '\$';
+
       final netStatusText = netSavings >= 0
-          ? 'You maintain a positive cash flow of \$${netSavings.abs().toStringAsFixed(2)} (${savingsRatePct.toStringAsFixed(1)}% savings rate). Controlling spending in ${topItem.categoryName} will help optimize your savings trajectory.'
-          : 'Expenses exceed income by \$${netSavings.abs().toStringAsFixed(2)}. Reducing spending in ${topItem.categoryName} is strongly recommended to return to a balanced cash flow.';
+          ? 'You maintain a positive cash flow of $currencySymbol${netSavings.abs().toStringAsFixed(2)} (${savingsRatePct.toStringAsFixed(1)}% savings rate). Controlling spending in ${topItem.categoryName} will help optimize your savings trajectory.'
+          : 'Expenses exceed income by $currencySymbol${netSavings.abs().toStringAsFixed(2)}. Reducing spending in ${topItem.categoryName} is strongly recommended to return to a balanced cash flow.';
 
       topCatDesc =
-          '${topItem.categoryName} is your highest spending category for this $period period, accounting for ${topItem.percentage.toStringAsFixed(1)}% (\$${topItem.amount.toStringAsFixed(2)}) of your total spending (\$${totalExpense.toStringAsFixed(2)}).\n\n'
-          '• Daily Burn: Averaging \$${avgDailySpend.toStringAsFixed(2)}/day over $daysCount day(s).\n'
+          '${topItem.categoryName} is your highest spending category for this $period period, accounting for ${topItem.percentage.toStringAsFixed(1)}% ($currencySymbol${topItem.amount.toStringAsFixed(2)}) of your total spending ($currencySymbol${totalExpense.toStringAsFixed(2)}).\n\n'
+          '• Daily Burn: Averaging $currencySymbol${avgDailySpend.toStringAsFixed(2)}/day over $daysCount day(s).\n'
           '• Trend & Strategy: $netStatusText';
     } else {
       topCatDesc =

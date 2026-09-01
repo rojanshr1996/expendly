@@ -242,7 +242,7 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
     }
 
     return RefreshIndicator(
-      color: AppColors.primary,
+      color: context.colorScheme.primary,
       onRefresh: () => context.read<BudgetCubit>().loadBudgets(),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(
@@ -384,7 +384,7 @@ class _BudgetsOverviewPageState extends State<BudgetsOverviewPage> {
           Positioned.fill(
             child: RefreshIndicator(
               key: const ValueKey('loaded_content'),
-              color: AppColors.primary,
+              color: context.colorScheme.primary,
               edgeOffset: headerPaddingTop,
               onRefresh: () => context.read<BudgetCubit>().loadBudgets(),
               child: ListView(

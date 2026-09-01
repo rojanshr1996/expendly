@@ -5,6 +5,7 @@ import '../../../../core/constants/margin_constants.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/padding_extensions.dart';
+import '../../../../core/preferences/quick_entry_preferences.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -99,6 +100,9 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
 
     final prefs = getIt<PreferenceService>();
     await prefs.setCurrency(code: selected.code, symbol: selected.symbol);
+    if (getIt.isRegistered<QuickEntryPreferences>()) {
+      await getIt<QuickEntryPreferences>().handleCurrencyChanged(selected.code);
+    }
 
     if (mounted) {
       context.router.push(const OnboardingSecuritySetupRoute());

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/margin_constants.dart';
+import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/shimmer_extensions.dart';
+import '../../../../core/services/preference_service.dart';
 import '../../../../core/widgets/glass_container.dart';
 
 /// Skeleton shimmer loader widget for [RefinedReportsPage] (Reports & Analytics screen).
@@ -13,6 +15,9 @@ class ReportsShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final currencySymbol = getIt.isRegistered<PreferenceService>()
+        ? getIt<PreferenceService>().currencySymbol
+        : '\$';
 
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),
@@ -48,7 +53,8 @@ class ReportsShimmer extends StatelessWidget {
                     children: [
                       Text('TOTAL INCOME', style: TextStyle(fontSize: 10.sp)),
                       SizedBox(height: 8.h),
-                      Text('\$0.00', style: TextStyle(fontSize: 18.sp)),
+                      Text('$currencySymbol 0.00',
+                          style: TextStyle(fontSize: 18.sp)),
                     ],
                   ),
                 ),
@@ -62,7 +68,8 @@ class ReportsShimmer extends StatelessWidget {
                     children: [
                       Text('TOTAL EXPENSE', style: TextStyle(fontSize: 10.sp)),
                       SizedBox(height: 8.h),
-                      Text('\$0.00', style: TextStyle(fontSize: 18.sp)),
+                      Text('$currencySymbol 0.00',
+                          style: TextStyle(fontSize: 18.sp)),
                     ],
                   ),
                 ),
@@ -124,7 +131,8 @@ class ReportsShimmer extends StatelessWidget {
                               style: TextStyle(fontSize: 14.sp)),
                         ],
                       ),
-                      Text('\$0.00 (0%)', style: TextStyle(fontSize: 14.sp)),
+                      Text('$currencySymbol 0.00 (0%)',
+                          style: TextStyle(fontSize: 14.sp)),
                     ],
                   ),
                 ),

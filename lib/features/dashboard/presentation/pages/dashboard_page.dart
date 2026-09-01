@@ -13,7 +13,6 @@ import '../../../../core/extensions/padding_extensions.dart';
 import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/responsive/tablet_spacing.dart';
 import '../../../../core/router/app_router.gr.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/adaptive_navigation_rail.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../../analytics/presentation/pages/refined_reports_page.dart';
@@ -24,6 +23,7 @@ import '../../../groups/presentation/cubit/groups_cubit.dart';
 import '../../../groups/presentation/pages/groups_list_page.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
 import '../../../transactions/presentation/pages/all_transactions_page.dart';
+import '../../../transactions/presentation/pages/quick_add_page.dart';
 import '../cubit/dashboard_cubit.dart';
 import '../cubit/dashboard_state.dart';
 import '../widgets/dashboard_bento_grid.dart';
@@ -65,8 +65,15 @@ class _DashboardPageState extends State<DashboardPage> {
     super.dispose();
   }
 
-  void _openAddTransaction(BuildContext context) async {
+  void _openDetailedAddTransaction(BuildContext context) async {
     final result = await context.router.push(ModernAddTransactionRoute());
+    if (result == true && context.mounted) {
+      context.read<DashboardCubit>().loadDashboardData();
+    }
+  }
+
+  void _openQuickAddTransaction(BuildContext context) async {
+    final result = await QuickAddBottomSheet.show(context);
     if (result == true && context.mounted) {
       context.read<DashboardCubit>().loadDashboardData();
     }
@@ -112,7 +119,7 @@ class _DashboardPageState extends State<DashboardPage> {
         navigateToCreate();
       }
     } else {
-      _openAddTransaction(context);
+      _openDetailedAddTransaction(context);
     }
   }
 
@@ -210,6 +217,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   },
                   onCenterFabPressed: () =>
                       _handleCenterFabPress(context, currentTab),
+                  onCenterFabLongPressed: () =>
+                      _openQuickAddTransaction(context),
                 );
               },
             ),
@@ -378,16 +387,7 @@ class _DashboardPageState extends State<DashboardPage> {
           right: 0,
           child: DashboardHeader(
             isPrivacyModeNotifier: _isPrivacyModeNotifier,
-            onReportsPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (_) => RefinedReportsPage(
-                    isPrivacyModeNotifier: _isPrivacyModeNotifier,
-                  ),
-                ),
-              );
-            },
+            onQuickAddPressed: () => _openQuickAddTransaction(context),
           ),
         ),
       ],
@@ -444,7 +444,7 @@ class _DashboardPageState extends State<DashboardPage> {
       if (isEmptyState) {
         return RefreshIndicator(
           key: const ValueKey('tablet_empty_content'),
-          color: AppColors.primary,
+          color: context.colorScheme.primary,
           onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(
@@ -459,7 +459,10 @@ class _DashboardPageState extends State<DashboardPage> {
               children: [
                 DashboardTabletHeader(
                   isPrivacyModeNotifier: _isPrivacyModeNotifier,
-                  onNewEntryPressed: () => _openAddTransaction(context),
+                  onNewEntryPressed: () => _openDetailedAddTransaction(context),
+                  onDetailedEntryPressed: () =>
+                      _openDetailedAddTransaction(context),
+                  onQuickAddPressed: () => _openQuickAddTransaction(context),
                   onRefreshPressed: () =>
                       context.read<DashboardCubit>().loadDashboardData(),
                 ),
@@ -467,7 +470,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 EmptyDashboardView(
                   key: const ValueKey('tablet_empty'),
                   onAddTransaction: () {
-                    _openAddTransaction(context);
+                    _openQuickAddTransaction(context);
                   },
                 ),
                 const SizedBox(height: TabletSpacing.sectionGap),
@@ -479,7 +482,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
       return RefreshIndicator(
         key: const ValueKey('tablet_loaded_content'),
-        color: AppColors.primary,
+        color: context.colorScheme.primary,
         onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(
@@ -495,7 +498,10 @@ class _DashboardPageState extends State<DashboardPage> {
               // 1. Tablet Header Bar with greetings & action buttons
               DashboardTabletHeader(
                 isPrivacyModeNotifier: _isPrivacyModeNotifier,
-                onNewEntryPressed: () => _openAddTransaction(context),
+                onNewEntryPressed: () => _openDetailedAddTransaction(context),
+                onDetailedEntryPressed: () =>
+                    _openDetailedAddTransaction(context),
+                onQuickAddPressed: () => _openQuickAddTransaction(context),
                 onRefreshPressed: () =>
                     context.read<DashboardCubit>().loadDashboardData(),
               ),
@@ -581,7 +587,7 @@ class _DashboardPageState extends State<DashboardPage> {
       if (isEmptyState) {
         return RefreshIndicator(
           key: const ValueKey('empty_content'),
-          color: AppColors.primary,
+          color: context.colorScheme.primary,
           edgeOffset: headerPaddingTop,
           displacement: 30.h,
           onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
@@ -603,7 +609,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     EmptyDashboardView(
                       key: const ValueKey('empty'),
                       onAddTransaction: () {
-                        _openAddTransaction(context);
+                        _openQuickAddTransaction(context);
                       },
                     ),
                     verticalMarginMedium,
@@ -633,7 +639,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
       return RefreshIndicator(
         key: const ValueKey('loaded_content'),
-        color: AppColors.primary,
+        color: context.colorScheme.primary,
         edgeOffset: headerPaddingTop,
         displacement: 30.h,
         onRefresh: () => context.read<DashboardCubit>().loadDashboardData(),
@@ -735,11 +741,13 @@ class _FloatingBottomNavBar extends StatelessWidget {
   final int currentTab;
   final ValueChanged<int> onTabSelected;
   final VoidCallback onCenterFabPressed;
+  final VoidCallback? onCenterFabLongPressed;
 
   const _FloatingBottomNavBar({
     required this.currentTab,
     required this.onTabSelected,
     required this.onCenterFabPressed,
+    this.onCenterFabLongPressed,
   });
 
   @override
@@ -884,6 +892,12 @@ class _FloatingBottomNavBar extends StatelessWidget {
               HapticFeedback.heavyImpact();
               onCenterFabPressed();
             },
+            onLongPress: onCenterFabLongPressed != null
+                ? () {
+                    HapticFeedback.heavyImpact();
+                    onCenterFabLongPressed!();
+                  }
+                : null,
           ),
         ),
       ],
@@ -894,10 +908,12 @@ class _FloatingBottomNavBar extends StatelessWidget {
 class _LiquidCenterFab extends StatefulWidget {
   final double fabSize;
   final VoidCallback onPressed;
+  final VoidCallback? onLongPress;
 
   const _LiquidCenterFab({
     required this.fabSize,
     required this.onPressed,
+    this.onLongPress,
   });
 
   @override
@@ -919,6 +935,12 @@ class _LiquidCenterFabState extends State<_LiquidCenterFab> {
         setState(() => _isPressed = false);
         widget.onPressed();
       },
+      onLongPress: widget.onLongPress != null
+          ? () {
+              setState(() => _isPressed = false);
+              widget.onLongPress!();
+            }
+          : null,
       onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedScale(
         scale: _isPressed ? 0.90 : 1.0,

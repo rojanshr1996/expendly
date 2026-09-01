@@ -19,6 +19,8 @@ abstract class StatusComponents {
     bool isSuccess = false,
     Duration duration = const Duration(seconds: 3),
     double? bottomMargin,
+    String? actionLabel,
+    VoidCallback? onActionPressed,
   }) {
     final customColors = context.customColors;
     final colorScheme = context.colorScheme;
@@ -64,6 +66,27 @@ abstract class StatusComponents {
                   ),
                 ),
               ),
+              if (actionLabel != null && onActionPressed != null) ...[
+                horizontalMarginSmall,
+                TextButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    onActionPressed();
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: colorScheme.primary,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    actionLabel,
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

@@ -181,6 +181,13 @@ abstract class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
+
+      // Progress & Pull-to-Refresh Indicator Theme
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: AppColors.primary,
+        linearTrackColor: AppColors.surfaceContainerHigh,
+        refreshBackgroundColor: AppColors.surfaceContainerHigh,
+      ),
     );
   }
 
@@ -367,6 +374,13 @@ abstract class AppTheme {
             .copyWith(color: AppColors.lightOutline),
         type: BottomNavigationBarType.fixed,
         elevation: 0,
+      ),
+
+      // Progress & Pull-to-Refresh Indicator Theme
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: AppColors.lightPrimary,
+        linearTrackColor: AppColors.lightSurfaceContainerHigh,
+        refreshBackgroundColor: AppColors.lightSurface,
       ),
     );
   }
