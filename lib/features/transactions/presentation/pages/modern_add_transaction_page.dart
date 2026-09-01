@@ -343,6 +343,17 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
               SnackBar(
                 content: Text(state.message),
                 backgroundColor: colorScheme.secondary,
+                action: state.transactionId != null
+                    ? SnackBarAction(
+                        label: 'Undo',
+                        textColor: colorScheme.onSecondary,
+                        onPressed: () {
+                          context
+                              .read<TransactionCubit>()
+                              .deleteTransaction(state.transactionId!);
+                        },
+                      )
+                    : null,
               ),
             );
 

@@ -332,6 +332,15 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
               message:
                   'Saved ${state.currencySymbol}${state.amount.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '')} for ${state.categoryName}',
               isSuccess: true,
+              actionLabel: 'Undo',
+              onActionPressed: () {
+                context.read<QuickAddCubit>().undoExpense(state.transactionId);
+                StatusComponents.showToast(
+                  context,
+                  message: 'Transaction undone',
+                  isSuccess: true,
+                );
+              },
             );
 
             if (!state.addAnother) {
@@ -412,7 +421,7 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                         child: Container(
                           width: 38.w,
                           height: 4.h,
-                          margin: EdgeInsets.only(top: 10.h, bottom: 2.h),
+                          margin: EdgeInsets.only(top: 12.h, bottom: 6.h),
                           decoration: BoxDecoration(
                             color: colorScheme.onSurfaceVariant
                                 .withValues(alpha: 0.35),
@@ -424,8 +433,8 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                       // 2. Compact Top Bar: Close, Title, More Details
                       Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: isTablet ? 20.0 : 14.w,
-                          vertical: 4.h,
+                          horizontal: isTablet ? 20.0 : 16.w,
+                          vertical: 6.h,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -484,7 +493,7 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                       Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: 20.w,
-                          vertical: 6.h,
+                          vertical: 10.h,
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -528,12 +537,12 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                       Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: 16.w,
-                          vertical: 4.h,
+                          vertical: 6.h,
                         ),
                         child: Wrap(
                           alignment: WrapAlignment.center,
                           spacing: 8.w,
-                          runSpacing: 6.h,
+                          runSpacing: 8.h,
                           children: [
                             // Category Chip
                             Material(
@@ -547,8 +556,8 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                                 borderRadius: BorderRadius.circular(20.r),
                                 child: Container(
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: 10.w,
-                                    vertical: 5.h,
+                                    horizontal: 11.w,
+                                    vertical: 6.h,
                                   ),
                                   decoration: BoxDecoration(
                                     color:
@@ -602,8 +611,8 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                                 borderRadius: BorderRadius.circular(20.r),
                                 child: Container(
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: 10.w,
-                                    vertical: 5.h,
+                                    horizontal: 11.w,
+                                    vertical: 6.h,
                                   ),
                                   decoration: BoxDecoration(
                                     color: isLight
@@ -660,8 +669,8 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                                 borderRadius: BorderRadius.circular(20.r),
                                 child: Container(
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: 10.w,
-                                    vertical: 5.h,
+                                    horizontal: 11.w,
+                                    vertical: 6.h,
                                   ),
                                   decoration: BoxDecoration(
                                     color: isLight
@@ -705,7 +714,55 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                         ),
                       ),
 
-                      SizedBox(height: 4.h),
+                      SizedBox(height: 6.h),
+
+                      // Recent Expenses
+                      if (state.recentExpenses.isNotEmpty)
+                        Container(
+                          height: 40.h,
+                          margin: EdgeInsets.only(top: 2.h, bottom: 10.h),
+                          child: ListView.separated(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: state.recentExpenses.length,
+                            separatorBuilder: (context, _) =>
+                                SizedBox(width: 8.w),
+                            itemBuilder: (context, index) {
+                              final item = state.recentExpenses[index];
+                              return ActionChip(
+                                avatar: Icon(
+                                  _parseIcon(item.categoryIcon),
+                                  size: 14.sp,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                label: Text(
+                                  '${item.categoryName} ${state.defaults.currencySymbol}${item.amount.toStringAsFixed(0)}',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeights.medium,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                                backgroundColor: colorScheme.surface,
+                                side: BorderSide(
+                                  color: colorScheme.outlineVariant
+                                      .withValues(alpha: 0.5),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                padding: EdgeInsets.zero,
+                                labelPadding: EdgeInsets.symmetric(
+                                    horizontal: 8.w, vertical: 2.h),
+                                onPressed: () {
+                                  HapticFeedback.lightImpact();
+                                  _cubit.selectRecentExpense(item);
+                                },
+                              );
+                            },
+                          ),
+                        ),
 
                       // 5. Numeric Keypad & Action Row
                       QuickAmountKeypad(
@@ -805,7 +862,7 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                           ],
                         ),
                       ),
-                      SizedBox(height: isTablet ? 12.0 : 6.h),
+                      SizedBox(height: isTablet ? 14.0 : 8.h),
                     ],
                   ),
                 ),

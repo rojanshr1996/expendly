@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +10,8 @@ import 'package:intl/intl.dart';
 import '../../../../core/database/enums/database_enums.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/responsive/breakpoints.dart';
+import '../../../../core/responsive/tablet_spacing.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/font_weights.dart';
@@ -16,8 +19,6 @@ import '../../../../core/widgets/animated_empty_state_hero.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
-import '../../../../core/responsive/breakpoints.dart';
-import '../../../../core/responsive/tablet_spacing.dart';
 import '../../../../core/widgets/master_detail_layout.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../domain/entities/transaction_item.dart';
@@ -42,7 +43,7 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
   late final ValueNotifier<DateTime> _selectedMonthNotifier;
   late final ValueNotifier<DateTime> _selectedDateNotifier;
 
-  final ScrollController _calendarScrollController = ScrollController();
+  int _slideDirection = 0;
 
   late final AnimationController _pageAnimationController;
   late final Animation<double> _headerFadeAnimation;
@@ -81,10 +82,6 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
     ).animate(_headerFadeAnimation);
 
     _pageAnimationController.forward();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToSelectedDate(animated: false);
-    });
   }
 
   final ValueNotifier<TransactionItem?> _selectedTransactionNotifier =
@@ -96,12 +93,12 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
     _viewModeNotifier.dispose();
     _selectedMonthNotifier.dispose();
     _selectedDateNotifier.dispose();
-    _calendarScrollController.dispose();
     _pageAnimationController.dispose();
     super.dispose();
   }
 
   void _previousPeriod() {
+    _slideDirection = -1;
     final mode = _viewModeNotifier.value;
     final currentMonth = _selectedMonthNotifier.value;
     final now = DateTime.now();
@@ -118,13 +115,11 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
         _selectedDateNotifier.value =
             DateTime(prevMonth.year, prevMonth.month, 1);
       }
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollToSelectedDate(animated: true);
-      });
     }
   }
 
   void _nextPeriod() {
+    _slideDirection = 1;
     final mode = _viewModeNotifier.value;
     final currentMonth = _selectedMonthNotifier.value;
     final now = DateTime.now();
@@ -141,43 +136,17 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
         _selectedDateNotifier.value =
             DateTime(nextMonth.year, nextMonth.month, 1);
       }
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollToSelectedDate(animated: true);
-      });
-    }
-  }
-
-  void _scrollToSelectedDate({bool animated = true}) {
-    if (!_calendarScrollController.hasClients) return;
-    final itemWidth = 60.0.w;
-    final index = _selectedDateNotifier.value.day - 1;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final targetOffset =
-        (16.0.w + index * itemWidth + (itemWidth / 2)) - (screenWidth / 2);
-    final maxScroll = _calendarScrollController.position.maxScrollExtent;
-    final clampedOffset = targetOffset.clamp(0.0, maxScroll);
-
-    if (animated) {
-      _calendarScrollController.animateTo(
-        clampedOffset,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      _calendarScrollController.jumpTo(clampedOffset);
     }
   }
 
   void _toggleViewMode(String mode) {
+    _slideDirection = 0;
     _viewModeNotifier.value = mode;
     getIt<PreferenceService>().setActivityViewMode(mode);
     if (mode == 'calendar') {
       final now = DateTime.now();
       _selectedMonthNotifier.value = DateTime(now.year, now.month);
       _selectedDateNotifier.value = now;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollToSelectedDate(animated: false);
-      });
     }
   }
 
@@ -201,15 +170,20 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
       helpText: context.l10n.selectMonthAndYear,
     );
     if (picked != null) {
-      _selectedMonthNotifier.value = DateTime(picked.year, picked.month);
+      final newMonth = DateTime(picked.year, picked.month);
+      if (newMonth.isAfter(currentMonth)) {
+        _slideDirection = 1;
+      } else if (newMonth.isBefore(currentMonth)) {
+        _slideDirection = -1;
+      } else {
+        _slideDirection = 0;
+      }
+      _selectedMonthNotifier.value = newMonth;
       if (picked.year == now.year && picked.month == now.month) {
         _selectedDateNotifier.value = now;
       } else {
         _selectedDateNotifier.value = DateTime(picked.year, picked.month, 1);
       }
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollToSelectedDate(animated: true);
-      });
     }
   }
 
@@ -355,13 +329,49 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                           horizontal: 6.w,
                           vertical: 2.h,
                         ),
-                        child: Text(
-                          periodText,
-                          style: (textTheme.titleMedium ?? const TextStyle())
-                              .copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: FontWeights.bold,
-                            fontSize: 16.sp,
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 260),
+                          switchInCurve: Curves.easeOutCubic,
+                          switchOutCurve: Curves.easeInCubic,
+                          transitionBuilder: (child, animation) {
+                            final isIncoming =
+                                child.key == ValueKey(periodText);
+                            final beginOffset = _slideDirection != 0
+                                ? (isIncoming
+                                    ? Offset(_slideDirection * 0.4, 0.0)
+                                    : Offset(-_slideDirection * 0.4, 0.0))
+                                : const Offset(0.0, 0.2);
+
+                            return FadeTransition(
+                              opacity: CurvedAnimation(
+                                parent: animation,
+                                curve: Curves.easeInOut,
+                              ),
+                              child: SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: beginOffset,
+                                  end: Offset.zero,
+                                ).animate(
+                                  CurvedAnimation(
+                                    parent: animation,
+                                    curve: isIncoming
+                                        ? Curves.easeOutCubic
+                                        : Curves.easeInCubic,
+                                  ),
+                                ),
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: Text(
+                            periodText,
+                            key: ValueKey(periodText),
+                            style: (textTheme.titleMedium ?? const TextStyle())
+                                .copyWith(
+                              color: colorScheme.onSurface,
+                              fontWeight: FontWeights.bold,
+                              fontSize: 16.sp,
+                            ),
                           ),
                         ),
                       ),
@@ -518,14 +528,53 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                       return ValueListenableBuilder<DateTime>(
                         valueListenable: _selectedDateNotifier,
                         builder: (context, selectedDate, _) {
-                          return _HorizontalDateSelector(
-                            selectedMonth: selectedMonth,
-                            selectedDate: selectedDate,
-                            scrollController: _calendarScrollController,
-                            onDateSelected: (date) {
-                              _selectedDateNotifier.value = date;
-                              _scrollToSelectedDate(animated: true);
-                            },
+                          final monthKey = ValueKey(
+                              'dates_${selectedMonth.year}_${selectedMonth.month}');
+
+                          return SizedBox(
+                            height: 84.h,
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 280),
+                              switchInCurve: Curves.easeOutCubic,
+                              switchOutCurve: Curves.easeInCubic,
+                              transitionBuilder: (child, animation) {
+                                final isIncoming = child.key == monthKey;
+                                final beginOffset = _slideDirection != 0
+                                    ? (isIncoming
+                                        ? Offset(_slideDirection * 0.3, 0.0)
+                                        : Offset(-_slideDirection * 0.3, 0.0))
+                                    : const Offset(0.0, 0.15);
+
+                                return FadeTransition(
+                                  opacity: CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.easeInOut,
+                                  ),
+                                  child: SlideTransition(
+                                    position: Tween<Offset>(
+                                      begin: beginOffset,
+                                      end: Offset.zero,
+                                    ).animate(
+                                      CurvedAnimation(
+                                        parent: animation,
+                                        curve: isIncoming
+                                            ? Curves.easeOutCubic
+                                            : Curves.easeInCubic,
+                                      ),
+                                    ),
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: _HorizontalDateSelector(
+                                key: monthKey,
+                                selectedMonth: selectedMonth,
+                                selectedDate: selectedDate,
+                                onDateSelected: (date) {
+                                  _selectedDateNotifier.value = date;
+                                },
+                              ),
+                            ),
                           );
                         },
                       );
@@ -542,9 +591,11 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                 behavior: HitTestBehavior.translucent,
                 onHorizontalDragEnd: (details) {
                   if (details.primaryVelocity != null) {
-                    if (details.primaryVelocity! < -250) {
+                    if (details.primaryVelocity! < -200) {
+                      HapticFeedback.lightImpact();
                       _nextPeriod();
-                    } else if (details.primaryVelocity! > 250) {
+                    } else if (details.primaryVelocity! > 200) {
+                      HapticFeedback.lightImpact();
                       _previousPeriod();
                     }
                   }
@@ -552,29 +603,71 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
                 child: ValueListenableBuilder<String>(
                   valueListenable: _viewModeNotifier,
                   builder: (context, viewMode, _) {
-                    return AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 350),
-                      switchInCurve: Curves.easeOutCubic,
-                      switchOutCurve: Curves.easeInCubic,
-                      transitionBuilder: (child, animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: ScaleTransition(
-                            scale: Tween<double>(begin: 0.96, end: 1.0)
-                                .animate(animation),
-                            child: child,
-                          ),
-                        );
-                      },
-                      child: KeyedSubtree(
-                        key: ValueKey('content_$viewMode'),
-                        child: ValueListenableBuilder<DateTime>(
-                          valueListenable: _selectedMonthNotifier,
-                          builder: (context, selectedMonth, _) {
-                            return ValueListenableBuilder<DateTime>(
-                              valueListenable: _selectedDateNotifier,
-                              builder: (context, selectedDate, _) {
-                                return BlocBuilder<TransactionCubit,
+                    return ValueListenableBuilder<DateTime>(
+                      valueListenable: _selectedMonthNotifier,
+                      builder: (context, selectedMonth, _) {
+                        return ValueListenableBuilder<DateTime>(
+                          valueListenable: _selectedDateNotifier,
+                          builder: (context, selectedDate, _) {
+                            final currentContentKey = ValueKey(
+                              'content_${viewMode}_${selectedMonth.year}_${selectedMonth.month}_${viewMode == 'calendar' ? selectedDate.day : 0}',
+                            );
+
+                            return AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 320),
+                              switchInCurve: Curves.easeOutCubic,
+                              switchOutCurve: Curves.easeInCubic,
+                              transitionBuilder: (child, animation) {
+                                if (_slideDirection == 0) {
+                                  return FadeTransition(
+                                    opacity: CurvedAnimation(
+                                      parent: animation,
+                                      curve: Curves.easeInOut,
+                                    ),
+                                    child: ScaleTransition(
+                                      scale:
+                                          Tween<double>(begin: 0.96, end: 1.0)
+                                              .animate(
+                                        CurvedAnimation(
+                                          parent: animation,
+                                          curve: Curves.easeOutCubic,
+                                        ),
+                                      ),
+                                      child: child,
+                                    ),
+                                  );
+                                }
+
+                                final isIncoming =
+                                    child.key == currentContentKey;
+                                final beginOffset = isIncoming
+                                    ? Offset(_slideDirection * 0.25, 0.0)
+                                    : Offset(-_slideDirection * 0.25, 0.0);
+
+                                return FadeTransition(
+                                  opacity: CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.easeInOut,
+                                  ),
+                                  child: SlideTransition(
+                                    position: Tween<Offset>(
+                                      begin: beginOffset,
+                                      end: Offset.zero,
+                                    ).animate(
+                                      CurvedAnimation(
+                                        parent: animation,
+                                        curve: isIncoming
+                                            ? Curves.easeOutCubic
+                                            : Curves.easeInCubic,
+                                      ),
+                                    ),
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: KeyedSubtree(
+                                key: currentContentKey,
+                                child: BlocBuilder<TransactionCubit,
                                     TransactionState>(
                                   builder: (context, state) {
                                     if (state is TransactionLoading) {
@@ -1040,12 +1133,12 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
 
                                     return const SizedBox.shrink();
                                   },
-                                );
-                              },
+                                ),
+                              ),
                             );
                           },
-                        ),
-                      ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -1071,18 +1164,72 @@ class _AllTransactionsPageState extends State<AllTransactionsPage>
   }
 }
 
-class _HorizontalDateSelector extends StatelessWidget {
+class _HorizontalDateSelector extends StatefulWidget {
   final DateTime selectedMonth;
   final DateTime selectedDate;
-  final ScrollController scrollController;
   final ValueChanged<DateTime> onDateSelected;
 
   const _HorizontalDateSelector({
+    super.key,
     required this.selectedMonth,
     required this.selectedDate,
-    required this.scrollController,
     required this.onDateSelected,
   });
+
+  @override
+  State<_HorizontalDateSelector> createState() =>
+      _HorizontalDateSelectorState();
+}
+
+class _HorizontalDateSelectorState extends State<_HorizontalDateSelector> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToDate(widget.selectedDate, animated: false);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant _HorizontalDateSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedDate != oldWidget.selectedDate) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToDate(widget.selectedDate, animated: true);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToDate(DateTime date, {bool animated = true}) {
+    if (!mounted || !_scrollController.hasClients) return;
+    if (_scrollController.positions.length != 1) return;
+    final itemWidth = 60.0.w;
+    final index = date.day - 1;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final targetOffset =
+        (16.0.w + index * itemWidth + (itemWidth / 2)) - (screenWidth / 2);
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final clampedOffset = targetOffset.clamp(0.0, maxScroll);
+
+    if (animated) {
+      _scrollController.animateTo(
+        clampedOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      );
+    } else {
+      _scrollController.jumpTo(clampedOffset);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1092,18 +1239,19 @@ class _HorizontalDateSelector extends StatelessWidget {
     final locale = Localizations.localeOf(context).languageCode;
 
     final daysInMonth = DateUtils.getDaysInMonth(
-      selectedMonth.year,
-      selectedMonth.month,
+      widget.selectedMonth.year,
+      widget.selectedMonth.month,
     );
     final List<DateTime> dates = List.generate(
       daysInMonth,
-      (i) => DateTime(selectedMonth.year, selectedMonth.month, i + 1),
+      (i) => DateTime(
+          widget.selectedMonth.year, widget.selectedMonth.month, i + 1),
     );
 
     return SizedBox(
       height: 84.h,
       child: ListView.builder(
-        controller: scrollController,
+        controller: _scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
         physics: const BouncingScrollPhysics(),
@@ -1115,9 +1263,9 @@ class _HorizontalDateSelector extends StatelessWidget {
           final isToday = date.year == now.year &&
               date.month == now.month &&
               date.day == now.day;
-          final isSelected = date.year == selectedDate.year &&
-              date.month == selectedDate.month &&
-              date.day == selectedDate.day;
+          final isSelected = date.year == widget.selectedDate.year &&
+              date.month == widget.selectedDate.month &&
+              date.day == widget.selectedDate.day;
 
           final weekdayStr = DateFormat.E(locale).format(date);
 
@@ -1135,7 +1283,7 @@ class _HorizontalDateSelector extends StatelessWidget {
               );
             },
             child: GestureDetector(
-              onTap: () => onDateSelected(date),
+              onTap: () => widget.onDateSelected(date),
               child: AnimatedScale(
                 scale: isSelected ? 1.05 : 1.0,
                 duration: const Duration(milliseconds: 200),

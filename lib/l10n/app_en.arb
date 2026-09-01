@@ -120,7 +120,7 @@
   "@offlineEncryption": {
     "description": "Footer label on splash screen"
   },
-  "appVersion": "VER 1.1.2",
+  "appVersion": "VER 1.2.0",
   "@appVersion": {
     "description": "App version label on splash screen"
   },
@@ -1126,7 +1126,7 @@
   "@aboutExpendly": {
     "description": "Menu title for About page"
   },
-  "aboutExpendlySubtitle": "Version 1.1.2",
+  "aboutExpendlySubtitle": "Version 1.2.0",
   "@aboutExpendlySubtitle": {
     "description": "Subtitle for About page menu item"
   },

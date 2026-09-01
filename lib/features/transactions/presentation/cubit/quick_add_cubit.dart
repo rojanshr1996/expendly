@@ -8,6 +8,7 @@ import '../../../../core/events/transaction_events.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../domain/entities/category_item.dart';
 import '../../domain/entities/quick_entry_defaults.dart';
+import '../../domain/entities/transaction_item.dart';
 import '../../domain/repositories/transaction_repository.dart';
 import '../../domain/usecases/get_quick_entry_defaults_use_case.dart';
 import '../../domain/usecases/update_quick_entry_defaults_use_case.dart';
@@ -84,6 +85,13 @@ class QuickAddCubit extends Cubit<QuickAddState> {
             .toList();
       } catch (_) {}
 
+      // Fetch recent distinct expenses
+      List<TransactionItem> recentExpenses = [];
+      try {
+        recentExpenses =
+            await _transactionRepository.getRecentDistinctExpenses(limit: 6);
+      } catch (_) {}
+
       emit(QuickAddReady(
         amountText: '',
         defaults: defaults,
@@ -91,6 +99,7 @@ class QuickAddCubit extends Cubit<QuickAddState> {
         selectedPaymentMethod: defaults.paymentMethod,
         selectedDate: defaults.date,
         availableCategories: availableCategories,
+        recentExpenses: recentExpenses,
       ));
     } catch (e) {
       emit(QuickAddReady(
@@ -217,6 +226,43 @@ class QuickAddCubit extends Cubit<QuickAddState> {
       emit(ready.copyWith(
         isSaving: false,
         errorMessage: 'Failed to save expense: $e',
+      ));
+    }
+  }
+
+  /// Undo a recently created expense
+  Future<void> undoExpense(int transactionId) async {
+    try {
+      await _transactionRepository.deleteTransaction(transactionId);
+      TransactionEvents.notifyUpdated();
+    } catch (_) {}
+  }
+
+  /// Select a recent expense to duplicate
+  void selectRecentExpense(TransactionItem item) {
+    if (state is QuickAddReady) {
+      final ready = state as QuickAddReady;
+      CategoryItem? matchedCategory;
+      try {
+        matchedCategory = ready.availableCategories.firstWhere(
+          (c) => c.id == item.categoryId,
+        );
+      } catch (_) {
+        matchedCategory = CategoryItem(
+          id: item.categoryId,
+          name: item.categoryName,
+          icon: item.categoryIcon,
+          colorHex: item.categoryColorHex,
+          type: TransactionType.expense,
+        );
+      }
+
+      emit(ready.copyWith(
+        amountText: item.amount.toStringAsFixed(
+            item.amount.truncateToDouble() == item.amount ? 0 : 2),
+        selectedCategory: matchedCategory,
+        selectedPaymentMethod: item.paymentMethod,
+        clearError: true,
       ));
     }
   }

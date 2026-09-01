@@ -14,6 +14,9 @@ abstract class TransactionLocalDataSource {
     int limit = 10,
     TransactionType? type,
   });
+  Future<List<TransactionItem>> getRecentDistinctExpenses({
+    int limit = 5,
+  });
   Future<int> addTransaction({
     required TransactionType type,
     required double amount,
@@ -160,6 +163,64 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
         paymentMethod: tx.paymentMethod,
       );
     }).toList();
+  }
+
+  @override
+  Future<List<TransactionItem>> getRecentDistinctExpenses({
+    int limit = 5,
+  }) async {
+    // Fetch a larger chunk to ensure we can find distinct ones
+    final baseQuery = _db.select(_db.transactions).join([
+      innerJoin(
+        _db.categories,
+        _db.categories.id.equalsExp(_db.transactions.categoryId),
+      ),
+    ])
+      ..where(_db.transactions.type.equals(TransactionType.expense.index))
+      ..orderBy([
+        OrderingTerm(
+            expression: _db.transactions.timestamp, mode: OrderingMode.desc),
+      ])
+      ..limit(50); // Hard limit to prevent memory issues
+
+    final rows = await baseQuery.get();
+
+    final allRecent = rows.map((row) {
+      final tx = row.readTable(_db.transactions);
+      final cat = row.readTable(_db.categories);
+
+      return TransactionItem(
+        id: tx.id,
+        type: tx.type,
+        amount: tx.amount / 100.0,
+        currencyCode: tx.currencyCode,
+        categoryId: cat.id,
+        categoryName: cat.name,
+        categoryIcon: cat.icon,
+        categoryColorHex: cat.color,
+        timestamp: tx.timestamp,
+        note: tx.note,
+        paymentMethod: tx.paymentMethod,
+      );
+    }).toList();
+
+    // Deduplicate by categoryId and amount
+    final distinctItems = <TransactionItem>[];
+    final seenSignatures = <String>{};
+
+    for (final item in allRecent) {
+      // Signature: categoryId_amount
+      final sig = '${item.categoryId}_${item.amount}';
+      if (!seenSignatures.contains(sig)) {
+        seenSignatures.add(sig);
+        distinctItems.add(item);
+        if (distinctItems.length >= limit) {
+          break;
+        }
+      }
+    }
+
+    return distinctItems;
   }
 
   @override

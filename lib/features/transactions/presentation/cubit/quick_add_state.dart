@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import '../../../../core/database/enums/database_enums.dart';
 import '../../domain/entities/category_item.dart';
 import '../../domain/entities/quick_entry_defaults.dart';
+import '../../domain/entities/transaction_item.dart';
 
 abstract class QuickAddState extends Equatable {
   const QuickAddState();
@@ -22,6 +23,7 @@ class QuickAddReady extends QuickAddState {
   final PaymentMethod selectedPaymentMethod;
   final DateTime selectedDate;
   final List<CategoryItem> availableCategories;
+  final List<TransactionItem> recentExpenses; // Will use TransactionItem
   final bool isSaving;
   final String? errorMessage;
 
@@ -32,6 +34,7 @@ class QuickAddReady extends QuickAddState {
     required this.selectedPaymentMethod,
     required this.selectedDate,
     this.availableCategories = const [],
+    this.recentExpenses = const [],
     this.isSaving = false,
     this.errorMessage,
   });
@@ -46,6 +49,7 @@ class QuickAddReady extends QuickAddState {
     PaymentMethod? selectedPaymentMethod,
     DateTime? selectedDate,
     List<CategoryItem>? availableCategories,
+    List<TransactionItem>? recentExpenses,
     bool? isSaving,
     String? errorMessage,
     bool clearError = false,
@@ -58,6 +62,7 @@ class QuickAddReady extends QuickAddState {
           selectedPaymentMethod ?? this.selectedPaymentMethod,
       selectedDate: selectedDate ?? this.selectedDate,
       availableCategories: availableCategories ?? this.availableCategories,
+      recentExpenses: recentExpenses ?? this.recentExpenses,
       isSaving: isSaving ?? this.isSaving,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
@@ -70,6 +75,7 @@ class QuickAddReady extends QuickAddState {
         selectedCategory,
         selectedPaymentMethod,
         selectedDate,
+        recentExpenses,
         isSaving,
         errorMessage,
       ];

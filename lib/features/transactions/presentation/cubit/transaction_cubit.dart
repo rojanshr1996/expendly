@@ -76,7 +76,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   }) async {
     _isPerformingLocalAction = true;
     try {
-      await _repository.addTransaction(
+      final txId = await _repository.addTransaction(
         type: type,
         amount: amount,
         categoryId: categoryId,
@@ -87,7 +87,8 @@ class TransactionCubit extends Cubit<TransactionState> {
       );
 
       if (isClosed) return;
-      emit(const TransactionActionSuccess('Transaction saved successfully'));
+      emit(TransactionActionSuccess('Transaction saved successfully',
+          transactionId: txId));
       await loadTransactions();
       TransactionEvents.notifyUpdated();
     } catch (e) {

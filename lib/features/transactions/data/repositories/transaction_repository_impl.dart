@@ -30,6 +30,14 @@ class TransactionRepositoryImpl implements TransactionRepository {
       );
 
   @override
+  Future<List<TransactionItem>> getRecentDistinctExpenses({
+    int limit = 5,
+  }) =>
+      _localDataSource.getRecentDistinctExpenses(
+        limit: limit,
+      );
+
+  @override
   Future<int> addTransaction({
     required TransactionType type,
     required double amount,
