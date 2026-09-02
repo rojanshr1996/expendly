@@ -11,6 +11,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/services/preference_service.dart';
+import '../../../../core/utils/category_icon_helper.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/category_picker_sheet.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
@@ -63,70 +64,214 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
         id: 1,
         name: 'Food & Dining',
         icon: 'restaurant',
-        colorHex: '#FF5722',
+        colorHex: '#FB7185',
         type: TransactionType.expense),
     CategoryItem(
         id: 2,
-        name: 'Shopping',
-        icon: 'shopping_bag',
-        colorHex: '#9C27B0',
+        name: 'Grocery Shopping',
+        icon: 'shopping_cart',
+        colorHex: '#FFAC5A',
         type: TransactionType.expense),
     CategoryItem(
         id: 3,
-        name: 'Housing',
-        icon: 'home',
-        colorHex: '#2196F3',
+        name: 'Coffee & Cafes',
+        icon: 'coffee',
+        colorHex: '#D97706',
         type: TransactionType.expense),
     CategoryItem(
         id: 4,
-        name: 'Transportation',
-        icon: 'directions_bus',
-        colorHex: '#FF9800',
+        name: 'Housing & Bills',
+        icon: 'home',
+        colorHex: '#62FAE3',
         type: TransactionType.expense),
     CategoryItem(
         id: 5,
-        name: 'Entertainment',
-        icon: 'movie',
-        colorHex: '#E91E63',
+        name: 'Utilities',
+        icon: 'receipt_long',
+        colorHex: '#38BDF8',
         type: TransactionType.expense),
     CategoryItem(
         id: 6,
-        name: 'Health & Medical',
-        icon: 'medical_services',
-        colorHex: '#00BCD4',
+        name: 'Transportation',
+        icon: 'directions_bus',
+        colorHex: '#C0C1FF',
         type: TransactionType.expense),
     CategoryItem(
         id: 7,
-        name: 'Bills & Utilities',
-        icon: 'receipt_long',
-        colorHex: '#607D8B',
+        name: 'Personal Care',
+        icon: 'content_cut',
+        colorHex: '#A78BFA',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 8,
+        name: 'Beauty & Grooming',
+        icon: 'spa',
+        colorHex: '#F472B6',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 9,
+        name: 'Fitness & Gym',
+        icon: 'fitness_center',
+        colorHex: '#06B6D4',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 10,
+        name: 'Shopping & Apparel',
+        icon: 'shopping_bag',
+        colorHex: '#F43F5E',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 11,
+        name: 'Hobbies & Crafts',
+        icon: 'palette',
+        colorHex: '#F59E0B',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 12,
+        name: 'Electronics & Gadgets',
+        icon: 'devices',
+        colorHex: '#3B82F6',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 13,
+        name: 'Health & Wellness',
+        icon: 'medical_services',
+        colorHex: '#34D399',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 14,
+        name: 'Education',
+        icon: 'school',
+        colorHex: '#FBBF24',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 15,
+        name: 'Subscriptions',
+        icon: 'subscriptions',
+        colorHex: '#EC4899',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 16,
+        name: 'Events & Celebrations',
+        icon: 'celebration',
+        colorHex: '#E11D48',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 17,
+        name: 'Concerts & Live Shows',
+        icon: 'music_note',
+        colorHex: '#8B5CF6',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 18,
+        name: 'Weddings & Ceremonies',
+        icon: 'favorite',
+        colorHex: '#DB2777',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 19,
+        name: 'Sports & Stadium Events',
+        icon: 'sports_soccer',
+        colorHex: '#10B981',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 20,
+        name: 'Nightlife & Bars',
+        icon: 'nightlife',
+        colorHex: '#9333EA',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 21,
+        name: 'Entertainment',
+        icon: 'movie',
+        colorHex: '#FFD1AA',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 22,
+        name: 'Travel & Vacation',
+        icon: 'flight',
+        colorHex: '#818CF8',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 23,
+        name: 'Gifts & Donations',
+        icon: 'card_giftcard',
+        colorHex: '#FB7185',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 24,
+        name: 'Family & Childcare',
+        icon: 'child_care',
+        colorHex: '#FB923C',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 25,
+        name: 'Pets',
+        icon: 'pets',
+        colorHex: '#A3E635',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 26,
+        name: 'Debt & Loans',
+        icon: 'credit_card',
+        colorHex: '#E11D48',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 27,
+        name: 'Other Expense',
+        icon: 'more_horiz',
+        colorHex: '#94A3B8',
         type: TransactionType.expense),
   ];
 
   static const List<CategoryItem> _fallbackIncomeCategories = [
     CategoryItem(
-        id: 8,
+        id: 28,
         name: 'Salary',
         icon: 'payments',
-        colorHex: '#4CAF50',
+        colorHex: '#34D399',
         type: TransactionType.income),
     CategoryItem(
-        id: 9,
-        name: 'Investments',
-        icon: 'trending_up',
-        colorHex: '#009688',
-        type: TransactionType.income),
-    CategoryItem(
-        id: 10,
-        name: 'Business',
-        icon: 'storefront',
-        colorHex: '#3F51B5',
-        type: TransactionType.income),
-    CategoryItem(
-        id: 11,
-        name: 'Freelance',
+        id: 29,
+        name: 'Freelance Payout',
         icon: 'work',
-        colorHex: '#8BC34A',
+        colorHex: '#57F1DB',
+        type: TransactionType.income),
+    CategoryItem(
+        id: 30,
+        name: 'Investments & Dividends',
+        icon: 'trending_up',
+        colorHex: '#C0C1FF',
+        type: TransactionType.income),
+    CategoryItem(
+        id: 31,
+        name: 'Business Revenue',
+        icon: 'storefront',
+        colorHex: '#38BDF8',
+        type: TransactionType.income),
+    CategoryItem(
+        id: 32,
+        name: 'Rental Income',
+        icon: 'real_estate_agent',
+        colorHex: '#FBBF24',
+        type: TransactionType.income),
+    CategoryItem(
+        id: 33,
+        name: 'Gifts & Cashbacks',
+        icon: 'redeem',
+        colorHex: '#F472B6',
+        type: TransactionType.income),
+    CategoryItem(
+        id: 34,
+        name: 'Refunds & Reimbursements',
+        icon: 'currency_exchange',
+        colorHex: '#A78BFA',
+        type: TransactionType.income),
+    CategoryItem(
+        id: 35,
+        name: 'Other Income',
+        icon: 'more_horiz',
+        colorHex: '#94A3B8',
         type: TransactionType.income),
   ];
 
@@ -475,84 +620,94 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
                                                   ),
                                                 ),
                                                 const SizedBox(height: 8.0),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .baseline,
-                                                  textBaseline:
-                                                      TextBaseline.alphabetic,
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Text(
-                                                      '$currencySymbol ',
-                                                      style: customTypography
-                                                          .headlineLargeMonoBold
-                                                          .copyWith(
-                                                        color: color,
-                                                        fontSize: 36.0,
-                                                      ),
-                                                    ),
-                                                    IntrinsicWidth(
-                                                      child: TextField(
-                                                        controller:
-                                                            _amountController,
-                                                        focusNode:
-                                                            _amountFocusNode,
-                                                        keyboardType:
-                                                            const TextInputType
-                                                                .numberWithOptions(
-                                                                decimal: true),
-                                                        textInputAction:
-                                                            TextInputAction
-                                                                .next,
-                                                        inputFormatters: [
-                                                          FilteringTextInputFormatter
-                                                              .allow(RegExp(
-                                                                  r'^\d*\.?\d{0,2}')),
-                                                        ],
+                                                FittedBox(
+                                                  fit: BoxFit.scaleDown,
+                                                  alignment: Alignment.center,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .baseline,
+                                                    textBaseline:
+                                                        TextBaseline.alphabetic,
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Text(
+                                                        '$currencySymbol ',
                                                         style: customTypography
                                                             .headlineLargeMonoBold
                                                             .copyWith(
                                                           color: color,
                                                           fontSize: 36.0,
                                                         ),
-                                                        cursorColor: color,
-                                                        decoration:
-                                                            InputDecoration(
-                                                          filled: false,
-                                                          fillColor: Colors
-                                                              .transparent,
-                                                          hintText: '0.00',
-                                                          hintStyle:
-                                                              customTypography
-                                                                  .headlineLargeMonoBold
-                                                                  .copyWith(
-                                                            color: color
-                                                                .withValues(
-                                                                    alpha:
-                                                                        0.35),
+                                                      ),
+                                                      IntrinsicWidth(
+                                                        child: TextField(
+                                                          controller:
+                                                              _amountController,
+                                                          focusNode:
+                                                              _amountFocusNode,
+                                                          keyboardType:
+                                                              const TextInputType
+                                                                  .numberWithOptions(
+                                                                  decimal:
+                                                                      true),
+                                                          textInputAction:
+                                                              TextInputAction
+                                                                  .next,
+                                                          inputFormatters: [
+                                                            FilteringTextInputFormatter
+                                                                .allow(RegExp(
+                                                                    r'^\d*\.?\d{0,2}')),
+                                                          ],
+                                                          style: customTypography
+                                                              .headlineLargeMonoBold
+                                                              .copyWith(
+                                                            color: color,
                                                             fontSize: 36.0,
                                                           ),
-                                                          border:
-                                                              InputBorder.none,
-                                                          enabledBorder:
-                                                              InputBorder.none,
-                                                          focusedBorder:
-                                                              InputBorder.none,
-                                                          errorBorder:
-                                                              InputBorder.none,
-                                                          disabledBorder:
-                                                              InputBorder.none,
-                                                          contentPadding:
-                                                              EdgeInsets.zero,
-                                                          isDense: true,
+                                                          cursorColor: color,
+                                                          decoration:
+                                                              InputDecoration(
+                                                            filled: false,
+                                                            fillColor: Colors
+                                                                .transparent,
+                                                            hintText: '0.00',
+                                                            hintStyle:
+                                                                customTypography
+                                                                    .headlineLargeMonoBold
+                                                                    .copyWith(
+                                                              color: color
+                                                                  .withValues(
+                                                                      alpha:
+                                                                          0.35),
+                                                              fontSize: 36.0,
+                                                            ),
+                                                            border: InputBorder
+                                                                .none,
+                                                            enabledBorder:
+                                                                InputBorder
+                                                                    .none,
+                                                            focusedBorder:
+                                                                InputBorder
+                                                                    .none,
+                                                            errorBorder:
+                                                                InputBorder
+                                                                    .none,
+                                                            disabledBorder:
+                                                                InputBorder
+                                                                    .none,
+                                                            contentPadding:
+                                                                EdgeInsets.zero,
+                                                            isDense: true,
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -1512,34 +1667,7 @@ class _ModernAddTransactionPageState extends State<ModernAddTransactionPage> {
   }
 
   IconData _getIconData(String iconName) {
-    switch (iconName) {
-      case 'restaurant':
-        return Icons.restaurant_rounded;
-      case 'shopping_cart':
-        return Icons.shopping_cart_rounded;
-      case 'home':
-        return Icons.home_rounded;
-      case 'receipt_long':
-        return Icons.receipt_long_rounded;
-      case 'directions_bus':
-        return Icons.directions_bus_rounded;
-      case 'movie':
-        return Icons.movie_rounded;
-      case 'medical_services':
-        return Icons.medical_services_rounded;
-      case 'shopping_bag':
-        return Icons.shopping_bag_rounded;
-      case 'payments':
-        return Icons.payments_rounded;
-      case 'work':
-        return Icons.work_rounded;
-      case 'trending_up':
-        return Icons.trending_up_rounded;
-      case 'storefront':
-        return Icons.storefront_rounded;
-      default:
-        return Icons.category_rounded;
-    }
+    return CategoryIconHelper.getIcon(iconName);
   }
 
   Widget _buildPaymentMethodOption(

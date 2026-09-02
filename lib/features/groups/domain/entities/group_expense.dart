@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import 'expense_split.dart';
 
 class GroupExpense extends Equatable {

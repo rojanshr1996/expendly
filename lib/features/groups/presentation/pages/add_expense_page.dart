@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,8 +13,8 @@ import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/adaptive_sheet.dart';
 import '../../../../core/widgets/app_button.dart';
-import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../domain/entities/event_participant.dart';
 import '../../domain/entities/expense_split.dart';
@@ -40,15 +41,23 @@ class AddExpensePage extends StatefulWidget {
 }
 
 class _AddExpensePageState extends State<AddExpensePage> {
-  final _amountController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _amountFocusNode = FocusNode();
+  late final TextEditingController _amountController;
+  late final TextEditingController _descriptionController;
+  late final FocusNode _amountFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _amountController = TextEditingController();
+    _descriptionController = TextEditingController();
+    _amountFocusNode = FocusNode();
+  }
 
   @override
   void dispose() {
+    _amountFocusNode.dispose();
     _amountController.dispose();
     _descriptionController.dispose();
-    _amountFocusNode.dispose();
     super.dispose();
   }
 
@@ -249,6 +258,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
         widget.participants,
       ),
       child: BlocConsumer<AddExpenseCubit, AddExpenseState>(
+        buildWhen: (previous, current) => !current.isSaved,
         listenWhen: (previous, current) =>
             previous.isSaved != current.isSaved ||
             (current.validationMessage != null &&
@@ -261,7 +271,13 @@ class _AddExpensePageState extends State<AddExpensePage> {
               context,
               message: context.l10n.expenseAddedSuccess,
             );
-            context.router.popForced(true);
+            if (context.mounted) {
+              try {
+                context.router.maybePop(true);
+              } catch (_) {
+                Navigator.of(context).maybePop(true);
+              }
+            }
           } else if (state.validationMessage != null) {
             StatusComponents.showToast(
               context,
@@ -803,34 +819,37 @@ class _LiquidGlassSplitModeTabBar extends StatelessWidget {
                             behavior: HitTestBehavior.opaque,
                             onTap: () => onModeChanged(mode.$1),
                             child: Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    mode.$2,
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? colorScheme.onPrimary
-                                          : colorScheme.primary,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12.sp,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      mode.$2,
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? colorScheme.onPrimary
+                                            : colorScheme.primary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12.sp,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 4.w),
-                                  Text(
-                                    mode.$3,
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? colorScheme.onPrimary
-                                          : colorScheme.onSurfaceVariant,
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.w500,
-                                      fontSize: 12.sp,
+                                    SizedBox(width: 4.w),
+                                    Text(
+                                      mode.$3,
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? colorScheme.onPrimary
+                                            : colorScheme.onSurfaceVariant,
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.w500,
+                                        fontSize: 12.sp,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),

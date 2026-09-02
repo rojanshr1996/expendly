@@ -75,12 +75,36 @@ class AppTextField extends StatelessWidget {
     this.borderRadius,
   });
 
+  TextEditingController? get _effectiveController {
+    if (controller == null) return null;
+    try {
+      void probe() {}
+      controller!.addListener(probe);
+      controller!.removeListener(probe);
+      return controller;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  FocusNode? get _effectiveFocusNode {
+    if (focusNode == null) return null;
+    try {
+      void probe() {}
+      focusNode!.addListener(probe);
+      focusNode!.removeListener(probe);
+      return focusNode;
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
     final customTypography = context.customTypography;
     final colorScheme = context.colorScheme;
-    final effectiveRadius = borderRadius ?? BorderRadius.circular(10.r);
+    final effectiveRadius = borderRadius ?? BorderRadius.circular(16.r);
 
     // If isAmount is true, use monospaced typography (JetBrains Mono).
     // Otherwise, use Hanken Grotesk from theme context.
@@ -113,8 +137,8 @@ class AppTextField extends StatelessWidget {
           SizedBox(height: 6.h),
         ],
         TextFormField(
-          controller: controller,
-          focusNode: focusNode,
+          controller: _effectiveController,
+          focusNode: _effectiveFocusNode,
           onChanged: onChanged,
           onFieldSubmitted: onSubmitted,
           onTap: onTap,

@@ -1,8 +1,8 @@
+import 'package:expendly/core/config/app_config.dart';
+import 'package:expendly/core/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:expendly/core/config/app_config.dart';
-import 'package:expendly/core/widgets/app_text_field.dart';
 
 void main() {
   setUpAll(() {
@@ -77,6 +77,26 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Invalid email address'), findsOneWidget);
+    });
+
+    testWidgets('does not throw when built with an already disposed controller or focusNode', (tester) async {
+      final controller = TextEditingController();
+      final focusNode = FocusNode();
+      controller.dispose();
+      focusNode.dispose();
+
+      await tester.pumpWidget(
+        wrapWithMaterial(
+          AppTextField(
+            controller: controller,
+            focusNode: focusNode,
+            labelText: 'Safe Disposed Field',
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Safe Disposed Field'), findsOneWidget);
     });
   });
 }

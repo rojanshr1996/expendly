@@ -9,6 +9,8 @@ import '../extensions/context_extensions.dart';
 import '../services/remote_config_service.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_typography.dart';
+import 'animated_hero_illustration.dart';
+import 'app_button.dart';
 
 class AppUpdateGuard extends StatefulWidget {
   final Widget child;
@@ -135,19 +137,15 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 96.r,
-                height: 96.r,
-                decoration: BoxDecoration(
-                  color: colorScheme.tertiaryContainer,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: colorScheme.tertiary, width: 2),
-                ),
-                child: Icon(
-                  Icons.build_circle_rounded,
-                  size: 48.r,
-                  color: colorScheme.tertiary,
-                ),
+              AnimatedHeroIllustration(
+                size: 190.w,
+                mainIcon: Icons.build_circle_rounded,
+                mainIconColor: colorScheme.tertiary,
+                glowColor: colorScheme.tertiary,
+                topBadgeIcon: Icons.security_rounded,
+                topBadgeColor: colorScheme.tertiary,
+                bottomBadgeIcon: Icons.timer_outlined,
+                bottomBadgeColor: colorScheme.secondary,
               ),
               SizedBox(height: 24.h),
               Text(
@@ -185,19 +183,15 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 96.r,
-                height: 96.r,
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: colorScheme.primary, width: 2),
-                ),
-                child: Icon(
-                  Icons.system_update_rounded,
-                  size: 48.r,
-                  color: colorScheme.primary,
-                ),
+              AnimatedHeroIllustration(
+                size: 190.w,
+                mainIcon: Icons.system_update_rounded,
+                mainIconColor: colorScheme.primary,
+                glowColor: colorScheme.primary,
+                topBadgeIcon: Icons.auto_awesome_rounded,
+                topBadgeColor: colorScheme.primary,
+                bottomBadgeIcon: Icons.download_rounded,
+                bottomBadgeColor: colorScheme.secondary,
               ),
               SizedBox(height: 24.h),
               Text(
@@ -217,13 +211,11 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
                 ),
               ),
               SizedBox(height: 32.h),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _openStoreUrl,
-                  icon: const Icon(Icons.download_rounded),
-                  label: const Text('Update Now'),
-                ),
+              AppButton(
+                text: 'Update Now',
+                icon: const Icon(Icons.download_rounded),
+                variant: AppButtonVariant.primary,
+                onPressed: _openStoreUrl,
               ),
             ],
           ),
@@ -259,14 +251,20 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.new_releases_rounded,
-                size: 48.r,
-                color: colorScheme.secondary,
+              AnimatedHeroIllustration(
+                size: 130.w,
+                mainIcon: Icons.new_releases_rounded,
+                mainIconColor: colorScheme.secondary,
+                glowColor: colorScheme.secondary,
+                topBadgeIcon: Icons.auto_awesome_rounded,
+                topBadgeColor: colorScheme.primary,
+                bottomBadgeIcon: Icons.arrow_upward_rounded,
+                bottomBadgeColor: colorScheme.secondary,
               ),
               SizedBox(height: 16.h),
               Text(
                 _remoteConfig.optionalUpdateTitle,
+                textAlign: TextAlign.center,
                 style: AppTypography.headlineMedium.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colorScheme.onSurface,
@@ -284,20 +282,34 @@ class _AppUpdateGuardState extends State<AppUpdateGuard> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
+                    child: AppButton(
+                      text: 'Later',
+                      height: 44.h,
+                      variant: AppButtonVariant.outlined,
+                      padding: EdgeInsets.symmetric(horizontal: 12.w),
+                      textStyle: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
                       onPressed: () =>
                           _optionalUpdateDismissedNotifier.value = true,
-                      child: const Text('Later'),
                     ),
                   ),
                   SizedBox(width: 12.w),
                   Expanded(
-                    child: ElevatedButton(
+                    child: AppButton(
+                      text: 'Update',
+                      height: 44.h,
+                      variant: AppButtonVariant.primary,
+                      padding: EdgeInsets.symmetric(horizontal: 12.w),
+                      textStyle: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
                       onPressed: () {
                         _optionalUpdateDismissedNotifier.value = true;
                         _openStoreUrl();
                       },
-                      child: const Text('Update'),
                     ),
                   ),
                 ],

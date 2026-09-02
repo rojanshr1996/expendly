@@ -2,13 +2,13 @@
   "parameters": {
     "min_required_version": {
       "defaultValue": {
-        "value": "1.2.0"
+        "value": "1.2.1"
       },
       "description": "Minimum app version required. Users on lower versions will be forced to update."
     },
     "latest_version": {
       "defaultValue": {
-        "value": "1.2.0"
+        "value": "1.2.1"
       },
       "description": "Latest available app version. Users on lower versions will be prompted with an optional update."
     },
@@ -20,37 +20,37 @@
     },
     "force_update_title": {
       "defaultValue": {
-        "value": "Update Required"
+        "value": "Time for an Update!"
       },
       "description": "Title text shown on mandatory force update modal."
     },
     "force_update_message": {
       "defaultValue": {
-        "value": "A mandatory update is required to continue using Expendly. Please update to the latest version."
+        "value": "We’ve added important improvements and enhancements to keep your experience smooth and secure. Please update Expendly to the latest version to continue."
       },
       "description": "Description message shown on mandatory force update modal."
     },
     "optional_update_title": {
       "defaultValue": {
-        "value": "Update Available"
+        "value": "New Version Available!"
       },
       "description": "Title text shown on optional update modal."
     },
     "optional_update_message": {
       "defaultValue": {
-        "value": "A new update is available with new features and performance enhancements."
+        "value": "A new update is ready with fresh improvements and performance boosts to make managing your expenses even better. Would you like to update now?"
       },
       "description": "Description message shown on optional update modal."
     },
     "maintenance_title": {
       "defaultValue": {
-        "value": "Under Scheduled Maintenance"
+        "value": "We’ll Be Right Back!"
       },
       "description": "Header title displayed when app is in maintenance mode."
     },
     "maintenance_message": {
       "defaultValue": {
-        "value": "Expendly is currently undergoing maintenance to serve you better. Please check back soon."
+        "value": "We’re currently performing quick scheduled maintenance to serve you better. Thank you for your patience, and please check back shortly!"
       },
       "description": "Subtext message displayed when app is in maintenance mode."
     },

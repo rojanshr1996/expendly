@@ -71,10 +71,11 @@ class _SettleUpSheetState extends State<SettleUpSheet> {
       if (mounted) {
         Navigator.pop(context);
       }
-    } finally {
+    } catch (_) {
       if (mounted) {
         setState(() => _isLoading = false);
       }
+      rethrow;
     }
   }
 

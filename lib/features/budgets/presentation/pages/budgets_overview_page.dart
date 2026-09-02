@@ -17,6 +17,7 @@ import '../../../../core/responsive/tablet_spacing.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/category_icon_helper.dart';
 import '../../../../core/widgets/animated_empty_state_hero.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
@@ -914,26 +915,7 @@ class _BudgetCard extends StatelessWidget {
   }
 
   IconData _getIconData(String iconName) {
-    switch (iconName) {
-      case 'restaurant':
-        return Icons.restaurant_rounded;
-      case 'shopping_cart':
-        return Icons.shopping_cart_rounded;
-      case 'home':
-        return Icons.home_rounded;
-      case 'receipt_long':
-        return Icons.receipt_long_rounded;
-      case 'directions_bus':
-        return Icons.directions_bus_rounded;
-      case 'movie':
-        return Icons.movie_rounded;
-      case 'medical_services':
-        return Icons.medical_services_rounded;
-      case 'shopping_bag':
-        return Icons.shopping_bag_rounded;
-      default:
-        return Icons.account_balance_wallet_rounded;
-    }
+    return CategoryIconHelper.getIcon(iconName);
   }
 }
 

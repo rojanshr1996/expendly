@@ -65,15 +65,15 @@ class RemoteConfigService {
       keyLatestVersion: AppConfig.appVersion,
       keyIsMaintenanceMode: false,
       keyIsAdsEnabled: true,
-      keyForceUpdateTitle: 'Update Required',
+      keyForceUpdateTitle: 'Time for an Update!',
       keyForceUpdateMessage:
-          'A mandatory update is required to continue using Expendly.',
-      keyOptionalUpdateTitle: 'Update Available',
+          'We’ve added important improvements and enhancements to keep your experience smooth and secure. Please update Expendly to the latest version to continue.',
+      keyOptionalUpdateTitle: 'New Version Available!',
       keyOptionalUpdateMessage:
-          'A new update is available with performance improvements and feature updates.',
-      keyMaintenanceTitle: 'Under Scheduled Maintenance',
+          'A new update is ready with fresh improvements and performance boosts to make managing your expenses even better. Would you like to update now?',
+      keyMaintenanceTitle: 'We’ll Be Right Back!',
       keyMaintenanceMessage:
-          'Expendly is currently undergoing maintenance to serve you better. Please try again shortly.',
+          'We’re currently performing quick scheduled maintenance to serve you better. Thank you for your patience, and please check back shortly!',
       keyUpdateUrlAndroid:
           'https://play.google.com/store/apps/details?id=com.expendly.app',
       keyUpdateUrlIos: 'https://apps.apple.com/app/expendly/id000000000',

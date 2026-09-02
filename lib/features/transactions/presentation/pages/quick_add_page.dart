@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:expendly/core/constants/margin_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,7 +14,9 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/theme/font_weights.dart';
+import '../../../../core/utils/category_icon_helper.dart';
 import '../../../../core/widgets/category_picker_sheet.dart';
+import '../../../../core/widgets/compact_amount_text.dart';
 import '../../../../core/widgets/status_components.dart';
 import '../../domain/entities/category_item.dart';
 import '../../domain/entities/transaction_item.dart';
@@ -109,43 +112,163 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
         id: 1,
         name: 'Food & Dining',
         icon: 'restaurant',
-        colorHex: '#FF5722',
+        colorHex: '#FB7185',
         type: TransactionType.expense),
     CategoryItem(
         id: 2,
-        name: 'Shopping',
-        icon: 'shopping_bag',
-        colorHex: '#9C27B0',
+        name: 'Grocery Shopping',
+        icon: 'shopping_cart',
+        colorHex: '#FFAC5A',
         type: TransactionType.expense),
     CategoryItem(
         id: 3,
-        name: 'Housing',
-        icon: 'home',
-        colorHex: '#2196F3',
+        name: 'Coffee & Cafes',
+        icon: 'coffee',
+        colorHex: '#D97706',
         type: TransactionType.expense),
     CategoryItem(
         id: 4,
-        name: 'Transportation',
-        icon: 'directions_bus',
-        colorHex: '#FF9800',
+        name: 'Housing & Bills',
+        icon: 'home',
+        colorHex: '#62FAE3',
         type: TransactionType.expense),
     CategoryItem(
         id: 5,
-        name: 'Entertainment',
-        icon: 'movie',
-        colorHex: '#E91E63',
+        name: 'Utilities',
+        icon: 'receipt_long',
+        colorHex: '#38BDF8',
         type: TransactionType.expense),
     CategoryItem(
         id: 6,
-        name: 'Health & Medical',
-        icon: 'medical_services',
-        colorHex: '#00BCD4',
+        name: 'Transportation',
+        icon: 'directions_bus',
+        colorHex: '#C0C1FF',
         type: TransactionType.expense),
     CategoryItem(
         id: 7,
-        name: 'Bills & Utilities',
-        icon: 'receipt_long',
-        colorHex: '#607D8B',
+        name: 'Personal Care',
+        icon: 'content_cut',
+        colorHex: '#A78BFA',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 8,
+        name: 'Beauty & Grooming',
+        icon: 'spa',
+        colorHex: '#F472B6',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 9,
+        name: 'Fitness & Gym',
+        icon: 'fitness_center',
+        colorHex: '#06B6D4',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 10,
+        name: 'Shopping & Apparel',
+        icon: 'shopping_bag',
+        colorHex: '#F43F5E',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 11,
+        name: 'Hobbies & Crafts',
+        icon: 'palette',
+        colorHex: '#F59E0B',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 12,
+        name: 'Electronics & Gadgets',
+        icon: 'devices',
+        colorHex: '#3B82F6',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 13,
+        name: 'Health & Wellness',
+        icon: 'medical_services',
+        colorHex: '#34D399',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 14,
+        name: 'Education',
+        icon: 'school',
+        colorHex: '#FBBF24',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 15,
+        name: 'Subscriptions',
+        icon: 'subscriptions',
+        colorHex: '#EC4899',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 16,
+        name: 'Events & Celebrations',
+        icon: 'celebration',
+        colorHex: '#E11D48',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 17,
+        name: 'Concerts & Live Shows',
+        icon: 'music_note',
+        colorHex: '#8B5CF6',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 18,
+        name: 'Weddings & Ceremonies',
+        icon: 'favorite',
+        colorHex: '#DB2777',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 19,
+        name: 'Sports & Stadium Events',
+        icon: 'sports_soccer',
+        colorHex: '#10B981',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 20,
+        name: 'Nightlife & Bars',
+        icon: 'nightlife',
+        colorHex: '#9333EA',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 21,
+        name: 'Entertainment',
+        icon: 'movie',
+        colorHex: '#FFD1AA',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 22,
+        name: 'Travel & Vacation',
+        icon: 'flight',
+        colorHex: '#818CF8',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 23,
+        name: 'Gifts & Donations',
+        icon: 'card_giftcard',
+        colorHex: '#FB7185',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 24,
+        name: 'Family & Childcare',
+        icon: 'child_care',
+        colorHex: '#FB923C',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 25,
+        name: 'Pets',
+        icon: 'pets',
+        colorHex: '#A3E635',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 26,
+        name: 'Debt & Loans',
+        icon: 'credit_card',
+        colorHex: '#E11D48',
+        type: TransactionType.expense),
+    CategoryItem(
+        id: 27,
+        name: 'Other Expense',
+        icon: 'more_horiz',
+        colorHex: '#94A3B8',
         type: TransactionType.expense),
   ];
 
@@ -178,23 +301,8 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
     super.dispose();
   }
 
-  IconData _parseIcon(String iconName) {
-    switch (iconName) {
-      case 'restaurant':
-        return Icons.restaurant;
-      case 'shopping_bag':
-        return Icons.shopping_bag_outlined;
-      case 'directions_car':
-        return Icons.directions_car_outlined;
-      case 'movie':
-        return Icons.movie_outlined;
-      case 'medical_services':
-        return Icons.medical_services_outlined;
-      case 'receipt_long':
-        return Icons.receipt_long_outlined;
-      default:
-        return Icons.category_outlined;
-    }
+  IconData _parseIcon(String iconName, [String? categoryName]) {
+    return CategoryIconHelper.getIcon(iconName, categoryName);
   }
 
   Color _parseColor(String colorHex) {
@@ -449,15 +557,19 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                               constraints: const BoxConstraints(),
                               onPressed: () => Navigator.of(context).pop(),
                             ),
-                            Text(
-                              'Quick Expense',
-                              textAlign: TextAlign.center,
-                              style:
-                                  (textTheme.titleMedium ?? const TextStyle())
-                                      .copyWith(
-                                fontWeight: FontWeights.bold,
-                                color: colorScheme.onSurface,
-                                fontSize: isTablet ? 16.0 : 15.sp,
+                            Expanded(
+                              child: Text(
+                                'Quick Expense',
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style:
+                                    (textTheme.titleMedium ?? const TextStyle())
+                                        .copyWith(
+                                  fontWeight: FontWeights.bold,
+                                  color: colorScheme.onSurface,
+                                  fontSize: isTablet ? 16.0 : 15.sp,
+                                ),
                               ),
                             ),
                             TextButton.icon(
@@ -495,29 +607,31 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                           horizontal: 20.w,
                           vertical: 10.h,
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          textBaseline: TextBaseline.alphabetic,
-                          children: [
-                            Text(
-                              currencySymbol,
-                              style: (customTypography.amountDisplay).copyWith(
-                                fontSize: isTablet ? 30.0 : 26.sp,
-                                fontWeight: FontWeights.bold,
-                                color: state.amountText.isEmpty
-                                    ? customColors.semanticRed
-                                        .withValues(alpha: 0.45)
-                                    : customColors.semanticRed,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: [
+                              Text(
+                                currencySymbol,
+                                style:
+                                    (customTypography.amountDisplay).copyWith(
+                                  fontSize: isTablet ? 30.0 : 26.sp,
+                                  fontWeight: FontWeights.bold,
+                                  color: state.amountText.isEmpty
+                                      ? customColors.semanticRed
+                                          .withValues(alpha: 0.45)
+                                      : customColors.semanticRed,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 6.w),
-                            Flexible(
-                              child: Text(
+                              SizedBox(width: 6.w),
+                              Text(
                                 amountStr,
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
                                 style: (customTypography.amountLarge).copyWith(
                                   fontSize: isTablet ? 46.0 : 42.sp,
                                   fontWeight: FontWeights.bold,
@@ -528,8 +642,8 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                                       : customColors.semanticRed,
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
 
@@ -716,13 +830,53 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
 
                       SizedBox(height: 6.h),
 
-                      // Recent Expenses
-                      if (state.recentExpenses.isNotEmpty)
+                      // Recent Expenses Section
+                      if (state.recentExpenses.isNotEmpty) ...[
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isTablet ? 20.0 : 18.w,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.history_rounded,
+                                size: isTablet ? 14.0 : 13.sp,
+                                color: colorScheme.onSurfaceVariant
+                                    .withValues(alpha: 0.70),
+                              ),
+                              SizedBox(width: 5.w),
+                              Text(
+                                'RECENT EXPENSES',
+                                style:
+                                    customTypography.labelMediumMono.copyWith(
+                                  fontSize: isTablet ? 11.0 : 10.5.sp,
+                                  fontWeight: FontWeights.bold,
+                                  letterSpacing: 1.1,
+                                  color: colorScheme.onSurfaceVariant
+                                      .withValues(alpha: 0.70),
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                'Tap to re-fill',
+                                style: TextStyle(
+                                  fontSize: isTablet ? 11.0 : 10.5.sp,
+                                  fontWeight: FontWeights.medium,
+                                  color: colorScheme.outline
+                                      .withValues(alpha: 0.65),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 6.h),
                         Container(
-                          height: 40.h,
-                          margin: EdgeInsets.only(top: 2.h, bottom: 10.h),
+                          height: isTablet ? 46.0 : 42.h,
+                          margin: EdgeInsets.only(bottom: 8.h),
                           child: ListView.separated(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isTablet ? 20.0 : 16.w,
+                            ),
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
                             itemCount: state.recentExpenses.length,
@@ -730,39 +884,115 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                                 SizedBox(width: 8.w),
                             itemBuilder: (context, index) {
                               final item = state.recentExpenses[index];
-                              return ActionChip(
-                                avatar: Icon(
-                                  _parseIcon(item.categoryIcon),
-                                  size: 14.sp,
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                                label: Text(
-                                  '${item.categoryName} ${state.defaults.currencySymbol}${item.amount.toStringAsFixed(0)}',
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeights.medium,
-                                    color: colorScheme.onSurface,
+                              final itemColor =
+                                  _parseColor(item.categoryColorHex);
+
+                              return Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    _cubit.selectRecentExpense(item);
+                                  },
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10.w,
+                                      vertical: 5.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isLight
+                                          ? colorScheme.surfaceContainerLowest
+                                          : colorScheme.surfaceContainerLow,
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      border: Border.all(
+                                        color: colorScheme.outlineVariant
+                                            .withValues(
+                                                alpha: isLight ? 0.45 : 0.30),
+                                        width: 1.0,
+                                      ),
+                                      boxShadow: isLight
+                                          ? [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withValues(alpha: 0.03),
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 1),
+                                              ),
+                                            ]
+                                          : null,
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        // Colored Category Icon Badge
+                                        Container(
+                                          width: 26.w,
+                                          height: 26.w,
+                                          decoration: BoxDecoration(
+                                            color: itemColor.withValues(
+                                                alpha: isLight ? 0.15 : 0.22),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Icon(
+                                            _parseIcon(item.categoryIcon,
+                                                item.categoryName),
+                                            size: 14.sp,
+                                            color: itemColor,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        // Category Name
+                                        Text(
+                                          item.categoryName,
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            fontWeight: FontWeights.semiBold,
+                                            color: colorScheme.onSurface,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        // Distinct Amount Pill Tag
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 6.w,
+                                            vertical: 2.h,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: customColors.semanticRed
+                                                .withValues(alpha: 0.10),
+                                            borderRadius:
+                                                BorderRadius.circular(6.r),
+                                          ),
+                                          child: CompactAmountText(
+                                            amount: item.amount,
+                                            currencySymbol:
+                                                state.defaults.currencySymbol,
+                                            showSign: true,
+                                            type: TransactionType.expense,
+                                            isIncome: false,
+                                            compact: true,
+                                            animate: false,
+                                            style: customTypography
+                                                .labelMediumMono
+                                                .copyWith(
+                                              fontSize:
+                                                  isTablet ? 12.0 : 11.5.sp,
+                                              fontWeight: FontWeights.bold,
+                                              color: customColors.semanticRed,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                backgroundColor: colorScheme.surface,
-                                side: BorderSide(
-                                  color: colorScheme.outlineVariant
-                                      .withValues(alpha: 0.5),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                                padding: EdgeInsets.zero,
-                                labelPadding: EdgeInsets.symmetric(
-                                    horizontal: 8.w, vertical: 2.h),
-                                onPressed: () {
-                                  HapticFeedback.lightImpact();
-                                  _cubit.selectRecentExpense(item);
-                                },
                               );
                             },
                           ),
                         ),
+                      ],
 
                       // 5. Numeric Keypad & Action Row
                       QuickAmountKeypad(
@@ -811,7 +1041,8 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 10.w),
+
+                            horizontalMarginSmall,
 
                             // "Save" Primary Button
                             Expanded(

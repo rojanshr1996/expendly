@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import '../../../../core/database/enums/database_enums.dart';
 
 class CategoryItem extends Equatable {
