@@ -6,6 +6,7 @@ import '../database/enums/database_enums.dart';
 import '../extensions/context_extensions.dart';
 import '../responsive/breakpoints.dart';
 import '../theme/font_weights.dart';
+import '../utils/category_icon_helper.dart';
 import 'adaptive_sheet.dart';
 
 /// Reusable modal sheet for picking a category from a responsive grid.
@@ -87,38 +88,77 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
     return context.colorScheme.primary;
   }
 
-  IconData _parseIcon(String name) {
-    switch (name.toLowerCase()) {
-      case 'shopping_bag':
-      case 'shopping':
-        return Icons.shopping_bag_outlined;
-      case 'restaurant':
-      case 'food':
-        return Icons.restaurant_rounded;
-      case 'movie':
-      case 'entertainment':
-        return Icons.movie_outlined;
-      case 'local_taxi':
-      case 'transport':
-      case 'commute':
-        return Icons.directions_car_rounded;
-      case 'payments':
-      case 'salary':
-      case 'income':
-        return Icons.payments_outlined;
-      case 'work':
-      case 'freelance':
-        return Icons.work_outline_rounded;
-      case 'fitness_center':
-      case 'health':
-        return Icons.fitness_center_rounded;
-      case 'home':
-      case 'bills':
-      case 'rent':
-        return Icons.home_work_outlined;
-      default:
-        return Icons.category_outlined;
+  IconData _parseIcon(String name, [String? categoryName]) {
+    return CategoryIconHelper.getIcon(name, categoryName);
+  }
+
+  static String _normalizeCategoryName(String name) {
+    final lower = name.toLowerCase().trim();
+    if (lower == 'entertainment & movies' || lower == 'entertainment') {
+      return 'entertainment';
     }
+    if (lower == 'health & medical' || lower == 'health & wellness') {
+      return 'health & wellness';
+    }
+    if (lower == 'bills & utilities' || lower == 'utilities') {
+      return 'utilities';
+    }
+    if (lower == 'housing & bills' || lower == 'housing') {
+      return 'housing & bills';
+    }
+    if (lower == 'shopping & apparel' || lower == 'shopping') {
+      return 'shopping & apparel';
+    }
+    return lower;
+  }
+
+  static bool _isOtherCategory(String name) {
+    final lower = name.toLowerCase().trim();
+    return lower == 'other' ||
+        lower == 'other expense' ||
+        lower == 'other income' ||
+        lower == 'others' ||
+        lower == 'misc' ||
+        lower == 'miscellaneous' ||
+        lower.startsWith('other ');
+  }
+
+  List<CategoryItem> _getDisplayCategories(String query) {
+    // 1. Deduplicate by ID and normalized category key
+    final seenKeys = <String>{};
+    final seenIds = <int>{};
+    final deduplicated = <CategoryItem>[];
+
+    for (final cat in widget.categories) {
+      if (seenIds.contains(cat.id)) continue;
+      final normKey = '${cat.type.name}_${_normalizeCategoryName(cat.name)}';
+      if (seenKeys.contains(normKey)) continue;
+
+      seenIds.add(cat.id);
+      seenKeys.add(normKey);
+      deduplicated.add(cat);
+    }
+
+    // 2. Filter by search query
+    final cleanQuery = query.trim().toLowerCase();
+    final matched = deduplicated.where((cat) {
+      if (cleanQuery.isEmpty) return true;
+      return cat.name.toLowerCase().contains(cleanQuery);
+    }).toList();
+
+    // 3. Separate standard categories and "other" categories to guarantee "other" is last
+    final regular = <CategoryItem>[];
+    final other = <CategoryItem>[];
+
+    for (final cat in matched) {
+      if (_isOtherCategory(cat.name)) {
+        other.add(cat);
+      } else {
+        regular.add(cat);
+      }
+    }
+
+    return [...regular, ...other];
   }
 
   @override
@@ -259,14 +299,9 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
               child: ValueListenableBuilder<String>(
                 valueListenable: _searchQueryNotifier,
                 builder: (context, query, _) {
-                  // The parent passes a pre-filtered list (expense or income
-                  // categories), so we only need to apply the search query here.
-                  final filtered = widget.categories.where((cat) {
-                    return query.isEmpty ||
-                        cat.name.toLowerCase().contains(query.toLowerCase());
-                  }).toList();
+                  final displayCategories = _getDisplayCategories(query);
 
-                  if (filtered.isEmpty) {
+                  if (displayCategories.isEmpty) {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -294,7 +329,7 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                       mainAxisSpacing: isTablet ? 12.0 : 10.h,
                       childAspectRatio: isTablet ? 1.15 : 1.05,
                     ),
-                    itemCount: filtered.length +
+                    itemCount: displayCategories.length +
                         (widget.allowOverallLimitOption ? 1 : 0),
                     itemBuilder: (context, index) {
                       // "Overall" option always appears first when enabled
@@ -311,11 +346,11 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                         );
                       }
 
-                      final cat = filtered[
+                      final cat = displayCategories[
                           index - (widget.allowOverallLimitOption ? 1 : 0)];
                       final isSelected = widget.selectedCategory?.id == cat.id;
                       final color = _parseColor(context, cat.colorHex);
-                      final icon = _parseIcon(cat.icon);
+                      final icon = _parseIcon(cat.icon, cat.name);
 
                       return _buildGridItem(
                         context: context,
@@ -349,7 +384,8 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
     final textTheme = context.textTheme;
     final isLight = Theme.of(context).brightness == Brightness.light;
     final isDark = !isLight;
-    final br = BorderRadius.circular(16.r);
+    final isTablet = Breakpoints.isTablet(context);
+    final br = BorderRadius.circular(isTablet ? 16.0 : 16.r);
     final selectedBg = colorScheme.primary;
     final selectedFg = isLight ? Colors.white : colorScheme.onPrimary;
 
@@ -376,7 +412,7 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                   BoxShadow(
                     color: colorScheme.primary
                         .withValues(alpha: isDark ? 0.35 : 0.25),
-                    blurRadius: 8.r,
+                    blurRadius: isTablet ? 8.0 : 8.r,
                     offset: const Offset(0, 2),
                   ),
                 ]
@@ -391,7 +427,10 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                   : null),
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 8.h),
+          padding: EdgeInsets.symmetric(
+            horizontal: isTablet ? 6.0 : 6.w,
+            vertical: isTablet ? 6.0 : 8.h,
+          ),
           child: Stack(
             clipBehavior: Clip.none,
             alignment: Alignment.center,
@@ -401,7 +440,8 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(7.w),
+                    width: isTablet ? 44.0 : 44.w,
+                    height: isTablet ? 44.0 : 44.w,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isSelected
@@ -418,24 +458,28 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                               width: 1.0,
                             ),
                     ),
+                    alignment: Alignment.center,
                     child: Icon(
                       icon,
                       color: isSelected ? selectedFg : iconColor,
-                      size: 22.sp,
+                      size: isTablet ? 22.0 : 22.sp,
                     ),
                   ),
-                  SizedBox(height: 6.h),
-                  Text(
-                    label,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: (textTheme.bodySmall ?? const TextStyle()).copyWith(
-                      fontSize: 11.sp,
-                      height: 1.2,
-                      fontWeight:
-                          isSelected ? FontWeights.bold : FontWeights.medium,
-                      color: isSelected ? selectedFg : colorScheme.onSurface,
+                  SizedBox(height: isTablet ? 4.0 : 6.h),
+                  Flexible(
+                    child: Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          (textTheme.bodySmall ?? const TextStyle()).copyWith(
+                        fontSize: isTablet ? 11.0 : 11.sp,
+                        height: 1.2,
+                        fontWeight:
+                            isSelected ? FontWeights.bold : FontWeights.medium,
+                        color: isSelected ? selectedFg : colorScheme.onSurface,
+                      ),
                     ),
                   ),
                 ],
@@ -445,14 +489,14 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                   top: 0,
                   right: 0,
                   child: Container(
-                    padding: EdgeInsets.all(2.r),
+                    padding: EdgeInsets.all(isTablet ? 2.0 : 2.r),
                     decoration: BoxDecoration(
                       color: isLight ? Colors.white : colorScheme.onPrimary,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.check_rounded,
-                      size: 11.sp,
+                      size: isTablet ? 11.0 : 11.sp,
                       color: colorScheme.primary,
                     ),
                   ),

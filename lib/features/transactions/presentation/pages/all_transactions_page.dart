@@ -15,6 +15,7 @@ import '../../../../core/responsive/tablet_spacing.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/theme/font_weights.dart';
+import '../../../../core/utils/category_icon_helper.dart';
 import '../../../../core/widgets/animated_empty_state_hero.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/compact_amount_text.dart';
@@ -1555,34 +1556,7 @@ class _TransactionListTile extends StatelessWidget {
   }
 
   IconData _getIconData(String iconName) {
-    switch (iconName) {
-      case 'restaurant':
-        return Icons.restaurant_rounded;
-      case 'shopping_cart':
-        return Icons.shopping_cart_rounded;
-      case 'home':
-        return Icons.home_rounded;
-      case 'receipt_long':
-        return Icons.receipt_long_rounded;
-      case 'directions_bus':
-        return Icons.directions_bus_rounded;
-      case 'movie':
-        return Icons.movie_rounded;
-      case 'medical_services':
-        return Icons.medical_services_rounded;
-      case 'shopping_bag':
-        return Icons.shopping_bag_rounded;
-      case 'payments':
-        return Icons.payments_rounded;
-      case 'work':
-        return Icons.work_rounded;
-      case 'trending_up':
-        return Icons.trending_up_rounded;
-      case 'storefront':
-        return Icons.storefront_rounded;
-      default:
-        return Icons.category_rounded;
-    }
+    return CategoryIconHelper.getIcon(iconName);
   }
 }
 

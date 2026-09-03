@@ -68,8 +68,7 @@ void main() {
     }
   });
 
-  testWidgets('ModernAddTransactionPage renders properly on phone and tablet',
-      (tester) async {
+  testWidgets('ModernAddTransactionPage renders properly on phone and tablet', (tester) async {
     tester.view.physicalSize = const Size(1024, 768);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -88,8 +87,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('ModernAddTransactionPage renders edit transfer mode and fields',
-      (tester) async {
+  testWidgets('ModernAddTransactionPage renders edit transfer mode and fields', (tester) async {
     final transferTx = TransactionItem(
       id: 1,
       amount: 150.0,
@@ -119,8 +117,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('ModernAddTransactionPage renders properly on phone screen',
-      (tester) async {
+  testWidgets('ModernAddTransactionPage renders properly on phone screen', (tester) async {
     tester.view.physicalSize = const Size(375, 812);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -131,6 +128,25 @@ void main() {
 
     expect(find.byType(ModernAddTransactionPage), findsOneWidget);
     expect(find.text('0.00'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Entering a large number scales within FittedBox without RenderFlex overflow', (tester) async {
+    tester.view.physicalSize = const Size(375, 812);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(_wrapWithApp(const ModernAddTransactionPage()));
+    await tester.pumpAndSettle();
+
+    // Enter a very large amount that would previously overflow
+    final textFieldFinder = find.byType(TextField).first;
+    await tester.enterText(textFieldFinder, '9999999999.99');
+    await tester.pumpAndSettle();
+
+    expect(find.widgetWithText(TextField, '9999999999.99'), findsOneWidget);
+    expect(find.byType(FittedBox), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 }

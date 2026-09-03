@@ -70,7 +70,7 @@ class QuickAmountKeypad extends StatelessWidget {
     final colorScheme = context.colorScheme;
     final textTheme = context.textTheme;
 
-    final rowSpacing = isTablet ? 12.0 : 8.h;
+    final rowSpacing = isTablet ? 12.0 : 12.h;
     final buttonHeight = isTablet ? 60.0 : 52.h;
 
     return Container(

@@ -1,6 +1,7 @@
 import 'package:drift/native.dart';
 import 'package:expendly/core/config/app_config.dart';
 import 'package:expendly/core/database/app_database.dart';
+import 'package:expendly/core/database/enums/database_enums.dart';
 import 'package:expendly/core/di/injection.dart';
 import 'package:expendly/core/preferences/quick_entry_preferences.dart';
 import 'package:expendly/core/services/preference_service.dart';
@@ -119,10 +120,6 @@ void main() {
     await cubit.loadDefaults();
   });
 
-  tearDown(() async {
-    await cubit.close();
-  });
-
   group('QuickAddPage Widget Tests', () {
     testWidgets('Renders top bar, hero amount, keypad, and action buttons', (tester) async {
       tester.view.physicalSize = const Size(800, 1200);
@@ -216,6 +213,92 @@ void main() {
       expect(find.text('Quick Expense'), findsOneWidget);
       expect(find.text('More Details'), findsOneWidget);
       expect(find.byType(QuickAmountKeypad), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('Renders distinguishable Recent Expenses section when recent transactions exist', (tester) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.runAsync(() async {
+        final cat = (await db.select(db.categories).get()).first;
+        await db.into(db.transactions).insert(
+              TransactionsCompanion.insert(
+                type: TransactionType.expense,
+                amount: 1550, // $15.50
+                categoryId: cat.id,
+                timestamp: DateTime.now(),
+              ),
+            );
+        await cubit.loadDefaults();
+      });
+
+      await tester.pumpWidget(_wrapWithApp(QuickAddBottomSheet(
+        key: UniqueKey(),
+        cubit: cubit,
+      )));
+      await tester.pumpAndSettle();
+
+      expect(find.text('RECENT EXPENSES'), findsOneWidget);
+      expect(find.text('Tap to re-fill'), findsOneWidget);
+      expect(find.text('-\$15.50'), findsOneWidget);
+      expect(find.byIcon(Icons.history_rounded), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('Compresses large amounts in Recent Expenses section without filling width', (tester) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.runAsync(() async {
+        final cat = (await db.select(db.categories).get()).first;
+        await db.into(db.transactions).insert(
+              TransactionsCompanion.insert(
+                type: TransactionType.expense,
+                amount: 15000000, // $150,000.00 -> 150K
+                categoryId: cat.id,
+                timestamp: DateTime.now(),
+              ),
+            );
+        await cubit.loadDefaults();
+      });
+
+      await tester.pumpWidget(_wrapWithApp(QuickAddBottomSheet(
+        key: UniqueKey(),
+        cubit: cubit,
+      )));
+      await tester.pumpAndSettle();
+
+      expect(find.text('-\$150K'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('Entering a large number via keypad in Quick Add scales within FittedBox without overflow', (tester) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(_wrapWithApp(QuickAddPage(cubit: cubit)));
+      await tester.pumpAndSettle();
+
+      // Tap '9' on keypad until max digits
+      final keypadNine = find.descendant(
+        of: find.byType(QuickAmountKeypad),
+        matching: find.text('9'),
+      );
+      for (int i = 0; i < 9; i++) {
+        await tester.tap(keypadNine);
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+      await tester.pumpAndSettle();
+
+      expect(find.text('999999999'), findsOneWidget);
+      expect(find.byType(FittedBox), findsWidgets);
       expect(tester.takeException(), isNull);
     });
   });

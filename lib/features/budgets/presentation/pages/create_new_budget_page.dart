@@ -14,6 +14,7 @@ import '../../../../core/responsive/breakpoints.dart';
 import '../../../../core/services/preference_service.dart';
 import '../../../../core/ads/interstitial_ad_helper.dart';
 import '../../../../core/theme/font_weights.dart';
+import '../../../../core/utils/category_icon_helper.dart';
 import '../../../../core/widgets/category_picker_sheet.dart';
 import '../../../../core/widgets/liquid_glass_app_bar.dart';
 import '../../../../core/widgets/status_components.dart';
@@ -529,26 +530,7 @@ class _CreateNewBudgetPageState extends State<CreateNewBudgetPage> {
   }
 
   IconData _getIconData(String iconName) {
-    switch (iconName) {
-      case 'restaurant':
-        return Icons.restaurant_rounded;
-      case 'shopping_cart':
-        return Icons.shopping_cart_rounded;
-      case 'home':
-        return Icons.home_rounded;
-      case 'receipt_long':
-        return Icons.receipt_long_rounded;
-      case 'directions_bus':
-        return Icons.directions_bus_rounded;
-      case 'movie':
-        return Icons.movie_rounded;
-      case 'medical_services':
-        return Icons.medical_services_rounded;
-      case 'shopping_bag':
-        return Icons.shopping_bag_rounded;
-      default:
-        return Icons.all_inclusive_rounded;
-    }
+    return CategoryIconHelper.getIcon(iconName);
   }
 }
 
